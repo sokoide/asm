@@ -1,48 +1,36 @@
+; macOS i386 (32-bit) Hello World
+;   nasm -f macho32 hello.asm -o hello.o
+;   ld -e _main -arch i386 -lSystem hello.o -o hello
+; NOTE: macOS 10.14 以降は i386 バイナリが動作しません
+
 global _main
 
 section .text
 
 _main:
-    ; args passed on stack from last to first
-    ; syscall)
-    ; https://github.com/opensource-apple/xnu/blob/master/bsd/kern/syscalls.master
-    ; 1	AUE_EXIT	ALL	{ void exit(int rval) NO_SYSCALL_STUB; } 
-    ; 4	AUE_NULL	ALL	{ user_ssize_t write(int fd, user_addr_t cbuf, user_size_t nbyte); } 
-    push  dword hello_world.len ; nbyte
-    push  dword hello_world     ; cbuf
-    push  dword 1               ; fd=1=stdout
+    ; write(1, msg, len)
+    push    dword len
+    push    dword msg
+    push    dword 1
+    mov     eax, 4          ; SYS_write
+    call    _syscall
+    add     esp, 12         ; 引数をスタックから除去
 
-    mov   eax, 4    ; 'write' syscall number 4
+    ; exit(0)
+    push    dword 0
+    mov     eax, 1          ; SYS_exit
+    call    _syscall
+    ; exit は戻らないのでスタックを戻す必要なし
 
-    ; http://takesako.hatenablog.com/entry/20090313/1236937017
-    ;  dummy 4byte push for return address.
-    ; because syscall is generally called by 'call' but we call it by int 0x80.
-    ; if you want to use 'call', it'll be as below.
-    ;
-    ;kernel:
-    ; 	int	80h	; Call kernel
-    ; 	ret
-
-    ; open:
-    ; 	push	dword mode
-    ; 	push	dword flags
-    ; 	push	dword path
-    ; 	mov	eax, 5
-    ; 	call	kernel
-    ; 	add	esp, byte 12
-    ; 	ret
-    ;
-    sub   esp, 4    ;
-    int   0x80      ; syscall
-    add   esp, 16   ; reset stack
-
-
-    push  dword 0   ; exit code 0
-    mov   eax, 1    ; 'exit' syscall number 1
-    sub   esp, 4    ; dummy 4byte push
-    int   0x80      ; syscall
+; int 0x80 ラッパー:
+; macOS の int 0x80 は call と違い戻りアドレスを自動で積まないため、
+; ダミー領域を確保してから呼び出す。
+_syscall:
+    sub     esp, 4
+    int     0x80
+    add     esp, 4
+    ret
 
 section .data
-
-hello_world: db "Hello World!", 10
-.len: equ $ - hello_world
+msg:    db "Hello World!", 10
+len:    equ $ - msg

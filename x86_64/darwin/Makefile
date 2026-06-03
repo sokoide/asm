@@ -1,21 +1,14 @@
-TARGET=hello
-SRCS=hello.asm\
-
-OBJS = $(SRCS:.asm=.o)
+TARGET = hello
 
 all: $(TARGET)
 
-run : all
-	./$(TARGET)
+$(TARGET): hello.o
+	ld -e _main -arch x86_64 -lSystem -o $@ $<
 
-$(TARGET): $(OBJS)
-	ld -e _main -macosx_version_min 10.12 -arch x86_64 -lSystem -o $(TARGET) $<
-
-%.o: %.asm
+hello.o: hello.asm
 	nasm -f macho64 -o $@ $<
 
 clean:
-	rm *.o $(TARGET)
+	rm -f $(TARGET) hello.o
 
-
-
+.PHONY: all clean
