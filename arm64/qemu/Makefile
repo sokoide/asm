@@ -29,7 +29,7 @@ run:
 	$(AS) $(ASFLAGS) -o $(S).o $(S).s
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
-	$(QEMU) $(QFLAGS) -kernel $(S).elf
+	timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $(S).elf || true
 
 # Run all scenarios through QEMU
 runall: all
