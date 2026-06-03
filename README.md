@@ -10,6 +10,7 @@
 | **6502** | `6502/sim65/` | sim65 シミュレータ (cc65) | 12 |
 | **ARM64** | `arm64/qemu/` | QEMU virt マシン (bare-metal) | 12 |
 | **PowerPC** | `ppc/qemu/` | QEMU bamboo マシン (bare-metal) | 12 |
+| **M68000** | `m68k/qemu/` | QEMU virt マシン (bare-metal) | 12 |
 | **x86 (16-bit)** | `x86_16/qemu/` | QEMU i386 フロッピーブート | 14 |
 | **x86 (16-bit)** | `x86_16/dos/exe/` | DOSBox (MZ EXE) | 14 |
 | **x86 (64-bit)** | `x86_64/darwin/` | macOS ネイティブ | 1 |
@@ -26,6 +27,7 @@
 |---|---|---|---|
 | **ARM64** | PL011 | `STRB` (MMIOストア) | `0x09000000` (UARTDR) |
 | **PowerPC** | 16550 | `STB` (MMIOストア) | `0xEF600300` (THR) |
+| **M68000** | Goldfish TTY | `MOVE.L` (MMIOストア) | `0xFF008000` (PUT_CHAR) |
 | **x86 (16-bit)** | 16550 (COM1) | `OUT` (I/Oポート) | `0x3F8` (THR) |
 | **6502** | — | sim65 API | — |
 
@@ -96,8 +98,10 @@ make clean
 |---|---|---|
 | `cc65` / `sim65` | 6502 | `brew install cc65` |
 | `clang` + `ld.lld` | ARM64, PPC | Xcode Command Line Tools |
+| `m68k-xelf-as` `m68k-xelf-ld` | M68000 | `brew install elf2x68k && source ~/.elf2x68k` |
 | `qemu-system-aarch64` | ARM64 | `brew install qemu` |
 | `qemu-system-ppc` | PPC | `brew install qemu` |
+| `qemu-system-m68k` | M68000 | `brew install qemu` |
 | `qemu-system-i386` | x86_16 | `brew install qemu` |
 | `nasm` | x86_16, x86_64, i386 | `brew install nasm` |
 | `dosbox` | x86_16 DOS | `brew install dosbox` |
@@ -112,6 +116,7 @@ asm/
 ├── arm64/
 │   ├── darwin/          # macOS ARM64 (System ABI)
 │   └── qemu/            # ARM64 bare-metal (QEMU virt)
+├── m68k/qemu/           # M68000 bare-metal (QEMU virt)
 ├── ppc/qemu/            # PowerPC bare-metal (QEMU bamboo)
 ├── x86_16/
 │   ├── qemu/            # 16-bit x86 フロッピーブート
