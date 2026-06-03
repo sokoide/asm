@@ -11,7 +11,7 @@ brew install nasm
 ## How to build and run
 
 ```bash
-cd mac32 # or mac64 for 64bit
+cd darwin
 make clean
 make run
 ```

@@ -1,5 +1,5 @@
-TARGET=hoge
-SRCS=hoge.asm\
+TARGET=hello
+SRCS=hello.asm\
 
 OBJS = $(SRCS:.asm=.o)
 
