@@ -51,7 +51,7 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_keyboard" ] || [ "$$name" = "s12_minishell" ]; then \
-			printf 'q\n' | timeout --foreground 3 qemu-system-i386 -drive file=$$name.img,format=raw,if=floppy -nographic 2>/dev/null || true; \
+			printf 'q\n' | timeout --foreground 1 qemu-system-i386 -drive file=$$name.img,format=raw,if=floppy -nographic 2>/dev/null || true; \
 		else \
 			qemu-system-i386 -drive file=$$name.img,format=raw,if=floppy -nographic || true; \
 		fi; \

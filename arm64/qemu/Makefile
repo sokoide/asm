@@ -37,7 +37,7 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
-			printf 'q\n' | timeout --foreground 3 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
+			printf 'q\n' | timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		else \
 			$(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
 		fi; \
