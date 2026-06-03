@@ -1,1 +1,14 @@
-hello
+s01_hello
+s02_registers
+s03_arithmetic
+s04_stack
+s05_loops
+s06_addressing
+s07_subroutines
+s08_zeropage
+s09_bitwise
+s10_memory
+s11_strings
+s12_interactive
+*.map
+*.lst
