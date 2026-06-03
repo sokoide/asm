@@ -13,7 +13,7 @@ LDFLAGS = -T linker.ld -nostdlib
 QEMU    = qemu-system-aarch64
 QFLAGS  = -machine virt -cpu cortex-a57 -nographic -semihosting
 
-.PHONY: all run dump clean test
+.PHONY: all run runall dump clean
 
 all:
 	@for name in $(SOURCES); do \
@@ -31,21 +31,22 @@ run:
 	rm -f $(S).o
 	$(QEMU) $(QFLAGS) -kernel $(S).elf
 
+# Run all scenarios through QEMU
+runall: all
+	@for name in $(SOURCES); do \
+		echo ""; \
+		echo "=== $$name ==="; \
+		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
+			printf 'q\n' | timeout --foreground 3 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
+		else \
+			$(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
+		fi; \
+		echo ""; \
+	done
+
 # Disassemble
 dump:
 	llvm-objdump -d $(S).elf
-
-# Run all and show output
-test:
-	@for name in $(SOURCES); do \
-		echo ""; \
-		echo "======== $$name ========"; \
-		$(AS) $(ASFLAGS) -o $$name.o $$name.s && \
-		$(LD) $(LDFLAGS) -o $$name.elf $$name.o && \
-		rm -f $$name.o && \
-		timeout 3 $(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
-		echo ""; \
-	done
 
 clean:
 	rm -f *.elf *.o *.bin

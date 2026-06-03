@@ -18,7 +18,7 @@ runall: all
 	@for s in $(SCENARIOS); do \
 		echo "=== $$s ==="; \
 		if [ "$$s" = "s12_interactive" ]; then \
-			printf 'help\nquit\n' | timeout 3 sim65 $$s 2>/dev/null || true; \
+			printf 'help\nquit\n' | timeout --foreground 3 sim65 $$s 2>/dev/null || true; \
 		else \
 			sim65 $$s; \
 		fi; \

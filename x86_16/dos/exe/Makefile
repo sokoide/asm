@@ -8,7 +8,7 @@ LK      = alink
 ASFLAGS = -f obj
 LKFLAGS = -m -oEXE
 
-.PHONY: all run dump clean
+.PHONY: all run runall dump clean
 
 all:
 	@for name in $(SCENARIOS); do \
@@ -25,6 +25,19 @@ run:
 	$(LK) $(LKFLAGS) -o $(S).exe $(S).o
 	rm -f $(S).o
 	dosbox -c "MOUNT C ." -c "C:" -c "$(S).exe" -c "EXIT"
+
+# Run all scenarios through DOSBox
+runall: all
+	@for name in $(SCENARIOS); do \
+		echo ""; \
+		echo "=== $$name ==="; \
+		if [ "$$name" = "s06_keyboard" ] || [ "$$name" = "s12_minishell" ]; then \
+			timeout --foreground 3 dosbox -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" 2>/dev/null || true; \
+		else \
+			dosbox -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" || true; \
+		fi; \
+		echo ""; \
+	done
 
 # Disassemble (skip 512-byte EXE header)
 dump:

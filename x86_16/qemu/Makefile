@@ -11,7 +11,7 @@ LK      = $(shell command -v x86_64-elf-ld 2>/dev/null || command -v x86_64-linu
 ASFLAGS = -f elf32
 LKFLAGS = -m elf_i386 -T linker.ld
 
-.PHONY: all run dump dump32 clean
+.PHONY: all run runall dump dump32 clean
 
 all:
 	@for name in $(SINGLE); do \
@@ -44,6 +44,19 @@ run:
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
 	qemu-system-i386 -drive file=$(S).img,format=raw,if=floppy -nographic
+
+# Run all scenarios through QEMU
+runall: all
+	@for name in $(SINGLE) $(MULTI); do \
+		echo ""; \
+		echo "=== $$name ==="; \
+		if [ "$$name" = "s06_keyboard" ] || [ "$$name" = "s12_minishell" ]; then \
+			printf 'q\n' | timeout --foreground 3 qemu-system-i386 -drive file=$$name.img,format=raw,if=floppy -nographic 2>/dev/null || true; \
+		else \
+			qemu-system-i386 -drive file=$$name.img,format=raw,if=floppy -nographic || true; \
+		fi; \
+		echo ""; \
+	done
 
 # Disassemble 16-bit code (single-sector examples)
 dump:
