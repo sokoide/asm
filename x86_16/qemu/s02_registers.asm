@@ -5,7 +5,7 @@
 ;   - High/low byte access: AH/AL, BH/BL, etc.
 ;   - MOV, ADD, SUB, INC, DEC instructions
 ;   - Hex display subroutine (print_hex16)
-;   - BIOS INT 0x10 for character output
+;   - COM1 UART output (16550 at I/O port 0x3F8)
 
 bits 16
 global _start
@@ -64,14 +64,27 @@ _start:
 
 ; ---- Subroutines ----
 
+; uart_putc: output character in AL to COM1 (16550 UART at 0x3F8)
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 ; print_str: null-terminated string at DS:SI
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
@@ -95,16 +108,16 @@ print_nibble:
     jle .out
     add al, 7               ; 'A' - '9' - 1
 .out:
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     ret
 
 print_crlf:
-    mov ax, 0x0E0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----

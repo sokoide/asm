@@ -26,11 +26,11 @@ _start:
     and al, 0x0F            ; 0000 1010 = 0x0A
     call print_bin8
     mov al, ' '
-    call print_char
+    call uart_putc
     mov al, '='
-    call print_char
+    call uart_putc
     mov al, ' '
-    call print_char
+    call uart_putc
     mov al, 0x5A
     and al, 0x0F
     call print_hex8
@@ -88,6 +88,20 @@ _start:
 
 ; ---- Subroutines ----
 
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 ; print_bin8: display AL as 8 binary digits (MSB first)
 print_bin8:
     mov cx, 8
@@ -98,22 +112,16 @@ print_bin8:
     jnc .zero
     mov al, '1'
 .zero:
-    call print_char
+    call uart_putc
     pop ax
     loop .bit_loop
-    ret
-
-print_char:
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
     ret
 
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    call print_char
+    call uart_putc
     jmp print_str
 .ret:
     ret
@@ -131,14 +139,16 @@ print_nibble:
     jle .out
     add al, 7
 .out:
-    call print_char
+    call uart_putc
     ret
 
 print_crlf:
+    push ax
     mov al, 13
-    call print_char
+    call uart_putc
     mov al, 10
-    call print_char
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----

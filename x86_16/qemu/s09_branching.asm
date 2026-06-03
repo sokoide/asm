@@ -1,10 +1,10 @@
-; s09_branching.asm - Scenario 9: Branching and Menu System
-; ==========================================================
+; s09_branching.asm - Scenario 9: Conditional Branching
+; ======================================================
 ; Learning objectives:
 ;   - CMP: compare two values (sets flags without modifying operands)
 ;   - Conditional jumps: JE/JNE (equal), JL/JG (signed), JB/JA (unsigned)
-;   - Signed vs unsigned comparison
-;   - Building an interactive menu with keyboard dispatch
+;   - Building decision trees with branch instructions
+;   - Signed vs unsigned comparison semantics
 
 bits 16
 global _start
@@ -17,63 +17,72 @@ _start:
     mov ss, ax
     mov sp, 0x7C00
 
-    call show_menu
-
-    ; --- Main loop: read key, dispatch ---
-.menu:
-    mov ah, 0x00
-    int 0x16                ; Wait for keypress -> AL = ASCII
-
-    cmp al, '1'
-    je  .hello
-    cmp al, '2'
-    je  .test_signed
-    cmp al, '3'
-    je  .test_unsigned
-    cmp al, 'q'
-    je  .quit
-    ; Ignore other keys
-    jmp .menu
-
-.hello:
-    mov si, msg_hello
+    ; --- Test 1: JE / JNE (equal / not-equal) ---
+    mov si, msg_eq
     call print_str
-    call show_menu
-    jmp .menu
+    mov ax, 42
+    mov bx, 42
+    cmp ax, bx
+    je  .yes1
+    mov si, msg_no
+    call print_str
+    jmp .next1
+.yes1:
+    mov si, msg_yes
+    call print_str
+.next1:
 
-.test_signed:
-    ; Signed comparison: JL / JG use SF and OF flags
-    mov al, -5              ; 0xFB = 251 unsigned, -5 signed
-    cmp al, 10
-    jl  .is_neg             ; JL: signed less than
-    mov si, msg_pos
+    ; --- Test 2: JL (signed less than) ---
+    mov si, msg_slt
     call print_str
-    jmp .back
-.is_neg:
-    mov si, msg_neg
+    mov ax, -5
+    mov bx, 10
+    cmp ax, bx
+    jl  .yes2
+    mov si, msg_no
     call print_str
-.back:
-    call show_menu
-    jmp .menu
+    jmp .next2
+.yes2:
+    mov si, msg_yes
+    call print_str
+.next2:
 
-.test_unsigned:
-    ; Unsigned comparison: JB / JA use CF flag only
-    ; Same bit pattern 0xFB, but treated as unsigned
-    mov al, 0xFB            ; 251 unsigned
-    cmp al, 200
-    jb  .below              ; JB: unsigned below (CF=1)
-    mov si, msg_above
+    ; --- Test 3: JG (signed greater than) ---
+    mov si, msg_sgt
     call print_str
-    jmp .back2
-.below:
-    mov si, msg_below
+    mov ax, 30
+    mov bx, 10
+    cmp ax, bx
+    jg  .yes3
+    mov si, msg_no
     call print_str
-.back2:
-    call show_menu
-    jmp .menu
+    jmp .next3
+.yes3:
+    mov si, msg_yes
+    call print_str
+.next3:
 
-.quit:
-    mov si, msg_bye
+    ; --- Test 4: If-else chain ---
+    mov si, msg_ife
+    call print_str
+    mov ax, 50
+    cmp ax, 10
+    jl  .small
+    cmp ax, 100
+    jg  .big
+    mov si, msg_mid
+    call print_str
+    jmp .done4
+.small:
+    mov si, msg_small
+    call print_str
+    jmp .done4
+.big:
+    mov si, msg_big
+    call print_str
+.done4:
+
+    mov si, msg_dn
     call print_str
 
 .halt:
@@ -83,35 +92,49 @@ _start:
 
 ; ---- Subroutines ----
 
-show_menu:
-    mov si, msg_menu
-    call print_str
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
     ret
 
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
 
+print_crlf:
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
+    ret
+
 ; ---- Data ----
-msg_menu  db 13, 10, "== Menu ==", 13, 10
-          db "1 - Hello", 13, 10
-          db "2 - Signed test (-5 < 10?)", 13, 10
-          db "3 - Unsigned test (251 < 200?)", 13, 10
-          db "q - Quit", 13, 10
-          db "> ", 0
-msg_hello db 13, 10, "Hello!", 13, 10, 0
-msg_pos   db 13, 10, "Result: -5 >= 10 (wrong!)", 13, 10, 0
-msg_neg   db 13, 10, "Result: -5 < 10 (JL signed)", 13, 10, 0
-msg_above db 13, 10, "Result: 251 >= 200 (JA unsigned)", 13, 10, 0
-msg_below db 13, 10, "Result: 251 < 200 (wrong!)", 13, 10, 0
-msg_bye   db 13, 10, "Bye!", 0
+msg_eq:    db "42 == 42? ", 0
+msg_slt:   db "-5 < 10?  ", 0
+msg_sgt:   db "30 > 10?  ", 0
+msg_ife:   db "50: ", 0
+msg_small: db "small (<10)", 13, 10, 0
+msg_mid:   db "mid (10..100)", 13, 10, 0
+msg_big:   db "big (>100)", 13, 10, 0
+msg_yes:   db "Yes!", 13, 10, 0
+msg_no:    db "No!", 13, 10, 0
+msg_dn:    db "Done!", 13, 10, 0
 
 times 510-($-$$) db 0
 dw 0xAA55

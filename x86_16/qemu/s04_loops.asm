@@ -26,11 +26,9 @@ _start:
 .loop1:
     mov al, cl
     add al, '0'            ; Convert number to ASCII digit
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     mov al, ' '
-    int 0x10
+    call uart_putc
     loop .loop1             ; CX--; if CX != 0, jump
 
     call print_crlf
@@ -43,11 +41,9 @@ _start:
 .loop2:
     mov al, cl
     add al, '0'
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     mov al, ' '
-    int 0x10
+    call uart_putc
     inc cl
     cmp cl, 6              ; Stop after printing 5
     jle .loop2             ; Jump if CL <= 5
@@ -80,22 +76,37 @@ _start:
     jmp .halt
 
 ; ---- Subroutines ----
+
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
 
 print_crlf:
-    mov ax, 0x0E0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----

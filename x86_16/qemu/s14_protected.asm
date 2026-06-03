@@ -7,8 +7,8 @@
 ;   - Far jump to flush pipeline after mode switch
 ;   - Segment selectors (index into GDT)
 ;   - 32-bit registers: EAX, ESI, EDI, ESP
-;   - Linear address mapping: VRAM at 0x000B8000
 ;   - Flat memory model: base=0, limit=4GB
+;   - I/O port access (IN/OUT) works in protected mode at CPL=0
 ;
 ; Structure:
 ;   Sector 1: 16-bit boot + GDT + mode switch
@@ -18,7 +18,7 @@ bits 16
 org 0x7C00
 
 ; ============================================================
-; SECTOR 1: Boot → Protected Mode transition
+; SECTOR 1: Boot -> Protected Mode transition
 ; ============================================================
 
 start:
@@ -39,7 +39,7 @@ start:
     int 0x13
     jc  .error
 
-    ; --- Print status (last BIOS call before PM) ---
+    ; --- Print status (last use of 16-bit uart_putc) ---
     mov si, msg_switching
     call print_str_16
 
@@ -58,7 +58,6 @@ start:
 
     ; Step 4: Far jump to flush 16-bit prefetch queue
     ;   0x08 = code segment selector (GDT index 1, ring 0)
-    ;   pm_entry is in sector 2 at ~0x7E00
     jmp 0x08:pm_entry
 
 .error:
@@ -67,14 +66,27 @@ start:
     cli
     hlt
 
-; ---- 16-bit print subroutine ----
+; ---- 16-bit UART subroutines ----
+
+uart_putc_16:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 print_str_16:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc_16
     jmp print_str_16
 .ret:
     ret
@@ -85,13 +97,6 @@ msg_err       db "Disk read error!", 0
 ; ============================================================
 ; GDT (Global Descriptor Table)
 ; ============================================================
-; Each entry is 8 bytes:
-;   [Limit low 16][Base low 16][Base mid 8][Access][Flags+Limit hi 4][Base hi 8]
-;
-; Access byte: [Present(1)][DPL(2)][S(1)][Type(4)]
-;   S=1 for code/data, Type: code=1010(A), data=0010(2)
-; Flags: [Granularity(1)][D/B(1)][0][0]
-;   G=1: limit in 4KB pages, D=1: 32-bit
 
 gdt_start:
     ; --- Descriptor 0: Null (required by processor) ---
@@ -136,6 +141,7 @@ bits 32
 pm_entry:
     ; ===== Now in 32-bit Protected Mode =====
     ; BIOS interrupts are NO LONGER AVAILABLE
+    ; But I/O ports (IN/OUT) still work at CPL=0
 
     ; Step 5: Set up data segment registers with data selector
     mov ax, 0x10             ; Data segment selector (GDT index 2)
@@ -146,81 +152,54 @@ pm_entry:
     mov ss, ax
     mov esp, 0x90000         ; Stack in safe memory
 
-    ; Step 6: Write directly to VRAM
-    ; In protected mode with flat model (base=0),
-    ; VRAM linear address = 0x000B8000
-    ; (In real mode it was segment 0xB800, offset = 0xB800 * 16 = 0xB8000)
+    ; Step 6: Print messages via COM1 serial (I/O port)
+    ; In protected mode, OUT/IN instructions still work
 
-    ; --- Draw colored header (row 0) ---
-    ; Each character: [ASCII byte][attribute byte]
-    ; Attribute: [Blink][BG RGB][Bright][FG RGB]
-    mov esi, pm_header
-    mov edi, 0x000B8000      ; VRAM row 0
-    mov ah, 0x4F             ; White on red
-.call_header:
-    lodsb                    ; AL = [ESI], ESI++
-    or  al, al
-    jz  .fill_header
-    stosw                    ; [EDI] = AX, EDI += 2
-    jmp .call_header
-.fill_header:
-    mov al, ' '
-    mov ecx, edi
-    shr ecx, 1
-    neg ecx
-    add ecx, 80
-    rep stosw
-
-    ; --- Draw separator (row 1) ---
-    mov edi, 0x000B8000 + 160
-    mov eax, 0x1F2D001F     ; Two chars at once: white-on-blue '-'
-    ; Actually stosw writes 16 bits, let's do it simply
-    mov ax, 0x1F2D           ; White on blue, '-'
-    mov ecx, 80
-    rep stosw
-
-    ; --- Print message (row 3) ---
     mov esi, pm_msg1
-    mov edi, 0x000B8000 + (80 * 2 * 3)  ; Row 3
-    mov ah, 0x0A             ; Light green on black
-.print1:
-    lodsb
-    or  al, al
-    jz  .msg2
-    stosw
-    jmp .print1
-
-.msg2:
+    call print_str_32
     mov esi, pm_msg2
-    mov edi, 0x000B8000 + (80 * 2 * 4)  ; Row 4
-    mov ah, 0x0E             ; Yellow on black
-.print2:
-    lodsb
-    or  al, al
-    jz  .msg3
-    stosw
-    jmp .print2
-
-.msg3:
+    call print_str_32
     mov esi, pm_msg3
-    mov edi, 0x000B8000 + (80 * 2 * 5)  ; Row 5
-    mov ah, 0x0B             ; Light cyan on black
-.print3:
-    lodsb
-    or  al, al
-    jz  .done
-    stosw
-    jmp .print3
+    call print_str_32
+    mov esi, pm_msg4
+    call print_str_32
 
 .done:
     hlt
     jmp .done
 
+; ---- 32-bit subroutines ----
+
+; uart_putc_32: output character in AL to COM1
+uart_putc_32:
+    push    edx
+    push    eax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     eax
+    out     dx, al
+    pop     edx
+    ret
+
+; print_str_32: print null-terminated string at ESI
+print_str_32:
+    lodsb
+    or  al, al
+    jz  .ret
+    call uart_putc_32
+    jmp print_str_32
+.ret:
+    ret
+
 ; ---- Sector 2 Data ----
-pm_header db " 32-bit Protected Mode Active ", 0
-pm_msg1   db "CR0.PE = 1: protected mode enabled", 0
-pm_msg2   db "GDT: flat model (base=0, limit=4GB)", 0
-pm_msg3   db "VRAM at linear 0x000B8000 (no BIOS needed)", 0
+pm_msg1 db "CR0.PE = 1: protected mode enabled", 13, 10, 0
+pm_msg2 db "GDT: flat model (base=0, limit=4GB)", 13, 10, 0
+pm_msg3 db "I/O ports (IN/OUT) work at CPL=0", 13, 10, 0
+pm_msg4 db "32-bit protected mode active!", 13, 10, 0
 
 ; Pad to 1024 bytes (2 sectors total)
 times 1024-($-$$) db 0

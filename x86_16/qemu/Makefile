@@ -1,6 +1,6 @@
 # --- Single-sector examples (ELF32 + linker, 512 bytes) ---
 SINGLE = s01_hello s02_registers s03_stack s04_loops \
-         s05_strings s06_keyboard s07_subroutines s08_vram \
+         s05_strings s06_serial_in s07_subroutines s08_hardware \
          s09_branching s10_bitwise s11_memory s12_minishell
 
 # --- Multi-sector examples (flat binary, -f bin) ---
@@ -10,6 +10,9 @@ AS      = nasm
 LK      = $(shell command -v x86_64-elf-ld 2>/dev/null || command -v x86_64-linux-gnu-ld 2>/dev/null || echo ld)
 ASFLAGS = -f elf32
 LKFLAGS = -m elf_i386 -T linker.ld
+
+QEMU    = qemu-system-i386
+QFLAGS  = -drive file=$(1).img,format=raw,if=floppy -serial stdio -display none -monitor none
 
 .PHONY: all run runall dump dump32 clean
 
@@ -43,17 +46,17 @@ run:
 	fi
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
-	timeout --foreground 1 qemu-system-i386 -drive file=$(S).img,format=raw,if=floppy -nographic || true
+	timeout --foreground 1 $(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none || true
 
 # Run all scenarios through QEMU
 runall: all
 	@for name in $(SINGLE) $(MULTI); do \
 		echo ""; \
 		echo "=== $$name ==="; \
-		if [ "$$name" = "s06_keyboard" ] || [ "$$name" = "s12_minishell" ]; then \
-			printf 'q\n' | timeout --foreground 1 qemu-system-i386 -drive file=$$name.img,format=raw,if=floppy -nographic 2>/dev/null || true; \
+		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
+			printf 'q\n' | timeout --foreground 1 $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
 		else \
-			timeout --foreground 1 qemu-system-i386 -drive file=$$name.img,format=raw,if=floppy -nographic 2>/dev/null || true; \
+			timeout --foreground 1 $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
 		fi; \
 		echo ""; \
 	done

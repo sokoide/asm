@@ -26,6 +26,7 @@ _start:
     ; POP in reverse order (LIFO)
     pop bx                  ; BX = 0x5678 (last pushed = first popped)
     pop ax                  ; AX = 0x1234
+    push ax                 ; Save on stack for later
 
     ; Display first POP result
     mov si, msg1
@@ -37,7 +38,8 @@ _start:
     ; Display second POP result
     mov si, msg2
     call print_str
-    call print_hex16        ; AX = 0x1234 (already in AX from pop)
+    pop ax                  ; 0x1234 (restored from stack)
+    call print_hex16
     call print_crlf
 
     ; --- Save/restore pattern ---
@@ -47,8 +49,10 @@ _start:
     ; ... do other work ...
     pop ax                  ; AX restored = 42
 
+    push ax                 ; Save before print
     mov si, msg3
     call print_str
+    pop ax                  ; 42
     call print_hex16
     call print_crlf
 
@@ -61,13 +65,26 @@ _start:
     jmp .halt
 
 ; ---- Subroutines ----
+
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
@@ -90,16 +107,16 @@ print_nibble:
     jle .out
     add al, 7
 .out:
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     ret
 
 print_crlf:
-    mov ax, 0x0E0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----

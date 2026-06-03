@@ -1,5 +1,12 @@
-bits 16
+; s12_minishell.asm - Scenario 12: Interactive Mini Shell
+; =======================================================
+; Learning objectives:
+;   - Combining all previous concepts into one program
+;   - Serial input and output (UART TX/RX)
+;   - String comparison for command dispatch
+;   - Building a read-eval-print loop (REPL)
 
+bits 16
 global _start
 
 section .text
@@ -10,197 +17,200 @@ _start:
     mov ss, ax
     mov sp, 0x7C00
 
-    ; 80x25 text mode (16 colors)
-    mov ax, 0x0003
-    int 0x10
-
-    call draw_header
-
-    mov si, msg_welcome
+    ; Print banner
+    mov si, msg_banner
+    call print_str
+    mov si, msg_h1
+    call print_str
+    mov si, msg_h2
+    call print_str
+    mov si, msg_h3
     call print_str
 
-; ---- Main command loop ----
-cmd_loop:
+    ; Main loop: print prompt, read line, dispatch
+.main:
     mov si, msg_prompt
     call print_str
     call read_line
+    call print_crlf
 
-    ; --- dispatch ---
-    mov si, input_buf
+    ; Compare input with "hello"
+    mov si, input
     mov di, cmd_hello
     call strcmp
     je  .hello
 
-    mov si, input_buf
+    ; Compare input with "help"
+    mov si, input
     mov di, cmd_help
     call strcmp
     je  .help
 
-    mov si, input_buf
-    mov di, cmd_clear
+    ; Compare input with "quit"
+    mov si, input
+    mov di, cmd_quit
     call strcmp
-    je  .clear
+    je  .quit
 
-    mov si, input_buf
-    mov di, cmd_reboot
-    call strcmp
-    je  .reboot
+    ; Empty line? (first char is null) -> just loop
+    mov al, [input]
+    or  al, al
+    jz  .main
 
-    ; empty line -> just prompt again
-    cmp byte [input_buf], 0
-    je  cmd_loop
-
-    mov si, msg_unknown
+    ; Unknown command
+    mov si, msg_unk
     call print_str
-    jmp cmd_loop
+    jmp .main
 
 .hello:
-    mov si, msg_hello_r
+    mov si, msg_hi
     call print_str
-    jmp cmd_loop
+    jmp .main
 
 .help:
-    mov si, msg_help
+    mov si, msg_h1
     call print_str
-    jmp cmd_loop
+    mov si, msg_h2
+    call print_str
+    mov si, msg_h3
+    call print_str
+    jmp .main
 
-.clear:
-    mov ax, 0x0003
-    int 0x10
-    call draw_header
-    jmp cmd_loop
+.quit:
+    mov si, msg_bye
+    call print_str
 
-.reboot:
-    mov al, 0xFE
-    out 0x64, al
+.halt:
+    cli
+    hlt
+    jmp .halt
 
 ; ---- Subroutines ----
 
-; print_str: print null-terminated string at DS:SI via BIOS
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
+uart_getc:
+    push    dx
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x01
+    jz      .wait
+    mov     dx, 0x3F8
+    in      al, dx
+    pop     dx
+    ret
+
+; read_line: read chars into input buffer until Enter
+read_line:
+    pusha
+    mov di, input
+.rl_loop:
+    call uart_getc
+    ; Check for Enter (CR or LF)
+    cmp al, 13
+    je  .rl_enter
+    cmp al, 10
+    je  .rl_enter
+    ; Check for Backspace (0x08)
+    cmp al, 8
+    je  .rl_bs
+    ; Only store printable chars (>= 0x20)
+    cmp al, 0x20
+    jb  .rl_loop
+    ; Check buffer limit
+    push ax
+    mov ax, di
+    sub ax, input
+    cmp ax, 30
+    pop ax
+    jge .rl_loop
+    ; Store and echo
+    mov [di], al
+    inc di
+    call uart_putc
+    jmp .rl_loop
+.rl_bs:
+    mov ax, di
+    sub ax, input
+    or  ax, ax
+    jz  .rl_loop
+    dec di
+    push ax
+    mov al, 8
+    call uart_putc
+    mov al, ' '
+    call uart_putc
+    mov al, 8
+    call uart_putc
+    pop ax
+    jmp .rl_loop
+.rl_enter:
+    mov byte [di], 0
+    popa
+    ret
+
+; strcmp: compare strings at SI and DI. ZF=1 if equal
+strcmp:
+    pusha
+.sc_loop:
+    mov al, [si]
+    mov bl, [di]
+    cmp al, bl
+    jne .sc_done
+    or  al, al
+    jz  .sc_done
+    inc si
+    inc di
+    jmp .sc_loop
+.sc_done:
+    cmp al, bl
+    popa
+    ret
+
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
 
-; read_line: read line into input_buf (lowercased, backspace ok)
-read_line:
-    mov byte [input_len], 0
-    mov di, input_buf
-.loop:
-    xor ah, ah
-    int 0x16             ; wait for keystroke
-
-    cmp al, 13           ; Enter
-    je  .enter
-    cmp al, 8            ; Backspace
-    je  .bs
-    cmp al, ' '
-    jb  .loop            ; ignore other control chars
-    cmp byte [input_len], 48
-    jge .loop            ; buffer full
-
-    ; A-Z -> a-z
-    cmp al, 'A'
-    jb  .store
-    cmp al, 'Z'
-    ja  .store
-    add al, 32
-.store:
-    stosb
-    inc byte [input_len]
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10             ; echo
-    jmp .loop
-.bs:
-    cmp byte [input_len], 0
-    je  .loop
-    dec di
-    dec byte [input_len]
-    mov ah, 0x0E
-    mov al, 8
-    int 0x10
-    mov al, ' '
-    int 0x10
-    mov al, 8
-    int 0x10
-    jmp .loop
-.enter:
-    xor al, al
-    stosb                ; null terminate
-    mov si, msg_crlf
-    call print_str
-    ret
-
-; strcmp: compare DS:SI and DS:DI — ZF=1 if equal
-strcmp:
-    mov al, [si]
-    mov bl, [di]
-    cmp al, bl
-    jne .ret
-    inc si
-    inc di
-    test al, al
-    jnz strcmp
-.ret:
-    ret
-
-; draw_header: colored title bar via direct VRAM write
-draw_header:
-    pusha
-    push es
-    mov ax, 0xB800
-    mov es, ax
-
-    ; --- row 0: white on red ---
-    xor di, di
-    mov ah, 0x4F
-    mov si, header_text
-.hloop:
-    lodsb
-    or  al, al
-    jz  .hfill
-    stosw
-    jmp .hloop
-.hfill:
-    mov al, ' '
-    mov cx, di
-    shr cx, 1
-    neg cx
-    add cx, 80
-    rep stosw
-
-    ; cursor to row 1
-    mov dh, 1
-    xor dl, dl
-    xor bh, bh
-    mov ah, 0x02
-    int 0x10
-
-    pop es
-    popa
+print_crlf:
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----
-header_text  db " 8086 MiniShell v1.0 ", 0
-msg_welcome  db 13, 10, "Type 'help' for commands.", 13, 10, 0
-msg_prompt   db "> ", 0
-msg_crlf     db 13, 10, 0
-msg_hello_r  db "Hello from the 8086!", 13, 10, 0
-msg_help     db "Commands: hello, clear, help, reboot", 13, 10, 0
-msg_unknown  db "Unknown command.", 13, 10, 0
-cmd_hello    db "hello", 0
-cmd_help     db "help", 0
-cmd_clear    db "clear", 0
-cmd_reboot   db "reboot", 0
-input_len    db 0
-input_buf    times 48 db 0
+msg_banner db "8086 MiniShell", 13, 10, 0
+msg_prompt db "> ", 0
+msg_hi     db "Hello, 8086!", 13, 10, 0
+msg_h1     db "Commands: hello, help, quit", 13, 10, 0
+msg_h2     db "  hello - Say hello", 13, 10, 0
+msg_h3     db "  quit  - Exit", 13, 10, 0
+msg_bye    db "Bye!", 13, 10, 0
+msg_unk    db "Unknown command", 13, 10, 0
+cmd_hello  db "hello", 0
+cmd_help   db "help", 0
+cmd_quit   db "quit", 0
+input      times 32 db 0
 
 times 510-($-$$) db 0
 dw 0xAA55

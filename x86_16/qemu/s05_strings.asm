@@ -38,9 +38,7 @@ _start:
     call print_str
     pop ax
     add al, '0'            ; Convert to ASCII (safe if < 10)
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     call print_crlf
 
     ; --- Demo 2: Copy string with REP MOVSB ---
@@ -72,22 +70,37 @@ _start:
     jmp .halt
 
 ; ---- Subroutines ----
+
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 print_str:
     lodsb                   ; AL = [DS:SI], SI++
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
 
 print_crlf:
-    mov ax, 0x0E0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----

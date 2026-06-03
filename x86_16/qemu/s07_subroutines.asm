@@ -36,7 +36,7 @@ _start:
     call print_hex16
     call print_crlf
 
-    ; --- Call 3: Nested call (print_dots calls print_char) ---
+    ; --- Call 3: Nested call (print_dots calls uart_putc) ---
     mov si, msg4
     call print_str
     mov cx, 5               ; Parameter: CX = count
@@ -64,6 +64,21 @@ _start:
 
 ; ---- Subroutines ----
 
+; uart_putc: output character in AL to COM1 (16550 UART at 0x3F8)
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 ; add_bytes: return AL + BL in AL
 ;   Input:  AL, BL
 ;   Output: AL = AL + BL
@@ -74,15 +89,8 @@ add_bytes:
 ; print_dots: print CX dots using nested call
 print_dots:
     mov al, '.'
-    call print_char          ; Nested call
+    call uart_putc          ; Nested call
     loop print_dots
-    ret
-
-; print_char: print single character in AL
-print_char:
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
     ret
 
 ; print_str: print null-terminated string at DS:SI
@@ -93,9 +101,7 @@ print_str:
     lodsb
     or  al, al
     jz  .done
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp .loop
 .done:
     popa
@@ -120,16 +126,16 @@ print_nibble:
     jle .out
     add al, 7
 .out:
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     ret
 
 print_crlf:
-    mov ax, 0x0E0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----

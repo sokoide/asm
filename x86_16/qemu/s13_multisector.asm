@@ -32,17 +32,6 @@ start:
     call print_str
 
     ; --- Read sector 2 using INT 0x13 AH=02h ---
-    ; Parameters:
-    ;   AH = 02h (read sectors)
-    ;   AL = number of sectors to read (1)
-    ;   CH = cylinder (0)
-    ;   CL = sector number, 1-based (2 = second sector)
-    ;   DH = head (0)
-    ;   DL = drive (0x00 = first floppy)
-    ;   ES:BX = destination buffer (0x0000:0x7E00)
-    ;
-    ; Note: sectors are numbered starting from 1 (not 0)
-    ;       0x7E00 is right after the boot sector (0x7C00 + 512)
     mov ah, 0x02
     mov al, 1               ; Read 1 sector
     mov ch, 0               ; Cylinder 0
@@ -59,7 +48,6 @@ start:
     jmp 0x7E00              ; Far jump to loaded code
 
 .disk_error:
-    ; AH = error code, AL = sectors actually read
     mov si, msg_err
     call print_str
     mov al, ah
@@ -73,13 +61,25 @@ start:
 
 ; ---- 16-bit subroutines ----
 
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
@@ -97,16 +97,16 @@ print_nibble:
     jle .out
     add al, 7
 .out:
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     ret
 
 print_crlf:
-    mov ax, 0x0E0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----
@@ -121,11 +121,8 @@ dw 0xAA55
 ; ============================================================
 ; SECTOR 2: Loaded at 0x7E00 by our INT 0x13 call
 ; ============================================================
-; Since we use ORG 0x7C00, addresses here are automatically
-; correct: sector2_start = 0x7C00 + 512 = 0x7E00
 
 sector2:
-    ; We can call print_str from sector 1 (it's still in memory)
     mov si, s2_welcome
     call print_str
 
@@ -150,7 +147,7 @@ sector2:
     hlt
     jmp .halt2
 
-; Small local hex printer (reuses BIOS, avoids cross-sector issues)
+; Small local hex printer (reuses uart_putc, avoids cross-sector issues)
 print_hex16_s2:
     push ax
     mov al, ah

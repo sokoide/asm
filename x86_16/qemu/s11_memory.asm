@@ -66,9 +66,11 @@ _start:
     mov bx, display         ; BX = base address
     mov si, 3               ; SI = index
     mov al, [bx+si]         ; AL = display[3] = 'L' = 0x4C
+    push ax                 ; Save value
 
     mov si, msg4
     call print_str
+    pop ax                  ; Restore value
     call print_hex8
     call print_crlf
 
@@ -81,13 +83,26 @@ _start:
     jmp .halt
 
 ; ---- Subroutines ----
+
+uart_putc:
+    push    dx
+    push    ax
+    mov     dx, 0x3FD
+.wait:
+    in      al, dx
+    test    al, 0x20
+    jz      .wait
+    mov     dx, 0x3F8
+    pop     ax
+    out     dx, al
+    pop     dx
+    ret
+
 print_str:
     lodsb
     or  al, al
     jz  .ret
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     jmp print_str
 .ret:
     ret
@@ -105,16 +120,16 @@ print_nibble:
     jle .out
     add al, 7
 .out:
-    mov ah, 0x0E
-    xor bh, bh
-    int 0x10
+    call uart_putc
     ret
 
 print_crlf:
-    mov ax, 0x0E0D
-    int 0x10
-    mov al, 0x0A
-    int 0x10
+    push ax
+    mov al, 13
+    call uart_putc
+    mov al, 10
+    call uart_putc
+    pop ax
     ret
 
 ; ---- Data ----
