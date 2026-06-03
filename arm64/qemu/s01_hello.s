@@ -20,9 +20,9 @@ _start:
     ldr     x0, =message
     bl      print_str
 
-    // Exit via semihosting
+    // Exit via semihosting (AArch64: x1 must be a pointer to a two-word block)
     mov     x0, #0x18            // angel_SWIreason_ReportException
-    ldr     x1, =0x20026         // ADP_Stopped_ApplicationExit
+    ldr     x1, =exit_reason     // pointer to { ADP_Stopped_ApplicationExit, 0 }
     hlt     #0xF000
 
 // ---- Subroutines ----
@@ -56,3 +56,8 @@ uart_putc:
 // ---- Data ----
 message:
     .asciz "Hello, ARM64 World!\n"
+
+    .align 3
+exit_reason:
+    .dword 0x20026               // ADP_Stopped_ApplicationExit
+    .dword 0x0                   // subcode
