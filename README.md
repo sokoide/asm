@@ -11,6 +11,7 @@
 | **ARM64** | `arm64/qemu/` | QEMU virt マシン (bare-metal) | 12 |
 | **PowerPC** | `ppc/qemu/` | QEMU bamboo マシン (bare-metal) | 12 |
 | **M68000** | `m68k/qemu/` | QEMU virt マシン (bare-metal) | 12 |
+| **Z80** | `z80/sim/` | Go製 CP/M シミュレータ | 13 |
 | **x86 (16-bit)** | `x86_16/qemu/` | QEMU i386 フロッピーブート | 14 |
 | **x86 (16-bit)** | `x86_16/dos/exe/` | DOSBox (MZ EXE) | 14 |
 | **x86 (64-bit)** | `x86_64/darwin/` | macOS ネイティブ | 1 |
@@ -30,6 +31,7 @@
 | **M68000** | Goldfish TTY | `MOVE.L` (MMIOストア) | `0xFF008000` (PUT_CHAR) |
 | **x86 (16-bit)** | 16550 (COM1) | `OUT` (I/Oポート) | `0x3F8` (THR) |
 | **6502** | — | sim65 API | — |
+| **Z80** | — | CP/M BDOS (`CALL 0x0005`) | — |
 
 ARM64/PPCはMMIO（メモリマップドI/O）でUARTレジスタに直接ストア。x86はI/Oポート命令（`OUT`/`IN`）でCOM1にアクセス。いずれも **OSやドライバを介さず** CPU命令が直接ハードウェアレジスタを叩きます。
 
@@ -67,6 +69,7 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです（x86_
 | s10 | ビット演算 | AND, OR, XOR, シフト, マスク |
 | s11 | メモリ | fill, copy, インデックスアドレッシング |
 | s12 | インタラクティブ | 簡易シェル (コマンド解析, 入力ループ) |
+| s13 | 裏レジスタ | EXX, EX AF,AF', ISR コンテキスト保存 (Z80のみ) |
 | s13 | ファイルI/O / マルチセクタ | (x86_16のみ) |
 | s14 | PSP / プロテクトモード | (x86_16のみ) |
 
@@ -99,6 +102,8 @@ make clean
 | `cc65` / `sim65` | 6502 | `brew install cc65` |
 | `clang` + `ld.lld` | ARM64, PPC | Xcode Command Line Tools |
 | `m68k-xelf-as` `m68k-xelf-ld` | M68000 | `brew install elf2x68k && source ~/.elf2x68k` |
+| `z80asm` | Z80 | `brew install z80asm` |
+| `go` | Z80 (シミュレータ) | `brew install go` |
 | `qemu-system-aarch64` | ARM64 | `brew install qemu` |
 | `qemu-system-ppc` | PPC | `brew install qemu` |
 | `qemu-system-m68k` | M68000 | `brew install qemu` |
@@ -117,6 +122,7 @@ asm/
 │   ├── darwin/          # macOS ARM64 (System ABI)
 │   └── qemu/            # ARM64 bare-metal (QEMU virt)
 ├── m68k/qemu/           # M68000 bare-metal (QEMU virt)
+├── z80/sim/             # Z80 + Go製CP/Mシミュレータ (z80asm)
 ├── ppc/qemu/            # PowerPC bare-metal (QEMU bamboo)
 ├── x86_16/
 │   ├── qemu/            # 16-bit x86 フロッピーブート
