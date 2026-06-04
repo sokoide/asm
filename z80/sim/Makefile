@@ -10,11 +10,12 @@ SIM     = ./simz80
 TIMEOUT = timeout --foreground 1
 GODIR   = cmd/simz80
 
-CPMDIR  = cpm
-YAZERC  = $(HOME)/cpm/.yazerc
-CPMPATH = $(abspath $(CPMDIR))
+CPMDIR   = cpm
+YAZERC   = $(HOME)/cpm/.yazerc
+CPMPATH  = $(abspath $(CPMDIR))
+YAZEDISK = $(wildcard /usr/local/lib/yaze/disks)
 
-.PHONY: all run runall dump cpm clean
+.PHONY: all run runall dump cpm cpm-setup clean
 
 $(SIM): $(GODIR)/main.go $(GODIR)/go.mod
 	cd $(GODIR) && go build -o ../../simz80 .
@@ -56,13 +57,24 @@ cpm: all
 		cp $$name.com $(CPMDIR)/$$cpmname.com; \
 	done
 	@echo "CP/M files ready in $(CPMDIR)/"
+	@# Ensure .ydsk files exist in ~/cpm/ for yaze-ag
+	@if [ -n "$(YAZEDISK)" ] && [ -d "$(YAZEDISK)" ]; then \
+		changed=0; \
+		for ydsk in $(YAZEDISK)/*.ydsk; do \
+			base=$$(basename $$ydsk); \
+			if [ ! -f $(HOME)/cpm/$$base ]; then \
+				cp $$ydsk $(HOME)/cpm/; \
+				changed=1; \
+				echo "Copied $$base -> $(HOME)/cpm/"; \
+			fi; \
+		done; \
+		if [ "$$changed" -eq 0 ]; then \
+			echo "~/cpm/ disk images OK"; \
+		fi; \
+	fi
 	@# Update .yazerc: add/update mount c line before 'go'
 	@if [ -f $(YAZERC) ]; then \
-		if grep -q '^mount c ' $(YAZERC); then \
-			sed -i '' 's|^mount c .*|mount c $(CPMPATH)|' $(YAZERC); \
-		else \
-			awk '/^go$$/{print "mount c $(CPMPATH)"}{print}' $(YAZERC) > $(YAZERC).tmp && mv $(YAZERC).tmp $(YAZERC); \
-		fi; \
+		awk 'BEGIN{m=0} /^mount c /{print "mount c $(CPMPATH)";m=1;next} /^go$$/{if(!m){print "mount c $(CPMPATH)"}m=1} {print}' $(YAZERC) > $(YAZERC).tmp && mv $(YAZERC).tmp $(YAZERC); \
 		echo "Updated $(YAZERC)"; \
 	else \
 		mkdir -p $$(dirname $(YAZERC)); \
@@ -73,3 +85,16 @@ cpm: all
 clean:
 	rm -f *.com *.bin *.sym *.lis *.err $(SIM)
 	rm -rf $(CPMDIR)
+
+# One-time setup: copy yaze-ag disk images to ~/cpm/
+cpm-setup:
+	@if [ -n "$(YAZEDISK)" ] && [ -d "$(YAZEDISK)" ]; then \
+		mkdir -p $(HOME)/cpm; \
+		for ydsk in $(YAZEDISK)/*.ydsk; do \
+			cp -n $$ydsk $(HOME)/cpm/; \
+		done; \
+		echo "Copied disk images to $(HOME)/cpm/"; \
+	else \
+		echo "yaze-ag disk images not found (expected at /usr/local/lib/yaze/disks/)"; \
+		echo "Install yaze-ag first: https://github.com/andreasgerlich/yaze-ag"; \
+	fi
