@@ -3,3 +3,5 @@
 *.sym
 *.lis
 *.err
+__pycache__/
+simz80

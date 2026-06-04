@@ -8,10 +8,14 @@ SOURCES = s01_hello s02_registers s03_stack s04_loops \
 AS      = z80asm
 SIM     = ./simz80
 TIMEOUT = timeout --foreground 1
+GODIR   = cmd/simz80
 
 .PHONY: all run runall dump clean
 
-all:
+$(SIM): $(GODIR)/main.go $(GODIR)/go.mod
+	cd $(GODIR) && go build -o ../../simz80 .
+
+all: $(SIM)
 	@for name in $(SOURCES); do \
 		echo "=== $$name ==="; \
 		$(AS) -o $$name.com $$name.asm && \
@@ -19,7 +23,7 @@ all:
 	done
 
 # Run: make run S=s01_hello
-run:
+run: $(SIM)
 	$(AS) -o $(S).com $(S).asm
 	$(TIMEOUT) $(SIM) $(S).com
 
@@ -41,4 +45,4 @@ dump:
 	hexdump -C $(S).com
 
 clean:
-	rm -f *.com *.bin *.sym *.lis *.err
+	rm -f *.com *.bin *.sym *.lis *.err $(SIM)
