@@ -126,7 +126,8 @@ gdt_end:
 
 gdt_descriptor:
     dw gdt_end - gdt_start - 1   ; GDT size - 1
-    dd gdt_start                  ; GDT linear address
+    dd gdt_start                  ; GDT linear address (works because all
+                                  ; segments = 0, so offset = linear address)
 
 ; Pad sector 1
 times 510-($-$$) db 0

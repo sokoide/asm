@@ -28,10 +28,11 @@ _start:
     bl      print_crlf
 
     // SUBF: 30 - 5 = 25 (0x19)
+    // Note: SUBF rd, ra, rb computes rd = rb - ra (reversed operand order!)
     lis     %r3, msg3@ha; addi %r3, %r3, msg3@l; bl print_str
     addi    %r3, %r0, 30
     addi    %r4, %r0, 5
-    subf    %r3, %r4, %r3
+    subf    %r3, %r4, %r3       // r3 = r3 - r4 = 30 - 5 = 25
     bl      print_hex32
     bl      print_crlf
 

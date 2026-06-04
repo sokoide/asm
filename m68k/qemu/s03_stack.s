@@ -30,6 +30,9 @@ _start:
     moveq   #0, %d6
     moveq   #0, %d7
 
+    # MOVEM.L pop: reversed register list (%d7-%d5) restores in
+    # the correct order because POP uses post-increment addressing.
+    # This matches the LIFO principle: last pushed = first popped.
     movem.l (%sp)+, %d7-%d5
 
     lea     msg_pop, %a0; bsr print_str
