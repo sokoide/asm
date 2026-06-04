@@ -1,4 +1,5 @@
-; s10_bitwise.s — Bitwise Operations
+; s10_bitwise.s - Scenario 10: Bitwise Operations
+; ========================================
 ; Learning objectives:
 ;   - AND — mask (extract specific bits)
 ;   - ORA — set bits

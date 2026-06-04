@@ -1,4 +1,5 @@
-; s07_subroutines.s — Subroutines and Parameter Passing
+; s07_subroutines.s - Scenario 7: Subroutines
+; ========================================
 ; Learning objectives:
 ;   - JSR / RTS — jump to subroutine / return
 ;   - Parameter passing via A/X/Y registers

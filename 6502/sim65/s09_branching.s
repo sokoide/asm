@@ -1,4 +1,5 @@
-; s09_branching.s — Conditional Branching
+; s09_branching.s - Scenario 9: Conditional Branching
+; ========================================
 ; Learning objectives:
 ;   - CMP: compare A (sets flags, does not modify)
 ;   - BEQ/BNE — branch equal / not equal

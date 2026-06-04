@@ -1,4 +1,5 @@
-; s02_registers.s — Registers, Data Transfer & Arithmetic
+; s02_registers.s - Scenario 2: Registers and Arithmetic
+; ========================================
 ; Learning objectives:
 ;   - A / X / Y registers
 ;   - LDA / LDX / LDY — load immediate values

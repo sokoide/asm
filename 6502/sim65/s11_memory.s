@@ -1,4 +1,5 @@
-; s11_memory.s — Memory and Array Operations
+; s11_memory.s - Scenario 11: Memory Operations
+; ========================================
 ; Learning objectives:
 ;   - Array access with base + X/Y index
 ;   - Block copy: loop-based memory transfer

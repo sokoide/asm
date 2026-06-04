@@ -1,6 +1,6 @@
 SCENARIOS = s01_hello s02_registers s03_stack s04_loops \
             s05_strings s06_serial_in s07_subroutines s08_hardware \
-            s09_branching s10_bitwise s11_memory s12_interactive
+            s09_branching s10_bitwise s11_memory s12_minishell
 
 HELPERS = helpers.s
 
@@ -19,7 +19,7 @@ run:
 runall: all
 	@for s in $(SCENARIOS); do \
 		echo "=== $$s ==="; \
-		if [ "$$s" = "s12_interactive" ]; then \
+		if [ "$$s" = "s12_minishell" ]; then \
 			printf 'help\nquit\n' | timeout --foreground 1 sim65 $$s 2>/dev/null || true; \
 		elif [ "$$s" = "s06_serial_in" ]; then \
 			printf 'q\n' | timeout --foreground 1 sim65 $$s 2>/dev/null || true; \

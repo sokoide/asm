@@ -1,4 +1,5 @@
-; s03_stack.s — Stack Operations
+; s03_stack.s - Scenario 3: Stack Operations
+; ========================================
 ; Learning objectives:
 ;   - Stack page: $0100-$01FF (fixed 256 bytes, grows downward)
 ;   - PHA / PLA — push/pull accumulator

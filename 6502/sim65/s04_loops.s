@@ -1,10 +1,10 @@
-; s04_loops.s — Loops and Conditional Branches
+; s04_loops.s - Scenario 4: Loops and Counters
+; ========================================
 ; Learning objectives:
-;   - CMP / CPX / CPY — compare (updates flags only)
-;   - BEQ / BNE — branch on zero / not-zero
-;   - BCC / BCS — branch on carry clear / set
-;   - BMI / BPL — branch on minus / plus
 ;   - Classic countdown loop: DEX + BNE
+;   - Counted loop: CPX + BNE
+;   - Conditional skip: AND + BNE (even number filter)
+;   - Loop counter preservation across function calls
 
 .import print_str, print_nl, print_hex8
 .import _putchar

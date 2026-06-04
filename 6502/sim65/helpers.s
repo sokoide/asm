@@ -1,15 +1,15 @@
-; helpers.s — Shared helper subroutines for 6502 scenarios
-; =========================================================
+; helpers.s - Shared helper subroutines for 6502 scenarios
+; ========================================================
 ; Linked with each scenario to avoid code duplication.
 ;
 ; Exported symbols:
-;   y_save    — ZP byte for Y save across C calls ($F0)
-;   str_ptr   — ZP word for print_str pointer
-;   print_str — print null-terminated string (A/X = ptr)
-;   print_nl  — print newline
-;   print_hex8 — print A as 2-digit hex
-;   print_nibble — print low nibble of A as hex digit
-;   print_dec  — print A as decimal (0-99)
+;   y_save     - ZP byte for Y save across C calls ($F0)
+;   str_ptr    - ZP word for print_str pointer
+;   print_str  - print null-terminated string (A/X = ptr)
+;   print_nl   - print newline
+;   print_hex8 - print A as 2-digit hex
+;   print_nibble - print low nibble of A as hex digit
+;   print_dec  - print A as decimal (0-99)
 
 .import _putchar
 .export str_ptr

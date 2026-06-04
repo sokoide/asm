@@ -1,4 +1,5 @@
-; s06_serial_in.s — Serial Input
+; s06_serial_in.s - Scenario 6: Serial Input
+; ========================================
 ; Learning objectives:
 ;   - _getchar for keyboard input
 ;   - Echo characters back via _putchar

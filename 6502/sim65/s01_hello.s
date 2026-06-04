@@ -1,4 +1,5 @@
-; s01_hello.s — Hello World
+; s01_hello.s - Scenario 1: Hello World
+; ========================================
 ; Learning objectives:
 ;   - Program structure (.import, .export, .segment)
 ;   - C runtime entry point (_main) and return (rts)

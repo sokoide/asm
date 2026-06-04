@@ -52,12 +52,12 @@ getchar:
     movem.l %a0, -(%sp)
     lea     .Lrxbuf, %a0
 .Lpoll:
-    move.l  0xff008004, %d0      # REG_BYTES_READY: bytes available?
+    move.l  0xff008004, %d0      | REG_BYTES_READY: bytes available?
     tst.l   %d0
-    beq     .Lpoll               # spin until data ready
-    move.l  %a0, 0xff008010      # REG_DATA_PTR: set DMA destination
-    move.l  #1, 0xff008014       # REG_DATA_LEN: read 1 byte
-    move.l  #3, 0xff008008       # REG_CMD: CMD_READ_BUFFER (3)
+    beq     .Lpoll               | spin until data ready
+    move.l  %a0, 0xff008010      | REG_DATA_PTR: set DMA destination
+    move.l  #1, 0xff008014       | REG_DATA_LEN: read 1 byte
+    move.l  #3, 0xff008008       | REG_CMD: CMD_READ_BUFFER (3)
     move.b  (%a0), %d0
     movem.l (%sp)+, %a0
     rts

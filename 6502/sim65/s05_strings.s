@@ -1,4 +1,5 @@
-; s05_strings.s — String Processing
+; s05_strings.s - Scenario 5: String Operations
+; ========================================
 ; Learning objectives:
 ;   - String length: count until null terminator
 ;   - String copy: byte-by-byte via (indirect),Y

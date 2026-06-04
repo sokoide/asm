@@ -39,8 +39,8 @@ _start:
     lea     msg5, %a0; bsr print_str
     move.l  #100, %d0
     # DIVU result format: D0[0:15]=quotient, D0[16:31]=remainder
-    divu.w  #3, %d0              # 100/3 => quotient=33 (0x21), remainder=1
-    and.l   #0xFFFF, %d0         # extract quotient (lower 16 bits)
+    divu.w  #3, %d0              | 100/3 => quotient=33 (0x21), remainder=1
+    and.l   #0xFFFF, %d0         | extract quotient (lower 16 bits)
     bsr     print_hex32
     bsr     print_crlf
 

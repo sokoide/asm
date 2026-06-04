@@ -1,4 +1,5 @@
-; s12_interactive.s — Interactive Mini Shell
+; s12_minishell.s - Scenario 12: Interactive Mini Shell
+; ========================================
 ; Learning objectives:
 ;   - _getchar / _putchar for character I/O
 ;   - Line editor with backspace handling
