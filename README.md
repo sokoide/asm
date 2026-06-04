@@ -108,7 +108,7 @@ make clean
 |---|---|---|
 | `cc65` / `sim65` | 6502 | `brew install cc65` |
 | `clang` + `ld.lld` | ARM64, PPC | Xcode Command Line Tools |
-| `m68k-xelf-as` `m68k-xelf-ld` | M68000 | `brew install elf2x68k && source ~/.elf2x68k` |
+| `m68k-elf-as` `m68k-elf-ld` | M68000 | macOS: `brew install m68k-elf-gcc` / Linux: `apt install gcc-m68k-linux-gnu` |
 | `z80asm` | Z80 | `brew install z80asm` |
 | `go` | Z80 (シミュレータ) | `brew install go` |
 | `qemu-system-aarch64` | ARM64 | `brew install qemu` |

@@ -1,13 +1,15 @@
 # m68k bare-metal assembly for QEMU virt machine
-# Toolchain: m68k-xelf-as / m68k-xelf-ld (from ~/.elf2x68k)
+# Toolchain: m68k-elf-* (macOS: brew install m68k-elf-gcc)
+#            m68k-linux-gnu-* (Linux: apt install gcc-m68k-linux-gnu)
 # Goldfish TTY at 0xff008000
 
 SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s05_strings s06_serial_in s07_subroutines s08_hardware \
           s09_branching s10_bitwise s11_memory s12_minishell
 
-AS      = m68k-xelf-as
-LD      = m68k-xelf-ld
+AS      = $(shell which m68k-elf-as m68k-linux-gnu-as 2>/dev/null | head -1)
+LD      = $(shell which m68k-elf-ld m68k-linux-gnu-ld 2>/dev/null | head -1)
+OD      = $(shell which m68k-elf-objdump m68k-linux-gnu-objdump 2>/dev/null | head -1)
 ASFLAGS = -m68000
 LDFLAGS = -T linker.ld
 
@@ -47,7 +49,7 @@ runall: all
 
 # Disassemble
 dump:
-	m68k-xelf-objdump -d $(S).elf
+	$(OD) -d $(S).elf
 
 clean:
 	rm -f *.elf *.o
