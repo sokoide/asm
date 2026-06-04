@@ -1,29 +1,32 @@
-; s02_registers.s - Scenario 2: Registers and Data Transfer
-; =========================================
+; s02_registers.s — Registers, Data Transfer & Arithmetic
 ; Learning objectives:
-;   - A / X / Y registers (6502's three general-purpose registers)
+;   - A / X / Y registers
 ;   - LDA / LDX / LDY — load immediate values
 ;   - STA / STX / STY — store register to memory
 ;   - TAX / TXA / TAY / TYA — register-to-register transfer
-;   - Observing values via direct string output + print_hex8 helper
+;   - ADC / SBC — add/subtract with carry
+;   - CLC / SEC — clear/set carry flag
+;   - INC / DEC — memory inc/dec
+;   - INX / DEX / INY / DEY — register inc/dec
+;   - Multi-byte (16-bit) addition using carry
 
-.import _putchar
+.import print_str, print_nl, print_hex8, y_save
 .export _main
 
-; ---- Zero-page variables ----
 .segment "ZEROPAGE"
 tmp_val: .res 3
 
-; ---- Read-only data ----
 .segment "RODATA"
-msg_a:      .asciiz "A=$"
-msg_x:      .asciiz " X=$"
-msg_y:      .asciiz " Y=$"
-msg_xfer:   .asciiz "After TAX+INX+TXA: A=$"
-msg_x2:     .asciiz " X=$"
-nl:         .byte $0A, $00
+msg_a:     .asciiz "A=$"
+msg_x:     .asciiz " X=$"
+msg_y:     .asciiz " Y=$"
+msg_xfer:  .asciiz "After TAX+INX+TXA: A=$"
+msg_x2:    .asciiz " X=$"
+msg_add8:  .asciiz "8-bit:  $30+$28=$"
+msg_sub8:  .asciiz "8-bit:  $50-$20=$"
+msg_add16: .asciiz "16-bit: $01FF+$0003=$"
+msg_inx:   .asciiz "INX x2, DEX: X=$"
 
-; ---- Code ----
 .segment "CODE"
 _main:
     ; ---- Demo 1: Load immediate values ----
@@ -31,172 +34,110 @@ _main:
     ldx #$07
     ldy #$FF
 
-    ; Save A, X, Y before any C function calls
     sta tmp_val
     stx tmp_val+1
     sty tmp_val+2
 
-    ; Print "A=$42"
-    jsr print_msg_a
+    lda #<msg_a
+    ldx #>msg_a
+    jsr print_str
     lda tmp_val
     jsr print_hex8
 
-    ; Print " X=$07"
-    jsr print_msg_x
+    lda #<msg_x
+    ldx #>msg_x
+    jsr print_str
     lda tmp_val+1
     jsr print_hex8
 
-    ; Print " Y=$FF"
-    jsr print_msg_y
+    lda #<msg_y
+    ldx #>msg_y
+    jsr print_str
     lda tmp_val+2
     jsr print_hex8
 
     jsr print_nl
 
     ; ---- Demo 2: Register transfers ----
-    lda #$10        ; A = $10
-    tax             ; X = A = $10
-    inx             ; X = $11
-    txa             ; A = X = $11
+    lda #$10
+    tax
+    inx
+    txa
 
-    ; Save results before any C function calls
     sta tmp_val
     stx tmp_val+1
 
-    ; Print "After TAX+INX+TXA: A=$11"
-    jsr print_msg_xfer
+    lda #<msg_xfer
+    ldx #>msg_xfer
+    jsr print_str
     lda tmp_val
     jsr print_hex8
 
-    ; Print " X=$11"
-    jsr print_msg_x2
+    lda #<msg_x2
+    ldx #>msg_x2
+    jsr print_str
     lda tmp_val+1
     jsr print_hex8
 
     jsr print_nl
 
-    lda #0
-    rts
-
-; ---- Individual string print functions ----
-print_msg_a:
-    lda #'A'
-    jsr _putchar
-    lda #'='
-    jsr _putchar
-    lda #'$'
-    jsr _putchar
-    rts
-
-print_msg_x:
-    lda #' '
-    jsr _putchar
-    lda #'X'
-    jsr _putchar
-    lda #'='
-    jsr _putchar
-    lda #'$'
-    jsr _putchar
-    rts
-
-print_msg_y:
-    lda #' '
-    jsr _putchar
-    lda #'Y'
-    jsr _putchar
-    lda #'='
-    jsr _putchar
-    lda #'$'
-    jsr _putchar
-    rts
-
-print_msg_xfer:
-    lda #'A'
-    jsr _putchar
-    lda #'f'
-    jsr _putchar
-    lda #'t'
-    jsr _putchar
-    lda #'e'
-    jsr _putchar
-    lda #'r'
-    jsr _putchar
-    lda #' '
-    jsr _putchar
-    lda #'T'
-    jsr _putchar
-    lda #'A'
-    jsr _putchar
-    lda #'X'
-    jsr _putchar
-    lda #'+'
-    jsr _putchar
-    lda #'I'
-    jsr _putchar
-    lda #'N'
-    jsr _putchar
-    lda #'X'
-    jsr _putchar
-    lda #'+'
-    jsr _putchar
-    lda #'T'
-    jsr _putchar
-    lda #'X'
-    jsr _putchar
-    lda #'A'
-    jsr _putchar
-    lda #':'
-    jsr _putchar
-    lda #' '
-    jsr _putchar
-    lda #'A'
-    jsr _putchar
-    lda #'='
-    jsr _putchar
-    lda #'$'
-    jsr _putchar
-    rts
-
-print_msg_x2:
-    lda #' '
-    jsr _putchar
-    lda #'X'
-    jsr _putchar
-    lda #'='
-    jsr _putchar
-    lda #'$'
-    jsr _putchar
-    rts
-
-; ---- Shared helper subroutines ----
-
-; ---- print newline ----
-print_nl:
-    lda #$0A
-    jsr _putchar
-    rts
-
-; ---- print A as 2-digit hex ----
-print_hex8:
+    ; ---- Demo 3: 8-bit arithmetic ----
+    clc
+    lda #$30
+    adc #$28
     pha
-    lsr a
-    lsr a
-    lsr a
-    lsr a
-    jsr print_nibble
-    pla
-    and #$0F
-    jsr print_nibble
-    rts
 
-print_nibble:
-    cmp #10
-    bcc @digit
+    lda #<msg_add8
+    ldx #>msg_add8
+    jsr print_str
+    pla
+    jsr print_hex8
+    jsr print_nl
+
+    sec
+    lda #$50
+    sbc #$20
+    pha
+
+    lda #<msg_sub8
+    ldx #>msg_sub8
+    jsr print_str
+    pla
+    jsr print_hex8
+    jsr print_nl
+
+    ; ---- Demo 4: 16-bit addition ----
     clc
-    adc #'A' - '0' - 10
-@digit:
-    clc
-    adc #'0'
-@done:
-    jsr _putchar
+    lda #$FF
+    adc #$03
+    sta tmp_val
+    lda #$01
+    adc #$00
+    sta tmp_val+1
+
+    lda #<msg_add16
+    ldx #>msg_add16
+    jsr print_str
+    lda tmp_val+1
+    jsr print_hex8
+    lda tmp_val
+    jsr print_hex8
+    jsr print_nl
+
+    ; ---- Demo 5: INX / DEX ----
+    ldx #$08
+    inx
+    inx
+    dex
+
+    stx tmp_val
+
+    lda #<msg_inx
+    ldx #>msg_inx
+    jsr print_str
+    lda tmp_val
+    jsr print_hex8
+    jsr print_nl
+
+    lda #0
     rts

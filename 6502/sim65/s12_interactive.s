@@ -1,31 +1,24 @@
-; s12_interactive.s - Scenario 12: Interactive Program
-; =========================================
+; s12_interactive.s — Interactive Mini Shell
 ; Learning objectives:
 ;   - _getchar / _putchar for character I/O
 ;   - Line editor with backspace handling
 ;   - Command parsing: string compare
 ;   - Menu dispatch pattern
 ;   - Integration of all previous concepts
-; ----
 ; Commands: hello, count, hex, help, quit
 
-; High ZP save location (safe from C runtime which uses $02-$1B)
 y_save = $F0
 
-.import _puts
-.import _putchar
-.import _getchar
+.import print_str, print_nl, print_hex8
+.import _putchar, _getchar
 .export _main
 
-; ---- Zero-page variables ----
 .segment "ZEROPAGE"
 input_buf:    .res 32
 buf_idx:      .res 1
 running:      .res 1
-dispatch_idx: .res 1
 cmp_cmd:      .res 2
 
-; ---- Read-only data ----
 .segment "RODATA"
 msg_welcome: .asciiz "6502 Mini Shell - type 'help'"
 msg_prompt:  .asciiz "> "
@@ -35,7 +28,6 @@ msg_help:    .asciiz "Commands: hello count hex help quit"
 msg_quit:    .asciiz "Goodbye!"
 msg_count:   .asciiz "Count: "
 msg_hex_hdr: .asciiz "Hex: "
-nl:          .asciiz ""
 
 cmd_hello: .asciiz "hello"
 cmd_count: .asciiz "count"
@@ -43,14 +35,12 @@ cmd_hex:   .asciiz "hex"
 cmd_help:  .asciiz "help"
 cmd_quit:  .asciiz "quit"
 
-; ---- Code ----
 .segment "CODE"
 _main:
     lda #<msg_welcome
     ldx #>msg_welcome
-    jsr _puts
-    lda #$0A
-    jsr _putchar
+    jsr print_str
+    jsr print_nl
 
     lda #1
     sta running
@@ -61,7 +51,7 @@ main_loop:
 
     lda #<msg_prompt
     ldx #>msg_prompt
-    jsr _puts
+    jsr print_str
 
     jsr read_line
     jsr dispatch
@@ -77,9 +67,9 @@ read_line:
     sta buf_idx
     ldy #0
 rl_loop:
-    sty y_save          ; save Y (C runtime destroys Y)
+    sty y_save
     jsr _getchar
-    ldy y_save          ; restore Y
+    ldy y_save
     cmp #$0A
     beq rl_done
     cmp #$0D
@@ -92,22 +82,22 @@ rl_loop:
     bcs rl_loop
     sta input_buf,y
     iny
-    sty y_save          ; save Y before echo
+    sty y_save
     jsr _putchar
-    ldy y_save          ; restore Y
+    ldy y_save
     jmp rl_loop
 rl_bs:
     cpy #0
     beq rl_loop
     dey
-    sty y_save          ; save Y before _putchar(s)
+    sty y_save
     lda #$08
     jsr _putchar
     lda #' '
     jsr _putchar
     lda #$08
     jsr _putchar
-    ldy y_save          ; restore Y
+    ldy y_save
     jmp rl_loop
 rl_done:
     lda #0
@@ -119,9 +109,6 @@ rl_done:
 
 ; ---- Dispatch ----
 dispatch:
-    lda #0
-    sta dispatch_idx
-
     ; Check hello
     lda #<cmd_hello
     sta cmp_cmd
@@ -131,9 +118,8 @@ dispatch:
     beq @not_hello
     lda #<msg_hello
     ldx #>msg_hello
-    jsr _puts
-    lda #$0A
-    jsr _putchar
+    jsr print_str
+    jsr print_nl
     rts
 @not_hello:
 
@@ -168,9 +154,8 @@ dispatch:
     beq @not_help
     lda #<msg_help
     ldx #>msg_help
-    jsr _puts
-    lda #$0A
-    jsr _putchar
+    jsr print_str
+    jsr print_nl
     rts
 @not_help:
 
@@ -183,9 +168,8 @@ dispatch:
     beq @not_quit
     lda #<msg_quit
     ldx #>msg_quit
-    jsr _puts
-    lda #$0A
-    jsr _putchar
+    jsr print_str
+    jsr print_nl
     lda #0
     sta running
     rts
@@ -193,9 +177,8 @@ dispatch:
 
     lda #<msg_unknown
     ldx #>msg_unknown
-    jsr _puts
-    lda #$0A
-    jsr _putchar
+    jsr print_str
+    jsr print_nl
     rts
 
 ; ---- String compare input_buf vs cmp_cmd ----
@@ -220,7 +203,7 @@ streq_cmd:
 do_count:
     lda #<msg_count
     ldx #>msg_count
-    jsr _puts
+    jsr print_str
     lda #5
     sta y_save
 @dc_loop:
@@ -232,15 +215,14 @@ do_count:
     jsr _putchar
     dec y_save
     bne @dc_loop
-    lda #$0A
-    jsr _putchar
+    jsr print_nl
     rts
 
 ; ---- Command: hex ----
 do_hex:
     lda #<msg_hex_hdr
     ldx #>msg_hex_hdr
-    jsr _puts
+    jsr print_str
     lda #0
     sta y_save
 @dh_loop:
@@ -252,30 +234,5 @@ do_hex:
     lda y_save
     cmp #16
     bne @dh_loop
-    lda #$0A
-    jsr _putchar
-    rts
-
-; ---- print A as 2-digit hex ----
-print_hex8:
-    pha
-    lsr a
-    lsr a
-    lsr a
-    lsr a
-    jsr print_nibble
-    pla
-    and #$0F
-    jsr print_nibble
-    rts
-
-print_nibble:
-    cmp #10
-    bcc @pn_digit
-    clc
-    adc #'A' - '0' - 10
-@pn_digit:
-    clc
-    adc #'0'
-    jsr _putchar
+    jsr print_nl
     rts

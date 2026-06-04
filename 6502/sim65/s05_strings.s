@@ -1,24 +1,18 @@
-; s11_strings.s - Scenario 11: String Processing
-; =========================================
+; s05_strings.s — String Processing
 ; Learning objectives:
 ;   - String length: count until null terminator
 ;   - String copy: byte-by-byte via (indirect),Y
 ;   - Uppercase to lowercase: ASCII offset (+$20)
 ;   - Using zero-page pointers for string operations
 
-; High ZP save location (safe from C runtime which uses $02-$1B)
-y_save = $F0
-
+.import print_str, print_nl, print_hex8
 .import _putchar
 .export _main
 
-; ---- Zero-page variables ----
 .segment "ZEROPAGE"
 src_ptr:  .res 2
 dst_ptr:  .res 2
-str_ptr:  .res 2
 
-; ---- Read-only data ----
 .segment "RODATA"
 msg_hdr:    .asciiz "--- String Operations ---"
 msg_len:    .asciiz "Length of 'Hello' = "
@@ -28,24 +22,19 @@ msg_lower:  .asciiz "' -> Lower: '"
 msg_cmp_eq: .asciiz "Compare 'Hello'='Hello': EQUAL"
 msg_cmp_ne: .asciiz "Compare 'Hello'='World': NOT EQUAL"
 msg_quote:  .asciiz "'"
-nl:         .asciiz ""
-
 src_str:    .asciiz "Hello"
 diff_str:   .asciiz "World"
 upper_str:  .asciiz "HELLO"
 
-; ---- BSS ----
 .segment "BSS"
 dst_buf:    .res 32
 
-; ---- Code ----
 .segment "CODE"
 _main:
     lda #<msg_hdr
     ldx #>msg_hdr
     jsr print_str
-    lda #$0A
-    jsr _putchar
+    jsr print_nl
 
     ; ---- Demo 1: String length ----
     lda #<src_str
@@ -53,7 +42,7 @@ _main:
     lda #>src_str
     sta src_ptr+1
     jsr strlen
-    ; A = 5
+
     lda #<msg_len
     ldx #>msg_len
     jsr print_str
@@ -61,8 +50,7 @@ _main:
     clc
     adc #'0'
     jsr _putchar
-    lda #$0A
-    jsr _putchar
+    jsr print_nl
 
     ; ---- Demo 2: String copy ----
     lda #<src_str
@@ -84,8 +72,7 @@ _main:
     lda #<msg_quote
     ldx #>msg_quote
     jsr print_str
-    lda #$0A
-    jsr _putchar
+    jsr print_nl
 
     ; ---- Demo 3: Uppercase -> Lowercase ----
     lda #<msg_upper
@@ -110,39 +97,20 @@ _main:
     lda #<msg_quote
     ldx #>msg_quote
     jsr print_str
-    lda #$0A
-    jsr _putchar
+    jsr print_nl
 
     ; ---- Demo 4: Compare results ----
     lda #<msg_cmp_eq
     ldx #>msg_cmp_eq
     jsr print_str
-    lda #$0A
-    jsr _putchar
+    jsr print_nl
 
     lda #<msg_cmp_ne
     ldx #>msg_cmp_ne
     jsr print_str
-    lda #$0A
-    jsr _putchar
+    jsr print_nl
 
     lda #0
-    rts
-
-; ---- print null-terminated string (A/X = ptr, no newline) ----
-print_str:
-    sta str_ptr
-    stx str_ptr+1
-    ldy #0
-@ps_loop:
-    lda (str_ptr),y
-    beq @ps_done
-    sty y_save          ; save Y before C call (putchar destroys Y)
-    jsr _putchar
-    ldy y_save          ; restore Y
-    iny
-    jmp @ps_loop
-@ps_done:
     rts
 
 ; ---- strlen ----

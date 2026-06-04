@@ -1,33 +1,33 @@
 ; s13_shadow.asm - Scenario 13: Shadow Registers (Alternate Register Set)
 ; ================================================================
-; Z80はメインレジスタとは別に「裏レジスタ（shadow/alternate）」を持つ:
+; The Z80 has two complete sets of registers: main and alternate (shadow):
 ;
-;   メイン:  A  F  B  C  D  E  H  L
-;   裏  :  A' F' B' C' D' E' H' L'
+;   Main:    A  F  B  C  D  E  H  L
+;   Shadow:  A' F' B' C' D' E' H' L'
 ;
-; 2つの命令で瞬時に入れ替え可能:
-;   EXX         → BC↔BC', DE↔DE', HL↔HL' (同時swap)
-;   EX AF,AF'   → AF↔AF'
+; Two instructions swap between sets instantly:
+;   EXX         -> BC<->BC', DE<->DE', HL<->HL' (all three pairs at once)
+;   EX AF,AF'   -> AF<->AF'
 ;
-; 代表的な用途:
-;   - 割り込みハンドラ(ISR)での高速コンテキスト保存
-;     (PUSH/POP不要で2命令で保存・復元)
-;   - 2つの計算コンテキストの切替
-;   - スタックを使わない一時変数の退避
+; Typical use cases:
+;   - Interrupt Service Routine (ISR) fast context save
+;     (saves/restores all registers in just 2 instructions, no stack needed)
+;   - Switching between two computation contexts
+;   - Saving temporary values without using the stack
 ;
-; 注意: IX/IY, SPには裏レジスタがない
+; Note: IX/IY and SP have no shadow registers.
 ; ================================================================
 
 	org 0x0100
 
 _start:
-	; ---- タイトル ----
+	; ---- Title ----
 	ld	hl, msg_title
 	call	print_str
 	call	newline
 
 	; ============================================================
-	; Step 1: メインレジスタに値をセットして表示
+	; Step 1: Set values in main registers and display
 	; ============================================================
 	ld	hl, msg_step1
 	call	print_str
@@ -37,27 +37,27 @@ _start:
 	ld	de, 0x5678		; DE = 0x5678
 	ld	hl, 0x9ABC		; HL = 0x9ABC
 	ld	a, 0x42		; A  = 0x42
-	call	save_regs		; メモリに保存
+	call	save_regs		; save to memory
 
 	ld	hl, msg_main
-	call	show_regs		; 保存値を表示
+	call	show_regs		; display saved values
 
 	; ============================================================
-	; Step 2: EXX + EX AF,AF' で裏レジスタに切替え
+	; Step 2: EXX + EX AF,AF' to switch to shadow set
 	; ============================================================
-	; swap前にメモリから正しい値をリロード(表示でHLが変更されるため)
+	; Reload from memory before swap (display changed HL)
 	ld	hl, msg_exx
 	call	print_str
 	call	newline
 
-	call	load_regs		; メモリから復元: 1234/5678/9ABC/42
+	call	load_regs		; restore from memory: 1234/5678/9ABC/42
 
-	exx			; BC↔BC', DE↔DE', HL↔HL'
-	ex	af, af'		; AF↔AF'
-	; → シャドウに 1234/5678/9ABC/42 が退避された
-	; → メインにはシャドウの初期値(0)が現れた
+	exx			; BC<->BC', DE<->DE', HL<->HL'
+	ex	af, af'		; AF<->AF'
+	; -> shadow now holds 1234/5678/9ABC/42
+	; -> main now shows shadow's initial values (zero)
 
-	; 新しい値をセット(メインとして見えているレジスタ)
+	; Set new values in the registers now visible as "main"
 	ld	bc, 0xABCD
 	ld	de, 0xEF01
 	ld	hl, 0x2345
@@ -68,30 +68,30 @@ _start:
 	call	show_regs
 
 	; ============================================================
-	; Step 3: もう一度swapしてメインに戻す
+	; Step 3: Swap again to restore main values
 	; ============================================================
 	ld	hl, msg_back
 	call	print_str
 	call	newline
 
-	call	load_regs		; メモリから復元: ABCD/EF01/2345/99
+	call	load_regs		; restore from memory: ABCD/EF01/2345/99
 
-	exx			; シャドウ←ABCD/EF01/2345/99
+	exx			; shadow <- ABCD/EF01/2345/99
 	ex	af, af'
-	; → メインに 1234/5678/9ABC/42 が復元された!
+	; -> main now has 1234/5678/9ABC/42 restored!
 
 	call	save_regs
 	ld	hl, msg_restored
 	call	show_regs
 
 	; ============================================================
-	; Step 4: ISR風コンテキスト保存パターン
+	; Step 4: ISR-style context save/restore pattern
 	; ============================================================
 	ld	hl, msg_step4
 	call	print_str
 	call	newline
 
-	; 「メインプログラム」の値をセット
+	; Set "main program" values
 	ld	bc, 0xAAAA
 	ld	de, 0xBBBB
 	ld	hl, 0xCCCC
@@ -101,13 +101,13 @@ _start:
 	ld	hl, msg_pre_isr
 	call	show_regs
 
-	; --- ISR開始: 2命令で全レジスタ保存! (スタック不要) ---
-	call	load_regs		; AAAA/BBBB/CCCC/DD をリロード
+	; --- ISR entry: save all registers in 2 instructions! (no stack) ---
+	call	load_regs		; reload AAAA/BBBB/CCCC/DD
 
-	exx			; BC/DE/HL → 裏へ退避
-	ex	af, af'		; AF → 裏へ退避
+	exx			; BC/DE/HL -> shadow
+	ex	af, af'		; AF -> shadow
 
-	; ISR本体: レジスタを自由に使用
+	; ISR body: freely use registers
 	ld	bc, 0x1111
 	ld	de, 0x2222
 	ld	hl, 0x3333
@@ -117,12 +117,12 @@ _start:
 	ld	hl, msg_in_isr
 	call	show_regs
 
-	; --- ISR終了: 2命令で全レジスタ復元! ---
-	call	load_regs		; 1111/2222/3333/44 をリロード
+	; --- ISR exit: restore all registers in 2 instructions! ---
+	call	load_regs		; reload 1111/2222/3333/44
 
-	exx			; BC/DE/HL ← 裏から復元
-	ex	af, af'		; AF ← 裏から復元
-	; → AAAA/BBBB/CCCC/DD が復元された!
+	exx			; BC/DE/HL <- restored from shadow
+	ex	af, af'		; AF <- restored from shadow
+	; -> AAAA/BBBB/CCCC/DD restored!
 
 	call	save_regs
 	ld	hl, msg_post_isr
@@ -131,7 +131,7 @@ _start:
 	ret
 
 ; ================================================================
-; save_regs: BC, DE, HL, A をメモリに保存
+; save_regs: save BC, DE, HL, A to memory
 ; ================================================================
 save_regs:
 	ld	(save_bc), bc
@@ -141,7 +141,7 @@ save_regs:
 	ret
 
 ; ================================================================
-; load_regs: メモリから BC, DE, HL, A を復元
+; load_regs: restore BC, DE, HL, A from memory
 ; ================================================================
 load_regs:
 	ld	bc, (save_bc)
@@ -151,22 +151,22 @@ load_regs:
 	ret
 
 ; ================================================================
-; show_regs: メモリに保存された値をラベル付きで表示
-;   入力: HL = ラベルメッセージのアドレス
+; show_regs: display memory-saved values with a label
+;   Input: HL = label message address
 ; ================================================================
 show_regs:
 	call	print_str
 
-	; BC表示
+	; Display BC
 	ld	hl, msg_bc
 	call	print_str
-	ld	a, (save_bc+1)		; B (Z80はリトルエンディアン)
+	ld	a, (save_bc+1)		; B (Z80 is little-endian)
 	call	print_hex8
 	ld	a, (save_bc)		; C
 	call	print_hex8
 	call	newline
 
-	; DE表示
+	; Display DE
 	ld	hl, msg_de
 	call	print_str
 	ld	a, (save_de+1)		; D
@@ -175,7 +175,7 @@ show_regs:
 	call	print_hex8
 	call	newline
 
-	; HL表示
+	; Display HL
 	ld	hl, msg_hl
 	call	print_str
 	ld	a, (save_hl+1)		; H
@@ -184,7 +184,7 @@ show_regs:
 	call	print_hex8
 	call	newline
 
-	; A表示
+	; Display A
 	ld	hl, msg_a
 	call	print_str
 	ld	a, (save_a)
@@ -195,7 +195,7 @@ show_regs:
 	ret
 
 ; ================================================================
-; 共通サブルーチン
+; Common subroutines
 ; ================================================================
 
 print_str:
@@ -220,7 +220,7 @@ print_str:
 print_hex8:
 	push	bc
 	ld	b, a
-	; 上位ニブル
+	; high nibble
 	rrca
 	rrca
 	rrca
@@ -229,7 +229,7 @@ print_hex8:
 	ld	c, 2
 	ld	e, a
 	call	0x0005
-	; 下位ニブル
+	; low nibble
 	ld	a, b
 	call	hex_nibble
 	ld	c, 2
@@ -264,16 +264,16 @@ newline:
 	ret
 
 ; ================================================================
-; データセクション
+; Data section
 ; ================================================================
 
-; レジスタ値保存用(リトルエンディアン: low byte, high byte)
+; Register save area (little-endian: low byte, high byte)
 save_bc:	defw	0
 save_de:	defw	0
 save_hl:	defw	0
 save_a:		defb	0
 
-; メッセージ
+; Messages
 msg_title:	defm	"=== s13: Shadow Registers ===$"
 msg_step1:	defm	"--- Step 1: Set main registers ---$"
 msg_main:	defm	"Main:     $"

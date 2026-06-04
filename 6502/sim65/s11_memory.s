@@ -1,5 +1,4 @@
-; s10_memory.s - Scenario 10: Memory and Array Operations
-; =========================================
+; s11_memory.s — Memory and Array Operations
 ; Learning objectives:
 ;   - Array access with base + X/Y index
 ;   - Block copy: loop-based memory transfer
@@ -7,20 +6,15 @@
 ;   - Sum with 16-bit carry
 ;   - Buffer read/write patterns
 
-; High ZP save location (safe from C runtime which uses $02-$1B)
-y_save = $F0
-
+.import print_str, print_nl, print_hex8
 .import _putchar
 .export _main
 
-; ---- Zero-page variables ----
 .segment "ZEROPAGE"
-str_ptr:  .res 2
-sum_lo:   .res 1
-sum_hi:   .res 1
-tmp_x:    .res 1
+sum_lo:  .res 1
+sum_hi:  .res 1
+tmp_x:   .res 1
 
-; ---- Read-only data ----
 .segment "RODATA"
 msg_hdr:  .asciiz "--- Memory Operations ---"
 msg_src:  .asciiz "Source:      "
@@ -28,15 +22,12 @@ msg_dst:  .asciiz "Copy:        "
 msg_fill: .asciiz "Fill $AA:    "
 msg_sum:  .asciiz "Array sum:   $"
 
-; ---- BSS ----
 .segment "BSS"
 src_array: .res 8
 dst_array: .res 8
 
-; ---- Code ----
 .segment "CODE"
 _main:
-    ; ---- Print header ----
     lda #<msg_hdr
     ldx #>msg_hdr
     jsr print_str
@@ -59,7 +50,7 @@ _main:
     jsr print_str
     ldx #0
 @print_src:
-    stx tmp_x           ; save index X
+    stx tmp_x
     lda src_array,x
     jsr print_hex8
     lda #' '
@@ -85,7 +76,7 @@ _main:
     jsr print_str
     ldx #0
 @print_dst:
-    stx tmp_x           ; save index X
+    stx tmp_x
     lda dst_array,x
     jsr print_hex8
     lda #' '
@@ -111,7 +102,7 @@ _main:
     jsr print_str
     ldx #0
 @print_fill:
-    stx tmp_x           ; save index X
+    stx tmp_x
     lda dst_array,x
     jsr print_hex8
     lda #' '
@@ -123,7 +114,6 @@ _main:
     jsr print_nl
 
     ; ---- Sum src_array with 16-bit carry ----
-    ; src = $10,$20,$30,$40,$50,$60,$70,$80 → sum = $0240
     clc
     lda #0
     sta sum_lo
@@ -152,50 +142,4 @@ _main:
     jsr print_nl
 
     lda #0
-    rts
-
-; ---- print null-terminated string (A/X = ptr, no newline) ----
-print_str:
-    sta str_ptr
-    stx str_ptr+1
-    ldy #0
-@ps_loop:
-    lda (str_ptr),y
-    beq @ps_done
-    sty y_save          ; save Y before C call (putchar destroys Y)
-    jsr _putchar
-    ldy y_save          ; restore Y
-    iny
-    jmp @ps_loop
-@ps_done:
-    rts
-
-; ---- print newline ----
-print_nl:
-    lda #$0A
-    jsr _putchar
-    rts
-
-; ---- print A as 2-digit hex ----
-print_hex8:
-    pha
-    lsr a
-    lsr a
-    lsr a
-    lsr a
-    jsr print_nibble
-    pla
-    and #$0F
-    jsr print_nibble
-    rts
-
-print_nibble:
-    cmp #10
-    bcc @digit
-    clc
-    adc #'A' - '0' - 10
-@digit:
-    clc
-    adc #'0'
-    jsr _putchar
     rts
