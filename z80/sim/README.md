@@ -27,9 +27,15 @@ make clean    # 生成物を削除
 
 ```sh
 # 1. yaze-ag をインストール
+#    macOS:
 brew install yaze-ag
+#    Termux (proot-debian):
+#      see https://github.com/andreasgerlich/yaze-ag — build from source
 
-# 2. CP/M互換ファイルをビルド (アンダースコアなしファイル名)
+# 2. yaze-ag ディスクイメージを ~/cpm/ に配置 (初回のみ)
+make cpm-setup
+
+# 3. CP/M互換ファイルをビルド (アンダースコアなしファイル名)
 make cpm
 ```
 
