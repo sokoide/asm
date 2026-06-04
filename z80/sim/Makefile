@@ -11,6 +11,7 @@ TIMEOUT = timeout --foreground 1
 GODIR   = cmd/simz80
 
 CPMDIR  = cpm
+YAZERC  = $(HOME)/cpm/.yazerc
 
 .PHONY: all run runall dump cpm clean
 
@@ -54,6 +55,19 @@ cpm: all
 		cp $$name.com $(CPMDIR)/$$cpmname.com; \
 	done
 	@echo "CP/M files ready in $(CPMDIR)/"
+	@# Update .yazerc: add/update mount c line before 'go'
+	@if [ -f $(YAZERC) ]; then \
+		if grep -q '^mount c ' $(YAZERC); then \
+			sed -i '' 's|^mount c .*|mount c $(CURDIR)/$(CPMDIR)|' $(YAZERC); \
+		else \
+			awk '/^go$$/{print "mount c $(CURDIR)/$(CPMDIR)"}{print}' $(YAZERC) > $(YAZERC).tmp && mv $(YAZERC).tmp $(YAZERC); \
+		fi; \
+		echo "Updated $(YAZERC)"; \
+	else \
+		mkdir -p $$(dirname $(YAZERC)); \
+		printf 'mount c $(CURDIR)/$(CPMDIR)\ngo\n' > $(YAZERC); \
+		echo "Created $(YAZERC)"; \
+	fi
 
 clean:
 	rm -f *.com *.bin *.sym *.lis *.err $(SIM)
