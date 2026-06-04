@@ -10,7 +10,9 @@ SIM     = ./simz80
 TIMEOUT = timeout --foreground 1
 GODIR   = cmd/simz80
 
-.PHONY: all run runall dump clean
+CPMDIR  = cpm
+
+.PHONY: all run runall dump cpm clean
 
 $(SIM): $(GODIR)/main.go $(GODIR)/go.mod
 	cd $(GODIR) && go build -o ../../simz80 .
@@ -44,5 +46,15 @@ runall: all
 dump:
 	hexdump -C $(S).com
 
+# Build CP/M-compatible copies (no underscores) for yaze-ag
+cpm: all
+	@mkdir -p $(CPMDIR)
+	@for name in $(SOURCES); do \
+		cpmname=$$(echo $$name | tr -d '_'); \
+		cp $$name.com $(CPMDIR)/$$cpmname.com; \
+	done
+	@echo "CP/M files ready in $(CPMDIR)/"
+
 clean:
 	rm -f *.com *.bin *.sym *.lis *.err $(SIM)
+	rm -rf $(CPMDIR)

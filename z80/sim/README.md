@@ -15,8 +15,61 @@
 make all      # 全シナリオをビルド
 make runall   # 全シナリオをビルド + 実行 (timeout 1秒付き)
 make run S=s01_hello   # 個別実行
+make cpm      # CP/M互換ファイルをcpm/に生成 (yaze-ag用)
 make clean    # 生成物を削除
 ```
+
+## yaze-ag (CP/M 3.1 エミュレータ) での実行
+
+[yaze-ag](https://github.com/andreasgerlich/yaze-ag) で実際のCP/M環境上で .com を実行できる。
+
+### 準備
+
+```sh
+# 1. yaze-ag をインストール
+brew install yaze-ag
+
+# 2. CP/M互換ファイルをビルド (アンダースコアなしファイル名)
+make cpm
+```
+
+CP/Mのファイル名に `_` は使えないため、`make cpm` はアンダースコアを除去したコピーを `cpm/` に生成する:
+
+| simz80用 | CP/M用 (cpm/) |
+|---|---|
+| `s01_hello.com` | `s01hello.com` |
+| `s02_registers.com` | `s02registers.com` |
+| ... | ... |
+
+### .yazerc 設定
+
+`$HOME/cpm/.yazerc` に以下を記述:
+
+```
+mount a <yaze-ag-disks>/BOOT_UTILS.ydsk
+mount b <yaze-ag-disks>/CPM3_SYS.ydsk
+mount c <repo-root>/z80/sim/cpm
+go
+```
+
+### 実行例
+
+```
+$ yaze
+
+A>c:s01
+Hello, Z80 World!
+
+A>e
+```
+
+| 操作 | コマンド |
+|---|---|
+| モニタに入る (CP/M→モニタ) | `A>sys` |
+| CP/Mに戻る (モニタ→CP/M) | `$>go` |
+| ディレクトリをマウント | `$>mount c <path>` |
+| リマウント (ファイル変更後) | `$>mount c <path>` |
+| yaze-ag終了 | `e` |
 
 ## シナリオ一覧
 
