@@ -58,11 +58,7 @@ cpm: all
 	@echo "CP/M files ready in $(CPMDIR)/"
 	@# Update .yazerc: add/update mount c line before 'go'
 	@if [ -f $(YAZERC) ]; then \
-		if grep -q '^mount c ' $(YAZERC); then \
-			sed -i '' 's|^mount c .*|mount c $(CPMPATH)|' $(YAZERC); \
-		else \
-			awk '/^go$$/{print "mount c $(CPMPATH)"}{print}' $(YAZERC) > $(YAZERC).tmp && mv $(YAZERC).tmp $(YAZERC); \
-		fi; \
+		awk 'BEGIN{m=0} /^mount c /{print "mount c $(CPMPATH)";m=1;next} /^go$$/{if(!m){print "mount c $(CPMPATH)"}m=1} {print}' $(YAZERC) > $(YAZERC).tmp && mv $(YAZERC).tmp $(YAZERC); \
 		echo "Updated $(YAZERC)"; \
 	else \
 		mkdir -p $$(dirname $(YAZERC)); \
