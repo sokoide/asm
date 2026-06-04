@@ -12,6 +12,7 @@ GODIR   = cmd/simz80
 
 CPMDIR  = cpm
 YAZERC  = $(HOME)/cpm/.yazerc
+CPMPATH = $(abspath $(CPMDIR))
 
 .PHONY: all run runall dump cpm clean
 
@@ -58,14 +59,14 @@ cpm: all
 	@# Update .yazerc: add/update mount c line before 'go'
 	@if [ -f $(YAZERC) ]; then \
 		if grep -q '^mount c ' $(YAZERC); then \
-			sed -i '' 's|^mount c .*|mount c $(CURDIR)/$(CPMDIR)|' $(YAZERC); \
+			sed -i '' 's|^mount c .*|mount c $(CPMPATH)|' $(YAZERC); \
 		else \
-			awk '/^go$$/{print "mount c $(CURDIR)/$(CPMDIR)"}{print}' $(YAZERC) > $(YAZERC).tmp && mv $(YAZERC).tmp $(YAZERC); \
+			awk '/^go$$/{print "mount c $(CPMPATH)"}{print}' $(YAZERC) > $(YAZERC).tmp && mv $(YAZERC).tmp $(YAZERC); \
 		fi; \
 		echo "Updated $(YAZERC)"; \
 	else \
 		mkdir -p $$(dirname $(YAZERC)); \
-		printf 'mount c $(CURDIR)/$(CPMDIR)\ngo\n' > $(YAZERC); \
+		printf 'mount c $(CPMPATH)\ngo\n' > $(YAZERC); \
 		echo "Created $(YAZERC)"; \
 	fi
 
