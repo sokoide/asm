@@ -83,8 +83,10 @@ print_str:
     cp      '$'
     jr      z, .ps_done
     ld      c, 2
+    push    hl
     ld      e, a
     call    0x0005
+    pop     hl
     inc     hl
     jr      .ps_loop
 .ps_done:
@@ -104,8 +106,10 @@ print_str_de:
     cp      '$'
     jr      z, .psde_done
     ld      c, 2
+    push    hl
     ld      e, a
     call    0x0005
+    pop     hl
     inc     hl
     jr      .psde_loop
 .psde_done:

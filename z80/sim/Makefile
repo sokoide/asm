@@ -15,6 +15,13 @@ YAZERC   = $(HOME)/cpm/.yazerc
 CPMPATH  = $(abspath $(CPMDIR))
 YAZEDISK = $(or $(wildcard /usr/local/lib/yaze/disks),$(wildcard /usr/share/yaze-ag/disks))
 
+# CP/M 8.3 filename mapping (name must be ≤8 chars)
+CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
+            s04_loops=S04LOOPS s05_strings=S05STRS s06_serial_in=S06SERIN \
+            s07_subroutines=S07SUBS s08_hardware=S08HARD s09_branching=S09BRNCH \
+            s10_bitwise=S10BITS s11_memory=S11MEM s12_minishell=S12MSHL \
+            s13_shadow=S13SHAD
+
 .PHONY: all run runall dump cpm cpm-setup clean
 
 $(SIM): $(GODIR)/main.go $(GODIR)/go.mod
@@ -49,11 +56,13 @@ runall: all
 dump:
 	hexdump -C $(S).com
 
-# Build CP/M-compatible copies (no underscores) for yaze-ag
+# Build CP/M-compatible copies (8.3 filenames) for yaze-ag
 cpm: all
+	@rm -rf $(CPMDIR)
 	@mkdir -p $(CPMDIR)
-	@for name in $(SOURCES); do \
-		cpmname=$$(echo $$name | tr -d '_'); \
+	@for mapping in $(CPM_NAMES); do \
+		name=$${mapping%%=*}; \
+		cpmname=$${mapping##*=}; \
 		cp $$name.com $(CPMDIR)/$$cpmname.com; \
 	done
 	@echo "CP/M files ready in $(CPMDIR)/"
