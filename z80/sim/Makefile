@@ -13,7 +13,7 @@ GODIR   = cmd/simz80
 CPMDIR   = cpm
 YAZERC   = $(HOME)/cpm/.yazerc
 CPMPATH  = $(abspath $(CPMDIR))
-YAZEDISK = $(wildcard /usr/local/lib/yaze/disks)
+YAZEDISK = $(or $(wildcard /usr/local/lib/yaze/disks),$(wildcard /usr/share/yaze-ag/disks))
 
 .PHONY: all run runall dump cpm cpm-setup clean
 
