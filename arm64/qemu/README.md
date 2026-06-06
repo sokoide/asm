@@ -1,86 +1,570 @@
-# ARM64 (AArch64) ベアメタルアセンブリ教材
+# ARM64 (AArch64) ベアメタル アセンブラ ワークショップ
 
-QEMU virt マシン上で動作する ARM64 アセンブリ言語の学習教材です。
+QEMU virt マシン上で動作する ARM64 ベアメタルアセンブリ言語教材。PL011 UART を I/O に使い、12 のシナリオで段階的に学ぶ。
 
-## 必要環境
+## 前提条件
 
-- **ツールチェーン**: Clang (macOS 標準)
-- **エミュレータ**: QEMU (`brew install qemu`)
-- **リンカ**: ld.lld (Clang に付属)
+| ツール                 | 用途                 | インストール例                   |
+| :---                   | :---                 | :---                             |
+| Clang                  | アセンブラ           | Xcode Command Line Tools に同梱  |
+| ld.lld                 | リンカ               | `brew install lld`               |
+| llvm-objdump           | 逆アセンブラ         | `brew install llvm`              |
+| QEMU                   | エミュレータ         | `brew install qemu`              |
 
-## 使い方
+## ビルドと実行
 
 ```bash
-# 全ビルド
+# 全シナリオをビルド
 make
 
-# 個別実行
+# 特定のシナリオを QEMU で実行
 make run S=s01_hello
+
+# 全シナリオを連続実行
+make runall
 
 # 逆アセンブル
 make dump S=s01_hello
 
-# 全テスト実行
-make test
-
-# クリーン
+# 掃除
 make clean
+```
+
+## ディレクトリ構造
+
+```text
+.
+├── linker.ld           # リンカスクリプト（0x40000000 配置）
+├── Makefile
+├── README.md
+├── s01_hello.s         # シナリオ 1: Hello World
+├── s02_registers.s     # シナリオ 2: レジスタと算術
+├── s03_stack.s         # シナリオ 3: スタック操作
+├── s04_loops.s         # シナリオ 4: ループと条件分岐
+├── s05_strings.s       # シナリオ 5: 文字列操作
+├── s06_serial_in.s     # シナリオ 6: シリアル入力
+├── s07_subroutines.s   # シナリオ 7: サブルーチン
+├── s08_hardware.s      # シナリオ 8: ハードウェアアクセス（タイマー）
+├── s09_branching.s     # シナリオ 9: メニュー分岐
+├── s10_bitwise.s       # シナリオ 10: ビット演算
+├── s11_memory.s        # シナリオ 11: メモリ操作
+└── s12_minishell.s     # シナリオ 12: ミニシェル（総合）
 ```
 
 ## シナリオ一覧
 
-| #    | ファイル          | テーマ           | 難易度 | 学習内容                                    |
-| :--- | :---              | :---             | :---   | :---                                        |
-| s01  | s01_hello.s       | Hello World      | ★☆☆☆☆  | UART出力、MOVZ、STRB、セミホスティング終了  |
-| s02  | s02_registers.s   | レジスタと算術   | ★☆☆☆☆  | ADD/SUB/MOV、16進表示サブルーチン           |
-| s03  | s03_stack.s       | スタック操作     | ★★☆☆☆  | STP/LDP、LIFOの確認                         |
-| s04  | s04_loops.s       | ループと分岐     | ★★☆☆☆  | SUBS+B.NE、CMP+B.LT、TST+B.EQ               |
-| s05  | s05_strings.s     | 文字列操作       | ★★☆☆☆  | strlen、strcpy、LDRB/STRB                   |
-| s06  | s06_serial_in.s   | シリアル入力     | ★★★☆☆  | UART受信 (RXFE)、エコーバック               |
-| s07  | s07_subroutines.s | サブルーチン     | ★★★☆☆  | BL/RET、パラメータ渡し (X0-X7)、ネスト呼出  |
-| s08  | s08_hardware.s    | ハードウェア     | ★★★☆☆  | MRS命令、ジェネリックタイマー (CNTVCT_EL0)  |
-| s09  | s09_branching.s   | メニュー分岐     | ★★★★☆  | CMP+B.EQ、ディスパッチパターン              |
-| s10  | s10_bitwise.s     | ビット演算       | ★★★★☆  | AND/ORR/EOR/LSL/LSR、2進表示                |
-| s11  | s11_memory.s      | メモリ操作       | ★★★★☆  | memset/memcpy、pre/post-indexアドレッシング |
-| s12  | s12_minishell.s   | 総合プロジェクト | ★★★★★  | コマンド解析、文字列比較、全概念の統合      |
+### S01: Hello World
 
-## 技術仕様
+**難易度**: ★☆☆☆☆
 
-- **ターゲット**: `aarch64-none-elf`
-- **QEMU**: `qemu-system-aarch64 -machine virt -cpu cortex-a57 -nographic -semihosting`
-- **UART**: PL011 @ 0x09000000 (UARTDR), 0x09000018 (UARTFR)
-- **ロードアドレス**: 0x40000000
-- **スタックポインタ**: 0x48000000 (RAM 末尾)
-- **終了方法**: セミホスティング (HLT #0xF000)
+最も基本的なベアメタルプログラム。PL011 UART に文字列を出力し、セミホスティングで終了する。
+
+| 学習項目                    | 説明                                            |
+| :---                        | :---                                            |
+| `.section .text`            | コードセクションの宣言                          |
+| `.global _start`            | プログラム開始シンボルをエクスポート            |
+| `movz x0, #0x4800, lsl #16` | スタックポインタを RAM 末尾（0x48000000）に設定 |
+| `mov sp, x0`                | SP レジスタに書き込み                           |
+| `ldr x0, =message`          | 文字列アドレスをロード（疑似命令）              |
+| `bl print_str`              | サブルーチン呼び出し                            |
+| `strb w0, [x8]`             | UART への 1 バイト書き込み（MMIO）              |
+| `hlt #0xF000`               | セミホスティングトラップ（QEMU 終了）           |
+| `.asciz`                    | ヌル終端文字列の定義                            |
+
+**QEMU 終了方法**: 自動終了（セミホスティング）
+
+---
+
+### S02: レジスタと算術
+
+**難易度**: ★☆☆☆☆
+
+ARM64 の 64 ビット汎用レジスタ（X0-X30）と基本演算を学ぶ。
+
+| 学習項目                    | 説明                                       |
+| :---                        | :---                                       |
+| `mov x0, #val`              | 即値をレジスタにロード（16-bit まで）      |
+| `movz x0, #val, lsl #shift` | 即値をゼロ拡張してロード（最大 64-bit）    |
+| `add x0, x1, x2`            | レジスタ間加算：x0 = x1 + x2               |
+| `sub x0, x1, x2`            | レジスタ間減算：x0 = x1 - x2               |
+| `add x0, x0, #1`            | インクリメント（専用命令はなし）           |
+| `sub x0, x0, #1`            | デクリメント                               |
+| 16 進数表示                 | `print_hex64` サブルーチン（ニブル→ASCII） |
+
+**ポイント**: ARM64 には `INC` / `DEC` 専用命令がなく、`ADD` / `SUB #1` で代用する。
+
+---
+
+### S03: スタック操作
+
+**難易度**: ★★☆☆☆
+
+スタック（LIFO）の動作を理解し、`STP` / `LDP` によるレジスタペアの一括保存・復元を学ぶ。
+
+| 学習項目                  | 説明                                              |
+| :---                      | :---                                              |
+| `stp x2, x3, [sp, #-16]!` | レジスタペアをスタックに PUSH（事前デクリメント） |
+| `ldp x4, x5, [sp], #16`   | スタックから POP（事後インクリメント）            |
+| LIFO                      | Last In, First Out                                |
+| スタック成長方向          | 下方成長（SP が減少する）                         |
+| `!`（感嘆符）             | 書き込みアドレス更新（pre-index）                 |
+
+---
+
+### S04: ループと条件分岐
+
+**難易度**: ★★☆☆☆
+
+`SUBS` + `B.NE` / `CMP` + `B.LT` / `TST` + `B.EQ` を使った反復処理。
+
+| 学習項目             | 説明                                 |
+| :---                 | :---                                 |
+| `SUBS x0, x0, #1`    | 減算してフラグ更新（S サフィックス） |
+| `B.NE label`         | 非ゼロならジャンプ                   |
+| `CMP x0, #val`       | 比較（フラグのみ更新）               |
+| `B.LT label`         | より小さい（符号付き）ならジャンプ   |
+| `TST w0, #1`         | AND 演算テスト（偶数/奇数判定）      |
+| `B.EQ label`         | 等しいならジャンプ                   |
+| カウントダウンループ | `SUBS` → `B.NE` の定石パターン       |
+
+---
+
+### S05: 文字列操作
+
+**難易度**: ★★☆☆☆
+
+文字列の長さ測定（strlen）とコピー（strcpy）を実装する。
+
+| 学習項目         | 説明                                          |
+| :---             | :---                                          |
+| `ldrb w2, [x1]`  | [x1] から 1 バイト読み込み                    |
+| `strb w3, [x2]`  | w3 を [x2] に書き込み                         |
+| `cbz w2, label`  | w2 が 0 ならジャンプ（比較＋分岐の組合せ）    |
+| `sub x0, x1, x0` | アドレス差分で文字数計算                      |
+| `bss` セクション | 未初期化データ領域（`.space` で確保）         |
+| 10 進数表示      | `print_uint` サブルーチン（UDIV + MSUB 使用） |
+
+---
+
+### S06: シリアル入力
+
+**難易度**: ★★★☆☆
+
+PL011 UART から文字を読み込み、エコーバックする対話型プログラム。
+
+| 学習項目               | 説明                                 |
+| :---                   | :---                                 |
+| `uart_getc`            | UART 受信サブルーチン                |
+| `UARTFR` bit 4（RXFE） | 受信 FIFO Empty（0 = データあり）    |
+| `tbnz w9, #4, ug_wt`   | bit テスト＋非ゼロ分岐（データ待ち） |
+| `ldrb w0, [x8]`        | UARTDR から受信データ読み込み        |
+| エコーバック           | 受信文字をそのまま UART に出力       |
+
+**入力処理の流れ**:
+1. UARTFR（0x09000018）の bit 4（RXFE）をポーリング
+2. RXFE = 0 になったら UARTDR（0x09000000）から 1 バイト読み込み
+
+---
+
+### S07: サブルーチン
+
+**難易度**: ★★★☆☆
+
+`BL` / `RET` による関数呼び出しと、レジスタ渡しのパラメータ受け渡しを学ぶ。
+
+| 学習項目                    | 説明                                            |
+| :---                        | :---                                            |
+| `bl label`                  | サブルーチン呼び出し（LR = X30 に戻りアドレス） |
+| `ret`                       | LR（X30）にジャンプして復帰                     |
+| `stp x29, x30, [sp, #-16]!` | フレームポインタと LR を保存（関数プロローグ）  |
+| `ldp x29, x30, [sp], #16`   | フレームポインタと LR を復元（関数エピローグ）  |
+| リーフ関数                  | 他の関数を呼ばない関数（LR 保存不要）           |
+| 引数レジスタ                | X0-X7（最大 8 個の引数）                        |
+| 戻り値                      | X0                                              |
+
+**ARM64 呼び出し規約**:
+
+| レジスタ | 役割                            | 保存義務 |
+| :---     | :---                            | :---     |
+| X0-X7    | 引数 / 戻り値                   | なし     |
+| X8       | 間接結果レジスタ                | なし     |
+| X9-X15   | スクラッチレジスタ              | なし     |
+| X16-X17  | intra-procedure-call スクラッチ | なし     |
+| X18      | プラットフォーム予約            | —        |
+| X19-X28  | 呼び出し保存レジスタ            | あり     |
+| X29      | フレームポインタ                | あり     |
+| X30 (LR) | リンクレジスタ                  | あり     |
+| SP       | スタックポインタ                | —        |
+
+---
+
+### S08: ハードウェアアクセス
+
+**難易度**: ★★★☆☆
+
+ARM ジェネリックタイマー（CNTVCT_EL0）から時刻を読み取る。`MRS` 命令でシステムレジスタにアクセスする。
+
+| 学習項目             | 説明                                         |
+| :---                 | :---                                         |
+| `mrs x0, CNTVCT_EL0` | システムレジスタからタイマーカウンタ読み出し |
+| `mrs x0, CNTFRQ_EL0` | タイマー周波数の読み出し                     |
+| システムレジスタ     | 通常のメモリアドレッシングではなく専用命令   |
+| ハードウェアタイマー | システム時刻の高精度カウンタ                 |
+
+---
+
+### S09: メニュー分岐
+
+**難易度**: ★★★★☆
+
+`CMP` + `B.EQ` を使ったメニューディスパッチパターンを学ぶ。
+
+| 学習項目          | 説明                                       |
+| :---              | :---                                       |
+| `cmp x0, #1`      | 即値比較                                   |
+| `b.eq .opt_hello` | 条件付き分岐（等しい）                     |
+| `b.ne .next`      | 条件付き分岐（等しくない）                 |
+| メニューパターン  | プロンプト表示 → 入力待ち → 分岐 → 実行    |
+| 複数分岐          | if-else チェーンによるコマンドディスパッチ |
+
+---
+
+### S10: ビット演算
+
+**難易度**: ★★★★☆
+
+AND / ORR / EOR / LSL / LSR を使い、ビット単位の操作を理解する。
+
+| 学習項目             | 説明                                   |
+| :---                 | :---                                   |
+| `and x0, x0, #mask`  | ビット単位の AND（マスク抽出）         |
+| `orr x0, x0, #mask`  | ビット単位の OR（ビット設定）          |
+| `eor x0, x0, #mask`  | ビット単位の XOR（ビット反転）         |
+| `lsl x0, x0, #count` | 左論理シフト（× 2^n）                  |
+| `lsr x0, x0, #count` | 右論理シフト（÷ 2^n）                  |
+| 2 進数表示           | LSR で 1 ビットずつ桁上げ → ASCII 変換 |
+
+**応用例**:
+- AND: 特定ビットの抽出（`and x0, x0, #0xFF`）
+- ORR: 特定ビットのセット（`orr x0, x0, #0x80`）
+- EOR: ビット反転（`eor x0, x0, #0xFF`）
+- LSL: 高速乗算（`lsl x0, x0, #2` = ×4）
+
+---
+
+### S11: メモリ操作
+
+**難易度**: ★★★★☆
+
+メモリへのブロック単位の書き込み（memset）とコピー（memcpy）を実装する。pre-index / post-index アドレッシングも学ぶ。
+
+| 学習項目             | 説明                                                  |
+| :---                 | :---                                                  |
+| `strb w1, [x3], #1`  | 書き込み後にアドレスをインクリメント（post-index）    |
+| `ldrb w4, [x1], #1`  | 読み込み後にアドレスをインクリメント                  |
+| `ldrb w0, [x4, #1]!` | アドレスを事前インクリメントして読み込み（pre-index） |
+| post-index           | `[Xn], #imm` — アクセス後にポインタ進める             |
+| pre-index            | `[Xn, #imm]!` — ポインタ進めてからアクセス            |
+| `.space size`        | 未初期化メモリ領域の確保                              |
+
+**memset / memcpy 実装パターン**:
+```asm
+// my_memset: 指定バイト数だけメモリを特定の値で埋める
+my_memset:
+    mov     x3, x0              // x3 = 開始アドレス
+.ms_lp:
+    cbz     x2, .ms_dn           // カウンタ = 0 なら終了
+    strb    w1, [x3], #1         // 書き込み + アドレス進める
+    subs    x2, x2, #1           // カウンタデクリメント
+    b.ne    .ms_lp
+.ms_dn:
+    ret
+```
+
+---
+
+### S12: ミニシェル（総合）
+
+**難易度**: ★★★★★
+
+これまでの全要素を組み合わせた対話型コマンドシェル（デモモード）。
+
+| 学習項目             | 説明                         |
+| :---                 | :---                         |
+| REPL                 | Read-Eval-Print Loop         |
+| コマンドディスパッチ | 入力文字列に応じた処理の分岐 |
+| `print_str`          | 文字列出力サブルーチン       |
+| バナー表示           | 起動時のタイトル表示         |
+
+**コマンド一覧**:
+- `hello` — 挨拶メッセージを表示
+- `help` — コマンド一覧を表示
+- `quit` — シェルを終了
+
+---
 
 ## ARM64 命令リファレンス
 
 ### データ転送
 
-- `MOVZ Xd, #imm, LSL #shift` — 定数ロード
-- `LDR Xd, =label` — アドレスロード (疑似命令)
-- `LDRB Wd, [Xn]` — バイト読み出し
-- `STRB Wd, [Xn]` — バイト書き込み
-- `STP Xt1, Xt2, [Sp, #-16]!` — レジスタペア push
-- `LDP Xt1, Xt2, [Sp], #16` — レジスタペア pop
+| 命令                        | 動作                                         |
+| :---                        | :---                                         |
+| `mov xd, xn`                | xd ← xn（レジスタ間コピー）                  |
+| `mov xd, #imm`              | xd ← imm（16-bit 即値）                      |
+| `movz xd, #imm, lsl #shift` | xd ← ZeroExtend(imm << shift)（64-bit 即値） |
+| `movk xd, #imm, lsl #shift` | xd の 16-bit フィールドを置換（複数回使用）  |
+| `ldr xd, =label`            | xd ← label のアドレス（疑似命令）            |
+| `ldrb wd, [xn]`             | wd ← ZeroExtend([xn])（バイト読み込み）      |
+| `strb wd, [xn]`             | [xn] ← wd（バイト書き込み）                  |
+| `ldr xd, [xn]`              | xd ← [xn]（64-bit 読み込み）                 |
+| `str xd, [xn]`              | [xn] ← xd（64-bit 書き込み）                 |
 
-### 算術・論理
+### スタック操作
 
-- `ADD/SUB Xd, Xn, #imm` — 加算/減算
-- `AND/ORR/EOR Xd, Xn, #imm` — ビット演算
-- `LSL/LSR Xd, Xn, #shift` — シフト
-- `SUBS` — 減算 + フラグ更新
+| 命令                        | 動作                                           |
+| :---                        | :---                                           |
+| `stp xt1, xt2, [sp, #-16]!` | レジスタペアを PUSH（事前デクリメント）        |
+| `ldp xt1, xt2, [sp], #16`   | レジスタペアを POP（事後インクリメント）       |
+| `stp x29, x30, [sp, #-16]!` | フレームポインタ + LR を保存（関数プロローグ） |
+| `ldp x29, x30, [sp], #16`   | フレームポインタ + LR を復元（関数エピローグ） |
 
-### 分岐
+### 算術演算
 
-- `B label` — 無条件分岐
-- `BL label` — リンク付き分岐 (サブルーチン呼出)
-- `RET` — リンクレジスタへ復帰
-- `B.EQ/B.NE/B.LT/B.HI/B.PL` — 条件分岐
-- `CBZ/CBNZ Xn, label` — 比較+分岐
-- `TBNZ/TBZ Xn, #bit, label` — テスト+分岐
+| 命令                  | 動作                                |
+| :---                  | :---                                |
+| `add xd, xn, #imm`    | xd = xn + imm（即値加算）           |
+| `add xd, xn, xm`      | xd = xn + xm（レジスタ加算）        |
+| `sub xd, xn, #imm`    | xd = xn - imm（即値減算）           |
+| `sub xd, xn, xm`      | xd = xn - xm（レジスタ減算）        |
+| `subs xd, xn, #imm`   | 減算 + フラグ更新（S サフィックス） |
+| `neg xd, xn`          | xd = -xn（2 の補数）                |
+| `mul xd, xn, xm`      | xd = xn × xm                        |
+| `udiv xd, xn, xm`     | xd = xn ÷ xm（符号なし）            |
+| `sdiv xd, xn, xm`     | xd = xn ÷ xm（符号付き）            |
+| `msub xd, xn, xm, xa` | xd = xa - (xn × xm)                 |
 
-### システム
+### 論理演算
 
-- `MRS Xd, <sysreg>` — システムレジスタ読出
-- `HLT #0xF000` — セミホスティングトラップ
+| 命令                 | 動作                           |
+| :---                 | :---                           |
+| `and xd, xn, #mask`  | xd = xn & mask（論理積）       |
+| `orr xd, xn, #mask`  | xd = xn \| mask（論理和）      |
+| `eor xd, xn, #mask`  | xd = xn ^ mask（排他的論理和） |
+| `ands xd, xn, #mask` | AND + フラグ更新               |
+| `bic xd, xn, xm`     | xd = xn & ~xm（ビットクリア）  |
+
+### シフト演算
+
+| 命令                 | 動作                                   |
+| :---                 | :---                                   |
+| `lsl xd, xn, #shift` | 左論理シフト（Logical Shift Left）     |
+| `lsr xd, xn, #shift` | 右論理シフト（Logical Shift Right）    |
+| `asr xd, xn, #shift` | 算術右シフト（Arithmetic Shift Right） |
+
+### 比較・テスト
+
+| 命令                      | 動作                            |
+| :---                      | :---                            |
+| `cmp xn, #imm`            | xn - imm（フラグのみ更新）      |
+| `cmp xn, xm`              | xn - xm（フラグのみ更新）       |
+| `cmn xn, xm`              | xn + xm（フラグのみ更新）       |
+| `tst xn, #mask`           | xn & mask（フラグのみ更新）     |
+
+### 分岐命令
+
+| 命令                   | 動作                              | 条件           |
+| :---                   | :---                              | :---           |
+| `b label`              | 無条件ジャンプ                    | —              |
+| `bl label`             | リンク付きジャンプ（LR ← 戻り先） | —              |
+| `ret`                  | LR（X30）に復帰                   | —              |
+| `b.eq label`           | 等しい                            | Z=1            |
+| `b.ne label`           | 等しくない                        | Z=0            |
+| `b.lt label`           | より小さい（符号付き）            | N≠V            |
+| `b.le label`           | 以下（符号付き）                  | Z=1 または N≠V |
+| `b.gt label`           | より大きい（符号付き）            | Z=0 かつ N=V   |
+| `b.ge label`           | 以上（符号付き）                  | N=V            |
+| `b.hi label`           | より大きい（符号なし）            | C=1 かつ Z=0   |
+| `b.ls label`           | 以下（符号なし）                  | C=0 または Z=1 |
+| `b.pl label`           | プラス（正またはゼロ）            | N=0            |
+| `b.mi label`           | マイナス（負）                    | N=1            |
+| `cbz xn, label`        | xn == 0 なら分岐                  | —              |
+| `cbnz xn, label`       | xn != 0 なら分岐                  | —              |
+| `tbnz xn, #bit, label` | xn の指定ビットが 1 なら分岐      | —              |
+| `tbz xn, #bit, label`  | xn の指定ビットが 0 なら分岐      | —              |
+
+### システム命令
+
+| 命令                      | 動作                              |
+| :---                      | :---                              |
+| `mrs xd, sysreg`          | システムレジスタから読み出し      |
+| `msr sysreg, xn`          | システムレジスタに書き込み        |
+| `hlt #imm`                | セミホスティングトラップ          |
+| `nop`                     | 何もしない                        |
+
+### アドレッシングモード
+
+| モード                          | 例                          |
+| :---                            | :---                        |
+| ベースレジスタ Only             | `ldrb w0, [x1]`             |
+| 即値オフセット                  | `ldrb w0, [x1, #4]`         |
+| Post-index（アクセス後更新）    | `ldrb w0, [x1], #1`         |
+| Pre-index（事前更新後アクセス） | `ldrb w0, [x1, #1]!`        |
+| レジスタオフセット              | `ldrb w0, [x1, x2]`         |
+| 疑似命令（即値 + シフト）       | `movz x0, #0x0900, lsl #16` |
+
+## ハードウェア情報
+
+### QEMU virt マシン
+
+| 項目           | 値                              |
+| :---           | :---                            |
+| マシンタイプ   | `virt`                          |
+| CPU            | `cortex-a57`                    |
+| メモリ         | 128MB (0x40000000 - 0x47FFFFFF) |
+| スタック       | 0x48000000（RAM 末尾）          |
+| ロードアドレス | 0x40000000                      |
+| 終了方法       | セミホスティング                |
+
+### PL011 UART
+
+| オフセット | レジスタ名 | 説明                  | アクセス |
+| :---       | :---       | :---                  | :---     |
+| `0x000`    | UARTDR     | データレジスタ（送受信）| R/W    |
+| `0x018`    | UARTFR     | フラグレジスタ         | RO       |
+| `0x024`    | UARTIBRD   | 整数ボーレート         | R/W      |
+| `0x028`    | UARTFBRD   | 小数ボーレート         | R/W      |
+| `0x030`    | UARTLCR_H  | ライン制御              | R/W      |
+| `0x034`    | UARTCR     | 制御レジスタ            | R/W      |
+| `0x038`    | UARTIFLS   | 割り込み FIFO レベル    | R/W      |
+| `0x03C`    | UARTIMSC   | 割り込みマスク          | R/W      |
+
+**UARTFR フラグビット**:
+
+| ビット | 名前 | 説明                     |
+| :---   | :--- | :---                     |
+| 5      | TXFF | 送信 FIFO フル（1=満杯） |
+| 4      | RXFE | 受信 FIFO 空（1=空）     |
+
+**UART ベースアドレス**: `0x09000000`
+
+**書き込み手順**:
+1. UARTFR（0x09000018）の bit 5（TXFF）をチェック
+2. TXFF = 0 になるまで待機
+3. UARTDR（0x09000000）に文字を書き込み
+
+**読み込み手順**:
+1. UARTFR（0x09000018）の bit 4（RXFE）をチェック
+2. RXFE = 0 になるまで待機（データ到着）
+3. UARTDR（0x09000000）から 1 バイト読み込み
+
+### ARM ジェネリックタイマー
+
+| システムレジスタ | 説明                                    |
+| :---             | :---                                    |
+| `CNTVCT_EL0`     | 仮想カウンタ値（64-bit タイムスタンプ） |
+| `CNTFRQ_EL0`     | タイマー周波数（Hz）                    |
+
+**アクセス方法**:
+```asm
+mrs x0, CNTVCT_EL0    ; タイマーカウンタ読み出し
+mrs x0, CNTFRQ_EL0    ; 周波数読み出し
+```
+
+## ビルドシステム
+
+### ツールチェーン
+
+```bash
+# macOS (Xcode CLI Tools + Homebrew)
+xcode-select --install
+brew install lld qemu
+```
+
+### Makefile の仕組み
+
+```makefile
+# アセンブラとリンカ
+AS      = clang
+LD      = ld.lld
+
+# ターゲット（ARM64 ベアメタル）
+ASFLAGS = --target=aarch64-none-elf -c -nostdlib
+LDFLAGS = -T linker.ld -nostdlib
+
+# QEMU 起動
+QEMU  = qemu-system-aarch64
+QFLAGS = -machine virt -cpu cortex-a57 -nographic -semihosting
+```
+
+### リンカスクリプト (linker.ld)
+
+```c
+ENTRY(_start)          // エントリポイントは _start
+
+SECTIONS {
+    . = 0x40000000;    // RAM 先頭アドレス
+
+    .text : {          // コードセクション
+        *(.text)
+    }
+
+    .rodata : {        // 読み取り専用データ
+        *(.rodata)
+    }
+
+    .data : {          // 初期化済みデータ
+        *(.data)
+    }
+
+    .bss : {           // 未初期化データ
+        *(.bss)
+        *(COMMON)
+    }
+}
+```
+
+### セミホスティング終了
+
+ARM64 ベアメタルでは、QEMU を終了するためにセミホスティングを使用する。
+
+```asm
+mov     x0, #0x18            // angel_SWIreason_ReportException
+ldr     x1, =exit_reason     // { ADP_Stopped_ApplicationExit, 0 }
+hlt     #0xF000
+
+exit_reason:
+    .dword 0x20026           // ADP_Stopped_ApplicationExit
+    .dword 0x0               // subcode
+```
+
+## 次のステップ
+
+1. 各シナリオのソースを開き、コメントを読みながらコードを追う
+2. `make dump S=s02_registers` で逆アセンブル結果を確認し、各命令の機械語を観察する
+3. 即値を変更してビルド → 実行し、結果の変化を確認する
+4. PL011 UART の設定レジスタ（UARTIBRD, UARTLCR_H, UARTCR）を操作してボーレートやフォーマットを変更してみる
+5. S12 をベースに新しいコマンド（例: `echo`, `timer`）を追加してみる
+
+## トラブルシューティング
+
+### QEMU で起動しない場合
+
+```bash
+# ツールがインストールされているか確認
+which clang ld.lld qemu-system-aarch64
+
+# PATH を通す（必要に応じて）
+export PATH=/opt/homebrew/opt/llvm/bin:$PATH
+```
+
+### ビルドエラー
+
+- `clang: error: unknown argument` → `--target=aarch64-none-elf` が正しいか確認
+- `ld.lld: error: unknown argument` → LLD がインストールされているか確認
+- `undefined symbol: _start` → リンカスクリプトが正しく配置されているか確認
+
+### UART が動作しない
+
+- `0x09000000` が PL011 UART のベースアドレスか確認
+- QEMU の `-machine virt` オプションが指定されているか確認
+- 正しい QEMU バージョン（7.0+）を使用しているか確認
