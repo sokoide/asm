@@ -141,55 +141,55 @@ movk x0, #0x5678              ; X0 = 0x12345678
 
 ## 比較・条件分岐命令
 
-| 命令                              | 動作                            |
-| :---                              | :---                            |
-| `cmp xn, #imm`                    | xn - imm（フラグ更新）          |
-| `cmp xn, xm`                      | xn - xm（フラグ更新）           |
-| `cmn xn, xm`                      | xn + xm（フラグ更新）           |
-| `tst xn, #mask`                   | xn & mask（フラグ更新）         |
-| `ccmp xn, #imm, #nzcv, cond`     | 条件付き比較                    |
+| 命令                         | 動作                    |
+| :---                         | :---                    |
+| `cmp xn, #imm`               | xn - imm（フラグ更新）  |
+| `cmp xn, xm`                 | xn - xm（フラグ更新）   |
+| `cmn xn, xm`                 | xn + xm（フラグ更新）   |
+| `tst xn, #mask`              | xn & mask（フラグ更新） |
+| `ccmp xn, #imm, #nzcv, cond` | 条件付き比較            |
 
 ### 条件分岐
 
-| 命令            | 動作                      | 条件フラグ       |
-| :---            | :---                      | :---             |
-| `b label`       | 無条件分岐                | —                |
-| `bl label`      | リンク付き分岐（LR 保存） | —                |
-| `ret`           | LR に復帰                 | —                |
-| `b.eq label`    | 等しい                    | Z=1              |
-| `b.ne label`    | 等しくない                | Z=0              |
-| `b.lt label`    | より小さい（符号付き）    | N≠V              |
-| `b.le label`    | 以下（符号付き）          | Z=1 または N≠V   |
-| `b.gt label`    | より大きい（符号付き）    | Z=0 かつ N=V     |
-| `b.ge label`    | 以上（符号付き）          | N=V              |
-| `b.hi label`    | より大きい（符号なし）    | C=1 かつ Z=0     |
-| `b.hs label`    | 以上（符号なし）          | C=1              |
-| `b.lo label`    | より小さい（符号なし）    | C=0              |
-| `b.ls label`    | 以下（符号なし）          | C=0 または Z=1   |
-| `b.mi label`    | マイナス（負）            | N=1              |
-| `b.pl label`    | プラス（正/ゼロ）         | N=0              |
-| `b.vs label`    | オーバーフロー            | V=1              |
-| `b.vc label`    | オーバーフローなし        | V=0              |
+| 命令         | 動作                      | 条件フラグ     |
+| :---         | :---                      | :---           |
+| `b label`    | 無条件分岐                | —              |
+| `bl label`   | リンク付き分岐（LR 保存） | —              |
+| `ret`        | LR に復帰                 | —              |
+| `b.eq label` | 等しい                    | Z=1            |
+| `b.ne label` | 等しくない                | Z=0            |
+| `b.lt label` | より小さい（符号付き）    | N≠V            |
+| `b.le label` | 以下（符号付き）          | Z=1 または N≠V |
+| `b.gt label` | より大きい（符号付き）    | Z=0 かつ N=V   |
+| `b.ge label` | 以上（符号付き）          | N=V            |
+| `b.hi label` | より大きい（符号なし）    | C=1 かつ Z=0   |
+| `b.hs label` | 以上（符号なし）          | C=1            |
+| `b.lo label` | より小さい（符号なし）    | C=0            |
+| `b.ls label` | 以下（符号なし）          | C=0 または Z=1 |
+| `b.mi label` | マイナス（負）            | N=1            |
+| `b.pl label` | プラス（正/ゼロ）         | N=0            |
+| `b.vs label` | オーバーフロー            | V=1            |
+| `b.vc label` | オーバーフローなし        | V=0            |
 
 ### 比較+分岐（即値比較不要）
 
-| 命令                   | 動作                      |
-| :---                   | :---                      |
-| `cbz xn, label`        | xn == 0 なら分岐           |
-| `cbnz xn, label`       | xn != 0 なら分岐           |
-| `tbz xn, #bit, label`  | xn の bit が 0 なら分岐    |
-| `tbnz xn, #bit, label` | xn の bit が 1 なら分岐    |
+| 命令                   | 動作                    |
+| :---                   | :---                    |
+| `cbz xn, label`        | xn == 0 なら分岐        |
+| `cbnz xn, label`       | xn != 0 なら分岐        |
+| `tbz xn, #bit, label`  | xn の bit が 0 なら分岐 |
+| `tbnz xn, #bit, label` | xn の bit が 1 なら分岐 |
 
 ## 条件選択命令
 
-| 命令                          | 動作                                     |
-| :---                          | :---                                     |
-| `csel xd, xn, xm, cond`       | 条件が真なら xd=xn、偽なら xd=xm          |
-| `csinc xd, xn, xm, cond`      | 条件が真なら xd=xn、偽なら xd=xm+1        |
-| `csinv xd, xn, xm, cond`      | 条件が真なら xd=xn、偽なら xd=~xm         |
-| `csneg xd, xn, xm, cond`      | 条件が真なら xd=xn、偽なら xd=-xm         |
-| `cset xd, cond`               | 条件が真なら xd=1、偽なら xd=0            |
-| `csetm xd, cond`              | 条件が真なら xd=-1、偽なら xd=0           |
+| 命令                     | 動作                               |
+| :---                     | :---                               |
+| `csel xd, xn, xm, cond`  | 条件が真なら xd=xn、偽なら xd=xm   |
+| `csinc xd, xn, xm, cond` | 条件が真なら xd=xn、偽なら xd=xm+1 |
+| `csinv xd, xn, xm, cond` | 条件が真なら xd=xn、偽なら xd=~xm  |
+| `csneg xd, xn, xm, cond` | 条件が真なら xd=xn、偽なら xd=-xm  |
+| `cset xd, cond`          | 条件が真なら xd=1、偽なら xd=0     |
+| `csetm xd, cond`         | 条件が真なら xd=-1、偽なら xd=0    |
 
 `csel` で条件分岐なしの三項演算が可能：
 
@@ -200,14 +200,14 @@ csel x0, x1, x2, eq    ; if (x0 == 0) x0 = x1 else x0 = x2
 
 ## サブルーチン命令
 
-| 命令           | 動作                                    |
-| :---           | :---                                    |
-| `bl label`     | LR = PC+4; PC = label（関数呼び出し）   |
-| `blr xn`       | LR = PC+4; PC = xn（間接呼び出し）      |
-| `ret`          | PC = LR（復帰）                         |
-| `ret xn`       | PC = xn                                 |
-| `stp x29, x30, [sp, #-16]!` | 関数プロローグ（FP, LR 保存）|
-| `ldp x29, x30, [sp], #16`   | 関数エピローグ（FP, LR 復元）|
+| 命令                        | 動作                                  |
+| :---                        | :---                                  |
+| `bl label`                  | LR = PC+4; PC = label（関数呼び出し） |
+| `blr xn`                    | LR = PC+4; PC = xn（間接呼び出し）    |
+| `ret`                       | PC = LR（復帰）                       |
+| `ret xn`                    | PC = xn                               |
+| `stp x29, x30, [sp, #-16]!` | 関数プロローグ（FP, LR 保存）         |
+| `ldp x29, x30, [sp], #16`   | 関数エピローグ（FP, LR 復元）         |
 
 ### 関数プロローグ/エピローグの定石
 

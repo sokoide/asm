@@ -12,5 +12,9 @@
   // MD010/no-hard-tabs: コードブロック内でのタブ利用を許可（Goのコードなどで必要なため）
   "MD010": {
     "code_blocks": false
-  }
+  },
+  // MD055/table-pipe-style: テーブルパイプスタイルは MdTableAlignAll に委ねる（未インストールのためチェックしない）
+  "MD055": false,
+  // MD060/table-column-style: 同上（nvim MdTableAlignAll プラグインが未インストールのため）
+  "MD060": false
 }

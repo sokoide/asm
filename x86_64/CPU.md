@@ -22,7 +22,7 @@ AMD64 / Intel 64 アーキテクチャの 64-bit モード命令セット（Long
 
 ### 部分レジスタ
 
-```
+```text
 RAX (64-bit)
 ├── EAX (32-bit)
 │   ├── AX (16-bit)

@@ -19,7 +19,7 @@ IA-32 アーキテクチャの 32-bit モード命令セット。x86 の 16-bit 
 
 ### 下位互換の部分レジスタ
 
-```
+```text
 EAX (32-bit)
 ├── AX (16-bit)
 │   ├── AH (8-bit) ── 上位
@@ -27,7 +27,7 @@ EAX (32-bit)
 ```
 
 ECX → CX / CH / CL、EDX → DX / DH / DL、EBX → BX / BH / BL。
-ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位16-bitのみ）。
+ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 
 ### セグメントレジスタ
 

@@ -67,7 +67,8 @@ lea     rsi, [msg]          ; デフォルトでは RIP 相対 (NASM macho64)
 | 0x2000004 | write | `rdi` = fd, `rsi` = buf, `rdx` = len | ファイル書き出し |
 
 **macOS の syscall 番号体系**:
-- macOS は Mach トラップ（`0x0`-`0xFFFF`）と BSD システムコール（`0x2000000` + BSD番号）の 2 種類を持つ
+
+- macOS は Mach トラップ（`0x0`-`0xFFFF`）と BSD システムコール（`0x2000000` + BSD 番号）の 2 種類を持つ
 - BSD システムコールは `0x2000000` のフラグが必要
 - 標準的な BSD 番号: `exit` = 1, `write` = 4, `open` = 5, `close` = 6, `read` = 3
 

@@ -21,6 +21,7 @@ dosbox
 ```
 
 DOSBox 内で実行:
+
 ```bash
 c:
 mount c ~/tmp
@@ -42,9 +43,9 @@ hello.com
 
 ```text
 ┌────────────────────┐
-| PSP (256 バイト)   | DOS が管理するプログラム情報
+| PSP (256 バイト) | DOS が管理するプログラム情報
 ├────────────────────┤
-| コード (最大 64KB  | ORG 0x100 から開始
+| コード (最大 64KB | ORG 0x100 から開始
 └────────────────────┘
 ```
 
@@ -87,11 +88,13 @@ message db "Hello, COM world!$"  ; '$' で終端される文字列
 ## ビルド手順
 
 1. **アセンブル**:
+
    ```bash
    nasm -f bin hello.asm -o hello.com
    ```
 
 2. **実行環境準備**:
+
    ```bash
    # DOSBox 起動後
    mount c ~/tmp
@@ -99,11 +102,13 @@ message db "Hello, COM world!$"  ; '$' で終端される文字列
    ```
 
 3. **実行**:
+
    ```bash
    hello.com
    ```
 
 4. **逆アセンブル（デバッグ用）**:
+
    ```bash
    ndisasm -b 16 hello.com
    ```

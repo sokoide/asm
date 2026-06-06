@@ -146,12 +146,13 @@ Motorola 68000 アーキテクチャ。16-bit 外部データバス・32-bit 内
 
 DBRA / DBF は条件分岐とループカウンタの組み合わせ命令。
 
-```
+```asm
 dbra dn, label    ; dn--, dn≠-1 なら label へ
 ```
 
 条件付きバリエーション：
-```
+
+```asm
 dbeq dn, label    ; dn--, dn≠-1 かつ条件成立なら label へ
 dbne dn, label
 dbgt dn, label

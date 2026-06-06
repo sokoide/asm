@@ -160,12 +160,12 @@
 
 ### Indexed Indirect vs Indirect Indexed
 
-```
+```text
 ($NN,X) — Indexed Indirect:
-  アドレス = ZeroPage[($NN + X) mod 256] から取得した 16-bit アドレス
-  「X でインデックス → 間接参照」
+   アドレス = ZeroPage[($NN + X) mod 256] から取得した 16-bit アドレス
+   「X でインデックス → 間接参照」
 
 ($NN),Y — Indirect Indexed:
-  アドレス = ZeroPage[$NN] から取得した 16-bit アドレス + Y
-  「間接参照 → Y でインデックス」
+   アドレス = ZeroPage[$NN] から取得した 16-bit アドレス + Y
+   「間接参照 → Y でインデックス」
 ```
