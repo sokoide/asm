@@ -13,8 +13,8 @@
   "MD010": {
     "code_blocks": false
   },
-  // MD055/table-pipe-style: テーブルパイプスタイルは MdTableAlignAll に委ねる（未インストールのためチェックしない）
+  // MD055/table-pipe-style: テーブルパイプスタイル
   "MD055": false,
-  // MD060/table-column-style: 同上（nvim MdTableAlignAll プラグインが未インストールのため）
+  // MD060/table-column-style
   "MD060": false
 }
