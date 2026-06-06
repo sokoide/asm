@@ -16,7 +16,7 @@ $(SUBDIRS):
 
 format:
 	@echo "Formatting markdown files using $(RUNNER)..."
-	$(RUNNER) markdownlint-cli "**/*.md" --ignore "conductor/**" --ignore "CLAUDE.md" --fix
+	$(RUNNER) markdownlint-cli "**/*.md" --ignore "conductor/**" --ignore "CLAUDE.md" --ignore "node_modules/**" --fix
 	$(EXEC) textlint --fix "**/*.md"
 
 

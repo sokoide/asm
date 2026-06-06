@@ -29,20 +29,20 @@ make clean
 
 ## シナリオ一覧
 
-| # | ファイル | テーマ | 難易度 | 学習内容 |
-|---|---------|--------|--------|---------|
-| s01 | s01_hello.s | Hello World | ★☆☆☆☆ | UART出力、MOVZ、STRB、セミホスティング終了 |
-| s02 | s02_registers.s | レジスタと算術 | ★☆☆☆☆ | ADD/SUB/MOV、16進表示サブルーチン |
-| s03 | s03_stack.s | スタック操作 | ★★☆☆☆ | STP/LDP、LIFOの確認 |
-| s04 | s04_loops.s | ループと分岐 | ★★☆☆☆ | SUBS+B.NE、CMP+B.LT、TST+B.EQ |
-| s05 | s05_strings.s | 文字列操作 | ★★☆☆☆ | strlen、strcpy、LDRB/STRB |
-| s06 | s06_serial_in.s | シリアル入力 | ★★★☆☆ | UART受信 (RXFE)、エコーバック |
-| s07 | s07_subroutines.s | サブルーチン | ★★★☆☆ | BL/RET、パラメータ渡し (X0-X7)、ネスト呼出 |
-| s08 | s08_hardware.s | ハードウェア | ★★★☆☆ | MRS命令、ジェネリックタイマー (CNTVCT_EL0) |
-| s09 | s09_branching.s | メニュー分岐 | ★★★★☆ | CMP+B.EQ、ディスパッチパターン |
-| s10 | s10_bitwise.s | ビット演算 | ★★★★☆ | AND/ORR/EOR/LSL/LSR、2進表示 |
-| s11 | s11_memory.s | メモリ操作 | ★★★★☆ | memset/memcpy、pre/post-indexアドレッシング |
-| s12 | s12_minishell.s | 総合プロジェクト | ★★★★★ | コマンド解析、文字列比較、全概念の統合 |
+| #    | ファイル          | テーマ           | 難易度 | 学習内容                                    |
+| :--- | :---              | :---             | :---   | :---                                        |
+| s01  | s01_hello.s       | Hello World      | ★☆☆☆☆  | UART出力、MOVZ、STRB、セミホスティング終了  |
+| s02  | s02_registers.s   | レジスタと算術   | ★☆☆☆☆  | ADD/SUB/MOV、16進表示サブルーチン           |
+| s03  | s03_stack.s       | スタック操作     | ★★☆☆☆  | STP/LDP、LIFOの確認                         |
+| s04  | s04_loops.s       | ループと分岐     | ★★☆☆☆  | SUBS+B.NE、CMP+B.LT、TST+B.EQ               |
+| s05  | s05_strings.s     | 文字列操作       | ★★☆☆☆  | strlen、strcpy、LDRB/STRB                   |
+| s06  | s06_serial_in.s   | シリアル入力     | ★★★☆☆  | UART受信 (RXFE)、エコーバック               |
+| s07  | s07_subroutines.s | サブルーチン     | ★★★☆☆  | BL/RET、パラメータ渡し (X0-X7)、ネスト呼出  |
+| s08  | s08_hardware.s    | ハードウェア     | ★★★☆☆  | MRS命令、ジェネリックタイマー (CNTVCT_EL0)  |
+| s09  | s09_branching.s   | メニュー分岐     | ★★★★☆  | CMP+B.EQ、ディスパッチパターン              |
+| s10  | s10_bitwise.s     | ビット演算       | ★★★★☆  | AND/ORR/EOR/LSL/LSR、2進表示                |
+| s11  | s11_memory.s      | メモリ操作       | ★★★★☆  | memset/memcpy、pre/post-indexアドレッシング |
+| s12  | s12_minishell.s   | 総合プロジェクト | ★★★★★  | コマンド解析、文字列比較、全概念の統合      |
 
 ## 技術仕様
 
@@ -50,7 +50,7 @@ make clean
 - **QEMU**: `qemu-system-aarch64 -machine virt -cpu cortex-a57 -nographic -semihosting`
 - **UART**: PL011 @ 0x09000000 (UARTDR), 0x09000018 (UARTFR)
 - **ロードアドレス**: 0x40000000
-- **スタックポインタ**: 0x48000000 (RAM末尾)
+- **スタックポインタ**: 0x48000000 (RAM 末尾)
 - **終了方法**: セミホスティング (HLT #0xF000)
 
 ## ARM64 命令リファレンス
