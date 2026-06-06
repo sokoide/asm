@@ -17,6 +17,8 @@
 | **x86 (64-bit)** | `x86_64/darwin/`  | macOS ネイティブ                | 1          |
 | **x86 (32-bit)** | `i386/darwin/`    | macOS ネイティブ                | 1          |
 | **ARM64**        | `arm64/darwin/`   | macOS ネイティブ                | 1          |
+| **RISC-V (32-bit)** | `riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 12         |
+| **RISC-V (64-bit)** | `riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 12         |
 
 ## 出力・入力の仕組み
 
@@ -32,6 +34,7 @@
 | **x86 (16-bit)** | 16550 (COM1)     | `OUT` (I/Oポート)              | `0x3F8` (THR)           |
 | **6502**         | —                | sim65 API (`_putchar`/`_puts`) | —                       |
 | **Z80**          | —                | CP/M BDOS (`CALL 0x0005`)      | —                       |
+| **RISC-V**       | NS16550A         | `SB` (MMIOストア)              | 0x10000000 (THR)        |
 
 ARM64/PPC は MMIO（メモリマップド I/O）で UART レジスタに直接ストア。x86 は I/O ポート命令（`OUT`/`IN`）で COM1 にアクセス。いずれも **OSやドライバを介さず** CPU 命令が直接ハードウェアレジスタを叩きます。
 
@@ -118,6 +121,8 @@ make clean
 | `qemu-system-m68k`          | M68000               | `brew install qemu`                                                          |
 | `qemu-system-i386`          | x86_16               | `brew install qemu`                                                          |
 | `nasm`                      | x86_16, x86_64, i386 | `brew install nasm`                                                          |
+| `qemu-system-riscv32`       | RISC-V 32-bit        | `brew install qemu`                                                          |
+| `qemu-system-riscv64`       | RISC-V 64-bit        | `brew install qemu`                                                          |
 | `dosbox`                    | x86_16 DOS           | `brew install dosbox`                                                        |
 | `alink`                     | x86_16 DOS EXE       | <http://alink.sourceforge.net/>                                              |
 | `coreutils`                 | timeout コマンド     | `brew install coreutils`                                                     |
@@ -139,5 +144,7 @@ asm/
 │       ├── com/         # DOS COM 形式
 │       └── exe/         # DOS MZ EXE 形式
 ├── x86_64/darwin/       # macOS x86_64
-└── i386/darwin/         # macOS i386 (32-bit)
+├── i386/darwin/         # macOS i386 (32-bit)
+├── riscv32/qemu/        # RISC-V 32-bit bare-metal (QEMU virt)
+└── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
 ```
