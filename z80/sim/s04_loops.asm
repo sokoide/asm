@@ -15,16 +15,16 @@ _start:
 
     ld      b, 5              ; count from 5 to 1
 .countdown:
-    push    af
     ld      a, '0'
     add     b                 ; digit = '0' + B
-    ld      c, 2
     ld      e, a
+    push    bc                ; save loop counter (BDOS clobbers B)
+    ld      c, 2
     call    0x0005
     ld      c, 2
     ld      e, ' '
     call    0x0005
-    pop     af
+    pop     bc                ; restore loop counter
     djnz    .countdown
     call    newline
 
@@ -35,16 +35,16 @@ _start:
 
     ld      b, 0              ; counter starts at 0
 .countup:
-    push    af
     ld      a, '0'
     add     b
-    ld      c, 2
     ld      e, a
+    push    bc                ; save loop counter (BDOS clobbers B)
+    ld      c, 2
     call    0x0005
     ld      c, 2
     ld      e, ' '
     call    0x0005
-    pop     af
+    pop     bc                ; restore loop counter
     inc     b
     ld      a, b
     cp      5                 ; stop when B = 5
