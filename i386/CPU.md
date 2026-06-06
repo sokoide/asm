@@ -75,7 +75,7 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位16-bitのみ）。
 | `add dst, src` | dst += src                                  |
 | `adc dst, src` | dst += src + CF                             |
 | `sub dst, src` | dst -= src                                  |
-| `sbb dst, src` | dst -= src - CF                             |
+| `sbb dst, src` | dst = dst - src - CF                        |
 | `inc dst`      | dst++                                       |
 | `dec dst`      | dst--                                       |
 | `neg dst`      | dst = -dst（2 の補数）                      |

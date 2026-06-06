@@ -91,14 +91,14 @@
 
 ## 比較命令
 
-| 命令           | 動作                            |
-| :---           | :---                            |
-| `CMP #val`     | A - val（フラグのみ）           |
-| `CMP addr`     | A - [addr]（フラグのみ）        |
-| `CPX #val`     | X - val（フラグのみ）           |
-| `CPX addr`     | X - [addr]（フラグのみ）        |
-| `CPY #val`     | Y - val（フラグのみ）           |
-| `CPY addr`     | Y - [addr]（フラグのみ）        |
+| 命令       | 動作                     |
+| :---       | :---                     |
+| `CMP #val` | A - val（フラグのみ）    |
+| `CMP addr` | A - [addr]（フラグのみ） |
+| `CPX #val` | X - val（フラグのみ）    |
+| `CPX addr` | X - [addr]（フラグのみ） |
+| `CPY #val` | Y - val（フラグのみ）    |
+| `CPY addr` | Y - [addr]（フラグのみ） |
 
 ## 分岐命令
 
