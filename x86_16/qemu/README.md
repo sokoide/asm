@@ -317,78 +317,9 @@ JMP 0x7E00 でセクタ 2 のコードへ移行
 | アドレス指定 | リンカスクリプト（linker.ld） | `ORG 0x7C00`                         |
 | 逆アセンブル | `make dump S=...`             | `make dump32 S=...`（セクタ 2 以降） |
 
----
+## 関連ドキュメント
 
-## 主要命令リファレンス
-
-### データ転送
-
-| 命令           | 動作                              |
-| :---           | :---                              |
-| `MOV dst, src` | dst ← src                         |
-| `PUSH src`     | スタックに保存（SP -= 2）         |
-| `POP dst`      | スタックから復元（SP += 2）       |
-| `XCHG a, b`    | a と b を交換                     |
-| `LEA reg, mem` | 実効アドレスを計算して reg に格納 |
-
-### 算術
-
-| 命令           | 動作                     |
-| :---           | :---                     |
-| `ADD dst, src` | dst += src               |
-| `SUB dst, src` | dst -= src               |
-| `INC dst`      | dst++                    |
-| `DEC dst`      | dst--                    |
-| `MUL src`      | AX ← AL × src（8-bit）   |
-| `DIV src`      | AL ← AX ÷ src, AH ← 余り |
-
-### 論理・シフト
-
-| 命令           | 動作                      |
-| :---           | :---                      |
-| `AND dst, src` | ビット単位の AND          |
-| `OR dst, src`  | ビット単位の OR           |
-| `XOR dst, src` | ビット単位の XOR          |
-| `NOT dst`      | ビット反転                |
-| `SHL dst, 1`   | 左に 1 ビットシフト（×2） |
-| `SHR dst, 1`   | 右に 1 ビットシフト（÷2） |
-
-### 比較・分岐
-
-| 命令          | 動作                      | 条件        |
-| :---          | :---                      | :---        |
-| `CMP a, b`    | a - b（フラグだけ更新）   | —           |
-| `TEST a, b`   | a AND b（フラグだけ更新） | —           |
-| `JMP label`   | 無条件ジャンプ            | —           |
-| `JE` / `JZ`   | 等しいとき                | ZF=1        |
-| `JNE` / `JNZ` | 等しくないとき            | ZF=0        |
-| `JL` / `JNGE` | より小さい（符号付き）    | SF≠OF       |
-| `JG` / `JNLE` | より大きい（符号付き）    | ZF=0, SF=OF |
-| `JB` / `JNAE` | より小さい（符号なし）    | CF=1        |
-| `JA` / `JNBE` | より大きい（符号なし）    | CF=0, ZF=0  |
-| `LOOP label`  | CX--, CX≠0 ならジャンプ   | —           |
-
-### 文字列
-
-| 命令    | 動作                              |
-| :---    | :---                              |
-| `LODSB` | AL ← `[DS:SI]`, SI++              |
-| `STOSB` | `[ES:DI]` ← AL, DI++              |
-| `MOVSB` | `[ES:DI]` ← `[DS:SI]`, SI++, DI++ |
-| `SCASB` | 比較: AL と `[ES:DI]`, DI++       |
-| `REP`   | CX 回繰り返す                     |
-| `REPNE` | 等しくない間、CX 回繰り返す       |
-
-### 制御
-
-| 命令         | 動作                             |
-| :---         | :---                             |
-| `CALL label` | 次のアドレスを PUSH してジャンプ |
-| `RET`        | スタックから POP してジャンプ    |
-| `CLI`        | 割り込み禁止                     |
-| `STI`        | 割り込み許可                     |
-| `HLT`        | CPU 停止                         |
-| `NOP`        | 何もしない                       |
+- [`../CPU.md`](../CPU.md) — 8086/80286 命令セット完全リファレンス
 
 ## BIOS 割り込みリファレンス
 
