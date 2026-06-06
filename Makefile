@@ -24,8 +24,8 @@ format:
 		! -path "./node_modules/*" \
 		! -path "./.gomodcache/*" \
 		! -name "CLAUDE.md" \
-		! -name ".omc/*" \
-		! -name ".serena/*" \
+		! -name "./.omc/*" \
+		! -name "./.serena/*" \
 		-exec sh -c 'for f; do nvim --headless -c "MdTableAlignAll" -c "wq" "$$f"; done' _ {} +
 
 
