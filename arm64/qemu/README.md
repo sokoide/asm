@@ -56,6 +56,7 @@ make clean
 ## ARM64 命令リファレンス
 
 ### データ転送
+
 - `MOVZ Xd, #imm, LSL #shift` — 定数ロード
 - `LDR Xd, =label` — アドレスロード (疑似命令)
 - `LDRB Wd, [Xn]` — バイト読み出し
@@ -64,12 +65,14 @@ make clean
 - `LDP Xt1, Xt2, [Sp], #16` — レジスタペア pop
 
 ### 算術・論理
+
 - `ADD/SUB Xd, Xn, #imm` — 加算/減算
 - `AND/ORR/EOR Xd, Xn, #imm` — ビット演算
 - `LSL/LSR Xd, Xn, #shift` — シフト
 - `SUBS` — 減算 + フラグ更新
 
 ### 分岐
+
 - `B label` — 無条件分岐
 - `BL label` — リンク付き分岐 (サブルーチン呼出)
 - `RET` — リンクレジスタへ復帰
@@ -78,5 +81,6 @@ make clean
 - `TBNZ/TBZ Xn, #bit, label` — テスト+分岐
 
 ### システム
+
 - `MRS Xd, <sysreg>` — システムレジスタ読出
 - `HLT #0xF000` — セミホスティングトラップ
