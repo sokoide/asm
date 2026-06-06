@@ -1,8 +1,8 @@
 # 8086 / 80186 / 80286 命令リファレンス
 
-x86 リアルモード（16-bit）の命令セット。IAS (Intel Architecture 16-bit) の基礎を学ぶ。後に i386 で 32-bit に拡張された。
+x86 16-bit リアルモード（8086 / 80186 / 80286）の命令セット。後に i386 で 32-bit に拡張された。
 
-## 8086 レジスタ
+## レジスタ
 
 ### 汎用レジスタ（16-bit）
 
@@ -96,7 +96,7 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 | `ADD dst, src` | dst += src                                                     |
 | `ADC dst, src` | dst += src + CF                                                |
 | `SUB dst, src` | dst -= src                                                     |
-| `SBB dst, src` | dst -= src + CF（実際は dst -= src - CF だが一般的にこう説明） |
+| `SBB dst, src` | dst = dst - src - CF                    |
 | `INC dst`      | dst++                                                          |
 | `DEC dst`      | dst--                                                          |
 | `NEG dst`      | dst = -dst                                                     |
@@ -193,7 +193,7 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 | `CLD`             | DF=0（SI/DI 増加方向）              |
 | `STD`             | DF=1（SI/DI 減少方向）              |
 
-## 制御命令
+## システム制御命令
 
 | 命令   | 動作                           |
 | :---   | :---                           |

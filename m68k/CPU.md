@@ -67,8 +67,6 @@ Motorola 68000 アーキテクチャ。16-bit 外部データバス・32-bit 内
 | `subi.l #val, dst`    | dst -= val（即値）               |
 | `subq.l #val, dst`    | dst -= val（即値、1-8 を高速に） |
 | `subx.l src, dst`     | dst -= src - X（拡張減算）       |
-| `inc.l dst`           | dst++                            |
-| `dec.l dst`           | dst--                            |
 | `neg.l dst`           | dst = -dst                       |
 | `negx.l dst`          | dst = -dst - X（拡張 neg）       |
 | `mulu.w src, dn`      | dn = dn × src（符号なし 16-bit） |
@@ -160,7 +158,7 @@ dbgt dn, label
 ...
 ```
 
-## サブルーチン関連命令
+## サブルーチン命令
 
 | 命令                   | 動作                                      |
 | :---                   | :---                                      |
@@ -173,7 +171,7 @@ dbgt dn, label
 | `movem.l list, -(%sp)` | レジスタ群をスタックに PUSH               |
 | `movem.l (%sp)+, list` | スタックから POP                          |
 
-## システム制御・特権命令
+## システム制御命令
 
 | 命令            | 動作                                 |
 | :---            | :---                                 |

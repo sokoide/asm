@@ -85,19 +85,6 @@ movk x0, #0x5678              ; X0 = 0x12345678
 
 `ldr =label` はアセンブラがリテラルプールを使って展開する疑似命令。
 
-### アドレッシングモード
-
-| モード                       | 例                         |
-| :---                         | :---                       |
-| ベースレジスタ Only          | `ldr x0, [x1]`             |
-| 即値オフセット               | `ldr x0, [x1, #8]`         |
-| レジスタオフセット           | `ldr x0, [x1, x2]`         |
-| 拡張オフセット               | `ldr x0, [x1, x2, lsl #3]` |
-| Pre-index（更新後アクセス）  | `ldr x0, [x1, #8]!`        |
-| Post-index（アクセス後更新） | `ldr x0, [x1], #8`         |
-| PC 相対                      | `adr x0, label`            |
-| PC 相対（大域）              | `adrp x0, label@PAGE`      |
-
 ## 算術命令
 
 | 命令                  | 動作                                 |
@@ -139,16 +126,16 @@ movk x0, #0x5678              ; X0 = 0x12345678
 | `eon xd, xn, xm`     | xd = xn ^ ~xm                        |
 | `tst xn, #mask`      | xn & mask（フラグのみ、`ands` 相当） |
 
-## シフト命令
+## シフト・ローテート命令
 
-| 命令                              | 動作                            |
-| :---                              | :---                            |
-| `lsl xd, xn, #shift`              | 左論理シフト（×2^n）           |
-| `lsr xd, xn, #shift`              | 右論理シフト（÷2^n）           |
-| `asr xd, xn, #shift`              | 算術右シフト（符号維持）        |
-| `ror xd, xn, #shift`              | 右ローテート                    |
-| `lsl xd, xn, xm`                  | 可変左論理シフト（レジスタ指定）|
-| `lsr xd, xn, xm`                  | 可変右論理シフト                |
+| 命令                 | 動作                             |
+| :---                 | :---                             |
+| `lsl xd, xn, #shift` | 左論理シフト（×2^n）             |
+| `lsr xd, xn, #shift` | 右論理シフト（÷2^n）             |
+| `asr xd, xn, #shift` | 算術右シフト（符号維持）         |
+| `ror xd, xn, #shift` | 右ローテート                     |
+| `lsl xd, xn, xm`     | 可変左論理シフト（レジスタ指定） |
+| `lsr xd, xn, xm`     | 可変右論理シフト                 |
 
 `#shift` は 0-63（64-bit の場合）。
 
@@ -258,21 +245,15 @@ my_func:
 | `FPCR`       | 浮動小数点制御レジスタ           |
 | `FPSR`       | 浮動小数点ステータスレジスタ     |
 
-## 疑似命令（アセンブラ拡張）
+## アドレッシングモード
 
-GNU as / Clang as で使用可能な主な疑似命令：
-
-| 疑似命令           | 動作                              |
-| :---               | :---                              |
-| `.section .text`   | コードセクション開始              |
-| `.section .data`   | 初期化済みデータセクション        |
-| `.section .bss`    | 未初期化データセクション          |
-| `.section .rodata` | 読み取り専用データセクション      |
-| `.global sym`      | シンボルを外部公開                |
-| `.asciz "str"`     | ヌル終端文字列の定義              |
-| `.byte val`        | 1 バイトデータ定義                |
-| `.word val`        | 2 バイトデータ定義                |
-| `.dword val`       | 4/8 バイトデータ定義              |
-| `.space size`      | 未初期化領域の確保                |
-| `.align n`         | 2^n バイトにアライメント          |
-| `=label` 疑似      | `ldr xd, =label` でアドレスロード |
+| モード                       | 例                         |
+| :---                         | :---                       |
+| ベースレジスタ Only          | `ldr x0, [x1]`             |
+| 即値オフセット               | `ldr x0, [x1, #8]`         |
+| レジスタオフセット           | `ldr x0, [x1, x2]`         |
+| 拡張オフセット               | `ldr x0, [x1, x2, lsl #3]` |
+| Pre-index（更新後アクセス）  | `ldr x0, [x1, #8]!`        |
+| Post-index（アクセス後更新） | `ldr x0, [x1], #8`         |
+| PC 相対                      | `adr x0, label`            |
+| PC 相対（大域）              | `adrp x0, label@PAGE`      |

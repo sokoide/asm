@@ -375,6 +375,23 @@ xcode-select --install
 brew install lld qemu
 ```
 
+### アセンブラ疑似命令（GNU as / Clang as）
+
+| 疑似命令           | 動作                              |
+| :---               | :---                              |
+| `.section .text`   | コードセクション開始              |
+| `.section .data`   | 初期化済みデータセクション        |
+| `.section .bss`    | 未初期化データセクション          |
+| `.section .rodata` | 読み取り専用データセクション      |
+| `.global sym`      | シンボルを外部公開                |
+| `.asciz "str"`     | ヌル終端文字列の定義              |
+| `.byte val`        | 1 バイトデータ定義                |
+| `.word val`        | 2 バイトデータ定義                |
+| `.dword val`       | 4/8 バイトデータ定義              |
+| `.space size`      | 未初期化領域の確保                |
+| `.align n`         | 2^n バイトにアライメント          |
+| `=label` 疑似      | `ldr xd, =label` でアドレスロード |
+
 ### Makefile の仕組み
 
 ```makefile
