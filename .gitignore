@@ -3,3 +3,10 @@
 .claude/
 .omc/
 .ai-handoff.md
+
+# ---- Node.js ----
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
