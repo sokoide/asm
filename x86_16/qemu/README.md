@@ -46,7 +46,7 @@ make clean
 ├── s05_strings.asm     # シナリオ 5: 文字列操作
 ├── s06_serial_in.asm   # シナリオ 6: シリアル入力
 ├── s07_subroutines.asm # シナリオ 7: サブルーチン
-├── s08_hardware.asm    # シナリオ 8: ハードウェアアクセス（PIT タイマー）
+├── s08_hardware.asm    # シナリオ 8: ハードウェアアクセス（8254 PIT）
 ├── s09_branching.asm   # シナリオ 9: 条件分岐
 ├── s10_bitwise.asm     # シナリオ 10: ビット演算
 ├── s11_memory.asm      # シナリオ 11: メモリとブロック操作
@@ -195,7 +195,7 @@ make clean
 
 ---
 
-### S08: ハードウェアアクセス（PIT タイマー）
+### S08: ハードウェアアクセス（8254 PIT）
 
 **難易度**: ★★★☆☆
 

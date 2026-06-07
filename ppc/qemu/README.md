@@ -269,7 +269,7 @@ PowerPC の特殊レジスタ（SPR）にアクセスしてタイムベースを
 - **CPU**: PowerPC 405GP
 - **メモリ**: 64MB RAM
 - **UART**: 16550 compatible at 0xEF600300
-- **タイマ**: Time Base register（特殊レジスタ）
+- **タイマー**: Time Base register（特殊レジスタ）
 
 ### 16550 UART レジスタ
 
