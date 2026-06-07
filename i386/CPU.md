@@ -58,7 +58,7 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 
 | 命令               | 動作                                  |
 | :---               | :---                                  |
-| `mov dst, src`     | dst ← src（即値・レジスタ・メモリ間） |
+| `mov dst, src`     | dst ← src（即値・レジスタ・メモリ。ただし mem→mem 不可） |
 | `movzx dst, src`   | dst ← ZeroExtend(src)（ゼロ拡張）     |
 | `movsx dst, src`   | dst ← SignExtend(src)（符号拡張）     |
 | `xchg a, b`        | a ↔ b（交換）                         |
@@ -98,6 +98,7 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 | 命令             | 動作                           |
 | :---             | :---                           |
 | `shl dst, count` | 左論理シフト（×2^n）           |
+| `sal dst, count` | 左算術シフト（SHL と同じ）     |
 | `shr dst, count` | 右論理シフト（÷2^n）           |
 | `sar dst, count` | 算術右シフト（符号ビット維持） |
 | `rol dst, count` | 左ローテート                   |
