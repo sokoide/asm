@@ -87,28 +87,28 @@ movk x0, #0x5678              ; X0 = 0x12345678
 
 ## 算術命令
 
-| 命令                  | 動作                                 |
-| :---                  | :---                                 |
-| `add xd, xn, #imm`    | xd = xn + imm（即値加算）            |
-| `add xd, xn, xm`      | xd = xn + xm（レジスタ加算）         |
-| `adds xd, xn, #imm`   | 加算 + フラグ更新                    |
-| `adc xd, xn, xm`      | xd = xn + xm + C（繰り上がり加算）   |
-| `sub xd, xn, #imm`    | xd = xn - imm                        |
-| `sub xd, xn, xm`      | xd = xn - xm                         |
-| `subs xd, xn, #imm`   | 減算 + フラグ更新                    |
-| `sbc xd, xn, xm`      | xd = xn + xm - C（繰り下がり減算）   |
-| `neg xd, xn`          | xd = -xn                             |
-| `cmp xn, #imm`        | xn - imm（フラグのみ、`subs` 相当）  |
-| `cmp xn, xm`          | xn - xm（フラグのみ）                |
-| `cmn xn, xm`          | xn + xm（フラグのみ）                |
-| `mul xd, xn, xm`      | xd = xn × xm                         |
-| `mneg xd, xn, xm`     | xd = -(xn × xm)                      |
-| `smull xd, wn, wm`    | xd = SignExtend(wn) × SignExtend(wm) |
-| `umull xd, wn, wm`    | xd = ZeroExtend(wn) × ZeroExtend(wm) |
-| `udiv xd, xn, xm`     | xd = xn ÷ xm（符号なし）             |
-| `sdiv xd, xn, xm`     | xd = xn ÷ xm（符号付き）             |
-| `msub xd, xn, xm, xa` | xd = xa - (xn × xm)                  |
-| `madd xd, xn, xm, xa` | xd = xa + (xn × xm)                  |
+| 命令                  | 動作                                   |
+| :---                  | :---                                   |
+| `add xd, xn, #imm`    | xd = xn + imm（即値加算）              |
+| `add xd, xn, xm`      | xd = xn + xm（レジスタ加算）           |
+| `adds xd, xn, #imm`   | 加算 + フラグ更新                      |
+| `adc xd, xn, xm`      | xd = xn + xm + C（繰り上がり加算）     |
+| `sub xd, xn, #imm`    | xd = xn - imm                          |
+| `sub xd, xn, xm`      | xd = xn - xm                           |
+| `subs xd, xn, #imm`   | 減算 + フラグ更新                      |
+| `sbc xd, xn, xm`      | xd = xn - xm - 1 + C（繰り下がり減算） |
+| `neg xd, xn`          | xd = -xn                               |
+| `cmp xn, #imm`        | xn - imm（フラグのみ、`subs` 相当）    |
+| `cmp xn, xm`          | xn - xm（フラグのみ）                  |
+| `cmn xn, xm`          | xn + xm（フラグのみ）                  |
+| `mul xd, xn, xm`      | xd = xn × xm                           |
+| `mneg xd, xn, xm`     | xd = -(xn × xm)                        |
+| `smull xd, wn, wm`    | xd = SignExtend(wn) × SignExtend(wm)   |
+| `umull xd, wn, wm`    | xd = ZeroExtend(wn) × ZeroExtend(wm)   |
+| `udiv xd, xn, xm`     | xd = xn ÷ xm（符号なし）               |
+| `sdiv xd, xn, xm`     | xd = xn ÷ xm（符号付き）               |
+| `msub xd, xn, xm, xa` | xd = xa - (xn × xm)                    |
+| `madd xd, xn, xm, xa` | xd = xa + (xn × xm)                    |
 
 ## 論理命令
 
@@ -139,7 +139,7 @@ movk x0, #0x5678              ; X0 = 0x12345678
 
 `#shift` は 0-63（64-bit の場合）。
 
-## 比較・条件分岐命令
+## 比較命令
 
 | 命令                         | 動作                    |
 | :---                         | :---                    |
@@ -148,6 +148,8 @@ movk x0, #0x5678              ; X0 = 0x12345678
 | `cmn xn, xm`                 | xn + xm（フラグ更新）   |
 | `tst xn, #mask`              | xn & mask（フラグ更新） |
 | `ccmp xn, #imm, #nzcv, cond` | 条件付き比較            |
+
+## 分岐命令
 
 ### 条件分岐
 

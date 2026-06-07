@@ -124,23 +124,23 @@
 
 ### 8-bit 算術
 
-| 命令            | 動作                         |
-| :---            | :---                         |
-| `ADD A, r`      | A ← A + r                    |
-| `ADD A, n`      | A ← A + n                    |
-| `ADD A, (HL)`   | A ← A + [HL]                 |
-| `ADD A, (IX+d)` | A ← A + [IX + d]             |
-| `ADC A, s`      | A ← A + s + C                |
-| `SUB r`         | A ← A - r                    |
-| `SUB n`         | A ← A - n                    |
-| `SUB (HL)`      | A ← A - [HL]                 |
-| `SBC A, s`      | A ← A - s - (1-C) 実質 A-s-C |
-| `INC r`         | r++                          |
-| `INC (HL)`      | [HL]++                       |
-| `INC (IX+d)`    | [IX+d]++                     |
-| `DEC r`         | r--                          |
-| `DEC (HL)`      | [HL]--                       |
-| `DEC (IX+d)`    | [IX+d]--                     |
+| 命令            | 動作                              |
+| :---            | :---                              |
+| `ADD A, r`      | A ← A + r                         |
+| `ADD A, n`      | A ← A + n                         |
+| `ADD A, (HL)`   | A ← A + [HL]                      |
+| `ADD A, (IX+d)` | A ← A + [IX + d]                  |
+| `ADC A, s`      | A ← A + s + C                     |
+| `SUB r`         | A ← A - r                         |
+| `SUB n`         | A ← A - n                         |
+| `SUB (HL)`      | A ← A - [HL]                      |
+| `SBC A, s`      | A ← A - s - C（C=1 でボローあり） |
+| `INC r`         | r++                               |
+| `INC (HL)`      | [HL]++                            |
+| `INC (IX+d)`    | [IX+d]++                          |
+| `DEC r`         | r--                               |
+| `DEC (HL)`      | [HL]--                            |
+| `DEC (IX+d)`    | [IX+d]--                          |
 
 ### 16-bit 算術
 
