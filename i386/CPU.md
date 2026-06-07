@@ -86,12 +86,12 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 
 ## 論理命令
 
-| 命令           | 動作                    |
-| :---           | :---                    |
-| `and dst, src` | dst &= src              |
-| `or dst, src`  | dst \|= src             |
-| `xor dst, src` | dst ^= src              |
-| `not dst`      | dst = ~dst              |
+| 命令           | 動作        |
+| :---           | :---        |
+| `and dst, src` | dst &= src  |
+| `or dst, src`  | dst \|= src |
+| `xor dst, src` | dst ^= src  |
+| `not dst`      | dst = ~dst  |
 
 ## シフト命令
 
@@ -107,7 +107,7 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 
 `count` には即値（1-31）または `CL` レジスタを指定する。
 
-## 比較・テスト命令
+## 比較命令
 
 | 命令        | 動作                      |
 | :---        | :---                      |
@@ -144,12 +144,12 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 
 ## サブルーチン命令
 
-| 命令         | 動作                             |
-| :---         | :---                             |
-| `call label` | サブルーチン呼び出し             |
-| `ret`        | サブルーチン復帰                 |
-| `int n`      | ソフトウェア割り込み n を発生    |
-| `iret`       | 割り込みからの復帰               |
+| 命令         | 動作                          |
+| :---         | :---                          |
+| `call label` | サブルーチン呼び出し          |
+| `ret`        | サブルーチン復帰              |
+| `int n`      | ソフトウェア割り込み n を発生 |
+| `iret`       | 割り込みからの復帰            |
 
 ## 文字列操作命令
 

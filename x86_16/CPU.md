@@ -100,7 +100,6 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 | `INC dst`      | dst++                                 |
 | `DEC dst`      | dst--                                 |
 | `NEG dst`      | dst = -dst                            |
-| `CMP a, b`     | a - b（フラグのみ更新）               |
 | `MUL src`      | AX = AL × src（8-bit）                |
 | `MUL src`      | DX:AX = AX × src（16-bit）            |
 | `IMUL src`     | 同上、符号付き乗算                    |
@@ -114,13 +113,12 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 
 ## 論理命令
 
-| 命令           | 動作                      |
-| :---           | :---                      |
-| `AND dst, src` | dst &= src                |
-| `OR dst, src`  | dst \|= src               |
-| `XOR dst, src` | dst ^= src                |
-| `NOT dst`      | dst = ~dst                |
-| `TEST a, b`    | a AND b（フラグのみ更新） |
+| 命令           | 動作        |
+| :---           | :---        |
+| `AND dst, src` | dst &= src  |
+| `OR dst, src`  | dst \|= src |
+| `XOR dst, src` | dst ^= src  |
+| `NOT dst`      | dst = ~dst  |
 
 ## シフト命令
 
@@ -136,6 +134,13 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 | `RCR dst, count` | CF を含む右ローテート      |
 
 `count` は即値 `1` または `CL` レジスタ（8086 では即値は 1 のみ、80186+ で即値 n 対応）。
+
+## 比較命令
+
+| 命令        | 動作                      |
+| :---        | :---                      |
+| `CMP a, b`  | a - b（フラグのみ更新）   |
+| `TEST a, b` | a AND b（フラグのみ更新） |
 
 ## 分岐命令
 
