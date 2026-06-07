@@ -260,8 +260,10 @@ UART 入出力を使った対話型シェル。全要素の総合演習。
 | UART 種別       | NS16550A   |
 | ベースアドレス  | 0x10000000 |
 | THR (送信)      | base+0     |
+| RBR (受信)      | base+0     |
 | LSR (状態)      | base+5     |
 | THRE (送信可能) | LSR bit 5  |
+| DR (データあり) | LSR bit 0  |
 
 ### 入力（UART RX）
 
@@ -276,6 +278,103 @@ UART 入出力を使った対話型シェル。全要素の総合演習。
 | :--- | :--- |
 | SiFive test device | 0x100000 |
 | 終了コード (PASS)  | 0x5555   |
+
+## ビルドシステム
+
+### ツールチェーン
+
+| ツール         | コマンド               | 用途                       |
+| :--- | :--- | :--- |
+| アセンブラ     | `clang`                | RISC-V 64-bit クロスアセンブル |
+| リンカ         | `ld.lld`               | ELF バイナリ生成           |
+| 逆アセンブル   | `llvm-objdump`         | 機械語コードの確認         |
+| エミュレータ   | `qemu-system-riscv64`  | RISC-V 64-bit 仮想マシン   |
+
+基本コンパイルフラグ:
+
+```makefile
+ASFLAGS = --target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -c -nostdlib
+LDFLAGS = -T linker.ld -nostdlib
+```
+
+`-march=rv64im` は RV64I（基本整数） + M（乗除算）拡張を有効にする。`-mabi=lp64` は 64-bit long / pointer の ABI を指定。
+
+### アセンブラ疑似命令
+
+| 疑似命令        | 説明                     | 使用例                  |
+| :--- | :--- | :--- |
+| `.section .text` | コードセクション定義     | `.section .text`        |
+| `.global _start` | 外部公開シンボル         | `.global _start`        |
+| `.asciz`         | ヌル終端文字列           | `.asciz "Hello\n"`      |
+| `.byte`          | 1 バイトデータ定義       | `.byte 0x41`            |
+| `.word`          | 32 ビットデータ定義      | `.word 0x12345678`      |
+| `.dword`         | 64 ビットデータ定義      | `.dword 0xDEADBEEF`     |
+| `.space N`       | N バイトの領域確保       | `.space 256`            |
+| `.align N`       | 2^N バイト境界にアライメント | `.align 3` (8 バイト) |
+
+### Makefile 解説
+
+| 変数       | 値                                                              | 説明                                |
+| :--- | :--- | :--- |
+| `AS`       | `clang`                                                         | アセンブラとして Clang を使用       |
+| `LD`       | `ld.lld`                                                        | LLVM リンカ                         |
+| `ASFLAGS`  | `--target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -c -nostdlib` | RISC-V 64-bit クロスコンパイル      |
+| `LDFLAGS`  | `-T linker.ld -nostdlib`                                        | リンカスクリプト指定、stdlib 無効   |
+| `QEMU`     | `qemu-system-riscv64`                                           | RISC-V 64-bit エミュレータ           |
+| `QFLAGS`   | `-machine virt -nographic -bios none`                           | virt マシン、GUI 無効、BIOS 無し    |
+
+### リンカスクリプト
+
+`linker.ld` の要点:
+
+- **エントリポイント**: `ENTRY(_start)` — `_start` ラベルから実行開始
+- **ロードアドレス**: `0x80000000` — QEMU virt マシンの物理メモリ開始位置
+- **セクション配置（先頭から順に）**:
+  - `.text` — コード
+  - `.rodata` — 読み取り専用データ（文字列定数など）
+  - `.data` — 初期化済みデータ
+  - `.bss` — ゼロ初期化データ（`__bss_start` / `__bss_end` で境界管理）
+
+### 終了方法
+
+QEMU を正常終了させるには SiFive test device を使用する:
+
+```asm
+    li a0, 0x100000     # SiFive test device アドレス
+    li a1, 0x5555       # PASS コード
+    sw a1, 0(a0)        # 32-bit ストアで終了
+```
+
+- `0x5555` = PASS（成功）、`0x3333` = FAIL（失敗）
+- Makefile では `timeout --foreground 1` で 1 秒後に強制終了（SiFive test 未使用時の安全策）
+
+## トラブルシューティング
+
+### QEMU が起動しない
+
+| 現象                                               | 原因                  | 解決策                          |
+| :--- | :--- | :--- |
+| `command not found: qemu-system-riscv64`           | QEMU 未インストール   | `brew install qemu`             |
+| `qemu-system-riscv64: -machine virt: unsupported`  | 古い QEMU バージョン  | `brew upgrade qemu`             |
+| `Could not open 'xxx.elf'`                         | ビルドが失敗している  | 先に `make` を実行              |
+
+### ビルドエラー
+
+| 現象                                                    | 原因                              | 解決策                                |
+| :--- | :--- | :--- |
+| `clang: command not found`                              | Clang 未インストール              | Xcode CLT または `brew install llvm`  |
+| `clang: error: unknown target 'riscv64-unknown-elf'`    | LLVM に RISC-V バックエンドがない | `brew install llvm` で最新版を取得    |
+| `ld.lld: unknown argument: -T`                          | システムの `ld` が呼ばれている    | `brew install llvm` 後、PATH を確認   |
+| `undefined reference to '_start'`                       | `_start` シンボル未定義           | `.global _start` と `_start:` の存在確認 |
+
+### UART 出力が出ない
+
+| 現象                 | 原因                   | 解決策                                       |
+| :--- | :--- | :--- |
+| 何も表示されない     | THRE ビット未チェック  | LSR bit 5 のポーリングループを確認           |
+| 文字化けする         | アライメントの問題     | 送信データがバイト単位であることを確認       |
+| 途中で停止する       | 無限ループ / 不正アクセス | ループ終了条件とメモリアクセス範囲を確認     |
+| 受信が動作しない     | DR ビット未チェック    | LSR bit 0 のポーリングループを確認           |
 
 ## 次のステップ
 
