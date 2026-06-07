@@ -4,6 +4,8 @@
 
 .claude/
 .omc/
+.serena/
+.antigravitycli/
 .ai-handoff.md
 
 # ---- Node.js ----
