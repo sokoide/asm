@@ -56,7 +56,7 @@ hello.com
 
 ## hello.asm 解説
 
-```assembly
+```asm
 org 0x100              ; .COM ファイルのエントリポイント（256 バイト目）
 
 start:

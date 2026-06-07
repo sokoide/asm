@@ -4,7 +4,7 @@ macOS 上で x86_64 (AMD64) アセンブリ言語を学ぶための最小限の 
 
 ## ビルド & 実行
 
-```sh
+```bash
 make       # アセンブル + リンク
 ./hello    # 実行
 make clean # 掃除

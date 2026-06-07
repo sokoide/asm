@@ -2,7 +2,7 @@
 
 ## ビルド & 実行
 
-```sh
+```bash
 make
 ./hello
 ```

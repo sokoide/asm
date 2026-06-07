@@ -2,7 +2,7 @@
 
 ## ビルド & 実行
 
-```sh
+```bash
 make
 ./hello
 ```
@@ -50,7 +50,7 @@ add     x1, x1, msg@PAGEOFF ; ページ内オフセットを加算
 
 ARM64 macOS では NASM が使えないため、Clang の組み込みアセンブラでアセンブルする。
 
-```sh
+```bash
 clang -c -arch arm64 -x assembler hello.asm -o hello.o
 ld -e _main -arch arm64 -syslibroot $(xcrun --show-sdk-path) -lSystem hello.o -o hello
 ```
