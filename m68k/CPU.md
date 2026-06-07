@@ -23,15 +23,16 @@ Motorola 68000 アーキテクチャ。16-bit 外部データバス・32-bit 内
 
 ### ステータスレジスタ (SR)
 
-| ビット | フラグ | 名称           | 説明                                |
-| :---   | :---   | :---           | :---                                |
-| 15-13  | —      | 割り込み優先度 | 割り込みマスクレベル                |
-| 12-10  | —      | 特権状態       | S=1 でスーパーバイザ                |
-| 4      | X      | Extend Flag    | 延長キャリー（シフト/加減算で使用） |
-| 3      | N      | Negative Flag  | 結果が負                            |
-| 2      | Z      | Zero Flag      | 結果が 0                            |
-| 1      | V      | Overflow Flag  | 符号付きオーバーフロー              |
-| 0      | C      | Carry Flag     | 繰り上がり                          |
+| ビット | フラグ | 名称             | 説明                                |
+| :---   | :---   | :---             | :---                                |
+| 15     | T      | Trace            | トレースモード（シングルステップ）  |
+| 13     | S      | Supervisor       | スーパーバイザモード                |
+| 10-8   | I2-I0  | Interrupt Mask   | 割り込み優先度マスク（0-7）         |
+| 4      | X      | Extend Flag      | 拡張キャリー（シフト/加減算で使用） |
+| 3      | N      | Negative Flag    | 結果が負                            |
+| 2      | Z      | Zero Flag        | 結果が 0                            |
+| 1      | V      | Overflow Flag    | 符号付きオーバーフロー              |
+| 0      | C      | Carry Flag       | 繰り上がり                          |
 
 ### プログラムカウンタ (PC)
 
@@ -45,7 +46,7 @@ Motorola 68000 アーキテクチャ。16-bit 外部データバス・32-bit 内
 | `move.w src, dst`      | 同上（16-bit）                       |
 | `move.b src, dst`      | 同上（8-bit）                        |
 | `movea.l src, ay`      | アドレスレジスタへの move            |
-| `moveq #imm, d0`       | 即値（-128〜127）をロード（高速）    |
+| `moveq #imm, dn`       | 即値（-128〜127）をロード（高速）    |
 | `lea addr, ay`         | 実効アドレスをアドレスレジスタに     |
 | `pea addr`             | 実効アドレスをスタックに PUSH        |
 | `movem.l list, -(%sp)` | レジスタ群をスタックに保存           |
@@ -66,7 +67,7 @@ Motorola 68000 アーキテクチャ。16-bit 外部データバス・32-bit 内
 | `sub.l src, dst`      | dst -= src                       |
 | `subi.l #val, dst`    | dst -= val（即値）               |
 | `subq.l #val, dst`    | dst -= val（即値、1-8 を高速に） |
-| `subx.l src, dst`     | dst -= src - X（拡張減算）       |
+| `subx.l src, dst`     | dst = dst - src - X（拡張減算）  |
 | `neg.l dst`           | dst = -dst                       |
 | `negx.l dst`          | dst = -dst - X（拡張 neg）       |
 | `mulu.w src, dn`      | dn = dn × src（符号なし 16-bit） |
