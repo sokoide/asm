@@ -257,7 +257,7 @@
 
 | 命令            | 動作                              |
 | :---            | :---                              |
-| `CALL addr`     | [SP-2] ← PC+3, PC ← addr          |
+| `CALL addr`     | SP ← SP-2, [SP] ← PC+3, PC ← addr |
 | `CALL cc, addr` | 条件成立時に CALL                 |
 | `RET`           | PC ← [SP]                         |
 | `RET cc`        | 条件成立時に RET                  |
