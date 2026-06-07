@@ -449,6 +449,43 @@ SECTIONS {
 }
 ```
 
+### アセンブラ疑似命令（GNU as）
+
+| 疑似命令             | 動作                              |
+| :---                 | :---                              |
+| `.section .text`     | コードセクション開始              |
+| `.section .data`     | 初期化済みデータセクション        |
+| `.section .bss`      | 未初期化データセクション          |
+| `.section .rodata`   | 読み取り専用データセクション      |
+| `.global sym`        | シンボルを外部公開                |
+| `.asciz "str"`       | ヌル終端文字列の定義              |
+| `.ascii "str"`       | 非終端文字列の定義                |
+| `.byte val`          | 1 バイトデータ定義                |
+| `.word val`          | 2 バイトデータ定義                |
+| `.long val`          | 4 バイトデータ定義                |
+| `.space size`        | 未初期化領域の確保                |
+| `.align n`           | 2^n バイトにアライメント          |
+| `.equ sym, val`      | 定数定義                          |
+
+### Makefile ターゲット
+
+| ターゲット | 説明                                        |
+| :---       | :---                                        |
+| `all`      | 全シナリオをビルド（デフォルトターゲット）  |
+| `run`      | 特定シナリオを実行（`make run S=s01_hello`）|
+| `runall`   | 全シナリオをビルド + 連続実行               |
+| `dump`     | 逆アセンブル（`make dump S=s01_hello`）     |
+| `clean`    | 生成ファイルを削除                          |
+
+### 終了方法
+
+M68000 ベアメタルにはプログラム終了の概念がない。QEMU では CPU を無限ループで停止させ、`timeout --foreground 1` で強制終了する。
+
+```asm
+halt:
+    bra halt          ; 無限ループ（CPU 停止）
+```
+
 ---
 
 ## 次のステップ
