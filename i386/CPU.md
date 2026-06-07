@@ -84,14 +84,19 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 | `div src`      | EAX = EDX:EAX ÷ src, EDX = 余り（符号なし） |
 | `idiv src`     | 同上（符号付き）                            |
 
-## 論理・シフト命令
+## 論理命令
+
+| 命令           | 動作                    |
+| :---           | :---                    |
+| `and dst, src` | dst &= src              |
+| `or dst, src`  | dst \|= src             |
+| `xor dst, src` | dst ^= src              |
+| `not dst`      | dst = ~dst              |
+
+## シフト命令
 
 | 命令             | 動作                           |
 | :---             | :---                           |
-| `and dst, src`   | dst &= src                     |
-| `or dst, src`    | dst \|= src                    |
-| `xor dst, src`   | dst ^= src                     |
-| `not dst`        | dst = ~dst                     |
 | `shl dst, count` | 左論理シフト（×2^n）           |
 | `shr dst, count` | 右論理シフト（÷2^n）           |
 | `sar dst, count` | 算術右シフト（符号ビット維持） |
@@ -114,8 +119,6 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 | 命令           | 動作                   | 条件（EFLAGS）    |
 | :---           | :---                   | :---              |
 | `jmp label`    | 無条件ジャンプ         | —                 |
-| `call label`   | サブルーチン呼び出し   | PUSH 戻りアドレス |
-| `ret`          | サブルーチン復帰       | POP 戻りアドレス  |
 | `je` / `jz`    | 等しい                 | ZF=1              |
 | `jne` / `jnz`  | 等しくない             | ZF=0              |
 | `jl` / `jnge`  | より小さい（符号付き） | SF≠OF             |
@@ -139,6 +142,15 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 | `loopne label` | ECX--, ECX≠0かつZF=0   | —                 |
 | `jecxz label`  | ECX=0なら分岐          | —                 |
 
+## サブルーチン命令
+
+| 命令         | 動作                             |
+| :---         | :---                             |
+| `call label` | サブルーチン呼び出し             |
+| `ret`        | サブルーチン復帰                 |
+| `int n`      | ソフトウェア割り込み n を発生    |
+| `iret`       | 割り込みからの復帰               |
+
 ## 文字列操作命令
 
 | 命令    | 動作                                   |
@@ -160,9 +172,7 @@ ESP → SP、EBP → BP、ESI → SI、EDI → DI（下位 16-bit のみ）。
 
 | 命令    | 動作                             |
 | :---    | :---                             |
-| `int n` | ソフトウェア割り込み n を発生    |
 | `into`  | OF=1 の場合、割り込み 4 を発生   |
-| `iret`  | 割り込みからの復帰               |
 | `cli`   | IF=0（割り込み禁止）             |
 | `sti`   | IF=1（割り込み許可）             |
 | `hlt`   | CPU 停止                         |

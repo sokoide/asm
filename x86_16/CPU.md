@@ -112,15 +112,20 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 | `AAA` / `DAA`  | ASCII / 10 進加算補正                 |
 | `AAS` / `DAS`  | ASCII / 10 進減算補正                 |
 
-## 論理・シフト命令
+## 論理命令
+
+| 命令           | 動作                      |
+| :---           | :---                      |
+| `AND dst, src` | dst &= src                |
+| `OR dst, src`  | dst \|= src               |
+| `XOR dst, src` | dst ^= src                |
+| `NOT dst`      | dst = ~dst                |
+| `TEST a, b`    | a AND b（フラグのみ更新） |
+
+## シフト命令
 
 | 命令             | 動作                       |
 | :---             | :---                       |
-| `AND dst, src`   | dst &= src                 |
-| `OR dst, src`    | dst \|= src                |
-| `XOR dst, src`   | dst ^= src                 |
-| `NOT dst`        | dst = ~dst                 |
-| `TEST a, b`      | a AND b（フラグのみ更新）  |
 | `SHL dst, count` | 左論理シフト（×2）         |
 | `SHR dst, count` | 右論理シフト（÷2）         |
 | `SAL dst, count` | 左算術シフト（SHL と同じ） |
@@ -136,15 +141,10 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 
 ### 無条件分岐
 
-| 命令         | 動作                             |
-| :---         | :---                             |
-| `JMP label`  | 無条件ジャンプ（short/near/far） |
-| `JMP reg`    | レジスタ間接ジャンプ             |
-| `CALL label` | PUSH IP(/CS), JMP label          |
-| `RET`        | POP IP(/CS)                      |
-| `RETF`       | far リターン                     |
-| `INT n`      | ソフトウェア割り込み             |
-| `IRET`       | 割り込みからの復帰               |
+| 命令        | 動作                             |
+| :---        | :---                             |
+| `JMP label` | 無条件ジャンプ（short/near/far） |
+| `JMP reg`   | レジスタ間接ジャンプ             |
 
 ### 条件分岐
 
@@ -172,6 +172,16 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 | `LOOPE` / `LOOPZ`   | CX--, CX≠0 かつ ZF=1   | —                 |
 | `LOOPNE` / `LOOPNZ` | CX--, CX≠0 かつ ZF=0   | —                 |
 | `JCXZ label`        | CX=0 なら分岐          | —                 |
+
+## サブルーチン命令
+
+| 命令         | 動作                    |
+| :---         | :---                    |
+| `CALL label` | PUSH IP(/CS), JMP label |
+| `RET`        | POP IP(/CS)             |
+| `RETF`       | far リターン            |
+| `INT n`      | ソフトウェア割り込み    |
+| `IRET`       | 割り込みからの復帰      |
 
 ## 文字列操作命令
 
