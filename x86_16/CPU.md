@@ -85,8 +85,8 @@ BX → BH / BL、CX → CH / CL、DX → DH / DL。
 | 命令           | 動作                                             |
 | :---           | :---                                             |
 | `MOV dst, src` | dst ← src                                        |
-| `MOVSB`        | [ES:DI] ← [DS:SI], SI++, DI++                    |
-| `MOVSW`        | 同上、ワード単位                                 |
+| `MOVSB`        | [ES:DI] ← [DS:SI], SI++, DI++（→ 文字列操作命令参照） |
+| `MOVSW`        | 同上、ワード単位（→ 文字列操作命令参照）        |
 | `XCHG a, b`    | a ↔ b                                            |
 | `LEA reg, mem` | reg ← mem の実効アドレス                         |
 | `LDS reg, mem` | reg ← [mem], DS ← [mem+2]                        |
