@@ -46,9 +46,9 @@
 | :---   | :---   | :---            | :---                         |
 | 7      | S      | Sign            | 結果が負                     |
 | 6      | Z      | Zero            | 結果が 0                     |
-| 5      | Y      | 未使用          | —                            |
+| 5      | Y      | （非公開）    | 演算結果の bit 5 のコピー           |
 | 4      | H      | Half Carry      | BCD 演算の補助キャリー       |
-| 3      | X      | 未使用          | —                            |
+| 3      | X      | （非公開）    | 演算結果の bit 3 のコピー           |
 | 2      | P/V    | Parity/Overflow | パリティまたはオーバーフロー |
 | 1      | N      | Add/Subtract    | 直前の演算が減算             |
 | 0      | C      | Carry           | 繰り上がり                   |
@@ -134,7 +134,7 @@
 | `SUB r`         | A ← A - r                         |
 | `SUB n`         | A ← A - n                         |
 | `SUB (HL)`      | A ← A - [HL]                      |
-| `SBC A, s`      | A ← A - s - C（C=1 でボローあり） |
+| `SBC A, s`      | A ← A - s - C（C=1 は前回演算のボローを示す。多倍長減算用） |
 | `INC r`         | r++                               |
 | `INC (HL)`      | [HL]++                            |
 | `INC (IX+d)`    | [IX+d]++                          |
@@ -221,7 +221,7 @@
 | `JP (HL)`   | PC ← HL（間接）                      |
 | `JP (IX)`   | PC ← IX                              |
 | `JP (IY)`   | PC ← IY                              |
-| `JR offset` | PC ← PC + offset（相対、-126〜+129） |
+| `JR offset` | PC ← PC + offset（相対。命令長2バイトのため有効範囲は PC-126〜PC+129） |
 
 ### 条件分岐
 
