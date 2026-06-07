@@ -1,4 +1,6 @@
 *.o
+*.elf
+*.bin
 
 .claude/
 .omc/
