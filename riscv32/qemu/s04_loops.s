@@ -97,8 +97,6 @@ print_dec:
     jal     ra, uart_putc
     j       .done
 .nonzero:
-    // Extract digits (max 10 digits for 32-bit)
-    addi    sp, sp, -40          // digit buffer on stack
     li      s2, 0                // digit count
 .extract:
     beqz    s0, .print_digits
@@ -111,14 +109,12 @@ print_dec:
     addi    s2, s2, 1
     j       .extract
 .print_digits:
-    beqz    s2, .digits_done
+    beqz    s2, .done
     lw      a0, 0(sp)            // pop digit
     addi    sp, sp, 4
     addi    s2, s2, -1
     jal     ra, uart_putc
     j       .print_digits
-.digits_done:
-    addi    sp, sp, 40           // restore digit buffer
 .done:
     lw      s1, 0(sp)
     lw      s0, 4(sp)

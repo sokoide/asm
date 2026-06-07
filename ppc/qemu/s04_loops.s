@@ -80,9 +80,9 @@ print_crlf:
     mflr    %r0
     stw     %r0, -8(%r1)
     stwu    %r1, -16(%r1)
-    addi    %r3, %r0, 0x0D         // CR
+    li      %r3, 0x0D              // CR
     bl      uart_putc
-    addi    %r3, %r0, 0x0A         // LF
+    li      %r3, 0x0A              // LF
     bl      uart_putc
     addi    %r1, %r1, 16
     lwz     %r0, -8(%r1)

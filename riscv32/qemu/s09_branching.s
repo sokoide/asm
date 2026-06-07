@@ -147,7 +147,6 @@ print_dec:
     jal     ra, uart_putc
     j       .done
 .nonzero:
-    addi    sp, sp, -40
     li      s2, 0
 .extract:
     beqz    s0, .print_digits
@@ -160,14 +159,12 @@ print_dec:
     addi    s2, s2, 1
     j       .extract
 .print_digits:
-    beqz    s2, .digits_done
+    beqz    s2, .done
     lw      a0, 0(sp)
     addi    sp, sp, 4
     addi    s2, s2, -1
     jal     ra, uart_putc
     j       .print_digits
-.digits_done:
-    addi    sp, sp, 40
 .done:
     lw      s1, 0(sp)
     lw      s0, 4(sp)

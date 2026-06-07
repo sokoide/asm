@@ -127,7 +127,6 @@ print_dec:
     jal     ra, uart_putc
     j       .pd_done
 .pd_nonzero:
-    addi    sp, sp, -40
     li      s2, 0
 .pd_extract:
     beqz    s0, .pd_print_digits
@@ -140,14 +139,12 @@ print_dec:
     addi    s2, s2, 1
     j       .pd_extract
 .pd_print_digits:
-    beqz    s2, .pd_digits_done
+    beqz    s2, .pd_done
     lw      a0, 0(sp)
     addi    sp, sp, 4
     addi    s2, s2, -1
     jal     ra, uart_putc
     j       .pd_print_digits
-.pd_digits_done:
-    addi    sp, sp, 40
 .pd_done:
     lw      s1, 0(sp)
     lw      s0, 4(sp)

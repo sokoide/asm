@@ -24,15 +24,15 @@ CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
 
 .PHONY: all run runall dump cpm cpm-setup clean
 
-$(SIM): $(GODIR)/main.go $(GODIR)/go.mod
-	cd $(GODIR) && go build -o ../../simz80 .
-
 all: $(SIM)
 	@for name in $(SOURCES); do \
 		echo "=== $$name ==="; \
 		$(AS) -o $$name.com $$name.asm && \
 		echo "  OK ($$(wc -c < $$name.com) bytes)"; \
 	done
+
+$(SIM): $(GODIR)/main.go $(GODIR)/go.mod
+	cd $(GODIR) && go build -o ../../simz80 .
 
 # Run: make run S=s01_hello
 run: $(SIM)
