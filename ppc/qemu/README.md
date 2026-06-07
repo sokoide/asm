@@ -1,6 +1,6 @@
 # PowerPC アセンブラ ワークショップ
 
-PowerPC bare-metal（空芯）アセンブラの基礎から応用まで、12 のシナリオで段階的に学ぶ。
+PowerPC ベアメタル アセンブラの基礎から応用まで、12 のシナリオで段階的に学ぶ。
 
 ## 前提条件
 
@@ -273,13 +273,98 @@ PowerPC の特殊レジスタ（SPR）にアクセスしてタイムベースを
 
 ### 16550 UART レジスタ
 
-| オフセット | 名称 | 説明                                    |
-| :---       | :--- | :---                                    |
-| 0x00       | THR  | Transmit Holding Register（書き込み用） |
-| 0x05       | LSR  | Line Status Register（読み込み用）      |
+| オフセット | 名称 | 方向 | 説明                                    |
+| :---       | :--- | :--- | :---                                    |
+| 0x00       | RBR  | R    | Receiver Buffer Register（受信データ）   |
+| 0x00       | THR  | W    | Transmit Holding Register（送信データ） |
+| 0x05       | LSR  | R    | Line Status Register（状態レジスタ）     |
 
-- **LSR bit 5**: THRE（Transmitter Holding Register Empty）- 書き込み可能フラグ
-- **LSR bit 0**: DR（Data Ready）- 受信データありフラグ
+**LSR ビットフラグ**:
+
+| ビット | 名称 | 説明                                          |
+| :---   | :--- | :---                                          |
+| bit 0  | DR   | Data Ready — 受信データあり（1=受信完了）      |
+| bit 5  | THRE | Transmitter Holding Register Empty — 送信可能（1=書き込み可） |
+
+**受信手順**: LSR bit 0（DR）が 1 になるまでポーリング → RBR（0x00）から 1 バイト読み取り
+
+**送信手順**: LSR bit 5（THRE）が 1 になるまでポーリング → THR（0x00）へ 1 バイト書き込み
+
+## ビルドシステム
+
+### ツールチェーン
+
+| コンポーネント | コマンド                          | 役割                     |
+| :---           | :---                              | :---                     |
+| アセンブラ     | `clang --target=powerpc-none-elf` | アセンブリソースをオブジェクトに変換 |
+| リンカ         | `ld.lld`                          | オブジェクトをELFバイナリに結合 |
+| エミュレータ   | `qemu-system-ppc -machine bamboo -nographic` | ベアメタル実行 |
+
+### アセンブラ疑似命令
+
+| 疑似命令   | 説明                                | 使用例                    |
+| :---       | :---                                | :---                      |
+| `.section` | セクション切り替え（.text/.data/.rodata/.bss） | `.section .text`          |
+| `.global`  | シンボルを外部公開                  | `.global _start`          |
+| `.asciz`   | null終端文字列を定義                | `msg: .asciz "Hello\n"`   |
+| `.byte`    | 1バイトデータを配置                 | `.byte 0x0A`              |
+| `.word`    | 4バイトデータを配置                 | `.word 0xDEADBEEF`        |
+| `.space`   | 領域を確保（ゼロ埋め）              | `.space 256`              |
+| `.align`   | アドレスをアライメント              | `.align 2`（4バイト境界） |
+| `.dword`   | 8バイトデータを配置                 | `.dword 0x123456789ABCDEF0` |
+
+### Makefile ターゲット
+
+| ターゲット      | 使用例                   | 説明                             |
+| :---            | :---                     | :---                             |
+| `make`          | `make`                   | 全シナリオ（s01〜s12）を一括ビルド |
+| `make run`      | `make run S=s01_hello`   | 指定シナリオを QEMU で実行        |
+| `make runall`   | `make runall`            | 全シナリオを順次実行              |
+| `make dump`     | `make dump S=s01_hello`  | 指定シナリオの逆アセンブル出力    |
+| `make clean`    | `make clean`             | ビルド生成物を削除                |
+
+### リンカスクリプト（linker.ld）
+
+| 項目          | 値                                |
+| :---          | :---                              |
+| エントリポイント | `_start`                          |
+| ロードアドレス   | `0x00000000`                      |
+| セクション構成   | `.text` → `.rodata` → `.data` → `.bss` |
+
+### 終了方法
+
+PowerPC ベアメタルでは標準的な終了処理が存在しない。QEMU は無限ループで停止を検出できないため、`--foreground 1` オプションで 1 秒後にタイムアウトさせる。
+
+## トラブルシューティング
+
+### QEMU が起動しない
+
+```bash
+# 必要なツールがインストールされているか確認
+which clang ld.lld qemu-system-ppc
+# すべてのパスが表示されれば OK
+```
+
+- `clang` が見つからない → `apt install clang`（macOS では Xcode Command Line Tools）
+- `ld.lld` が見つからない → `apt install lld`
+- `qemu-system-ppc` が見つからない → `apt install qemu-system-ppc`（macOS では `brew install qemu`）
+
+### ビルドエラーが発生する
+
+`--target=powerpc-none-elf` が正しく指定されているか確認する。Makefile 内の `ASFLAGS` をチェック:
+
+```makefile
+ASFLAGS = --target=powerpc-none-elf -c
+```
+
+リンカスクリプト `linker.ld` がカレントディレクトリに存在することを確認。ない場合は `make clean` を実行してから再ビルドする。
+
+### UART が動作しない（文字が表示されない）
+
+1. **アドレス確認**: UART のベースアドレスが `0xEF600300` であることを確認
+2. **マシンタイプ確認**: QEMU 起動時に `-machine bamboo` フラグが指定されているかチェック
+3. **LSR ポーリング**: 送信前に必ず LSR bit 5（THRE）が 1 になるまでポーリングしているか確認
+4. **レジスタ幅**: `STB`（Store Byte）命令で 1 バイト書き込みを行っているか確認。`STW`（Store Word）を使うと隣接レジスタを破壊する可能性がある
 
 ## 次のステップ
 
