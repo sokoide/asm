@@ -3,6 +3,7 @@
 // Learning objectives:
 //   - CMPW / CMPWI to set Condition Register (CR)
 //   - Signed comparisons: BLT, BGT, BEQ, BNE
+//   - Unsigned comparisons: CMPLW (BLT/BGT act on the unsigned result)
 //   - Building decision trees with branch instructions
 
 .section .text
@@ -48,7 +49,20 @@ _start:
     lis     %r3, msg_yes@ha; addi %r3, %r3, msg_yes@l; bl print_str
 .Lnext3:
 
-    // --- Test 4: Multiple branches (if-else chain) ---
+    // --- Test 4: Unsigned greater-than (CMPLW) ---
+    //   -1 reads as 0xFFFFFFFF unsigned, so it is greater than 1.
+    lis     %r3, msg_uns@ha; addi %r3, %r3, msg_uns@l; bl print_str
+    li      %r3, -1
+    li      %r4, 1
+    cmplw   %r3, %r4
+    bgt     .Lyes4
+    lis     %r3, msg_no@ha; addi %r3, %r3, msg_no@l; bl print_str
+    b       .Lnext4
+.Lyes4:
+    lis     %r3, msg_yes@ha; addi %r3, %r3, msg_yes@l; bl print_str
+.Lnext4:
+
+    // --- Test 5: if-else chain (decision tree) ---
     lis     %r3, msg_ife@ha; addi %r3, %r3, msg_ife@l; bl print_str
     li      %r3, 50
     cmpwi   %r3, 10
@@ -56,13 +70,13 @@ _start:
     cmpwi   %r3, 100
     bgt     .Lbig
     lis     %r3, msg_mid@ha; addi %r3, %r3, msg_mid@l; bl print_str
-    b       .Ldone4
+    b       .Ldone5
 .Lsmall:
     lis     %r3, msg_small@ha; addi %r3, %r3, msg_small@l; bl print_str
-    b       .Ldone4
+    b       .Ldone5
 .Lbig:
     lis     %r3, msg_big@ha; addi %r3, %r3, msg_big@l; bl print_str
-.Ldone4:
+.Ldone5:
 
     lis     %r3, msg_dn@ha; addi %r3, %r3, msg_dn@l; bl print_str
 
@@ -103,6 +117,7 @@ uart_putc:
 msg_eq:    .asciz "42 == 42? "
 msg_slt:   .asciz "-5 < 10?  "
 msg_sgt:   .asciz "30 > 10?  "
+msg_uns:   .asciz "u(-1) > 1? "
 msg_ife:   .asciz "50: "
 msg_small: .asciz "small (<10)\n"
 msg_mid:   .asciz "mid (10..100)\n"

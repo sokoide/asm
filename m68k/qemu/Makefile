@@ -39,8 +39,10 @@ runall: all
 	@for name in $(SOURCES); do \
 		echo ""; \
 		echo "=== $$name ==="; \
-		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
+		if [ "$$name" = "s06_serial_in" ]; then \
 			printf 'q\n' | timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
+		elif [ "$$name" = "s12_minishell" ]; then \
+			printf 'help\nquit\n' | timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		else \
 			timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		fi; \

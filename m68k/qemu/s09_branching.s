@@ -4,6 +4,7 @@
 #   - BEQ / BNE (equal / not-equal)
 #   - BLT / BGT (signed less-than / greater-than)
 #   - BMI / BPL (negative / positive)
+#   - BHI / BLS (unsigned higher / lower-or-same)
 #   - Building decision trees with Bcc
 
 .text
@@ -59,7 +60,19 @@ _start:
     lea     msg_yes, %a0; bsr print_str
 .Lnext4:
 
-    # Test 5: Multiple branches
+    # Test 5: BHI (unsigned higher) — -1 reads as 0xFFFFFFFF unsigned
+    lea     msg_uns, %a0; bsr print_str
+    move.l  #-1, %d0
+    move.l  #1, %d1
+    cmp.l   %d1, %d0
+    bhi     .Lyes5
+    lea     msg_no, %a0; bsr print_str
+    bra     .Lnext5
+.Lyes5:
+    lea     msg_yes, %a0; bsr print_str
+.Lnext5:
+
+    # Test 6: Multiple branches (if-else chain)
     lea     msg_ife, %a0; bsr print_str
     move.l  #50, %d0
     cmpi.l  #10, %d0
@@ -67,13 +80,13 @@ _start:
     cmpi.l  #100, %d0
     bgt     .Lbig
     lea     msg_mid, %a0; bsr print_str
-    bra     .Ldone5
+    bra     .Ldone6
 .Lsmall:
     lea     msg_small, %a0; bsr print_str
-    bra     .Ldone5
+    bra     .Ldone6
 .Lbig:
     lea     msg_big, %a0; bsr print_str
-.Ldone5:
+.Ldone6:
 
     lea     msg_dn, %a0; bsr print_str
 
@@ -102,6 +115,7 @@ msg_eq:    .asciz "42 == 42? "
 msg_slt:   .asciz "-5 < 10?  "
 msg_sgt:   .asciz "30 > 10?  "
 msg_neg:   .asciz "-1 < 0?   "
+msg_uns:   .asciz "u(-1) > 1? "
 msg_ife:   .asciz "50: "
 msg_small: .asciz "small (<10)\n"
 msg_mid:   .asciz "mid (10..100)\n"
