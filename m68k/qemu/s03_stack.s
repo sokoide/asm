@@ -30,10 +30,10 @@ _start:
     moveq   #0, %d6
     moveq   #0, %d7
 
-    # MOVEM.L pop: reversed register list (%d7-%d5) restores in
-    # the correct order because POP uses post-increment addressing.
-    # This matches the LIFO principle: last pushed = first popped.
-    movem.l (%sp)+, %d7-%d5
+    # MOVEM.L は push (-(sp)) 時はレジスタ番号降順、pop ((sp)+) 時は昇順で
+    # 自動的に転送する。このためレジスタリストの記載順序に関わらず
+    # d5/d6/d7 はそれぞれ正しい値に復元される（リストを反転させる必要はない）。
+    movem.l (%sp)+, %d5-%d7
 
     lea     msg_pop, %a0; bsr print_str
     lea     msg_p1, %a0; bsr print_str

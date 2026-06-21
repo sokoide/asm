@@ -73,9 +73,11 @@ _start:
     cpir                      ; search for A in (HL)...
     ; After CPIR: HL points to byte AFTER match
     dec     hl                ; point to match
+    push    hl                ; print_str が HL を破壊するためマッチ位置を退避
     ld      hl, msg_search
     call    print_str
-    ld      a, (hl)
+    pop     hl                ; マッチ位置を復元
+    ld      a, (hl)           ; 見つけた値 (0x05) を読み込み
     call    print_hex8
     call    newline
 

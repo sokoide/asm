@@ -15,7 +15,7 @@ msg_hdr:    .asciiz "--- Hardware Timing (Cycle Counting) ---"
 msg_fast:   .asciiz "8x(3xNOP+DEX+BNE) = "
 msg_cyc:    .asciiz " cycles"
 msg_nop:    .asciiz "5x(5xNOP+DEX+BNE) = "
-msg_delay:  .asciiz "Nested 256x256: done (326143 cyc ~ 0.33s@1MHz)"
+msg_delay:  .asciiz "Nested 255x255: done (~326656 cyc ~ 0.33s@1MHz)"
 
 .segment "CODE"
 _main:
@@ -74,8 +74,11 @@ _main:
 
     ; ---- Demo 3: Nested delay (long wait) ----
     ; Used in real hardware for timing delays
-    ; Inner: DEY(2)+BNE(3) * 255 + DEY(2)+BNE(2) = 1274 cycles
-    ; Outer: (1274+DEX(2)+BNE(3)) * 255 + (1274+DEX(2)+BNE(2)) = 326,143 cycles
+    ; Y=$FF(255)..1 の255反復: DEY 255回 + BNE taken 254回 + BNE not-taken 1回
+    ; Inner: DEY(2)*255 + BNE(3)*254 + BNE(2)*1 = 510 + 762 + 2 = 1274 cycles
+    ; Outer: X=$FF(255)..1 の255反復。各反復 LDY(2)+inner(1274)+DEX(2)+BNE
+    ;   = LDX(2) + (LDY(2)+1274+DEX(2)+BNE(3))*254 + (LDY(2)+1274+DEX(2)+BNE(2))*1
+    ;   = 2 + 1281*254 + 1280*1 = 326656 cycles
     ; At 1 MHz: ~0.33 seconds
     lda #<msg_delay
     ldx #>msg_delay

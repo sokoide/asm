@@ -1,7 +1,7 @@
 # s02_registers.s - Registers and Arithmetic
 # Learning objectives:
 #   - Data registers D0-D7, address registers A0-A7
-#   - MOVE.L, ADDI.L, SUBI.L, ADD.L, SUB.L
+#   - MOVE.L, ADD.L, SUB.L (即値/レジスタ演算), ADDQ/SUBQ, CMPI.B
 #   - LEA pseudo-instruction for address loading
 #   - Hex display subroutine (print_hex32)
 

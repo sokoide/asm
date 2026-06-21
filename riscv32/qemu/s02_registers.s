@@ -122,7 +122,7 @@ uart_putc:
     ret
 
 // ---- Data ----
-msg1_li:   .asciz "li x0, #0x1234   -> X0=0x"
+msg1_li:   .asciz "li a0, 0x1234     -> A0=0x"
 msg2_add:  .asciz "10 + 20           = 0x"
 msg3_sub:  .asciz "30 - 5            = 0x"
 msg4_inc:  .asciz "INC(99)          = 0x"

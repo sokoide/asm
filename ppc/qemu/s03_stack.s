@@ -29,7 +29,7 @@ _start:
     bl      print_crlf
 
     // Push R30 and R31 onto the stack
-    // STWU creates a 16-byte frame and saves old R1 at frame base
+    // STWU r1,-16(r1): 新しい R1 の位置に古い R1 を保存しつつ R1 を 16 減らす
     stwu    %r1, -16(%r1)       // R1 -= 16; *(new R1) = old R1
     stw     %r30, 8(%r1)        // save R30 at frame+8
     stw     %r31, 12(%r1)       // save R31 at frame+12

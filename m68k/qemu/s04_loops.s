@@ -10,17 +10,20 @@
 _start:
     move.l  #0x4000, %sp
 
-    # Countdown 5->1
+    # Countdown 5->1 (DBRA: decrement-and-branch for counted loops)
+    #   d2 = 表示値 (5->1), d1 = DBRA カウンタ (4->0 で5回ループ)
+    #   dbra は D1-- 後、D1 != -1 なら分岐
     lea     msg_dn, %a0; bsr print_str
-    move.l  #5, %d1
+    move.l  #5, %d2
+    moveq   #4, %d1
 .Lcd_loop:
-    move.l  %d1, %d0
+    move.l  %d2, %d0
     addi.b  #'0', %d0
     bsr     putchar
     move.l  #0x20, %d0
     bsr     putchar
-    subq.l  #1, %d1
-    bne     .Lcd_loop
+    subq.l  #1, %d2
+    dbra    %d1, .Lcd_loop
     bsr     print_crlf
 
     # Count-up 1->5

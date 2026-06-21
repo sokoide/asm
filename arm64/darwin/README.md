@@ -65,3 +65,9 @@ ld -e _main -arch arm64 -syslibroot $(xcrun --show-sdk-path) -lSystem hello.o -o
 ## 関連ドキュメント
 
 - [`../CPU.md`](../CPU.md) — ARM64 (AArch64) 命令セット完全リファレンス
+
+## 次のステップ
+
+- `msg` の文字列を変更して再ビルド・実行
+- `SYS_write` の代わりに `SYS_open`（=5）でファイルを作成してみる
+- ベアメタル ARM64 に興味があれば、[`../qemu/`](../qemu/) のベアメタル教材も参照

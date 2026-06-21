@@ -28,22 +28,24 @@ _start:
     call    newline
 
     ; --- 16-bit operations ---
+    ld      hl, 0x0000        ; HL を明示的に 0 に初期化
     ld      bc, 0x1234
-    ld      de, 0x0001
-    add     hl, bc            ; (HL was set, but we show BC)
+    add     hl, bc            ; HL = HL + BC = 0x1234 (16-bit 加算の例)
     ld      hl, msg_16
     call    print_str
-    ld      a, b
+    ld      a, b              ; BC の上位バイト
     call    print_hex8
-    ld      a, c
+    ld      a, c              ; BC の下位バイト
     call    print_hex8
     call    newline
 
     ; --- Increment 16-bit ---
     ld      hl, 0x00FF
     inc     hl                ; HL = 0x0100
+    push    hl                ; 結果を退避（print_str が HL を破壊するため）
     ld      hl, msg_inc
     call    print_str
+    pop     hl                ; 結果を復元
     ld      a, h
     call    print_hex8
     ld      a, l

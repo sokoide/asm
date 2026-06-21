@@ -119,6 +119,7 @@ ps_dn:
     ldp     x29, x30, [sp], #16
     ret
 
+// print_hex64: 補助ルーチンの例（s09_branching で使用、s11 では未使用）
 print_hex64:
     stp     x29, x30, [sp, #-16]!
     stp     x19, x20, [sp, #-16]!

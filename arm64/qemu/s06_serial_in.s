@@ -2,7 +2,8 @@
 // ============================================
 // Learning objectives:
 //   - UART receive (UARTFR bit 4 = RXFE)
-//   - Echo back (commented out for auto-test)
+//   - uart_getc サブルーチンを定義（自動テストでは未使用、
+//     演習としてエコーバックの実装に活用できる）
 
 .section .text
 .global _start

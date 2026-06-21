@@ -1,22 +1,25 @@
-PROJECT_NAME	= hello
-BINARY = hello
+PROJECT	= hello
+TARGET	= $(PROJECT).com
+SRCS	= hello.asm
 
-TARGET = hello.com
-SRCS = hello.asm
-AS = nasm
+AS      = nasm
 ASFLAGS = -f bin
-INSTALLDIR = ~/tmp
 
-.PHONY: install dump clean
+.PHONY: all run dump clean
 
-install: $(TARGET)
-	mv $(TARGET) $(INSTALLDIR)
+# ビルド（他アーキテクチャと同じくカレントディレクトリに成果物を置く）
+all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(AS) -f bin $< -o $@
+	$(AS) $(ASFLAGS) $< -o $@
 
+# DOSBox で実行
+run: $(TARGET)
+	dosbox -c "MOUNT C ." -c "C:" -c "$(TARGET)" -c "EXIT"
+
+# 逆アセンブル
 dump: $(TARGET)
 	ndisasm -b 16 $(TARGET)
 
 clean:
-	rm -rf $(INSTALLDIR)/$(TARGET)
+	rm -f $(TARGET)

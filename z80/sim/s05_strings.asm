@@ -2,7 +2,7 @@
 ; ======================================
 ; Learning objectives:
 ;   - String length (null-terminated)
-;   - String copy (LDI / LDIR)
+;   - String copy (LDIR)
 ;   - Character-by-character output
 
 org 0x0100
@@ -22,13 +22,13 @@ _start:
     call    print_hex8
     call    newline
 
-    ; --- String copy (LDI) ---
+    ; --- String copy (LDIR) ---
     ld      hl, msg_src
     ld      de, dst_buf
-    ld      bc, 6
+    ld      bc, 5             ; "World" は5バイト
     ldir                      ; copy BC bytes from HL to DE
     ld      a, '$'
-    ld      (de), a           ; null-terminate
+    ld      (de), a           ; '$'-terminate (CP/M 文字列終端)
 
     ld      hl, msg_copy
     call    print_str

@@ -1,9 +1,9 @@
 // s09_branching.s - Scenario 9: Menu Branching
 // ==============================================
 // Learning objectives:
-//   - CMP + B.EQ/B.NE for dispatch
-//   - Multiple branch targets
-//   - Menu pattern with automated test
+//   - Sequential menu text output (automated demo)
+//   - Building structured output from string constants
+//   - (演習) CMP + B.EQ/B.NE で選択肢を分岐させる処理を追加してみよう
 
 .section .text
 .global _start

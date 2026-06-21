@@ -3,7 +3,6 @@
 #   - CMP.L / CMPI.L / TST for setting condition codes
 #   - BEQ / BNE (equal / not-equal)
 #   - BLT / BGT (signed less-than / greater-than)
-#   - BCS / BCC (unsigned carry-based)
 #   - BMI / BPL (negative / positive)
 #   - Building decision trees with Bcc
 

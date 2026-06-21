@@ -450,6 +450,12 @@ func (z *Z80) bdosCall() {
 				}
 			}
 		}
+	case 12: // S_BDOSVER - Get CP/M version number
+		// CP/M 2.2: B=0x00 (CP/M family), A=0x22 (version 2.2)
+		// HL 全体にも同じ値を設定（多くのプログラムが HL を参照するため）
+		z.b = 0x00
+		z.a = 0x22
+		z.setHl(0x0022)
 	default:
 		z.a = 0xFF // Unknown function
 	}
@@ -722,9 +728,9 @@ func (z *Z80) execED() {
 				f |= PF
 			}
 			z.f = f
-			if q == 0 && p == 1 && z.bc() != 0 { // LDIR
+			if q == 0 && p == 3 && z.bc() != 0 { // LDIR
 				z.pc -= 2
-			} else if q == 1 && p == 1 && z.bc() != 0 { // LDDR
+			} else if q == 1 && p == 3 && z.bc() != 0 { // LDDR
 				z.pc -= 2
 			}
 		} else if z_ == 1 { // CPI, CPD, CPIR, CPDR
@@ -745,9 +751,9 @@ func (z *Z80) execED() {
 				f |= PF
 			}
 			z.f = f
-			if q == 0 && p == 1 && z.bc() != 0 && result != 0 { // CPIR
+			if q == 0 && p == 3 && z.bc() != 0 && result != 0 { // CPIR
 				z.pc -= 2
-			} else if q == 1 && p == 1 && z.bc() != 0 && result != 0 { // CPDR
+			} else if q == 1 && p == 3 && z.bc() != 0 && result != 0 { // CPDR
 				z.pc -= 2
 			}
 		} else if z_ == 2 { // INI, IND, INIR, INDR
@@ -951,24 +957,7 @@ func (z *Z80) execWithHL(op byte, useIX bool) {
 			z.a = z.rb(addr)
 			return
 		}
-	}
-
-	if x == 1 {
-		if z_ == 6 && y == 6 {
-			z.halted = true
-			return
-		}
-		if z_ == 6 { // LD (IX/IY+d), r
-			addr := ixAddr()
-			z.wb(addr, z.getReg(y))
-			return
-		}
-		if y == 6 { // LD r, (IX/IY+d)
-			addr := ixAddr()
-			z.setReg(z_, z.rb(addr))
-			return
-		}
-		// LD rp, nn
+		// LD rp, nn (HL→IX/IY)
 		if z_ == 1 {
 			val := z.fetchWord()
 			if p == 2 { // IX/IY
@@ -976,6 +965,23 @@ func (z *Z80) execWithHL(op byte, useIX bool) {
 			} else {
 				z.setRp(p, val)
 			}
+			return
+		}
+	}
+
+	if x == 1 {
+		if z_ == 6 && y == 6 {
+			z.halted = true
+			return
+		}
+		if z_ == 6 { // LD r, (IX/IY+d)  ソースが(IX+d)→読み込み
+			addr := ixAddr()
+			z.setReg(y, z.rb(addr))
+			return
+		}
+		if y == 6 { // LD (IX/IY+d), r  デスティネーションが(IX+d)→書き込み
+			addr := ixAddr()
+			z.wb(addr, z.getReg(z_))
 			return
 		}
 		return

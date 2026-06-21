@@ -12,7 +12,7 @@ _main:
     mov     x0, #1              ; fd = stdout
     adrp    x1, msg@PAGE        ; buf (RIP-relative)
     add     x1, x1, msg@PAGEOFF
-    mov     x2, #13             ; count
+    mov     x2, len             ; count (文字列長、len = . - msg)
     mov     x16, #4             ; SYS_write
     svc     #0x80               ; BSD syscall
 

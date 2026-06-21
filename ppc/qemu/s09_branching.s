@@ -3,7 +3,6 @@
 // Learning objectives:
 //   - CMPW / CMPWI to set Condition Register (CR)
 //   - Signed comparisons: BLT, BGT, BEQ, BNE
-//   - Unsigned comparisons: BLTL, BGTL (using CMPW with CR1)
 //   - Building decision trees with branch instructions
 
 .section .text

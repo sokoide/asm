@@ -2,7 +2,7 @@
 // ========================================
 // Learning objectives:
 //   - LBZ / STB for byte load/store
-//   - LBZU / STBU for pre-increment addressing (update base register)
+//   - LBZU for pre-increment addressing (update base register)
 //   - Implementing memset and memcpy in assembly
 //   - .space directive for uninitialized memory
 

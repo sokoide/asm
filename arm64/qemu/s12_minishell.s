@@ -1,9 +1,9 @@
 // s12_minishell.s - Scenario 12: Interactive Mini Shell
 // =====================================================
 // Learning objectives:
-//   - Command parsing and dispatch
-//   - Integrating all previous concepts
-//   - Automated demo mode
+//   - Fixed demo sequence (automated, no live parsing)
+//   - Integrating all previous concepts into one program
+//   - (演習) S06 の入力ルーチンを組み合わせてコマンド解析・ディスパッチを実装してみよう
 
 .section .text
 .global _start
