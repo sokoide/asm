@@ -1,5 +1,7 @@
 # Z80 assembly for simz80 simulator (CP/M BDOS calling convention)
 # Toolchain: z80asm + simz80 (Go)
+# Note: z80asm (Bas Wijnen v1.8) writes the listing to stderr, so we
+#       redirect 2> to capture it into a .lst file.
 
 SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s05_strings s06_serial_in s07_subroutines s08_hardware \
@@ -27,8 +29,7 @@ CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
 all: $(SIM)
 	@for name in $(SOURCES); do \
 		echo "=== $$name ==="; \
-		$(AS) -o $$name.com $$name.asm && \
-		echo "  OK ($$(wc -c < $$name.com) bytes)"; \
+		$(AS) -l -o $$name.com $$name.asm 2>$$name.lst && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; cat $$name.lst; rm -f $$name.lst; }; \
 	done
 
 $(SIM): $(GODIR)/main.go $(GODIR)/go.mod
@@ -36,7 +37,7 @@ $(SIM): $(GODIR)/main.go $(GODIR)/go.mod
 
 # Run: make run S=s01_hello
 run: $(SIM)
-	$(AS) -o $(S).com $(S).asm
+	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
 	$(TIMEOUT) $(SIM) $(S).com
 
 # Run all scenarios (timeout 1s to prevent hangs)
@@ -92,7 +93,7 @@ cpm: all
 	fi
 
 clean:
-	rm -f *.com *.bin *.sym *.lis *.err $(SIM)
+	rm -f *.com *.bin *.sym *.lst *.lis *.err $(SIM)
 	rm -rf $(CPMDIR)
 
 # One-time setup: copy yaze-ag disk images to ~/cpm/

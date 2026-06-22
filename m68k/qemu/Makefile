@@ -21,7 +21,7 @@ QFLAGS  = -M virt -cpu m68000 -nographic
 all:
 	@for name in $(SOURCES); do \
 		echo "=== $$name ==="; \
-		$(AS) $(ASFLAGS) -o $$name.o $$name.s && \
+		$(AS) $(ASFLAGS) -al=$$name.lst -o $$name.o $$name.s && \
 		$(LD) $(LDFLAGS) -o $$name.elf $$name.o && \
 		rm -f $$name.o && \
 		echo "  OK"; \
@@ -29,7 +29,7 @@ all:
 
 # Run: make run S=s01_hello
 run:
-	$(AS) $(ASFLAGS) -o $(S).o $(S).s
+	$(AS) $(ASFLAGS) -al=$(S).lst -o $(S).o $(S).s
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
 	timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $(S).elf || true
@@ -54,4 +54,4 @@ dump:
 	$(OD) -d $(S).elf
 
 clean:
-	rm -f *.elf *.o
+	rm -f *.elf *.o *.lst

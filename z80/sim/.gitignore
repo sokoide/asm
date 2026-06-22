@@ -2,6 +2,7 @@
 *.bin
 *.sym
 *.lis
+*.lst
 *.err
 __pycache__/
 simz80

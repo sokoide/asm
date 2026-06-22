@@ -19,7 +19,7 @@ QFLAGS  = -drive file=$(1).img,format=raw,if=floppy -serial stdio -display none 
 all:
 	@for name in $(SINGLE); do \
 		echo "=== $$name [1 sector] ==="; \
-		$(AS) $(ASFLAGS) -o $$name.o $$name.asm && \
+		$(AS) $(ASFLAGS) -l $$name.lst -o $$name.o $$name.asm && \
 		$(LK) $(LKFLAGS) -o $$name.bin $$name.o && \
 		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null && \
 		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null && \
@@ -28,7 +28,7 @@ all:
 	done
 	@for name in $(MULTI); do \
 		echo "=== $$name [multi] ==="; \
-		$(AS) -f bin -o $$name.bin $$name.asm && \
+		$(AS) -f bin -l $$name.lst -o $$name.bin $$name.asm && \
 		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null && \
 		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null && \
 		echo "  OK ($$(wc -c < $$name.bin) bytes)"; \
@@ -38,11 +38,11 @@ all:
 run:
 	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
 	if [ "$$MODE" = "single" ]; then \
-		$(AS) $(ASFLAGS) -o $(S).o $(S).asm && \
+		$(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
 		$(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
 		rm -f $(S).o; \
 	else \
-		$(AS) -f bin -o $(S).bin $(S).asm; \
+		$(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
 	fi
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
@@ -70,4 +70,4 @@ dump32:
 	ndisasm -b 32 -o 0x7E00 -e 512 $(S).bin
 
 clean:
-	rm -f *.bin *.img *.o
+	rm -f *.bin *.img *.o *.lst
