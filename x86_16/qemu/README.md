@@ -7,7 +7,7 @@ QEMU フロッピーディスクイメージからリアルモードで起動し
 | ツール           | 用途                 | インストール例                |
 | :---             | :---                 | :---                          |
 | NASM             | アセンブラ           | `apt install nasm`            |
-| LD (elf_i386)    | リンカ               | GNU binutils に同梱           |
+| ld.lld           | リンカ               | `apt install lld`             |
 | QEMU (i386)      | エミュレータ         | `apt install qemu-system-x86` |
 
 ## ビルドと実行

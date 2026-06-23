@@ -7,8 +7,16 @@ SINGLE = s01_hello s02_registers s03_stack s04_loops \
 MULTI = s13_multisector s14_protected
 
 AS      = nasm
-LK      = $(shell command -v x86_64-elf-ld 2>/dev/null || command -v x86_64-linux-gnu-ld 2>/dev/null || echo ld)
+# リンカ: LLVM lld を使用。brainux(ARM ホスト) のシステム ld は elf_i386 を扱えず
+# (armelf_* しかサポートしない) エラーになるため、マルチアーキ対応の lld に統一。
+# arm64/ppc/riscv も同じく lld を使用。
+LK      = ld.lld
+# 旧定義(参考): x86 クロスリンカ -> システム ld の順でフォールバックしていたが、
+#   ARM ホストではクロスリンカが無くシステム ld が選ばれ、下記エラーで失敗:
+#     ld: unrecognized emulation mode: elf_i386
+#   LK = $(shell command -v x86_64-elf-ld 2>/dev/null || command -v x86_64-linux-gnu-ld 2>/dev/null || echo ld)
 ASFLAGS = -f elf32
+# 入力(nasm -f elf32 -> i386 ELF) と整合するよう 32-bit i386 を指定。lld は -m elf_i386 可。
 LKFLAGS = -m elf_i386 -T linker.ld
 
 QEMU    = qemu-system-i386
