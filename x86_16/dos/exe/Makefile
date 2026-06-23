@@ -8,6 +8,10 @@ LK      = alink
 ASFLAGS = -f obj
 LKFLAGS = -m -oEXE
 
+# 実行タイムアウト(秒)。環境変数 TIMEOUT_SECS が設定されていればその値を使用。
+# (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
+TIMEOUT_SECS ?= 1
+
 .PHONY: all run runall dump clean
 
 all:
@@ -32,7 +36,7 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_keyboard" ] || [ "$$name" = "s12_minishell" ]; then \
-			timeout --foreground 1 dosbox -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" 2>/dev/null || true; \
+			timeout --foreground $(TIMEOUT_SECS) dosbox -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" 2>/dev/null || true; \
 		else \
 			dosbox -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" || true; \
 		fi; \

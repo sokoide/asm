@@ -6,6 +6,10 @@ HELPERS = helpers.s
 HELPER_OBJS = $(HELPERS:.s=.o)
 HELPER_LST = $(HELPERS:.s=.lst)
 
+# 実行タイムアウト(秒)。環境変数 TIMEOUT_SECS が設定されていればその値を使用。
+# (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
+TIMEOUT_SECS ?= 1
+
 .PHONY: all run runall clean
 
 all:
@@ -27,11 +31,11 @@ runall: all
 	@for s in $(SCENARIOS); do \
 		echo "=== $$s ==="; \
 		if [ "$$s" = "s12_minishell" ]; then \
-			printf 'help\nquit\n' | timeout --foreground 1 sim65 $$s 2>/dev/null || true; \
+			printf 'help\nquit\n' | timeout --foreground $(TIMEOUT_SECS) sim65 $$s 2>/dev/null || true; \
 		elif [ "$$s" = "s06_serial_in" ]; then \
-			printf 'q\n' | timeout --foreground 1 sim65 $$s 2>/dev/null || true; \
+			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) sim65 $$s 2>/dev/null || true; \
 		else \
-			timeout --foreground 1 sim65 $$s 2>/dev/null || true; \
+			timeout --foreground $(TIMEOUT_SECS) sim65 $$s 2>/dev/null || true; \
 		fi; \
 		echo ""; \
 	done

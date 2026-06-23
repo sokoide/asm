@@ -13,6 +13,10 @@ LDFLAGS = -T linker.ld -nostdlib
 QEMU    = qemu-system-aarch64
 QFLAGS  = -machine virt -cpu cortex-a57 -nographic -semihosting
 
+# 実行タイムアウト(秒)。環境変数 TIMEOUT_SECS が設定されていればその値を使用。
+# (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
+TIMEOUT_SECS ?= 1
+
 .PHONY: all run runall dump clean
 
 all:
@@ -29,7 +33,7 @@ run:
 	$(AS) $(ASFLAGS) -o $(S).o $(S).s
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
-	timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $(S).elf || true
+	timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $(S).elf || true
 
 # Run all scenarios through QEMU
 runall: all
@@ -37,9 +41,9 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_serial_in" ]; then \
-			printf 'q\n' | timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
+			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		elif [ "$$name" = "s12_minishell" ]; then \
-			printf 'help\nquit\n' | timeout --foreground 1 $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
+			printf 'help\nquit\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		else \
 			$(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
 		fi; \

@@ -22,6 +22,10 @@ LKFLAGS = -m elf_i386 -T linker.ld
 QEMU    = qemu-system-i386
 QFLAGS  = -drive file=$(1).img,format=raw,if=floppy -serial stdio -display none -monitor none
 
+# 実行タイムアウト(秒)。環境変数 TIMEOUT_SECS が設定されていればその値を使用。
+# (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
+TIMEOUT_SECS ?= 1
+
 .PHONY: all run runall dump dump32 clean
 
 all:
@@ -54,7 +58,7 @@ run:
 	fi
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
-	timeout --foreground 1 $(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none || true
+	timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none || true
 
 # Run all scenarios through QEMU
 runall: all
@@ -62,9 +66,9 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
-			printf 'q\n' | timeout --foreground 1 $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
+			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
 		else \
-			timeout --foreground 1 $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
+			timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
 		fi; \
 		echo ""; \
 	done

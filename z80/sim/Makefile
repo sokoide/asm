@@ -9,7 +9,10 @@ SOURCES = s01_hello s02_registers s03_stack s04_loops \
 
 AS      = z80asm
 SIM     = ./simz80
-TIMEOUT = timeout --foreground 1
+# 実行タイムアウト(秒)。環境変数 TIMEOUT_SECS が設定されていればその値を使用。
+# (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
+TIMEOUT_SECS ?= 1
+TIMEOUT = timeout --foreground $(TIMEOUT_SECS)
 GODIR   = cmd/simz80
 
 CPMDIR   = cpm
