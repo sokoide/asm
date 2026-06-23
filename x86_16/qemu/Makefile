@@ -26,18 +26,6 @@ QFLAGS  = -drive file=$(1).img,format=raw,if=floppy -serial stdio -display none 
 # (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
 TIMEOUT_SECS ?= 1
 
-# エミュレータ切替: qemu(既定) | bochs
-# brainux(ARMv5, PXA270) は QEMU の TCG が ARMv5 非対応で起動時に
-# "TCG: ARMv5 is unsupported; exiting" となるため、pure interpreter の Bochs を使用:
-#   make run S=s01_hello EMULATOR=bochs
-EMULATOR ?= qemu
-
-# Bochs 用 BIOS / VGA-BIOS パス(ディストリ依存、存在する候補を優先)
-BOCHS_BIOS    = $(firstword $(wildcard /usr/share/bochs/BIOS-bochs-latest /usr/share/bochs/BIOS-bochs-legacy /usr/share/seabios/bios.bin))
-BOCHS_VGABIOS = $(firstword $(wildcard /usr/share/bochs/VGABIOS-lgpl-latest /usr/share/seabios/vgabios.bin))
-# Bochs 設定ファイルテンプレート(printf の %s に <name>, <name> を埋める)
-BOCHSRC_TPL = megs: 32\ndisplay_library: dummy\nromimage: file=$(BOCHS_BIOS)\nvgaromimage: file=$(BOCHS_VGABIOS)\nfloppya: 1_44=%s.img, status=inserted\nboot: floppy\ncom1: enabled=1, mode=file, dev=.bochs_serial.%s.out\nclock: sync=none\n
-
 .PHONY: all run runall dump dump32 clean
 
 all:
@@ -70,26 +58,14 @@ run:
 	fi
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
-	@if [ "$(EMULATOR)" = "bochs" ]; then \
-		printf '$(BOCHSRC_TPL)' $(S) $(S) > .bochsrc.$(S); \
-		rm -f .bochs_serial.$(S).out; \
-		timeout --foreground $(TIMEOUT_SECS) bochs -q -f .bochsrc.$(S) 2>/dev/null || true; \
-		cat .bochs_serial.$(S).out 2>/dev/null; \
-	else \
-		timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none || true; \
-	fi
+	timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none || true
 
 # Run all scenarios through QEMU
 runall: all
 	@for name in $(SINGLE) $(MULTI); do \
 		echo ""; \
 		echo "=== $$name ==="; \
-		if [ "$(EMULATOR)" = "bochs" ]; then \
-			printf '$(BOCHSRC_TPL)' $$name $$name > .bochsrc.$$name; \
-			rm -f .bochs_serial.$$name.out; \
-			timeout --foreground $(TIMEOUT_SECS) bochs -q -f .bochsrc.$$name 2>/dev/null || true; \
-			cat .bochs_serial.$$name.out 2>/dev/null; \
-		elif [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
+		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
 			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
 		else \
 			timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
@@ -106,4 +82,4 @@ dump32:
 	ndisasm -b 32 -o 0x7E00 -e 512 $(S).bin
 
 clean:
-	rm -f *.bin *.img *.o *.lst .bochsrc.* .bochs_serial.*
+	rm -f *.bin *.img *.o *.lst

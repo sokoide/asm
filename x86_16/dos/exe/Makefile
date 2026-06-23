@@ -12,11 +12,6 @@ LKFLAGS = -m -oEXE
 # (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
 TIMEOUT_SECS ?= 1
 
-# DOSBox CPU core。pure interpreter の normal を既定とする
-# (brainux/ARMv5 では dynamic recompiler が動かないため)。
-# ネイティブ x86 で速度優先なら DOSBOX_CORE=auto で上書き可。
-DOSBOX_CORE ?= normal
-
 .PHONY: all run runall dump clean
 
 all:
@@ -33,7 +28,7 @@ run:
 	$(AS) $(ASFLAGS) -o $(S).o $(S).asm
 	$(LK) $(LKFLAGS) -o $(S).exe $(S).o
 	rm -f $(S).o
-	dosbox -c "core=$(DOSBOX_CORE)" -c "MOUNT C ." -c "C:" -c "$(S).exe" -c "EXIT"
+	dosbox -c "MOUNT C ." -c "C:" -c "$(S).exe" -c "EXIT"
 
 # Run all scenarios through DOSBox
 runall: all
@@ -41,9 +36,9 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_keyboard" ] || [ "$$name" = "s12_minishell" ]; then \
-			timeout --foreground $(TIMEOUT_SECS) dosbox -c "core=$(DOSBOX_CORE)" -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" 2>/dev/null || true; \
+			timeout --foreground $(TIMEOUT_SECS) dosbox -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" 2>/dev/null || true; \
 		else \
-			dosbox -c "core=$(DOSBOX_CORE)" -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" || true; \
+			dosbox -c "MOUNT C ." -c "C:" -c "$$name.exe" -c "EXIT" || true; \
 		fi; \
 		echo ""; \
 	done

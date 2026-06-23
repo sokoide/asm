@@ -9,7 +9,6 @@ QEMU フロッピーディスクイメージからリアルモードで起動し
 | NASM             | アセンブラ           | `apt install nasm`            |
 | ld.lld           | リンカ               | `apt install lld`             |
 | QEMU (i386)      | エミュレータ         | `apt install qemu-system-x86` |
-| Bochs            | エミュレータ(代替)   | `apt install bochs`           |
 
 ## ビルドと実行
 
@@ -32,27 +31,6 @@ make dump32 S=s14_protected
 # 掃除
 make clean
 ```
-
-### brainux (ARMv5) での実行
-
-QEMU の TCG(JIT)はホスト CPU に ARMv6+ を要求するため、brainux(PXA270 = ARMv5TE) では
-`qemu-system-i386: TCG: ARMv5 is unsupported; exiting` で起動できません。
-pure interpreter の **Bochs** に切り替えてください（COM1 直接 I/O と floppy boot は Bochs と完全互換）:
-
-```bash
-apt install bochs                            # Bochs と BIOS を導入
-dpkg -L bochs | grep -i bios                 # BIOS ファイルのパスを確認
-export TIMEOUT_SECS=30                       # interpreter は遅いので延長(必要なら 60+)
-make run S=s01_hello EMULATOR=bochs          # Bochs で単一シナリオを実行
-make runall EMULATOR=bochs                   # 全シナリオを Bochs で連続実行
-```
-
-Makefile が各シナリオの `.bochsrc.<シナリオ>` を自動生成し、COM1(0x3F8) のシリアル出力を
-`.bochs_serial.<シナリオ>.out` 経由で表示します（QEMU の `-serial stdio` と同等）。
-
-- **S06/S12**(COM1 入力を扱う): Bochs では入力供給が難しいため出力のみ。入力テストは QEMU 環境で。
-- BIOS パスが見つからない場合は Makefile の `BOCHS_BIOS`/`BOCHS_VGABIOS` の候補を確認・追記してください。
-- Bochs が依存ライブラリ不足で起動しない場合は `apt install --no-install-recommends bochs` を試してください。
 
 ## ディレクトリ構造
 
