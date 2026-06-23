@@ -490,6 +490,23 @@ halt:
 
 ---
 
+## I/O ルーチン
+
+M68000 ベアメタル（QEMU `virt` マシン）では、**プログラムが呼び出せる外部 I/O コール（BIOS・システムコール・セミホスティング・終了デバイス等）は提供されない**。すべての入出力と時刻取得はハードウェアレジスタ（MMIO）の直接操作、プログラムの終了は CPU の停止（無限ループ）による。
+
+| 操作         | 方法                              | 参照先                                                         |
+| :---         | :---                              | :---                                                           |
+| 文字出力     | Goldfish TTY MMIO（`0xFF008000`） | [Goldfish TTY UART](#goldfish-tty-uart) の `REG_DATA` へ `move.l` |
+| 文字入力     | Goldfish TTY DMA 読込             | 同上の `REG_BYTES_READY` → `REG_DATA_PTR`/`REG_DATA_LEN`/`REG_CMD=3` |
+| 時刻取得     | Goldfish RTC MMIO（`0xFF006000`） | [Goldfish RTC (Real-Time Clock)](#goldfish-rtc-real-time-clock) |
+| プログラム終了 | 無限ループ（`bra halt`）        | [終了方法](#終了方法)。QEMU を `timeout --foreground 1` で停止 |
+
+**他アーキテクチャとの対比**: ARM64（semihosting）、RISC-V（SiFive test device）、x86（BIOS 割り込み）、6502（cc65 ランタイム）、Z80（CP/M BDOS）のような、QEMU・ROM・OS が提供する終了デバイスやシステムコールは **`virt` マシンでは接続されていない**。Goldfish デバイス自体は終了機能を持たないため、`bra halt` で CPU を停止させた上で外部から QEMU を終了する必要がある。これは教材が選んだ QEMU マシン設定の制約である。
+
+**定義元**: 該当なし（外部コール ABI は存在しない）。I/O は Goldfish TTY / Goldfish RTC の MMIO レジスタ仕様に従う。
+
+---
+
 ## トラブルシューティング
 
 ### QEMU で起動しない場合

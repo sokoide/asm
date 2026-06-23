@@ -448,19 +448,43 @@ SECTIONS {
 }
 ```
 
-### セミホスティング終了
+## I/O ルーチン
 
-ARM64 ベアメタルでは、QEMU を終了するためにセミホスティングを使用する。
+ARM64 では文字入出力に PL011 UART（MMIO `0x09000000`）を直接操作する（「ハードウェア情報」の [PL011 UART](#pl011-uart) を参照）。**セミホスティング（semihosting）はプログラムの終了にのみ使用**する。
+
+**定義元**: ARM semihosting 仕様（ARM IHI 0003 "Semihosting for AArch32 and AArch64"）。QEMU の `-semihosting` オプションがトラップをホスト OS のシステムコールに変換する。AArch64 では `HLT #0xF000` 命令でトラップする。
+
+**レジスタ規約**: `x0` に操作番号、`x1` にパラメータ（即値、またはパラメータブロックへのポインタ）を設定して `HLT #0xF000`。返り値は `x0`。
+
+**semihosting 操作一覧**:
+
+| 操作番号 (x0) | 名称        | 機能                 | 入力 (x1)                              | 返り値 (x0)                  | 教材使用   |
+| :---          | :---        | :---                 | :---                                   | :---                         | :---       |
+| `0x01`        | SYS_OPEN    | ファイル/ストリームを開く | パラメータブロックへのポインタ     | ファイルハンドル、失敗時 `-1` | 未使用     |
+| `0x02`        | SYS_CLOSE   | ファイルを閉じる     | パラメータブロックへのポインタ         | `0` = 成功                   | 未使用     |
+| `0x03`        | SYS_WRITEC  | 1 文字を出力         | 出力文字へのポインタ                   | なし                         | 未使用     |
+| `0x04`        | SYS_WRITE0  | ヌル終端文字列を出力 | 文字列へのポインタ                     | なし                         | 未使用     |
+| `0x05`        | SYS_WRITE   | バッファを書き込む   | パラメータブロック（handle, ptr, len） | `0` = 成功                   | 未使用     |
+| `0x06`        | SYS_READ    | バッファへ読み込む   | パラメータブロック                     | 読込バイト数（`0` = 全件読込）| 未使用     |
+| `0x18`        | SYS_EXIT    | プログラムを終了する | `0x20026`（`ADP_Stopped_ApplicationExit`） | 戻らない                | **全シナリオ** |
+
+**SYS_EXIT の理由コード（`x1` に指定する `ADP_Stopped_*`）**:
+
+| 理由コード | 定数                       | 意味                                 |
+| :---       | :---                       | :---                                 |
+| `0x20026`  | ADP_Stopped_ApplicationExit | アプリケーション正常終了（教材が使用）|
+
+**終了の使い方**:
 
 ```asm
-mov     x0, #0x18            // angel_SWIreason_ReportException
-ldr     x1, =exit_reason     // { ADP_Stopped_ApplicationExit, 0 }
-hlt     #0xF000
-
-exit_reason:
-    .dword 0x20026           // ADP_Stopped_ApplicationExit
-    .dword 0x0               // subcode
+mov     x0, #0x18            // SYS_EXIT（angel_SWIreason_ReportException）
+ldr     x1, =0x20026         // ADP_Stopped_ApplicationExit（正常終了）
+hlt     #0xF000              // semihosting トラップ
 ```
+
+**注意**: SYS_EXIT 以外の操作（SYS_WRITE0 で文字列出力等）も可能だが、本教材は一貫して PL011 UART の MMIO を使用する。semihosting はホスト依存（QEMU の `-semihosting` が必須）であり、実機では動作しない。
+
+**定義元**: ARM IHI 0003 "Semihosting for AArch32 and AArch64"。QEMU 実装は `-semihosting` オプション。
 
 ## トラブルシューティング
 

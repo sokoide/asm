@@ -279,6 +279,34 @@ UART 入出力を使った対話型シェル。全要素の総合演習。
 | SiFive test device | 0x100000 |
 | 終了コード (PASS)  | 0x5555   |
 
+## I/O ルーチン
+
+RISC-V では文字入出力に NS16550A UART（MMIO `0x10000000`）を直接操作する（「ハードウェア情報」の [出力（UART）](#出力uart) / [入力（UART RX）](#入力uart-rx) を参照）。**プログラムの終了は SiFive test device を使用**する。
+
+**定義元**: QEMU `virt` マシンに接続された **`sifive_test` デバイス**（SiFive Test/Finisher device、QEMU が実装）。MMIO アドレス `0x100000` に 32-bit 値をストアすると QEMU が値を解釈して終了/リセットする。OS や BIOS のシステムコールではなく、QEMU 固有の終了デバイス。
+
+**規約**: レジスタ引数なし。`0x100000` に 32-bit 値をストアする。値の **下位 16-bit** が動作コード、**上位 16-bit** が詳細コード（FAIL/RESET の場合）。
+
+**SiFive test device のコード**:
+
+| ストア値（下位 16-bit） | 定数           | 機能                                       | 教材使用   |
+| :---                    | :---           | :---                                       | :---       |
+| `0x5555`                | FINISHER_PASS  | 正常終了（終了コード 0）                   | **全シナリオ** |
+| `0x3333`                | FINISHER_FAIL  | 異常終了（上位 16-bit に終了理由コード）   | 未使用     |
+| `0x7777`                | FINISHER_RESET | システムリセット（上位 16-bit にリセット理由） | 未使用  |
+
+**終了の使い方**:
+
+```asm
+    li  t0, 0x100000     # SiFive test device アドレス
+    li  t1, 0x5555       # FINISHER_PASS
+    sw  t1, 0(t0)        # 32-bit ストアで終了
+```
+
+**注意**: FAIL/RESET は上位 16-bit に詳細コードを指定できる（例: `0x00013333` = 理由コード 1 で FAIL）。教材は `0x5555`（PASS）のみ使用する。Makefile は SiFive test が呼ばれない場合の安全策として `timeout --foreground 1` で QEMU を強制終了するが、全シナリオは SiFive test で明示的に終了する。
+
+**定義元**: QEMU `sifive_test` デバイス（`hw/misc/sifive_test.c`）。
+
 ## ビルドシステム
 
 ### ツールチェーン
@@ -334,19 +362,6 @@ LDFLAGS = -T linker.ld -nostdlib
   - `.rodata` — 読み取り専用データ（文字列定数など）
   - `.data` — 初期化済みデータ
   - `.bss` — ゼロ初期化データ（`__bss_start` / `__bss_end` で境界管理）
-
-### 終了方法
-
-QEMU を正常終了させるには SiFive test device を使用する:
-
-```asm
-    li a0, 0x100000     # SiFive test device アドレス
-    li a1, 0x5555       # PASS コード
-    sw a1, 0(a0)        # 32-bit ストアで終了
-```
-
-- `0x5555` = PASS（成功）、`0x3333` = FAIL（失敗）
-- Makefile では `timeout --foreground 1` で 1 秒後に強制終了（SiFive test 未使用時の安全策）
 
 ## トラブルシューティング
 
