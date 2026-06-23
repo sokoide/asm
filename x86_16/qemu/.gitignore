@@ -2,3 +2,5 @@
 *.o
 *.img
 *.lst
+.bochsrc.*
+.bochs_serial.*

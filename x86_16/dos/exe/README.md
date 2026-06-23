@@ -27,6 +27,13 @@ make dump S=s01_hello
 make clean
 ```
 
+### brainux (ARMv5) での実行
+
+DOSBox の dynamic recompiler は ARMv5 で動かないため、Makefile は既定で
+pure interpreter(`core=normal`)を指定します。`make run` のままで動作しますが
+遅いので `export TIMEOUT_SECS=30` 等で延長してください。
+ネイティブ x86 で速度を優先する場合は `make run S=s01_hello DOSBOX_CORE=auto` で上書きできます。
+
 ## ディレクトリ構造
 
 ```text
