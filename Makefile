@@ -7,9 +7,16 @@ CORE_DIRS := 6502/sim65 arm64/qemu ppc/qemu m68k/qemu z80/sim \
              x86_16/qemu x86_16/dos/exe riscv32/qemu riscv64/qemu
 
 # Hello World のみの最小アーキテクチャ: all / clean を持つ（runall は非対応）
-HELLO_DIRS := arm64/darwin x86_64/darwin i386/darwin x86_16/dos/com
+HELLO_DIRS := x86_16/dos/com
 
+# macOS(darwin) ネイティブバイナリ（Mach-O）。darwin ツールチェーンが必要なため
+# macOS(Darwin) でのみビルド対象に含める。それ以外の OS では make しない。
+DARWIN_DIRS := arm64/darwin x86_64/darwin i386/darwin
+ifeq ($(shell uname -s),Darwin)
+ALL_DIRS := $(CORE_DIRS) $(HELLO_DIRS) $(DARWIN_DIRS)
+else
 ALL_DIRS := $(CORE_DIRS) $(HELLO_DIRS)
+endif
 
 .PHONY: all build runall clean lint format help
 .default: all
