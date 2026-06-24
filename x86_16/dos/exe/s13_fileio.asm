@@ -11,6 +11,7 @@
 ; Difficulty: ★★★★★
 
 segment .text
+global start
 
 start:
     mov ax, seg msg1

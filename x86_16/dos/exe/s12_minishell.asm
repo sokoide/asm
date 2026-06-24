@@ -16,6 +16,7 @@
 ;   exit   - exit to DOS
 
 segment .text
+global start
 
 start:
     mov ax, seg prompt

@@ -1,14 +1,14 @@
 # 8086 アセンブラ DOS .EXE ワークショップ
 
 DOS 向け 16-bit .EXE プログラムを 14 のシナリオで段階的に学ぶ。
-NASM（`-f obj`）+ ALINK でビルドし、DOSBox で実行する。
+NASM（`-f obj`）+ JWLINK（Open Watcom `wlink` 互換）でビルドし、DOSBox で実行する。
 
 ## 前提条件
 
 | ツール | 用途                | インストール例                                        |
 | :---   | :---                | :---                                                  |
 | NASM   | アセンブラ          | `apt install nasm`                                    |
-| ALINK  | リンカ（OMF → EXE） | [ALINK](http://alink.sourceforge.net/) をダウンロード |
+| JWLINK | リンカ（OMF → EXE） | `yay -S jwlink-git`(Arch) / [JWlink](https://github.com/JWasm/JWlink) をビルド |
 | DOSBox | DOS エミュレータ    | `apt install dosbox`                                  |
 
 ## ビルドと実行
@@ -20,12 +20,14 @@ make
 # 特定のシナリオを DOSBox で実行
 make run S=s01_hello
 
-# 逆アセンブル（EXE ヘッダ 512 バイトをスキップ）
+# 逆アセンブル（MZ ヘッダサイズはヘッダから自動判別してスキップ）
 make dump S=s01_hello
 
 # 掃除
 make clean
 ```
+
+> 成果物は DOS の 8.3 命名規則に従い `SNN.EXE`（`S01.EXE` 〜 `S14.EXE`）で生成される。
 
 ## ディレクトリ構造
 
@@ -64,7 +66,7 @@ make clean
 ```
 
 - **COM との違い**: COM は 1 セグメント（64KB）に全て詰める。EXE は複数セグメントを持てる。
-- **エントリポイント**: ALINK は `segment .text` の先頭から実行を開始する。
+- **エントリポイント**: 各ソースは `global start` で `start` ラベルを公開し、JWLINK の `op start=start` でエントリポイントに指定する。
 - **DS の初期化**: EXE 起動時、DS はデータセグメントではなく PSP を指す。明示的に `mov ax, seg label / mov ds, ax` が必要。
 
 ## シナリオ一覧

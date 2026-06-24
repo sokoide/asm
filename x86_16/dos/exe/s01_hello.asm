@@ -9,6 +9,7 @@
 ; Difficulty: ★☆☆☆☆
 
 segment .text
+global start
 
 start:
     ; Set DS to the data segment — required before accessing any data

@@ -13,6 +13,7 @@
 ;        The program will display the command tail.
 
 segment .text
+global start
 
 start:
     ; At entry, DS = ES = PSP segment
