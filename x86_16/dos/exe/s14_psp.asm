@@ -16,14 +16,17 @@ segment .text
 global start
 
 start:
-    ; At entry, DS = ES = PSP segment
-    ; Save PSP segment BEFORE changing DS
-    mov [psp_seg], ds
+    ; At entry, DS = ES = PSP segment.
+    ; .data 変数は PSP とは別セグメントにあるため、DS を .data に切り替える前に
+    ; PSP セグメント値をレジスタ(AX)に退避しておかないと、[psp_seg] への書き込みが
+    ; PSP セグメント側のオフセットに飛んでしまい後から読み出せなくなる。
+    mov ax, ds              ; AX = PSP segment(エントリ時の DS)
 
-    ; Now set DS to our data segment
-    mov ax, seg msg1
-    mov ds, ax
-    mov es, ax
+    ; Set DS/ES to our data segment
+    mov bx, seg msg1
+    mov ds, bx
+    mov es, bx
+    mov [psp_seg], ax       ; ここで初めて .data の変数に PSP を保存
 
     ; --- 1. Show PSP segment ---
     mov si, msg_psp
