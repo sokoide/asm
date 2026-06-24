@@ -6,20 +6,22 @@ SCENARIOS = s01_hello s02_registers s03_stack s04_loops \
 AS      = nasm
 ASFLAGS = -f obj
 
-# リンカは OS ごとに切り替え(Homebrew 由由で jwlink が入らないため)。
-#   macOS  : alink            (Homebrew: brew install alink)
-#   Linux  : jwlink           (Open Watcom 互換 wlink。AUR 等から導入)
+# リンカは導入されているツールで切り替え(Homebrew 由来で jwlink が入らないことが多いため)。
+#   jwlink あり(通常 Linux/AUR 等) : jwlink (Open Watcom 互換 wlink)
+#   なし(macOS Homebrew / Termux 等): alink
+# OS 名ではなくツールの有無で判定し、macOS・Linux・Termux proot のどれでも動くようにする。
 # alink と jwlink は引数形式が異なるので、リンク行は $(call link,out,in) で抽象化。
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
-LK       = alink
-LKFLAGS  = -m -oEXE
-link     = $(LK) $(LKFLAGS) -o $(1) $(2)
-else
+JWLINK := $(shell command -v jwlink 2>/dev/null)
+
+ifneq ($(JWLINK),)
 LK       = jwlink
 LKFLAGS  = format dos op start=start
 # jwlink(Open Watcom wlink 互換): OMF -> DOS .EXE。start ラベルをエントリに指定。
 link     = $(LK) $(LKFLAGS) file $(2) name $(1)
+else
+LK       = alink
+LKFLAGS  = -m -oEXE
+link     = $(LK) $(LKFLAGS) -o $(1) $(2)
 endif
 
 # シナリオ名 sNN_xxx を DOS 8.3 形式 SNN.EXE に変換するヘルパー
