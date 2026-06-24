@@ -146,9 +146,11 @@ print_hex16:
     pop ax
 print_hex8:
     push ax
+    push cx
     mov cl, 4
     shr al, cl
     call print_nibble
+    pop cx
     pop ax
 print_nibble:
     and al, 0Fh
