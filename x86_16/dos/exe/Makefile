@@ -4,10 +4,23 @@ SCENARIOS = s01_hello s02_registers s03_stack s04_loops \
             s13_fileio s14_psp
 
 AS      = nasm
-LK      = jwlink
 ASFLAGS = -f obj
+
+# リンカは OS ごとに切り替え(Homebrew 由由で jwlink が入らないため)。
+#   macOS  : alink            (Homebrew: brew install alink)
+#   Linux  : jwlink           (Open Watcom 互換 wlink。AUR 等から導入)
+# alink と jwlink は引数形式が異なるので、リンク行は $(call link,out,in) で抽象化。
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+LK       = alink
+LKFLAGS  = -m -oEXE
+link     = $(LK) $(LKFLAGS) -o $(1) $(2)
+else
+LK       = jwlink
+LKFLAGS  = format dos op start=start
 # jwlink(Open Watcom wlink 互換): OMF -> DOS .EXE。start ラベルをエントリに指定。
-LKFLAGS = format dos op start=start
+link     = $(LK) $(LKFLAGS) file $(2) name $(1)
+endif
 
 # シナリオ名 sNN_xxx を DOS 8.3 形式 SNN.EXE に変換するヘルパー
 #   make run S=s01_hello  ->  S01.EXE
@@ -24,7 +37,7 @@ all:
 		num=$${name#s}; num=$${num%%_*}; exe=S$${num}.EXE; \
 		echo "=== $$name ($$exe) ==="; \
 		$(AS) $(ASFLAGS) -o $$name.o $$name.asm && \
-		$(LK) $(LKFLAGS) file $$name.o name $$exe && \
+		$(call link,$$exe,$$name.o) && \
 		rm -f $$name.o && \
 		echo "  OK ($$(wc -c < $$exe) bytes)"; \
 	done
@@ -32,7 +45,7 @@ all:
 # Run: make run S=s01_hello  (-> S01.EXE を DOSBox で実行)
 run:
 	$(AS) $(ASFLAGS) -o $(S).o $(S).asm
-	$(LK) $(LKFLAGS) file $(S).o name $(EXE)
+	$(call link,$(EXE),$(S).o)
 	rm -f $(S).o
 	dosbox -c "MOUNT C ." -c "C:" -c "$(EXE)" -c "EXIT"
 
