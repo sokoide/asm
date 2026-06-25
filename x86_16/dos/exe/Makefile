@@ -32,6 +32,9 @@ EXE = S$(patsubst s%,%,$(firstword $(subst _, ,$(S)))).EXE
 # (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
 TIMEOUT_SECS ?= 1
 
+# 単体 run の表示時間(秒)。make run S=s01_hello RUN_SECS=20 で延長可能。
+RUN_SECS ?= 10
+
 .PHONY: all run runall dump clean
 
 all:
@@ -49,7 +52,14 @@ run:
 	$(AS) $(ASFLAGS) -o $(S).o $(S).asm
 	$(call link,$(EXE),$(S).o)
 	rm -f $(S).o
-	dosbox -c "MOUNT C ." -c "C:" -c "$(EXE)" -c "EXIT"
+	@dosbox-x -nopromptfolder -defaultdir $(CURDIR) -c "MOUNT C $(CURDIR)" -c "C:" -c "$(EXE)" & \
+	PID=$$!; \
+	sleep 0.6; \
+	if uname | grep -q Darwin; then \
+		osascript -e 'tell application "System Events" to set frontmost of (first process whose name contains "dosbox") to true' 2>/dev/null || true; \
+	fi; \
+	sleep $(RUN_SECS); \
+	kill $$PID 2>/dev/null || true
 
 # Run all scenarios through DOSBox
 runall: all
@@ -58,9 +68,9 @@ runall: all
 		echo ""; \
 		echo "=== $$name ($$exe) ==="; \
 		if [ "$$name" = "s06_keyboard" ] || [ "$$name" = "s12_minishell" ]; then \
-			timeout --foreground $(TIMEOUT_SECS) dosbox -c "MOUNT C ." -c "C:" -c "$$exe" -c "EXIT" 2>/dev/null || true; \
+			timeout --foreground $(TIMEOUT_SECS) dosbox-x -nopromptfolder -defaultdir . -c "MOUNT C ." -c "C:" -c "$$exe" -c "EXIT" 2>/dev/null || true; \
 		else \
-			dosbox -c "MOUNT C ." -c "C:" -c "$$exe" -c "EXIT" || true; \
+			dosbox-x -nopromptfolder -defaultdir . -c "MOUNT C ." -c "C:" -c "$$exe" -c "EXIT" || true; \
 		fi; \
 		echo ""; \
 	done
