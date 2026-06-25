@@ -15,7 +15,7 @@ $(TARGET): $(SRCS)
 
 # DOSBox で実行
 run: $(TARGET)
-	dosbox -c "MOUNT C ." -c "C:" -c "$(TARGET)" -c "EXIT"
+	dosbox-x -c "MOUNT C ." -c "C:" -c "$(TARGET)" -c "EXIT"
 
 # 逆アセンブル
 dump: $(TARGET)
