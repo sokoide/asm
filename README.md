@@ -104,6 +104,54 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 - **6502 s08**: sim65 にはハードウェアタイマーがないため、CPU サイクルカウンティング（NOP 遅延ループ）でタイミング概念を学びます。
 - **6502**: 全シナリオで `helpers.s` （`print_str`, `print_hex8`, `print_dec` 等）をリンクし、コード重複を回避しています。cc65 C ランタイムの `_putchar` を経由して sim65 の API 呼び出しで出力します（MMIO ではなく）。他アーキテクチャの UART 直接書き込みとは異なる出力メカニズムです。
 
+## アーキテクチャ比較表
+
+同じパターンを各 CPU でどう実装するかを比較することで、アーキテクチャの違いを理解できます。
+
+### Hello World の実装比較
+
+| 要素 | ARM64 | RISC-V | x86_16 | M68K | PPC | 6502 | Z80 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **文字列定義** | `.asciz` | `.asciz` | `db ..., 0` | `.asciz` | `.asciz` | `.asciiz` | `defm ...$` |
+| **終端文字** | NUL (0) | NUL (0) | NUL (0) | NUL (0) | NUL (0) | NUL (0) | `$` (CP/M) |
+| **文字列出力** | `strb w0, [x8]` | `sb a0, 0(t0)` | `out dx, al` | `move.l d0, 0xff008000` | `stb r3, 0(r8)` | `jsr _putchar` | `call 0x0005` |
+| **I/O 方式** | MMIO | MMIO | I/Oポート | MMIO | MMIO | ランタイムAPI | BDOSコール |
+
+### スタック設定の比較
+
+| アーキテクチャ | 命令 | 設定値 | 備考 |
+| :--- | :--- | :--- | :--- |
+| **ARM64** | `movz x0, #0x4800, lsl #16; mov sp, x0` | `0x48000000` | RAM末尾 |
+| **RISC-V** | `li sp, 0x80200000` | `0x80200000` | RAM末尾付近 |
+| **x86_16** | `mov sp, 0x7C00` | `0x7C00` | コード直下 |
+| **M68K** | `move.l #0x4000, %sp` | `0x4000` | RAM末尾 |
+| **PPC** | `lis %r1, 0x0000; ori %r1, %r1, 0x1000` | `0x1000` | RAM末尾 |
+| **6502** | (cc65 ランタイム設定) | — | 自動設定 |
+| **Z80** | (CP/M TPA末尾) | — | 自動設定 |
+
+### 終了方法の比較
+
+| 方式 | アーキテクチャ | 命令 | 仕組み |
+| :--- | :--- | :--- | :--- |
+| **セミホスティング** | ARM64 | `hlt #0xF000` | QEMUに終了を伝える |
+| **テストデバイス** | RISC-V | `sw t1, 0(t0)` (0x100000に0x5555) | SiFiveテストフィニッシャー |
+| **HLT + タイムアウト** | x86_16 | `cli; hlt` | CPU停止、timeoutでQEMU強制終了 |
+| **無限ループ + タイムアウト** | M68K, PPC | `bra halt` / `b halt` | CPU停止、timeoutでQEMU強制終了 |
+| **ランタイム復帰** | 6502 | `rts` | cc65ランタイムに戻る |
+| **CP/M復帰** | Z80 | `ret` | CP/MのTPAに戻る |
+
+### サブルーチン呼び出しの比較
+
+| アーキテクチャ | 呼び出し命令 | リンクレジスタ | 戻り命令 |
+| :--- | :--- | :--- | :--- |
+| **ARM64** | `bl func` | X30 (LR) | `ret` |
+| **RISC-V** | `jal ra, func` | RA (x1) | `ret` (擬似命令) |
+| **x86_16** | `call func` | スタック | `ret` |
+| **M68K** | `bsr func` | スタック | `rts` |
+| **PPC** | `bl func` | LR | `blr` |
+| **6502** | `jsr func` | スタック | `rts` |
+| **Z80** | `call func` | スタック | `ret` |
+
 ## 使い方
 
 ### ビルド & 全シナリオ実行
@@ -125,6 +173,104 @@ make run S=s01_hello
 ```bash
 make clean
 ```
+
+## デバッグガイド
+
+QEMU でプログラムをデバッグする方法を説明します。
+
+### QEMU Monitor の使い方
+
+QEMU Monitor にアクセスすると、実行中のプログラムの状態を確認できます。
+
+```bash
+# QEMU Monitor を標準入出力で起動
+make run S=s01_hello QEMU_ARGS="-monitor stdio"
+```
+
+**よく使うコマンド**:
+
+| コマンド | 説明 |
+| :--- | :--- |
+| `info registers` | 全レジスタの値を表示 |
+| `info registers CPU` | 特定 CPU のレジスタ表示 |
+| `x /10i $pc` | PC から 10 命令を逆アセンブル |
+| `x /16xb 0x4000000` | メモリを 16 バイト 16 進表示 |
+| `x /4xw $sp` | スタックから 4 ワード表示 |
+| `stepi` | 1 命令ステップ実行 |
+| `continue` | 実行再開 |
+| `quit` | QEMU 終了 |
+
+**例（ARM64 のレジスタ確認）**:
+
+```
+(qemu) info registers
+x0000000000000048 x01=0000000004000040 ...
+```
+
+### GDB によるリモートデバッグ
+
+QEMU に GDB サーバを内蔵させ、GDB で接続してデバッグできます。
+
+**手順**:
+
+```bash
+# ターミナル 1: QEMU を GDB サーバ付きで起動
+make run S=s01_hello QEMU_ARGS="-s -S"
+
+# ターミナル 2: GDB で接続
+gdb -ex "target remote :1234" \
+    -ex "set architecture aarch64" \
+    -ex "b _start" \
+    -ex "c"
+```
+
+**GDB よく使うコマンド**:
+
+| コマンド | 短縮形 | 説明 |
+| :--- | :--- | :--- |
+| `break _start` | `b _start` | ブレークポイント設定 |
+| `continue` | `c` | 実行再開 |
+| `stepi` | `si` | 1 命令ステップ実行 |
+| `nexti` | `ni` | 1 命令ステップ（コール先に入らない） |
+| `info registers` | `i r` | レジスタ表示 |
+| `print/x $x0` | `p/x $x0` | レジスタの値を 16 進表示 |
+| `x/10i $pc` | — | PC から 10 命令を逆アセンブル |
+| `x/16xb $sp` | — | スタックを 16 バイト表示 |
+| `layout asm` | — | アセンブリ表示レイアウトに切替 |
+| `quit` | `q` | GDB 終了 |
+
+**アーキテクチャ別の設定**:
+
+| アーキテクチャ | GDB アーキテクチャ設定 |
+| :--- | :--- |
+| ARM64 | `set architecture aarch64` |
+| RISC-V 64 | `set architecture riscv:rv64` |
+| RISC-V 32 | `set architecture riscv:rv32` |
+| x86_16 | `set architecture i8086` |
+| M68K | `set architecture m68k` |
+| PPC | `set architecture powerpc` |
+
+### 逆アセンブル
+
+ビルド後に逆アセンブル出力を確認できます。
+
+```bash
+# 逆アセンブル出力
+make dump S=s01_hello
+
+# x86_16 の 32-bit コード（S13/S14 用）
+make dump32 S=s14_protected
+```
+
+### よくある問題と対処
+
+| 問題 | 原因 | 対処 |
+| :--- | :--- | :--- |
+| UART 出力が表示されない | アドレス間違い | UART ベースアドレスを確認 |
+| QEMU が起動しない | ツール未インストール | `qemu-system-<arch>` の存在確認 |
+| ビルドエラー | アセンブラ構文間違い | CPU.md の命令リファレンスを参照 |
+| タイムアウトで終了 | プログラムが正常終了していない | 終了方法を確認（上記比較表参照） |
+| 文字化け | ボーレート不一致 | UART のボーレート設定を確認 |
 
 ## 必要ツール
 
