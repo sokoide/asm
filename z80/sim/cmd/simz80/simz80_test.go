@@ -653,3 +653,104 @@ func TestEIDelayWindow(t *testing.T) {
 		t.Fatalf("cpuInsns=%d instrCount=%d: cpuInsns は受付を含まないはず", z.cpuInsns, z.instrCount)
 	}
 }
+
+// BDOS 呼び出しは CPU 命令ではないため bdosCalls のみ増え、cpuInsns は
+// 不変。恒等式: instrCount == cpuInsns + bdosCalls + intAccepts。
+func TestBDOSCounter(t *testing.T) {
+	prog := []byte{
+		0x0E, 0x1F, // LD C,1Fh (未定義 BDOS ファンクション、副作用なし)
+		0xCD, 0x05, 0x00, // CALL 0005h
+		0x76, // HALT
+	}
+	z := NewZ80()
+	copy(z.mem[0x0100:], prog)
+	z.pc = 0x0100
+
+	z.Step() // LD C,n
+	z.Step() // CALL 0005h
+	if z.pc != 0x0005 {
+		t.Fatalf("CALL 0005: PC=%04X, want 0005", z.pc)
+	}
+	if z.bdosCalls != 0 {
+		t.Fatalf("BDOS トラップ前: bdosCalls=%d, want 0", z.bdosCalls)
+	}
+	z.Step() // BDOS トラップ (PC=0005)
+	if z.bdosCalls != 1 {
+		t.Fatalf("BDOS トラップ後: bdosCalls=%d, want 1", z.bdosCalls)
+	}
+	if z.pc != 0x0105 {
+		t.Fatalf("BDOS リターン: PC=%04X, want 0105", z.pc)
+	}
+	z.Step() // HALT
+	if z.instrCount != z.cpuInsns+z.bdosCalls+z.intAccepts {
+		t.Fatalf("恒等式: instrCount=%d cpuInsns=%d bdosCalls=%d intAccepts=%d",
+			z.instrCount, z.cpuInsns, z.bdosCalls, z.intAccepts)
+	}
+}
+
+// BIT b,(IX+d) のフラグ: Z = テストビットの反転、P/V = Z、
+// S = テスト対象値の bit 7 (UM0080)。
+func TestDDCBBITFlags(t *testing.T) {
+	// LD IX,2000h / BIT 0,(IX+0) / HALT。mem[0x2000] は 0 (初期化値)
+	z := runProg(t, []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0xCB, 0x00, 0x46, 0x76}, 3)
+	if z.f&ZF == 0 {
+		t.Fatalf("BIT 0 of 00: Z=0, want Z=1")
+	}
+	if z.f&PF == 0 {
+		t.Fatalf("BIT 0 of 00: P/V=0, want P/V=1 (=Z)")
+	}
+	if z.f&SF != 0 {
+		t.Fatalf("BIT 0 of 00: S=1, want S=0 (値の bit7 = 0)")
+	}
+
+	// BIT 7,(IX+0) で値 0x80: Z=0, S=1
+	z2 := NewZ80()
+	copy(z2.mem[0x0100:], []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0xCB, 0x00, 0x7E, 0x76})
+	z2.wb(0x2000, 0x80)
+	z2.pc = 0x0100
+	for i := 0; i < 3; i++ {
+		z2.Step()
+	}
+	if z2.f&ZF != 0 {
+		t.Fatalf("BIT 7 of 80: Z=1, want Z=0")
+	}
+	if z2.f&PF != 0 {
+		t.Fatalf("BIT 7 of 80: P/V=1, want P/V=0")
+	}
+	if z2.f&SF == 0 {
+		t.Fatalf("BIT 7 of 80: S=0, want S=1 (値の bit7 = 1)")
+	}
+}
+
+// DD CB の rotate/SET/RES で z_==6 のとき setReg(6) = (HL) に誤書き込み
+// していた副作用の修正を検証する。
+func TestDDCBNoHLAlias(t *testing.T) {
+	// LD IX,2000h / LD HL,3000h / mem[2000]=01 / mem[3000]=7F
+	z := NewZ80()
+	copy(z.mem[0x0100:], []byte{
+		0xDD, 0x21, 0x00, 0x20, // LD IX,2000h
+		0x21, 0x00, 0x30, // LD HL,3000h
+		0xDD, 0xCB, 0x00, 0x06, // RLC (IX+0)
+		0xDD, 0xCB, 0x00, 0xC6, // SET 0,(IX+0)
+		0x76,
+	})
+	z.wb(0x2000, 0x01)
+	z.wb(0x3000, 0x7F)
+	z.pc = 0x0100
+	for i := 0; i < 3; i++ { // LD IX / LD HL / RLC (IX+0)
+		z.Step()
+	}
+	// RLC (IX+0): 0x01 -> 0x02。IX 側メモリのみ変化
+	if got := z.rb(0x2000); got != 0x02 {
+		t.Fatalf("mem[2000]=%02X, want 02 (RLC (IX+0))", got)
+	}
+	// SET 0,(IX+0): 0x02 -> 0x03
+	z.Step()
+	if got := z.rb(0x2000); got != 0x03 {
+		t.Fatalf("mem[2000]=%02X, want 03 (SET 0,(IX+0))", got)
+	}
+	// HL 側メモリは一切変化しない
+	if got := z.rb(0x3000); got != 0x7F {
+		t.Fatalf("mem[3000]=%02X, want 7F (HL 側は不変のはず)", got)
+	}
+}

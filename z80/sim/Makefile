@@ -68,7 +68,7 @@ cycles: $(SIM)
 # 命令数: make icount S=s04_loops (simz80 の実行命令数)
 icount: $(SIM)
 	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
-	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '/^instructions:/ { print "実行命令数: " $$2 " (simz80 実測 / CPU 命令のみ。BDOS 呼び出し・割り込み受付は含まない)"; found=1 } END { if (!found) print "実行命令数: 0 (simz80 実測 / CPU 命令のみ。BDOS 呼び出し・割り込み受付は含まない)" }'
+	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '/^instructions:/ { print "実行命令数: " $$2 " (simz80 実測 / CPU 命令のみ。BDOS 呼び出し・割り込み受付は含まない)"; found=1 } END { if (!found) print "実行命令数: unsupported (simz80 がサマリを出力せず終了。タイムアウト等で計測不能)" }'
 
 # Unit tests for the simulator core (flags, T-states, .lst parser)
 test:

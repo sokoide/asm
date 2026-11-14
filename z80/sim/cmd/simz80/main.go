@@ -209,6 +209,23 @@ func (z *Z80) szpFlags(v byte) byte {
 	return f
 }
 
+// setFlagsBIT: BIT b,m のフラグ更新。N=0、H=1、C は不変、
+// Z = テストしたビットが 0 のとき 1、P/V = Z (UM0080 の BIT のフラグ表)、
+// S = テスト対象値の bit 7 (UM0080: 「S is set in the same manner as
+// bit 7 of the tested register」— ビット番号 y に依存しない)。
+func (z *Z80) setFlagsBIT(val byte, y byte) {
+	f := z.f & CF
+	f |= HF
+	if val&(1<<y) == 0 {
+		f |= ZF
+		f |= PF // P/V = Z
+	}
+	if val&0x80 != 0 {
+		f |= SF
+	}
+	z.f = f
+}
+
 func (z *Z80) setFlagsAdd(a, b byte, cy byte) {
 	r := uint16(a) + uint16(b) + uint16(cy)
 	f := z.szpFlags(byte(r))
@@ -625,17 +642,7 @@ func (z *Z80) execCB() {
 		z.setReg(z_, newVal)
 
 	} else if x == 1 { // BIT y, r[z]
-		val := z.getReg(z_)
-		result := val & (1 << y)
-		f := z.f & CF
-		f |= HF
-		if result == 0 {
-			f |= ZF
-		}
-		if y == 7 && (val&0x80 != 0) {
-			f |= SF
-		}
-		z.f = f
+		z.setFlagsBIT(z.getReg(z_), y)
 
 	} else if x == 2 { // RES y, r[z]
 		val := z.getReg(z_)
@@ -875,6 +882,7 @@ func (z *Z80) Step() bool {
 		z.lastPc = 0x0005
 		z.lastT = 0
 		z.instrCount++
+		z.bdosCalls++
 		z.bdosCall()
 		z.pc = z.pop()
 		return true
@@ -984,22 +992,23 @@ func (z *Z80) execIX() {
 		if x == 0 { // rotate/shift
 			val = z.rotate(y, val)
 			z.wb(addr, val)
-			z.setReg(z_, val)
-		} else if x == 1 { // BIT
-			f := z.f & CF
-			f |= HF
-			if val&(1<<y) == 0 {
-				f |= ZF
+			if z_ != 6 {
+				z.setReg(z_, val)
 			}
-			z.f = f
+		} else if x == 1 { // BIT
+			z.setFlagsBIT(val, y)
 		} else if x == 2 { // RES
 			val &= ^(1 << y)
 			z.wb(addr, val)
-			z.setReg(z_, val)
+			if z_ != 6 {
+				z.setReg(z_, val)
+			}
 		} else if x == 3 { // SET
 			val |= (1 << y)
 			z.wb(addr, val)
-			z.setReg(z_, val)
+			if z_ != 6 {
+				z.setReg(z_, val)
+			}
 		}
 		return
 	}
@@ -1022,25 +1031,26 @@ func (z *Z80) execIY() {
 		y := (cbop >> 3) & 7
 		z_ := cbop & 7
 		val := z.rb(addr)
-		if x == 0 {
+		if x == 0 { // rotate/shift
 			val = z.rotate(y, val)
 			z.wb(addr, val)
-			z.setReg(z_, val)
-		} else if x == 1 {
-			f := z.f & CF
-			f |= HF
-			if val&(1<<y) == 0 {
-				f |= ZF
+			if z_ != 6 {
+				z.setReg(z_, val)
 			}
-			z.f = f
-		} else if x == 2 {
+		} else if x == 1 { // BIT
+			z.setFlagsBIT(val, y)
+		} else if x == 2 { // RES
 			val &= ^(1 << y)
 			z.wb(addr, val)
-			z.setReg(z_, val)
-		} else if x == 3 {
+			if z_ != 6 {
+				z.setReg(z_, val)
+			}
+		} else if x == 3 { // SET
 			val |= (1 << y)
 			z.wb(addr, val)
-			z.setReg(z_, val)
+			if z_ != 6 {
+				z.setReg(z_, val)
+			}
 		}
 		return
 	}

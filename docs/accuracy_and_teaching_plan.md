@@ -24,6 +24,16 @@
 - **P1 学習カード**: 6502 s101/s13 のカードの「make cycles でループ単位の実測」という誤記述を修正（make cycles はプログラム全体。ループ単位は trace の累積 T-state で入口・出口の差分を取る）。6 アーキのカードは全量 icount を正しく説明していたため無変更。**z80 の学習カード 4 枚（S13/S101×2/S102）が未追加だった**ため追加
 - 将来改善（未実施、記録）: `make measure S=... START=<label> END=<label>` の区間計測機能、計測コマンドの `|| true` 遮蔽の見直し、ppc/m68k halt 検出の明示的マーカー化
 
+## 再レビュー指摘への対応 第 2 次 (2026-11-14) — 正確性改善フェーズの区切り
+
+- **bdosCalls 未加算**: 前回のカウンタ導入パッチが bdosCalls++ を silent-fail していた（assert なし置換）。修正し、恒等式 `instrCount == cpuInsns + bdosCalls + intAccepts` を TestBDOSCounter で検証（未定義 BDOS ファンクション 0x1F で静かに呼び出すテスト設計）
+- **BIT フラグ**: setFlagsBIT ヘルパを新設（通常 CB / DD CB / FD CB の 3 経路共通）。Z = テストビットの反転、P/V = Z、S = テスト対象値の bit 7（UM0080「S is set in the same manner as bit 7 of the tested register」— 従来の y==7 専用実装を訂正）、N=0、H=1、C 不変
+- **DD/FD CB の setReg(6) 副作用**: rotate/SET/RES の z_==6 で setReg(6) が (HL) を書き換える誤副作用を除去（テスト: RLC (IX+0) と SET 0,(IX+0) で IX 側メモリのみ変化、HL 側不変）
+- **6502 icount 表示**: unsupported が「実行命令数: unsupported ...」と数値ラベルで包まれる表示を修正。完走 (PVExit) / 打ち切り (timeout 124 / -x 上限 126) を判定して「完走値」「打ち切り値」を区別表示。トレースは `.icount.trace` に分離（clean 対象 + gitignore）
+- **z80 icount の kill 時表示**: サマリ出力前にタイムアウト kill された場合の fallback を「0」から unsupported 表示に修正
+- 検証: z80 make test PASS（BDOS カウンタ恒等式・BIT フラグ・HL エイリアス不変の 3 テスト追加）、全 8 アーキ runall PASS、markdownlint / textlint 0 エラー
+- このフェーズで正確性改善は完了。以後は新機能（区間計測など）は別フェーズとして扱う
+
 ## 0. 指摘事項の検証結果（実コード・一次資料で裏付け済み）
 
 | 指摘 | 検証結果 |
