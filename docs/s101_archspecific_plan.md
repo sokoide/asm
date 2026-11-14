@@ -1,6 +1,6 @@
 # アーキ固有シナリオ拡張計画（s101+）
 
-作成日: 2026-11-14 / 状態: Phase 1・2 実装済み（Phase 3 は未実施）
+作成日: 2026-11-14 / 状態: Phase 1・2・3 実装済み
 
 ## 実施状況 (2026-11-14)
 
@@ -9,7 +9,14 @@
 - 未決事項の決定: (1) ARM64 は軸 A・軸 B ともに含めた。(2) 既存シナリオの改名を実施した。(3) 割り込み系は観察まで（IM/IFF の debug 観察、simz80/sim65 の拡張は未実施）。(4) RISC-V ページングは未実施
 - チェックサム仕様: 0+1+...+99 = 4950 = `0x1356`（当初の 0x1352 は 16 進変換の誤り）
 - m68k のみリンカスクリプトを 0x0 → 0x400 に変更（例外ベクタテーブル 0x0-0x3FF と .text の重複解消。既存シナリオ出力は変化なし）
-- Phase 3（任意）: simz80 割り込み注入、sim65 IRQ/NMI、RISC-V S-mode ページング → 未実施。参考: simz80 には INC IX/IY のバグ (DD/FD 23 が INC HL として実行される) も発見済み
+
+### Phase 3 実施状況 (2026-11-14)
+
+- **6502 IRQ/NMI**: cc65 の sim65 ソースを `6502/sim65/sim65src/` にベンダリング（CPU コアには本家の IRQRequest/NMIRequest が既存）し、割り込みトリガ MMIO（`$FFCC` = IRQ パルス、`$FFCE` = NMI パルス）を memory.c に追加した `sim65i` を make 時に自動ビルド。既存シナリオはシステム sim65 とサイクル数まで同一（s01 7648 / s04 17715 / s11 63320 / s13 15428）。`s103_irq_nmi` で IRQ 受付 / I フラグマスク → CLI 後の遅延配信（リクエストはラッチされる簡略化） / NMI の I 無視を実演。簡略化: トリガはエッジとして扱われ受付まで保持（実機のレベルトリガではデバイスがラインを下ろすと消失）
+- **Z80 割り込み注入**: simz80 に INT ラインを実装（OUT (0x10), A が要求 + ベクタバイト供給）。応答 T-state は Zilog UM0080 どおり IM 0/1 = 13T、IM 2 = 19T（acceptInterrupt 内で設定）。`s102_interrupts` で IM 2（ベクタテーブル）/ IM 1（RST 38h）/ IM 0（RST 10h）を実演。EI ディレイなし・HALT ウェイクアップ未対応・NMI 未実装の簡略化を README に明記。受付は BDOS トラップ (PC=0x0005) / 終了 (PC=0x0000) より後の命令境界
+- **simz80 バグ修正 2 件**: (1) `INC/DEC IX/IY`（DD/FD 23/2B）が INC/DEC HL として実行される（s101_blockops で回避済みだった）+ `INC/DEC (IX+d)` の誤実行、(2) **`ADD IX,rp`（DD 09/19/29/39）が `LD IX,nn` として実行される** — こちらは `s07_subroutines` が誤った結果 `stack(1234,5678) = 0043` を出力していた（正しくは `68AC`）ため修正し、既存シナリオの出力が 1 行だけ正しく変化した。go test に INC/DEC/ADD IX/IY と割り込み 11 テスト追加
+- **RISC-V S-mode ページング**: `s102_paging`（rv32 = Sv32 2 段、rv64 = Sv39 leaf-at-level-2）。M-mode で PMP（2 つの 2GB NAPOT エントリ — 単一 4GB NAPOT は QEMU の rv32 NAPOT 計算で動かない実測あり。PMP エントリなしでは mret 自体が access fault）→ medeleg 0xB000（実測: bit 11 のみ RO）→ mstatus.MPP = **bit 11**（bit 8 は SPP）→ mret → satp 設定 + sfence.vma → identity map 下で動作 → 0x40000000 への load/store で scause 13/15 のページフォールト → sret で復帰
+- 検証: 全 8 アーキ runall PASS、z80 `make test` PASS、markdownlint / textlint 0 エラー
 
 ## 目的
 

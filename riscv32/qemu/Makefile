@@ -4,7 +4,7 @@
 SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s05_strings s06_serial_in s07_subroutines s08_hardware \
           s09_branching s10_bitwise s11_memory s12_minishell \
-          s13_copybench s101_csr_ecall
+          s13_copybench s101_csr_ecall s102_paging
 
 AS      = clang
 LD      = ld.lld

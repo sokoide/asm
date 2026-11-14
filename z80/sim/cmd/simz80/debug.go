@@ -147,6 +147,8 @@ func (d *Debugger) showStep(prev regState) {
 	z := d.z
 	if z.lastBDOS {
 		fmt.Printf("── #%d  T+0 (host call) ──\n%s\n", z.instrCount, z.bdosLine())
+	} else if z.lastINT {
+		fmt.Printf("── #%d  T+%d (total %d) ──\n%s\n", z.instrCount, z.lastT, z.cycles, z.lastINTText)
 	} else {
 		fmt.Printf("── #%d  T+%d (total %d) ──\n", z.instrCount, z.lastT, z.cycles)
 		fmt.Println(z.disasmLine(z.lastPc, d.lst, false))
@@ -399,6 +401,8 @@ func runTrace(z *Z80, lst *Listing) {
 	for z.Step() {
 		if z.lastBDOS {
 			fmt.Printf("#%-5d T+0    %s\n", z.instrCount, z.bdosLine())
+		} else if z.lastINT {
+			fmt.Printf("#%-5d T+%-3d Σ%-6d %s\n", z.instrCount, z.lastT, z.cycles, z.lastINTText)
 		} else {
 			fmt.Printf("#%-5d T+%-3d Σ%-6d %s\n", z.instrCount, z.lastT, z.cycles,
 				z.disasmLine(z.lastPc, lst, false))
@@ -412,7 +416,7 @@ func runTrace(z *Z80, lst *Listing) {
 		prev = snapshot(z)
 	}
 	fmt.Printf("── stopped: %s\n", z.stopReason())
-	fmt.Printf("── %d instructions, %d T-states (BDOS host calls excluded)\n", z.instrCount, z.cycles)
+	fmt.Printf("── %d instructions, %d T-states (BDOS host calls excluded; interrupt acceptances included)\n", z.instrCount, z.cycles)
 }
 
 // runCycles executes silently and prints a timing summary.
@@ -420,6 +424,6 @@ func runCycles(z *Z80) {
 	for z.Step() {
 	}
 	fmt.Printf("instructions: %d\n", z.instrCount)
-	fmt.Printf("T-states:     %d (BDOS host calls excluded)\n", z.cycles)
+	fmt.Printf("T-states:     %d (BDOS host calls excluded; interrupt acceptances included)\n", z.cycles)
 	fmt.Printf("@ 4 MHz:      %.3f ms\n", float64(z.cycles)/4000.0)
 }

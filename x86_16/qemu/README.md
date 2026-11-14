@@ -166,6 +166,7 @@ make cycles S=s01_hello
 | `rep movsb`     | CX バイトを一括コピー                         |
 
 **文字列長測定の手順**:
+
 1. `mov di, greeting` — 検索開始アドレス
 2. `xor al, al; mov cx, 0xFFFF` — null 検索
 3. `repne scasb` — 検索実行
@@ -189,6 +190,7 @@ make cycles S=s01_hello
 | Enter (CR/LF) 判定    | `cmp al, 13` / `cmp al, 10` で入力終了判定  |
 
 **UART 受信の流れ**:
+
 1. LSR (0x3FD) の bit 0 (Data Ready) をポーリング
 2. Data Ready = 1 になったら RBR (0x3F8) から 1 バイト読み込み
 
@@ -229,6 +231,7 @@ Intel 8254 PIT (Programmable Interval Timer) のカウンタ値を I/O ポート
 | 2 回目の読み取り       | PIT が動作中（カウントダウン中）であることを確認 |
 
 **PIT 読み取り手順**:
+
 1. `mov al, 0x00` → `out 0x43, al` でカウンタ 0 をラッチ
 2. `in al, 0x40` → BL（ローバイト）
 3. `in al, 0x40` → BH（ハイバイト）

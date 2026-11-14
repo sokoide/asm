@@ -10,6 +10,21 @@ func writeFile(path, content string) error {
 	return os.WriteFile(path, []byte(content), 0o644)
 }
 
+// runProg loads prog at 0x0100 and executes exactly steps Step() calls,
+// failing the test when the CPU stops early.
+func runProg(t *testing.T, prog []byte, steps int) *Z80 {
+	t.Helper()
+	z := NewZ80()
+	copy(z.mem[0x0100:], prog)
+	z.pc = 0x0100
+	for i := 0; i < steps; i++ {
+		if !z.Step() {
+			t.Fatalf("step %d/%d stopped early: %s", i+1, steps, z.stopReason())
+		}
+	}
+	return z
+}
+
 // The reference example from the learning materials:
 // LD A,7Fh / ADD A,01h must produce A=80h, F=94h (S=1, H=1, P/V=1).
 func TestAddFlagsReferenceExample(t *testing.T) {
@@ -294,5 +309,239 @@ func TestListingWindow(t *testing.T) {
 	}
 	if lst.At(0x0106) == nil || lst.At(0x0106).Text != "ret" {
 		t.Fatal("At(0106) should be the ret")
+	}
+}
+
+// INC IX (DD 23) must increment IX itself, not fall back to INC HL.
+// Official timing: DD 23 = 10 T-states (4 prefix + 6 INC rp).
+func TestINCDECIndexRegisters(t *testing.T) {
+	// LD IX,0x1234; INC IX; DEC IX
+	z := runProg(t, []byte{0xDD, 0x21, 0x34, 0x12, 0xDD, 0x23, 0xDD, 0x2B}, 3)
+	// After step 2 INC IX ran; step 3 DEC IX returned IX to 0x1234.
+	if z.ix() != 0x1234 {
+		t.Fatalf("IX = %04X after INC+DEC, want 1234", z.ix())
+	}
+	if z.lastT != 10 {
+		t.Fatalf("DEC IX T-states = %d, want 10", z.lastT)
+	}
+
+	// INC IX alone: IX 0x1234 -> 0x1235 with 10 T-states.
+	z2 := runProg(t, []byte{0xDD, 0x21, 0x34, 0x12, 0xDD, 0x23}, 2)
+	if z2.ix() != 0x1235 {
+		t.Fatalf("IX = %04X after INC IX, want 1235", z2.ix())
+	}
+	if z2.lastT != 10 {
+		t.Fatalf("INC IX T-states = %d, want 10", z2.lastT)
+	}
+
+	// LD IY,0x1234; INC IY (FD 23); DEC IY (FD 2B)
+	z3 := runProg(t, []byte{0xFD, 0x21, 0x34, 0x12, 0xFD, 0x23}, 2)
+	if z3.iy() != 0x1235 {
+		t.Fatalf("IY = %04X after INC IY, want 1235", z3.iy())
+	}
+	if z3.lastT != 10 {
+		t.Fatalf("INC IY T-states = %d, want 10", z3.lastT)
+	}
+	z4 := runProg(t, []byte{0xFD, 0x21, 0x34, 0x12, 0xFD, 0x2B}, 2)
+	if z4.iy() != 0x1233 {
+		t.Fatalf("IY = %04X after DEC IY, want 1233", z4.iy())
+	}
+}
+
+// INC (IX+d) (DD 34) / DEC (IY+d) (FD 35) operate on memory with 23 T-states.
+func TestINCDECIndexIndirect(t *testing.T) {
+	z := runProg(t, []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0x34, 0x02}, 2)
+	if z.rb(0x2002) != 1 {
+		t.Fatalf("(IX+2) = %02X, want 01", z.rb(0x2002))
+	}
+	if z.lastT != 23 {
+		t.Fatalf("INC (IX+d) T-states = %d, want 23", z.lastT)
+	}
+
+	z2 := runProg(t, []byte{0xFD, 0x21, 0x00, 0x20, 0xFD, 0x35, 0x02}, 2)
+	// mem[0x2002] is 0 -> DEC wraps to FF.
+	if z2.rb(0x2002) != 0xFF {
+		t.Fatalf("(IY+2) = %02X, want FF", z2.rb(0x2002))
+	}
+	if z2.lastT != 23 {
+		t.Fatalf("DEC (IY+d) T-states = %d, want 23", z2.lastT)
+	}
+}
+
+// DD-prefixed x==2 opcodes other than (IX+d) forms are ALU A,r:
+// DD 83 must be ADD A,E (it used to be mis-decoded as INC BC).
+func TestDDPrefixALUFallback(t *testing.T) {
+	// LD A,1; LD E,2; ADD A,E (DD 83)
+	z := runProg(t, []byte{0x3E, 0x01, 0x1E, 0x02, 0xDD, 0x83}, 3)
+	if z.a != 3 {
+		t.Fatalf("A = %02X after DD 83 (ADD A,E with A=1,E=2), want 03", z.a)
+	}
+	if z.bc() != 0 {
+		t.Fatalf("BC = %04X, want 0000 (DD 83 must not increment BC)", z.bc())
+	}
+}
+
+// ---- Interrupt injection (port 0x10 INT line model) ----
+
+// OUT to port 0x10 asserts INT and latches the value as the vector byte.
+func TestPortOutInterruptRequest(t *testing.T) {
+	z := NewZ80()
+	z.portOut(0x0010, 0x80) // OUT (0x10),A with A=0x80
+	if !z.intPending {
+		t.Fatal("INT line must be pending after OUT (0x10)")
+	}
+	if z.intVector != 0x80 {
+		t.Fatalf("vector byte = %02X, want 80", z.intVector)
+	}
+	// A second OUT updates the latched vector byte.
+	z.portOut(0x0010, 0x42)
+	if z.intVector != 0x42 {
+		t.Fatalf("vector byte = %02X, want 42", z.intVector)
+	}
+	// Other ports do not touch the INT line.
+	z2 := NewZ80()
+	z2.portOut(0x0000, 0x55)
+	z2.portOut(0x0011, 0x55)
+	if z2.intPending {
+		t.Fatal("OUT to a port other than 0x10 must not assert INT")
+	}
+}
+
+// IM 1: pending INT with IFF1 set is accepted as RST 38h at the next
+// instruction boundary (13 T-states), IFF1/IFF2 cleared, PC pushed.
+func TestInterruptAcceptIM1(t *testing.T) {
+	// IM 1; EI; OUT (0x10),A; NOP (never reached before acceptance)
+	prog := []byte{0xED, 0x56, 0xFB, 0xD3, 0x10, 0x00, 0x00}
+	z := runProg(t, prog, 3) // IM 1, EI, OUT
+	if !z.intPending {
+		t.Fatal("INT must be pending after OUT (0x10)")
+	}
+	if !z.iff1 {
+		t.Fatal("IFF1 must be set after EI")
+	}
+
+	// Step 4: interrupt acceptance instead of the NOP.
+	if !z.Step() {
+		t.Fatal("acceptance step")
+	}
+	if z.pc != 0x0038 {
+		t.Fatalf("PC = %04X after acceptance, want 0038", z.pc)
+	}
+	if z.lastT != 13 {
+		t.Fatalf("IM 1 response T-states = %d, want 13", z.lastT)
+	}
+	if z.intPending {
+		t.Fatal("INT line must be cleared after acceptance")
+	}
+	if z.iff1 || z.iff2 {
+		t.Fatal("IFF1/IFF2 must be cleared by acceptance")
+	}
+	if ret := z.rw(z.sp); ret != 0x0105 {
+		t.Fatalf("stack return address = %04X, want 0105", ret)
+	}
+
+	// RETN at the handler restores IFF1 from IFF2 (both 0 here) and pops PC.
+	z.wb(0x0038, 0xED)
+	z.wb(0x0039, 0x45)
+	if !z.Step() {
+		t.Fatal("RETN step")
+	}
+	if z.pc != 0x0105 {
+		t.Fatalf("PC = %04X after RETN, want 0105", z.pc)
+	}
+	if z.iff1 {
+		t.Fatal("RETN restores IFF1 from IFF2 (clear after acceptance)")
+	}
+}
+
+// IM 2: vector = (I << 8) | vector byte, handler address read from the
+// vector table (19 T-states).
+func TestInterruptAcceptIM2(t *testing.T) {
+	// LD A,0x80; IM 2; LD I,A; EI; OUT (0x10),A; NOP
+	prog := []byte{0x3E, 0x80, 0xED, 0x5E, 0xED, 0x47, 0xFB, 0xD3, 0x10, 0x00}
+	z := NewZ80()
+	copy(z.mem[0x0100:], prog)
+	z.pc = 0x0100
+	// Vector table: 0x8080 -> handler 0x1234.
+	z.wb(0x8080, 0x34)
+	z.wb(0x8081, 0x12)
+	for i := 0; i < 5; i++ {
+		if !z.Step() {
+			t.Fatalf("step %d stopped early", i+1)
+		}
+	}
+	if !z.intPending || !z.iff1 {
+		t.Fatal("INT must be pending with IFF1 set before acceptance")
+	}
+	if !z.Step() {
+		t.Fatal("acceptance step")
+	}
+	if z.pc != 0x1234 {
+		t.Fatalf("PC = %04X after IM 2 acceptance, want 1234", z.pc)
+	}
+	if z.lastT != 19 {
+		t.Fatalf("IM 2 response T-states = %d, want 19", z.lastT)
+	}
+	if ret := z.rw(z.sp); ret != 0x0109 {
+		t.Fatalf("stack return address = %04X, want 0109", ret)
+	}
+}
+
+// IM 0: the device supplies RST 10h (13 T-states).
+func TestInterruptAcceptIM0(t *testing.T) {
+	prog := []byte{0xED, 0x46, 0xFB, 0xD3, 0x10, 0x00} // IM 0; EI; OUT; NOP
+	z := runProg(t, prog, 3)
+	if !z.Step() {
+		t.Fatal("acceptance step")
+	}
+	if z.pc != 0x0010 {
+		t.Fatalf("PC = %04X after IM 0 acceptance, want 0010", z.pc)
+	}
+	if z.lastT != 13 {
+		t.Fatalf("IM 0 response T-states = %d, want 13", z.lastT)
+	}
+}
+
+// A pending INT is not accepted while IFF1 is clear (DI); the pending
+// request survives until interrupts are enabled.
+func TestInterruptNotAcceptedWhenDisabled(t *testing.T) {
+	prog := []byte{0xED, 0x56, 0xF3, 0xD3, 0x10, 0x00, 0x00} // IM 1; DI; OUT; NOP; NOP
+	z := runProg(t, prog, 3)
+	if !z.intPending {
+		t.Fatal("INT must be pending")
+	}
+	if !z.Step() {
+		t.Fatal("NOP step with interrupts disabled")
+	}
+	if z.pc != 0x0106 {
+		t.Fatalf("PC = %04X, want 0106 (NOP must execute, no acceptance)", z.pc)
+	}
+	if !z.intPending {
+		t.Fatal("INT request must stay pending while IFF1 is clear")
+	}
+}
+
+func TestADDIndexRegisters(t *testing.T) {
+	// DD 39: ADD IX,SP = 15T. Before the fix, ADD IX,rp was mis-executed
+	// as LD IX,nn (the LD rp,nn handler did not check q == 0).
+	// LD IX,0x1000 / LD SP,0x0234 / ADD IX,SP -> IX=0x1234, carry per half
+	// 0x1000+0x0234: no carry, half-carry none
+	prog := []byte{0xDD, 0x21, 0x00, 0x10, 0x31, 0x34, 0x02, 0xDD, 0x39}
+	z := runProg(t, prog, 3) // LD IX,nn / LD SP,nn / ADD IX,SP
+	if z.ix() != 0x1234 {
+		t.Fatalf("ADD IX,SP: IX=%04X, want 1234", z.ix())
+	}
+	if z.lastT != 15 {
+		t.Fatalf("ADD IX,SP: lastT=%d, want 15", z.lastT)
+	}
+	if z.f&CF != 0 {
+		t.Fatalf("ADD IX,SP: unexpected carry")
+	}
+
+	// FD 29: ADD IY,IY -> 0x1000*2 = 0x2000
+	prog2 := []byte{0xFD, 0x21, 0x00, 0x10, 0xFD, 0x29}
+	z2 := runProg(t, prog2, 2) // LD IY,nn / ADD IY,IY
+	if z2.iy() != 0x2000 {
+		t.Fatalf("ADD IY,IY: IY=%04X, want 2000", z2.iy())
 	}
 }

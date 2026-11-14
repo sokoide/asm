@@ -64,7 +64,8 @@ make cycles S=s01_hello
 ├── s11_memory.s         # シナリオ 11: メモリ操作
 ├── s12_minishell.s      # シナリオ 12: インタラクティブシェル
 ├── s13_copybench.s      # シナリオ 13: 共通課題 100 バイトコピー
-└── s101_csr_ecall.s     # シナリオ 101: CSR と ECALL
+├── s101_csr_ecall.s     # シナリオ 101: CSR と ECALL
+└── s102_paging.s        # シナリオ 102: S-mode ページング (Sv39)
 ```
 
 ## シナリオ一覧
@@ -291,6 +292,32 @@ RISC-V 特有の「制御は CSR とトラップ機構に集約される」設�
 | ECALL / MRET      | 環境呼び出しトラップと mepc + 4 での復帰                 |
 
 観察: `make trace S=s101_csr_ecall` で ecall → mtvec 突入 → mret の流れが追える。
+
+---
+
+### S102: S-mode ページング (Sv39)
+
+**難易度**: ★★★★☆
+
+M-mode → S-mode 遷移 → S-mode でページテーブル構築 → ページフォールト実演。RISC-V 特権アーキテクチャの中核「satp による仮想記憶」を 1 ファイルで体験する。
+
+| 学習項目        | 説明                                                              |
+| :---            | :---                                                              |
+| PMP             | S-mode からの物理アクセス許可。設定しないと mret 直後に fetch が access fault |
+| medeleg         | ページフォールト (exception 12/13/15) を S-mode へ委譲            |
+| mstatus.MPP     | bits 12:11 = 01 (S) で mret の遷移先を S-mode に指定              |
+| Sv39            | 3 段ページテーブル (VPN2=VA[38:30], VPN1=VA[29:21], VPN0=VA[20:12]) |
+| PTE フィールド  | V/R/W/X/A/D ビット + PPN (64-bit PTE)。非 leaf ポインタは V のみ  |
+| メガページ      | leaf-at-level-2 で 1GB マッピング (3 段目を省略)                  |
+| satp / sfence.vma | MODE=8 (bits 63:60) \| PPN(root) で有効化、書換後は TLB 同期    |
+| ページフォールト | 未マップ VA へ load (scause=13) / store (scause=15)、stval にフォールト VA |
+| sepc += 4 + sret | stvec ハンドラでフォールト命令をスキップして継続               |
+
+**Sv39 の構成**: root[0] は 1GB メガページ leaf @ 0x00000000 (test デバイス / UART / CLINT / PLIC / flash / PCI)、root[2] は 1GB メガページ leaf @ 0x80000000 (コード・データ・スタックの DRAM)。1GB leaf の PPN は 0x80000000>>12 = 0x80000 (下位 18 ビット 0 = 1GB アライメントの証)。未マップの root[1] (VA 0x40000000) がフォールト実演の対象。rv32 版 (Sv32: 2 段 + 4MB メガページ + 4KB leaf) との違いはソース冒頭のコメントを参照。
+
+**PMP の必要性**: QEMU virt は PMP エントリなしでリセットされ、S-mode からのアクセスが PMP で拒否される。本シナリオは MMIO 領域 (0x00000000-0x7fffffff) と DRAM (0x80000000-0xbfffffff) を 2 つの 2GB NAPOT エントリ (`pmpcfg0=0x0f0f`, `pmpaddr0=0x0fffffff`, `pmpaddr1=0x2fffffff`) で許可する。
+
+観察: `make run S=s102_paging` で M→S 遷移、satp 読み戻し、`PAGE FAULT scause=... stval=...` の 2 回のフォールトと sret 復帰が追える。
 
 ---
 

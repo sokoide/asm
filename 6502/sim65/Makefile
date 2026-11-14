@@ -1,19 +1,28 @@
 SCENARIOS = s01_hello s02_registers s03_stack s04_loops \
             s05_strings s06_serial_in s07_subroutines s08_hardware \
             s09_branching s10_bitwise s11_memory s12_minishell \
-            s13_copybench s101_zeropage s102_selfmod
+            s13_copybench s101_zeropage s102_selfmod s103_irq_nmi
 
 HELPERS = helpers.s
 HELPER_OBJS = $(HELPERS:.s=.o)
 HELPER_LST = $(HELPERS:.s=.lst)
 
+# sim65i: リポジトリ内 sim65 ビルド (IRQ/NMI 対応拡張)。
+# cc65 V2.19 以降の sim65 ソースを sim65src/ にベンダリングし、
+# 割り込みトリガ MMIO ($FFCC=IRQ, $FFCE=NMI) を memory.c に追加したもの。
+# 既存シナリオはシステム sim65 とサイクル数まで同一の挙動。
+SIM65I = sim65src/sim65i
+SIM65I_SRCS = sim65src/simmain.c sim65src/6502.c sim65src/memory.c \
+              sim65src/paravirt.c sim65src/error.c sim65src/trace.c \
+              sim65src/peripherals.c sim65src/compat/compat.c
+
 # 実行タイムアウト(秒)。環境変数 TIMEOUT_SECS が設定されていればその値を使用。
 # (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
 TIMEOUT_SECS ?= 1
 
-.PHONY: all run runall debug trace cycles clean
+.PHONY: all run runall debug trace cycles clean sim65i
 
-all:
+all: sim65i
 	@echo "=== helpers ==="; \
 	cl65 -t sim6502 -c -l $(HELPER_LST) -o $(HELPER_OBJS) $(HELPERS) && echo "  OK" || echo "  FAIL"; \
 	for s in $(SCENARIOS); do \
@@ -29,9 +38,14 @@ cl65 -t sim6502 -c -l $(1).lst -o $(1).o $(1).s
 cl65 -t sim6502 -o $(1) $(1).o $(HELPER_OBJS)
 endef
 
+# s103_irq_nmi は割り込みトリガが必要なため sim65i を使う
 run:
 	$(call build_one,$(S))
-	sim65 $(S)
+	@if [ "$(S)" = "s103_irq_nmi" ]; then \
+		$(SIM65I) $(S); \
+	else \
+		sim65 $(S); \
+	fi
 
 # s06/s12 は入力を読むため、runall と同じ標準入力を与える
 define feed_input
@@ -41,6 +55,11 @@ else $(TIMEOUT) $(1) 2>/dev/null || true; \
 fi
 endef
 
+# s103_irq_nmi 用のシミュレータ選択 (debug/trace/cycles でも割り込みが必要)
+define pick_sim
+if [ "$(S)" = "s103_irq_nmi" ]; then echo "$(SIM65I)"; else echo "sim65"; fi
+endef
+
 # リプレイ型ステップ表示: make debug S=s03_stack
 # 注意: sim65 には対話ステップ実行がないため、全トレースを記録してから
 # ページャで1命令ずつ送って見る「再生」になる (停止・巻き戻しは自由)。
@@ -48,25 +67,30 @@ endef
 # トレース行の間に混ざって記録される。
 debug:
 	$(call build_one,$(S))
-	@$(call feed_input,sim65 --trace $(S)) >$(S).trace
+	@SIM=$$($(call pick_sim)); \
+	$(call feed_input,$$SIM --trace $(S)) >$(S).trace
 	@echo "── リプレイ: SPACE/Enter で1命令ずつ、q で終了 ($(S).trace に保存済み)"
 	@awk -f trace-diff.awk $(S).trace | $${PAGER:-less -R}
 
 # 実行トレース: make trace S=s03_stack (差分付きで標準出力へ)
 trace:
 	$(call build_one,$(S))
-	@$(call feed_input,sim65 --trace $(S)) >$(S).trace
+	@SIM=$$($(call pick_sim)); \
+	$(call feed_input,$$SIM --trace $(S)) >$(S).trace
 	@awk -f trace-diff.awk $(S).trace
 
 # サイクル数: make cycles S=s04_loops (最終行に合計サイクル)
 cycles:
 	$(call build_one,$(S))
-	@$(call feed_input,sim65 -c $(S))
+	@SIM=$$($(call pick_sim)); \
+	$(call feed_input,$$SIM -c $(S))
 
 runall: all
 	@for s in $(SCENARIOS); do \
 		echo "=== $$s ==="; \
-		if [ "$$s" = "s12_minishell" ]; then \
+		if [ "$$s" = "s103_irq_nmi" ]; then \
+			timeout --foreground $(TIMEOUT_SECS) $(SIM65I) $$s 2>/dev/null || true; \
+		elif [ "$$s" = "s12_minishell" ]; then \
 			printf 'help\nquit\n' | timeout --foreground $(TIMEOUT_SECS) sim65 $$s 2>/dev/null || true; \
 		elif [ "$$s" = "s06_serial_in" ]; then \
 			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) sim65 $$s 2>/dev/null || true; \
@@ -75,6 +99,9 @@ runall: all
 		fi; \
 		echo ""; \
 	done
+
+sim65i:
+	clang -O2 -Wall -Isim65src -Isim65src/compat -o $(SIM65I) $(SIM65I_SRCS)
 
 clean:
 	rm -f $(SCENARIOS) $(HELPER_OBJS) $(SCENARIOS:=.o) $(SCENARIOS:=.lst) $(HELPER_LST) $(SCENARIOS:=.trace)

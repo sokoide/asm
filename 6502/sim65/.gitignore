@@ -16,3 +16,5 @@ test_putchar
 s13_copybench
 s101_zeropage
 s102_selfmod
+s103_irq_nmi
+sim65src/sim65i

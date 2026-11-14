@@ -41,9 +41,9 @@ copy_loop:
 	; ============================================================
 	; Step 2: verify dst against the pattern + 16-bit checksum
 	;   The source data is defined as byte i = i, so dst[i] must
-	;   equal the index in C. (No IX here: simz80 executes DD 23
-	;   INC IX as INC HL - the index register must not be
-	;   incremented in a loop on this simulator.)
+	;   equal the index in C. (No IX here - HL/BC are already in use.
+	;   Note: simz80 used to execute DD 23 INC IX as INC HL; that bug
+	;   was fixed and INC/DEC IX/IY now work correctly.)
 	; ============================================================
 	ld	hl, dst_buf		; HL = destination pointer
 	ld	bc, 0			; C = byte index

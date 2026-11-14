@@ -24,6 +24,15 @@ type Z80 struct {
 	iff1, iff2 bool
 	im         byte
 	halted     bool
+	// INT line model (educational): OUT to port 0x10 latches the
+	// written value as the IM 2 vector byte and asserts INT until it
+	// is accepted at an instruction boundary.
+	intPending bool
+	intVector  byte
+	// lastINT/lastINTText describe an interrupt acceptance performed
+	// by the most recent Step() (for trace/debug display, like lastBDOS).
+	lastINT     bool
+	lastINTText string
 	// I/O
 	inputBuf []byte
 	inputPos int
@@ -383,7 +392,15 @@ func (z *Z80) portIn(port uint16) byte {
 }
 
 func (z *Z80) portOut(port uint16, val byte) {
-	// no-op
+	// Educational INT device (see s102_interrupts): an OUT to port 0x10
+	// (low byte of the port address) asserts the INT line and latches
+	// the written value as the vector byte for IM 2. One OUT request
+	// raises INT once; the CPU clears the line when it accepts the
+	// interrupt. All other ports remain no-ops.
+	if port&0xFF == 0x10 {
+		z.intVector = val
+		z.intPending = true
+	}
 }
 
 // BDOS handler
@@ -844,10 +861,19 @@ func (z *Z80) Step() bool {
 		return true
 	}
 	z.lastBDOS = false
+	z.lastINT = false
 
 	// Terminal trap at 0x0000
 	if z.pc == 0x0000 {
 		return false
+	}
+
+	// Interrupt acceptance: a pending INT is taken at the instruction
+	// boundary when IFF1 is set (i.e. after EI). The BDOS host call and
+	// the PC=0x0000 exit take priority over the interrupt.
+	if z.intPending && z.iff1 {
+		z.acceptInterrupt()
+		return true
 	}
 
 	start := z.pc
@@ -877,6 +903,45 @@ func (z *Z80) Step() bool {
 	z.cycles += t
 	z.instrCount++
 	return true
+}
+
+// acceptInterrupt emulates the Z80 interrupt acknowledge sequence for a
+// pending INT. The interrupted PC is pushed and IFF1/IFF2 are cleared;
+// the handler returns with RETN/RETI (both restore IFF1 from IFF2).
+// Response T-states follow the official Z80 timing (Zilog UM0080):
+// IM 0/1 = 13 T, IM 2 = 19 T.
+func (z *Z80) acceptInterrupt() {
+	z.lastINT = true
+	z.lastPc = z.pc
+	ret := z.pc
+	z.push(ret)
+	z.iff1 = false
+	z.iff2 = false
+	z.intPending = false
+
+	switch z.im {
+	case 0:
+		// IM 0: the interrupting device supplies an opcode on the data
+		// bus which the CPU executes. This educational device model
+		// always supplies RST 10h.
+		z.pc = 0x0010
+		z.lastT = 13
+		z.lastINTText = fmt.Sprintf("%04X  INT (IM 0): device supplies RST 10h -> PC=0010", ret)
+	case 1:
+		// IM 1: fixed RST 38h
+		z.pc = 0x0038
+		z.lastT = 13
+		z.lastINTText = fmt.Sprintf("%04X  INT (IM 1): RST 38h -> PC=0038", ret)
+	default:
+		// IM 2: vector table at (I << 8) | vector byte; the handler
+		// address is read from memory (device-supplied vector byte).
+		vec := (uint16(z.i) << 8) | uint16(z.intVector)
+		z.pc = z.rw(vec)
+		z.lastT = 19
+		z.lastINTText = fmt.Sprintf("%04X  INT (IM 2): vector %04X -> handler %04X", ret, vec, z.pc)
+	}
+	z.cycles += z.lastT
+	z.instrCount++
 }
 
 func (z *Z80) execIX() {
@@ -994,13 +1059,61 @@ func (z *Z80) execWithHL(op byte, useIX bool) {
 			val := z.fetch()
 			z.wb(addr, val)
 			return
-		} else if y == 6 { // LD A, (IX/IY+d)
+		} else if y == 6 && z_ == 4 { // INC (IX/IY+d)
 			addr := ixAddr()
-			z.a = z.rb(addr)
+			val := (z.rb(addr) + 1) & 0xFF
+			z.setFlagsInc(val)
+			z.wb(addr, val)
+			return
+		} else if y == 6 && z_ == 5 { // DEC (IX/IY+d)
+			addr := ixAddr()
+			val := (z.rb(addr) - 1) & 0xFF
+			z.setFlagsDec(val)
+			z.wb(addr, val)
+			return
+		} else if z_ == 3 { // INC/DEC rp (p==2: IX/IY)
+			// DD/FD 23/2B/33/3B: INC/DEC IX/IY (or SP). Before the fix,
+			// the p==2 case fell through to the unprefixed INC/DEC HL.
+			if q == 0 {
+				if p == 2 {
+					z.setHLorIndex(useIX, z.getHLorIndex(useIX)+1)
+				} else {
+					z.setRp(p, z.getRp(p)+1)
+				}
+			} else {
+				if p == 2 {
+					z.setHLorIndex(useIX, z.getHLorIndex(useIX)-1)
+				} else {
+					z.setRp(p, z.getRp(p)-1)
+				}
+			}
+			return
+		}
+		if z_ == 1 && q == 1 { // ADD IX/IY, rp[p]
+			// DD/FD 09/19/29/39: ADD IX,BC/DE/IX/SP (same for IY).
+			// Before the fix this fell through to the LD rp,nn handler
+			// below and ADD IX,rp was mis-executed as LD IX,nn.
+			var addend uint16
+			if p == 2 {
+				addend = z.getHLorIndex(useIX) // ADD IX,IX / ADD IY,IY
+			} else {
+				addend = z.getRp(p)
+			}
+			hl := z.getHLorIndex(useIX)
+			result := hl + addend
+			f := z.f & (SF | ZF | PF)
+			if result > 0xFFFF {
+				f |= CF
+			}
+			if (hl&0xFFF + addend&0xFFF) > 0xFFF {
+				f |= HF
+			}
+			z.f = f
+			z.setHLorIndex(useIX, result&0xFFFF)
 			return
 		}
 		// LD rp, nn (HL→IX/IY)
-		if z_ == 1 {
+		if z_ == 1 && q == 0 {
 			val := z.fetchWord()
 			if p == 2 { // IX/IY
 				z.setHLorIndex(useIX, val)
@@ -1039,37 +1152,11 @@ func (z *Z80) execWithHL(op byte, useIX bool) {
 			z.alu(y, z.rb(addr))
 			return
 		}
-		// INC/DEC
-		if z_ == 3 {
-			if q == 0 { // INC rp
-				if p == 2 {
-					z.setHLorIndex(useIX, z.getHLorIndex(useIX)+1)
-				} else {
-					z.setRp(p, z.getRp(p)+1)
-				}
-			} else { // DEC rp
-				if p == 2 {
-					z.setHLorIndex(useIX, z.getHLorIndex(useIX)-1)
-				} else {
-					z.setRp(p, z.getRp(p)-1)
-				}
-			}
-			return
-		}
-		if z_ == 4 { // INC (IX/IY+d)
-			addr := ixAddr()
-			val := (z.rb(addr) + 1) & 0xFF
-			z.setFlagsInc(val)
-			z.wb(addr, val)
-			return
-		}
-		if z_ == 5 { // DEC (IX/IY+d)
-			addr := ixAddr()
-			val := (z.rb(addr) - 1) & 0xFF
-			z.setFlagsDec(val)
-			z.wb(addr, val)
-			return
-		}
+		// Other x==2 opcodes (e.g. DD 83 = ADD A,E) fall through to
+		// execMain, which handles the unprefixed ALU A,r form. The old
+		// INC/DEC rp handling that lived here was misplaced: INC/DEC rp
+		// is encoded in the x==0 group (00 rp0 011) and is now handled
+		// above, while x==2 z==3 opcodes are ALU A,r (ADD A,E etc.).
 	}
 
 	if x == 3 {

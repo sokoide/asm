@@ -19,22 +19,23 @@
 ; bytes into a 16-bit checksum.
 ;   0+1+...+99 = 4950 = 1356h -> "OK CHECKSUM=1356"
 ;
-; Note: no INC IX in the verify loop - simz80 executes DD 23 INC IX
-; as INC HL (cmd/simz80/main.go falls back to the unprefixed opcode),
-; so the index register must not be incremented in a loop here.
+; Note: the verify loop uses HL/BC only. (simz80 used to execute DD 23
+; INC IX as INC HL through the unprefixed fallback - that bug was fixed;
+; INC/DEC IX/IY now update the index registers correctly.)
 ;
 ; IM 1 / IFF observation (make debug S=s101_blockops):
 ;   Step through with `s` and watch the diff line when `im 1` executes:
 ;       IM  00 -> 01
 ;   Press `r` (regs): the dump prints
 ;       ... I=00 R=.. IM=1 IFF1=true IFF2=true
-;   (after `ei`). simz80 has no INT injection, so the flags are
-;   observable but never triggered - see cmd/simz80/main.go.
+;   (after `ei`). This scenario only observes the flags; s102_interrupts
+;   actually injects INT requests via OUT (0x10),A.
 ;
 ; OTIR note: simz80 decodes and counts OTIR (tstates.go, ED B3) but its
-; portOut() is a no-op (cmd/simz80/main.go) and portIn() returns 0xFF
-; (floating bus). No port device is emulated, so an OTIR transfer has
-; no observable effect - it is left out of this scenario on purpose.
+; portOut() is a no-op outside the INT line model on port 0x10 (see
+; s102_interrupts) and portIn() returns 0xFF (floating bus). No port
+; device is emulated, so an OTIR transfer has no observable effect -
+; it is left out of this scenario on purpose.
 
 	org 0x0100
 

@@ -64,7 +64,8 @@ make cycles S=s01_hello
 ├── s11_memory.s         # シナリオ 11: メモリ操作
 ├── s12_minishell.s      # シナリオ 12: インタラクティブシェル
 ├── s13_copybench.s      # シナリオ 13: 共通課題 100 バイトコピー
-└── s101_csr_ecall.s     # シナリオ 101: CSR と ECALL
+├── s101_csr_ecall.s     # シナリオ 101: CSR と ECALL
+└── s102_paging.s        # シナリオ 102: S-mode ページング (Sv32)
 ```
 
 ## シナリオ一覧
@@ -291,6 +292,32 @@ RISC-V 特有の「制御は CSR とトラップ機構に集約される」設�
 | ECALL / MRET      | 環境呼び出しトラップと mepc + 4 での復帰                 |
 
 観察: `make trace S=s101_csr_ecall` で ecall → mtvec 突入 → mret の流れが追える。
+
+---
+
+### S102: S-mode ページング (Sv32)
+
+**難易度**: ★★★★☆
+
+M-mode → S-mode 遷移 → S-mode でページテーブル構築 → ページフォールト実演。RISC-V 特権アーキテクチャの中核「satp による仮想記憶」を 1 ファイルで体験する。
+
+| 学習項目        | 説明                                                              |
+| :---            | :---                                                              |
+| PMP             | S-mode からの物理アクセス許可。設定しないと mret 直後に fetch が access fault |
+| medeleg         | ページフォールト (exception 12/13/15) を S-mode へ委譲            |
+| mstatus.MPP     | bits 12:11 = 01 (S) で mret の遷移先を S-mode に指定              |
+| Sv32            | 2 段ページテーブル (VPN1=VA[31:22], VPN0=VA[21:12])               |
+| PTE フィールド  | V/R/W/X/A/D ビット + PPN。非 leaf ポインタは V のみ               |
+| メガページ      | root 直接 leaf (leaf-at-level-1) で 4MB マッピング                |
+| satp / sfence.vma | MODE=1 \| PPN(root) で有効化、書換後は TLB 同期                 |
+| ページフォールト | 未マップ VA へ load (scause=13) / store (scause=15)、stval にフォールト VA |
+| sepc += 4 + sret | stvec ハンドラでフォールト命令をスキップして継続               |
+
+**Sv32 の構成**: root[0] と root[64] は 4MB メガページ leaf (0x00000000 / 0x10000000: test デバイスと UART)、root[512] は V のみの非 leaf ポインタで、0x80000000-0x803fffff (コード・データ・スタック) を 1024 個の 4KB leaf で identity map する。
+
+**PMP の必要性**: QEMU virt は PMP エントリなしでリセットされ、S-mode からのアクセスが PMP で拒否される。本シナリオは MMIO 領域 (0x00000000-0x7fffffff) と DRAM (0x80000000-0xbfffffff) を 2 つの 2GB NAPOT エントリ (`pmpcfg0=0x0f0f`, `pmpaddr0=0x0fffffff`, `pmpaddr1=0x2fffffff`) で許可する。
+
+観察: `make run S=s102_paging` で M→S 遷移、satp 読み戻し、`PAGE FAULT scause=... stval=...` の 2 回のフォールトと sret 復帰が追える。
 
 ---
 
