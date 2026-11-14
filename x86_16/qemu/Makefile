@@ -118,8 +118,6 @@ debug:
 	    -ex 'set tdesc filename i8086.xml' \
 	    -ex 'set architecture i8086' \
 	    -ex 'set disassembly-flavor intel' \
-	    -ex 'source utils.gdb' \
-	    -ex 'show user regs16' \
 	    -ex 'break *0x7c00' \
 	    -ex 'continue' \
 	    -ex 'set disassemble-next-line on' \
