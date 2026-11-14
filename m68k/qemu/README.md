@@ -44,6 +44,8 @@ make icount S=s01_hello
 
 `make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
+停止ごとのレジスタ・メモリの自動表示やログ保存は、[GDB によるリモートデバッグ](../../README.md#gdb-によるリモートデバッグ-qemu-系)を参照。
+
 例外の観察（S102）: `make trace S=s102_trap` で TRAP #0 発生時の PC ジャンプ（ハンドラ先頭 0x42c）と例外スタックフレーム（SR・PC が SSP に積まれる際の A7 の変化）が命令単位で記録される。
 
 ## ディレクトリ構造

@@ -350,10 +350,10 @@ x0000000000000048 x01=0000000004000040 ...
 
 ### GDB によるリモートデバッグ (QEMU 系)
 
-QEMU 系の `make debug` は QEMU を `-S -gdb tcp::1234`（起動時停止 + GDB サーバ）で起動し、gdb を自動接続する。
+QEMU 系の `make debug` は QEMU を `-S -gdb tcp:127.0.0.1:1234`（起動時停止 + GDB サーバ）で起動し、gdb を自動接続する。Z80 は独自ステッパー、6502 はトレースのリプレイなので、以下の GDB コマンドは使わない。
 
 ```bash
-# gdb が起動して QEMU (tcp::1234) に接続される
+# gdb が起動して QEMU (127.0.0.1:1234) に接続される
 make debug A=arm64/qemu S=s01_hello
 
 # ポートや gdb を変える場合
@@ -376,6 +376,66 @@ make debug A=arm64/qemu S=s01_hello GDB_PORT=1234 GDB=aarch64-none-elf-gdb
 | `x/16xb $sp` | — | スタックを 16 バイト表示 |
 | `layout asm` | — | アセンブリ表示レイアウトに切替 |
 | `quit` | `q` | GDB 終了 |
+
+#### 停止時にレジスタとメモリを自動表示する
+
+`display` に登録すると、`si` やブレークポイントなどで停止するたびに値を表示する。次は M68K の例で、`make debug A=m68k/qemu S=s01_hello` の `(gdb)` プロンプトで入力する。
+
+```gdb
+display/i $pc
+display/x $d0
+display/x $a0
+display/16xb $a0
+display/8xh $sp
+si
+```
+
+`si` の後は命令実行後の値が表示され、`display/i $pc` は次に実行する命令を示す。`$a0` や `$sp` が読み取り可能なメモリを指してからメモリ表示を設定する。レジスタ名は対象や GDB によって異なるため `info registers` で確認する。M68K の A7 は通常 `$sp`、A6 は `$fp`、SR は `$ps` と表示される。ARM64 なら例えば `$x0` を使う。
+
+| 書式 | 意味 |
+| :--- | :--- |
+| `/x`、`/t` | 値を 16 進、2 進で表示 |
+| `/16xb` | メモリを 1 バイトずつ 16 個、16 進で表示 |
+| `/8xh` | メモリを 2 バイトずつ 8 個、16 進で表示 |
+| `/4xw` | メモリを 4 バイトずつ 4 個、16 進で表示 |
+| `/5i` | 命令を 5 個逆アセンブル |
+
+GDB の `h` は 16 ビット、`w` は 32 ビットを表す。68000 の Word（16 ビット）と GDB の `w` は異なる。登録一覧は `info display`、番号を指定した削除は `undisplay 1`、一時停止と再開は `disable display 1` / `enable display 1` を使う。
+
+複数のコマンドを毎回実行する場合は、GDB 上で次のように `hook-stop` を定義できる。`end` まで入力すると定義される。
+
+```gdb
+define hook-stop
+    info registers
+    x/i $pc
+    x/8xh $sp
+end
+```
+
+以後の停止時に実行される。スタックが読み取り可能な状態で使用する。処理を空にするには `define hook-stop` に続けて何も入力せず `end` とする。ファイルに保存した場合は `source m68k.gdb` で読み込める。
+
+GDB の表示をファイルに記録するには、GDB プロンプトで次を実行する。
+
+```gdb
+set logging file m68k-trace.log
+set logging overwrite on
+set logging enabled on
+si
+set logging enabled off
+```
+
+既存の同名ファイルは上書きされる。記録されるのは GDB の表示であり、QEMU の UART 出力や CPU のバスアクセス履歴ではない。変更箇所だけを表示するには Python 対応 GDB の `gdb.events.stop` と状態の比較を利用できるが、メモリの前後比較では書き込み順序は分からない。
+
+x86_16 では `make debug` が `set architecture i8086` を自動設定する。16 ビットのターゲット記述と Intel 形式を使うには、`x86_16/qemu/` にある `i8086.xml` と `i386-32bit.xml` を用意し、GDB プロンプトで次を入力する。`make debug` は同ディレクトリで GDB を起動する。
+
+```gdb
+set tdesc filename i8086.xml
+set architecture i8086
+set disassembly-flavor intel
+x/5i $pc
+```
+
+ターゲット記述を指定しない場合、GDB 表示は 32 ビットのレジスタ名や逆アセンブルのずれに注意する。命令一覧には `make dump S=<scenario>` も利用できる。スタックのアドレスにもセグメントを考慮する。
 
 **アーキテクチャ別の設定**:
 
