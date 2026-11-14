@@ -9,6 +9,7 @@ define regs68k
     printf "A0=%08x A1=%08x A2=%08x A3=%08x\n", (unsigned int)$a0, (unsigned int)$a1, (unsigned int)$a2, (unsigned int)$a3
     printf "A4=%08x A5=%08x A6=%08x A7=%08x\n", (unsigned int)$a4, (unsigned int)$a5, (unsigned int)$fp, (unsigned int)$sp
 
+    # flags
     printf "SR=%04x [X=%d N=%d Z=%d V=%d C=%d]  ", (unsigned int)$ps & 0xffff, ((unsigned int)$ps >> 4) & 1, ((unsigned int)$ps >> 3) & 1, ((unsigned int)$ps >> 2) & 1, ((unsigned int)$ps >> 1) & 1, (unsigned int)$ps & 1
     printf "PC=%08x\n", (unsigned int)$pc
 end
