@@ -1,0 +1,35 @@
+LD dst, src — Z80（データ転送）
+
+ロード。レジスタ・メモリ・即値の間でデータを転送する。組合せは多数あり。
+
+アドレッシング: 即値、レジスタ、レジスタ間接、インデックス(IX/IY+d)
+フラグ: S-  Z-  H-  P/V-  N-  C-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  LD r,r': 4
+  LD r,n: 7
+  LD r,(HL): 7
+  LD (HL),n: 10
+  LD r,(IX+d): 19
+  LD dd,nn (16bit): 10
+  LD A,(BC/DE): 7
+  LD A,(nn): 13
+  LD SP,HL: 6
+
+オペコード:
+  LD r,r': 01DDDSSS  (1 バイト)
+  LD r,n: 00DDD110 n  (2 バイト)
+  LD (HL),n: 36 n  (2 バイト)
+  LD (IX+d),n: DD 36 d n  (4 バイト)
+  LD dd,nn: 01ss0011 nn nn  (3 バイト)
+  LD A,(BC): 0A  (1 バイト)
+  LD A,(DE): 1A  (1 バイト)
+  LD A,(nn): 3A nn nn  (3 バイト)
+
+備考:
+  r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。
+  LD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。
+
+（根拠: knowledge）

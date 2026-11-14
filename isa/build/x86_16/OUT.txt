@@ -1,0 +1,18 @@
+OUT imm8/DX, AL/AX — 8086（I/O）
+
+I/O ポートへ出力。
+
+アドレッシング: I/O
+フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  imm8,AL: 10
+  DX,AX: 8
+
+オペコード:
+  OUT imm8,AL: E6 ib  (2 バイト)
+  OUT DX,AL: EE  (1 バイト)
+
+（根拠: knowledge）

@@ -1,0 +1,22 @@
+MUL src — x86-64（算術）
+
+符号なし乗算。RDX:RAX = RAX × src（64bit）。結果の上位半分が RDX に入る。
+
+アドレッシング: レジスタ、間接(base+index×scale+disp)
+フラグ: O‡  D-  I-  SU  ZU  AU  PU  C‡
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  reg: 3〜5
+  メモリオペランド: 3〜6
+
+オペコード:
+  MUL r/m64: REX.W F7 /4  (3 バイト)
+  MUL r/m32: F7 /4  (2 バイト)
+
+備考:
+  上位半分（RDX）が 0 なら C=O=0、0 でなければ C=O=1。S/Z/A/P は未定義。
+  8bit は AX=AL×src、16bit は DX:AX、32bit は EDX:EAX（本書6章 表参照）。
+
+（根拠: book）

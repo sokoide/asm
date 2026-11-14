@@ -1,0 +1,161 @@
+#!/usr/bin/env zsh
+# Offline ISA reference CLI.
+# Data lives in data/*.json; build/ holds generated TSV index + per-instruction TXT pages.
+# Usage: see `isa help`.
+set -uo pipefail
+
+SCRIPT_DIR="${0:A:h}"
+BUILD_DIR="$SCRIPT_DIR/build"
+SELF="$SCRIPT_DIR/isa"
+
+usage() {
+  cat <<'EOF'
+isa — オフライン命令セット・リファレンス（CLI 辞書）
+
+使い方:
+  isa MNEMONIC      命令を検索（コンパクト表示。大文字小文字は同一視）
+  isa -v MNEMONIC   詳細全文を表示（クロック・オペコード・備考）
+  isa -a ARCH MNEMONIC
+  isa ARCH MNEMONIC アーキを限定して検索
+  isa ARCH          そのアーキの命令一覧
+  isa               fzf 対話モード（絞り込み + 詳細プレビュー）
+  isa build         data/*.json から build/ を再生成
+  isa help          このヘルプ
+
+アーキ: 6502 z80 m68k x86_16 arm64
+例:
+  isa DJNZ
+  isa LSR           （複数アーキに同名ニーモニックがある場合の一覧）
+  isa -a 6502 -v LSR
+EOF
+}
+
+die() {
+  print -u2 -- "$1"
+  exit 1
+}
+
+require_build() {
+  [[ -f "$BUILD_DIR/index.tsv" ]] || die "build/ がありません。先に 'isa build' を実行してください。"
+}
+
+# First line(s) of a page = compact block; everything after the separator = detail.
+print_page() {
+  local file="$1" verbose="$2"
+  [[ -f "$file" ]] || return 1
+  if [[ "$verbose" == 1 ]]; then
+    cat "$file"
+  else
+    awk '/^─/ && /詳細/ { exit } { print }' "$file"
+  fi
+}
+
+arch_line() {
+  # Print arch-specific lines from index.tsv; '-' means all archs.
+  local arch="$1"
+  if [[ "$arch" == "-" ]]; then
+    cat "$BUILD_DIR/index.tsv"
+  else
+    awk -F'\t' -v a="$arch" '$1 == a' "$BUILD_DIR/index.tsv"
+  fi
+}
+
+known_arch() {
+  local arch="$1"
+  [[ -d "$BUILD_DIR/$arch" ]] || return 1
+}
+
+search() {
+  local arch="$1" mnem="$2" verbose="$3"
+  require_build
+  local upper="${mnem:u}"
+  local raw
+  raw=$(arch_line "$arch" | awk -F'\t' -v m="$upper" 'tolower($2) == tolower(m) { print $1 }')
+  local -a matches
+  [[ -n "$raw" ]] && matches=("${(@f)raw}")
+  if (( ${#matches[@]} == 0 )); then
+    print -u2 -- "見つかりません: $mnem（arch: ${arch/-/すべて}）"
+    print -u2 -- "ヒント: 'isa' で対話検索、'isa <arch>' で一覧を確認できます。"
+    exit 1
+  fi
+  if (( ${#matches[@]} == 1 )); then
+    print_page "$BUILD_DIR/${matches[1]}/$upper.txt" "$verbose" || die "内部エラー: ${matches[1]}/$upper.txt が開けません"
+    return
+  fi
+  # Same mnemonic in multiple archs: show one-line summaries + how to narrow down.
+  print "複数アーキに同名のニーモニックがあります: $upper"
+  print ""
+  arch_line "$arch" | awk -F'\t' -v m="$upper" 'tolower($2) == tolower(m) {
+    printf "  %-8s %-10s %s\n", $1, $3, $4
+    printf "           isa -a %s %s\n", $1, $2
+  }'
+}
+
+list_arch() {
+  local arch="$1"
+  require_build
+  known_arch "$arch" || die "不明なアーキ: $arch（6502 z80 m68k x86_16 arm64）"
+  local out
+  out=$(awk -F'\t' -v a="$arch" '$1 == a { printf "%-12s %s\n", $2, $4 }' "$BUILD_DIR/index.tsv")
+  [[ -n "$out" ]] || die "アーキ '$arch' の命令が登録されていません。'isa build' を試してください。"
+  print "$out"
+}
+
+interactive() {
+  require_build
+  command -v fzf >/dev/null 2>&1 \
+    || die "fzf が見つかりません（対話モードに必要）。'brew install fzf' または 'isa MNEMONIC' で直接検索してください。"
+  fzf --prompt="ISA > " --delimiter='\t' --with-nth=1,2,3,4 \
+      --preview="$SELF -f {1} {2}" \
+      --preview-window='right:55%:wrap' \
+      < "$BUILD_DIR/index.tsv"
+}
+
+print_full() {
+  # Internal mode used by the fzf preview: isa -f <arch> <mnemonic>
+  local arch="$1" mnem="$2"
+  require_build
+  local upper="${mnem:u}"
+  [[ -f "$BUILD_DIR/$arch/$upper.txt" ]] || die "見つかりません: $arch/$upper"
+  cat "$BUILD_DIR/$arch/$upper.txt"
+}
+
+verbose=0
+arch="-"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -v|--verbose) verbose=1; shift ;;
+    -a|--arch)
+      [[ $# -ge 2 ]] || die "-a にはアーキの指定が必要です"
+      arch="$2"; shift 2 ;;
+    -f) [[ $# -ge 3 ]] || die "-f には arch と mnemonic が必要です"; print_full "$2" "$3"; exit $? ;;
+    -h|--help|help) usage; exit 0 ;;
+    build) exec python3 "$SCRIPT_DIR/tools/generate.py" ;;
+    -*) die "不明なオプション: $1（'isa help' を参照）" ;;
+    *) break ;;
+  esac
+done
+
+case $# in
+  0)
+    if [[ "$arch" != "-" ]]; then
+      list_arch "$arch"
+    else
+      interactive
+    fi ;;
+  1)
+    if [[ "$arch" == "-" ]] && known_arch "$1"; then
+      list_arch "$1"
+    else
+      search "$arch" "$1" "$verbose"
+    fi ;;
+  2)
+    if known_arch "$1"; then
+      search "$1" "$2" "$verbose"
+    else
+      die "不明なアーキ: $1（6502 z80 m68k x86_16 arm64）"
+    fi ;;
+  *)
+    usage
+    die "引数が多すぎます" ;;
+esac

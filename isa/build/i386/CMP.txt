@@ -1,0 +1,22 @@
+CMP dst, src — 80386（比較）
+
+dst - src を計算してフラグのみ更新する（dst は不変）。分岐・setcc の判定に使う。
+
+アドレッシング: レジスタ、即値、間接(base+index×scale+disp)
+フラグ: O‡  D-  I-  S‡  Z‡  A‡  P‡  C‡
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  reg-reg / 即値→reg: 2
+  mem を含む: 6〜7
+
+オペコード:
+  CMP r/m, r: 39 /r（8bit は 38 /r）  (2 バイト)
+  CMP r/m, imm: 81 /7 iv  (4 バイト)
+  CMP r/m, imm8: 83 /7 ib  (3 バイト)
+
+備考:
+  符号付きは jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。
+
+（根拠: book）

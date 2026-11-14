@@ -1,0 +1,24 @@
+ADC A, r — Z80（算術）
+
+キャリー込みの加算。ADC A,r と 16ビットの ADC HL,ss がある。
+
+アドレッシング: レジスタ、レジスタ間接、即値
+フラグ: S‡  Z‡  H‡  P/V‡  N0  C‡
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  ADC A,r: 4
+  ADC A,(HL): 7
+  ADC A,n: 7
+  ADC HL,ss: 15
+
+オペコード:
+  ADC A,r: 10001SSS  (1 バイト)
+  ADC A,n: CE n  (2 バイト)
+  ADC HL,ss: ED 4A/5A/6A/7A  (2 バイト)
+
+備考:
+  ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。
+
+（根拠: knowledge）

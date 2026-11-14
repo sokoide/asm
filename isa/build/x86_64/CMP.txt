@@ -1,0 +1,23 @@
+CMP dst, src — x86-64（比較）
+
+dst - src を計算してフラグのみ更新する（dst は不変）。分岐・条件転送の判定に使う。
+
+アドレッシング: レジスタ、即値、間接(base+index×scale+disp)
+フラグ: O‡  D-  I-  S‡  Z‡  A‡  P‡  C‡
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  reg-reg: 1〜3
+  メモリオペランド: 3〜5
+
+オペコード:
+  CMP r/m64, r64: REX.W 39 /r  (3 バイト)
+  CMP r/m64, imm32: REX.W 81 /7 id  (6 バイト)
+  CMP r/m64, imm8: REX.W 83 /7 ib  (4 バイト)
+
+備考:
+  符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe（本書6章）。
+  C=1 が「dst < src」（符号なし）。
+
+（根拠: book）

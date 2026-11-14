@@ -1,0 +1,27 @@
+ADD A, r — Z80（算術）
+
+A に r（または (HL)、即値）を加算し結果を A に入れる。16ビット版は ADD HL,ss / ADD IX,ss。
+
+アドレッシング: レジスタ、レジスタ間接、即値
+フラグ: S‡  Z‡  H‡  P/V‡  N0  C‡
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  ADD A,r: 4
+  ADD A,(HL): 7
+  ADD A,n: 7
+  ADD A,(IX+d): 19
+  ADD HL,ss: 11
+  ADD IX,ss: 15
+
+オペコード:
+  ADD A,r: 10000SSS  (1 バイト)
+  ADD A,n: C6 n  (2 バイト)
+  ADD HL,ss: 09/19/29/39  (1 バイト)
+  ADD IX,pp: DD 29 など  (2 バイト)
+
+備考:
+  ss は BC/DE/HL/SP。算術演算時の P/V はオーバーフローとして機能する。
+
+（根拠: knowledge）

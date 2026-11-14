@@ -1,0 +1,22 @@
+OUT imm8 / DX, AL/AX/EAX — 80386（I/O）
+
+AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ書き込む。
+
+アドレッシング: I/O（ポート番号は imm8 または DX）
+フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  imm8 ポート: 10
+  DX 経由: 11
+
+オペコード:
+  OUT imm8, AL: E6 ib  (2 バイト)
+  OUT DX, AL: EE  (1 バイト)
+  OUT DX, eAX: EF  (1 バイト)
+
+備考:
+  特権命令: CPL≤IOPL または TSS の I/O 許可ビットマップで許可が必要。連続転送は INS/OUTS 文字列命令。
+
+（根拠: note）

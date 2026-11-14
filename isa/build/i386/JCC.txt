@@ -1,0 +1,23 @@
+Jcc label — 80386（分岐）
+
+条件付きジャンプ。フラグの状態をテストして成立時のみ rel8/rel16/32 のターゲットへ分岐する（16 種類の条件）。
+
+アドレッシング: 相対分岐(short/near)
+フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  不成立: 3
+  成立: 7〜13
+
+オペコード:
+  Jcc rel8: 70+cc cb  (2 バイト)
+  Jcc rel16/32: 0F 80+cc cd  (6 バイト)
+
+備考:
+  cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。
+  主な別名: je=jz / jne=jnz / jb=jc=jnae / jae=jnc=jnb / jbe=jna / ja=jnbe / jl=jnge / jge=jnl / jle=jng / jg=jnle / jp=jpe / jnp=jpo。
+  80386 から near（rel16/32）の条件分岐が可能になった。
+
+（根拠: book）

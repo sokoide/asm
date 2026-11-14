@@ -1,0 +1,23 @@
+CALL label / reg / mem / seg:offset — 80386（サブルーチン）
+
+戻りアドレス（EIP、far では CS:EIP）をスタックに積んでからプロシージャへジャンプする。
+
+アドレッシング: 相対分岐(short/near)、間接(reg/mem)、直接(seg:offset による far)
+フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  near: 7〜13
+  far: 17〜40
+
+オペコード:
+  CALL rel16/32: E8 cd  (3 バイト)
+  CALL r/m16/32: FF /2  (2 バイト)
+  CALL ptr16:16/32: 9A cp  (7 バイト)
+  CALL m16:16/32: FF /3  (2 バイト)
+
+備考:
+  far CALL（9A / FF /3）は CS:EIP を退避し、プロテクトモードではコールゲート経由で特権切替が起こる。
+
+（根拠: book）

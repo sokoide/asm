@@ -1,0 +1,25 @@
+EX dst, src — Z80（データ転送）
+
+EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP),HL/IX/IY（スタック内容と交換）。
+
+アドレッシング: レジスタ、スタック
+フラグ: S-  Z-  H-  P/V-  N-  C-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  EX DE,HL: 4
+  EX AF,AF': 4
+  EX (SP),HL: 19
+  EX (SP),IX/IY: 23
+
+オペコード:
+  EX DE,HL: EB  (1 バイト)
+  EX AF,AF': 08  (1 バイト)
+  EX (SP),HL: E3  (1 バイト)
+  EX (SP),IX: DD E3  (2 バイト)
+
+備考:
+  EXX は BC/DE/HL と裏レジスタを一括切替する別命令（D9）。
+
+（根拠: knowledge）

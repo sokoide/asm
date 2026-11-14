@@ -1,0 +1,23 @@
+DIV src — 80386（算術）
+
+符号なし除算。EDX:EAX ÷ src で EAX=商、EDX=剰余（32bit）。
+
+アドレッシング: レジスタ、間接(base+index×scale+disp)
+フラグ: OU  D-  I-  SU  ZU  AU  PU  CU
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  8bit: 16〜24
+  16bit: 22〜30
+  32bit: 38〜46
+
+オペコード:
+  DIV r/m8: F6 /6  (2 バイト)
+  DIV r/m16/32: F7 /6  (2 バイト)
+
+備考:
+  0 除算や商あふれで #DE 例外。事前準備: 32bit は EDX=0（xor edx, edx）、8bit は AX=AL のゼロ拡張。
+  8bit は AX÷src → AL=商/AH=剰余、16bit は DX:AX。
+
+（根拠: book）

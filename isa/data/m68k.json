@@ -1,0 +1,652 @@
+{
+  "arch": "m68k",
+  "flagNames": ["N", "Z", "V", "C", "X"],
+  "instructions": [
+    {
+      "mnemonic": "MOVE",
+      "operands": "src, dst",
+      "category": "データ転送",
+      "summary": "8/16/32 ビット（.B/.W/.L）の汎用データ転送。src → dst。",
+      "addressing": ["全 EA（dst はデータ可変）"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "MOVE.L D0,D1（レジスタ間）", "cycles": 4}, {"cond": "MOVE.W #n,D0", "cycles": 8}, {"cond": "MOVE.W (A0),D0", "cycles": 8}, {"cond": "MOVE.L (A0),D0", "cycles": 12}],
+      "encodings": [{"syntax": "MOVE.B/W/L src,dst", "opcode": "00 SS RRRMMM ...", "bytes": 2}]
+    },
+    {
+      "mnemonic": "MOVEA",
+      "operands": "src, An",
+      "category": "データ転送",
+      "summary": "アドレスレジスタへの転送。.W は符号拡張して 32 ビットに。フラグは一切変化しない。",
+      "addressing": ["全 EA（src）"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "MOVEA.W (A0),A1", "cycles": 8}, {"cond": "MOVEA.L #n,A0", "cycles": 12}]
+    },
+    {
+      "mnemonic": "MOVEQ",
+      "operands": "#d, Dn",
+      "category": "データ転送",
+      "summary": "8 ビット符号拡張即値をデータレジスタへ高速転送（A = -1 で 32 ビット -1 が入る）。フラグ更新あり。",
+      "addressing": ["即値"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}],
+      "encodings": [{"syntax": "MOVEQ #d,Dn", "opcode": "0 111 DDD dddddddd", "bytes": 2}],
+      "notes": "MOVE.L #imm,D0 より 2 クロック速い。-128〜127 のみ。フラグを変えるのが MOVE.L #imm との違い。",
+      "src": "knowledge"
+    },
+    {
+      "mnemonic": "MOVEM",
+      "operands": "list, dst / src, list",
+      "category": "データ転送",
+      "summary": "複数レジスタの一括退避/復帰（.W/.L）。レジスタリストは D0-D7/A0-A7 の指定。",
+      "addressing": ["レジスタリスト", "(An)+", "-(An)", "絶対", "相対"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "MOVEM.L D0-D2/A4-A6,-(A7)", "cycles": "8+8n（目安）"}],
+      "encodings": [{"syntax": "MOVEM.L list,-(A7)", "opcode": "0100100 1 x ...", "bytes": 4}]
+    },
+    {
+      "mnemonic": "MOVEP",
+      "operands": "Dn, (d,An)",
+      "category": "データ転送",
+      "summary": "データレジスタとメモリ間のニブル単位転送（周辺 I/O 用）。上位バイトから順に 2 バイト/4 バイト書く。",
+      "addressing": ["ディスプレースメント間接"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "MOVEP.W", "cycles": 16}, {"cond": "MOVEP.L", "cycles": 24}]
+    },
+    {
+      "mnemonic": "LEA",
+      "operands": "ea, An",
+      "category": "アドレス計算",
+      "summary": "実効アドレス（La 付き）をアドレスレジスタへ代入。ポインタ確保の定番。",
+      "addressing": ["(d,An)", "(d,An,Xn.W/L)", "絶対", "相対(PC)", "即値"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "LEA (d,An),A0", "cycles": 8}, {"cond": "LEA (d,An,Xn),A0", "cycles": 12}]
+    },
+    {
+      "mnemonic": "PEA",
+      "operands": "ea",
+      "category": "スタック",
+      "summary": "実効アドレスの値（アドレス計算結果）をスタックに PUSH する。",
+      "addressing": ["(d,An)", "絶対", "相対(PC)"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "PEA (d,An)", "cycles": 12}]
+    },
+    {
+      "mnemonic": "LINK",
+      "operands": "An, #d",
+      "category": "サブルーチン",
+      "summary": "スタックフレーム確保。An を退避し SP を An にコピーしてから d だけ減算。",
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 16}]
+    },
+    {
+      "mnemonic": "UNLK",
+      "operands": "An",
+      "category": "サブルーチン",
+      "summary": "LINK の逆。An を SP に戻し、退避していた旧 An を復帰する。",
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 12}]
+    },
+    {
+      "mnemonic": "EXG",
+      "operands": "Rx, Ry",
+      "category": "データ転送",
+      "summary": "レジスタ 32 ビット全体の交換（Dn/Dn、An/An、Dn/An）。",
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 6}]
+    },
+    {
+      "mnemonic": "SWAP",
+      "operands": "Dn",
+      "category": "データ転送",
+      "summary": "データレジスタの上位 16 ビットと下位 16 ビットを交換。",
+      "addressing": ["レジスタ"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}]
+    },
+    {
+      "mnemonic": "CLR",
+      "operands": "dst",
+      "category": "データ転送",
+      "summary": "オペランドを 0 にクリアする（.B/.W/.L）。N=0, Z=1。",
+      "addressing": ["データ可変"],
+      "flags": ["0", "1", "0", "0", "-"],
+      "cycles": [{"cond": "CLR.L D0", "cycles": 4}, {"cond": "CLR.W (A0)", "cycles": 12}]
+    },
+    {
+      "mnemonic": "ADD",
+      "operands": "src, dst",
+      "category": "算術",
+      "summary": "加算（.B/.W/.L）。X/C はキャリー、V はオーバーフロー。",
+      "addressing": ["データ可変 → データレジスタ", "データレジスタ → メモリ"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "ADD.W D0,D1", "cycles": 4}, {"cond": "ADD.L D0,D1", "cycles": 8}, {"cond": "ADD.W (A0),D0", "cycles": 8}, {"cond": "ADD.W D0,(A0)", "cycles": 12}]
+    },
+    {
+      "mnemonic": "ADDA",
+      "operands": "src, An",
+      "category": "算術",
+      "summary": "アドレスレジスタへの加算（.W/.L のみ）。",
+      "addressing": ["全 EA（src）"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "ADDA.L D0,A0", "cycles": 8}]
+    },
+    {
+      "mnemonic": "ADDI",
+      "operands": "#d, dst",
+      "category": "算術",
+      "summary": "即値加算（.B/.W/.L）。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "ADDI.W #n,D0", "cycles": 8}, {"cond": "ADDI.L #n,D0", "cycles": 16}]
+    },
+    {
+      "mnemonic": "ADDQ",
+      "operands": "#1-8, dst",
+      "category": "算術",
+      "summary": "小さい即値（1〜8）の高速加算。ADDI より短くて速い。An への ADDQ はフラグ不変ではない（ADDQ はフラグ更新する）。",
+      "addressing": ["データ可変 / An"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "ADDQ.W #1,D0", "cycles": 4}, {"cond": "ADDQ.L #1,A0（フラグ不変）", "cycles": 8}],
+      "notes": "レジスタに対する ADDQ は 4/8 クロック。ADDQ #1,A0 でフラグは更新されない（アドレスレジスタ宛はフラグ不変）。",
+      "src": "knowledge"
+    },
+    {
+      "mnemonic": "ADDX",
+      "operands": "src, dst",
+      "category": "算術",
+      "summary": "X 込み加算（多倍長演算用）。Z は結果が非 0 のときだけ 0 にクリア（1 には立たない）。",
+      "addressing": ["Dm ← Dm+Dk+X", "-(An) ← -(An)+(An)+X"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "ADDX.W D1,D0", "cycles": 4}, {"cond": "ADDX.L -(A0),-(A1)", "cycles": 18}]
+    },
+    {
+      "mnemonic": "SUB",
+      "operands": "src, dst",
+      "category": "算術",
+      "summary": "減算（.B/.W/.L）。dst = dst - src。",
+      "addressing": ["データ可変 → データレジスタ", "データレジスタ → メモリ"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "SUB.W D0,D1", "cycles": 4}, {"cond": "SUB.L D0,D1", "cycles": 8}]
+    },
+    {
+      "mnemonic": "SUBA",
+      "operands": "src, An",
+      "category": "算術",
+      "summary": "アドレスレジスタからの減算（.W/.L のみ）。",
+      "addressing": ["全 EA（src）"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "SUBA.L D0,A0", "cycles": 8}]
+    },
+    {
+      "mnemonic": "SUBI",
+      "operands": "#d, dst",
+      "category": "算術",
+      "summary": "即値減算（.B/.W/.L）。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "SUBI.W #n,D0", "cycles": 8}, {"cond": "SUBI.L #n,D0", "cycles": 16}]
+    },
+    {
+      "mnemonic": "SUBQ",
+      "operands": "#1-8, dst",
+      "category": "算術",
+      "summary": "小さい即値（1〜8）の高速減算。",
+      "addressing": ["データ可変 / An"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "SUBQ.L #1,D0", "cycles": 8}]
+    },
+    {
+      "mnemonic": "SUBX",
+      "operands": "src, dst",
+      "category": "算術",
+      "summary": "X 込み減算（多倍長演算用）。Z はクリアのみ（非 0 で 0 になり、1 には立たない）。",
+      "addressing": ["レジスタ", "-(An)"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "SUBX.W D1,D0", "cycles": 4}, {"cond": "SUBX.L -(A0),-(A1)", "cycles": 18}]
+    },
+    {
+      "mnemonic": "NEG",
+      "operands": "dst",
+      "category": "算術",
+      "summary": "符号反転（dst = 0 - dst、.B/.W/.L）。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "NEG.W D0", "cycles": 4}]
+    },
+    {
+      "mnemonic": "NEGX",
+      "operands": "dst",
+      "category": "算術",
+      "summary": "X 込み符号反転（多倍長）。Z はクリアのみ。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "NEGX.W D0", "cycles": 4}]
+    },
+    {
+      "mnemonic": "NBCD",
+      "operands": "dst",
+      "category": "BCD",
+      "summary": "BCD の符号反転（dst = 0 - dst、10 進補正込み）。Z はクリアのみ。",
+      "addressing": ["データ可変"],
+      "flags": ["-", "‡", "-", "‡", "‡"],
+      "cycles": [{"cond": "NBCD.B D0", "cycles": 6}]
+    },
+    {
+      "mnemonic": "ABCD",
+      "operands": "src, dst",
+      "category": "BCD",
+      "summary": "BCD 加算（X 込み）。Z はクリアのみ。多倍長 BCD 演算用。",
+      "addressing": ["レジスタ", "-(An)"],
+      "flags": ["-", "‡", "-", "‡", "‡"],
+      "cycles": [{"cond": "ABCD.B D1,D0", "cycles": 6}, {"cond": "ABCD.B -(A0),-(A1)", "cycles": 18}]
+    },
+    {
+      "mnemonic": "SBCD",
+      "operands": "src, dst",
+      "category": "BCD",
+      "summary": "BCD 減算（X 込み）。Z はクリアのみ。",
+      "addressing": ["レジスタ", "-(An)"],
+      "flags": ["-", "‡", "-", "‡", "‡"],
+      "cycles": [{"cond": "SBCD.B D1,D0", "cycles": 6}]
+    },
+    {
+      "mnemonic": "MULU",
+      "operands": "src, Dn",
+      "category": "算術",
+      "summary": "符号なし 16×16 → 32 ビット乗算（.W のみ）。結果は下位 32 ビット。",
+      "addressing": ["データアドレス可変（src）"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "MULU.W src,Dn", "cycles": "38〜44"}]
+    },
+    {
+      "mnemonic": "MULS",
+      "operands": "src, Dn",
+      "category": "算術",
+      "summary": "符号付き 16×16 → 32 ビット乗算（.W のみ）。",
+      "addressing": ["データアドレス可変（src）"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "MULS.W src,Dn", "cycles": "38〜44"}]
+    },
+    {
+      "mnemonic": "DIVU",
+      "operands": "src, Dn",
+      "category": "算術",
+      "summary": "符号なし 32 ÷ 16 → 商(下位16) 剰余(上位16)。V=1 でオーバーフロー検出、割算零はトラップ（例外ベクタ 5）。",
+      "addressing": ["データアドレス可変（src）"],
+      "flags": ["‡", "‡", "‡", "0", "-"],
+      "cycles": [{"cond": "DIVU.W src,Dn", "cycles": "126〜140"}]
+    },
+    {
+      "mnemonic": "DIVS",
+      "operands": "src, Dn",
+      "category": "算術",
+      "summary": "符号付き 32 ÷ 16。商/剰余は符号付き。V/C の挙動は DIVU と同じ。",
+      "addressing": ["データアドレス可変（src）"],
+      "flags": ["‡", "‡", "‡", "0", "-"],
+      "cycles": [{"cond": "DIVS.W src,Dn", "cycles": "158〜170"}]
+    },
+    {
+      "mnemonic": "AND",
+      "operands": "src, dst",
+      "category": "論理",
+      "summary": "論理積（.B/.W/.L）。V/C は常に 0、X は不変。",
+      "addressing": ["データ可変 → データレジスタ", "データレジスタ → メモリ"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "AND.W D0,D1", "cycles": 4}, {"cond": "AND.L D0,D1", "cycles": 8}]
+    },
+    {
+      "mnemonic": "ANDI",
+      "operands": "#d, dst",
+      "category": "論理",
+      "summary": "即値との論理積。フラグレジスタ CCR への ANDI #n,CCR も可能。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "ANDI.W #n,D0", "cycles": 8}, {"cond": "ANDI.L #n,D0", "cycles": 16}]
+    },
+    {
+      "mnemonic": "OR",
+      "operands": "src, dst",
+      "category": "論理",
+      "summary": "論理和（.B/.W/.L）。V/C は常に 0。",
+      "addressing": ["データ可変 → データレジスタ", "データレジスタ → メモリ"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "OR.W D0,D1", "cycles": 4}, {"cond": "OR.L D0,D1", "cycles": 8}]
+    },
+    {
+      "mnemonic": "ORI",
+      "operands": "#d, dst",
+      "category": "論理",
+      "summary": "即値との論理和。ORI #n,CCR でフラグ操作も可能。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "ORI.W #n,D0", "cycles": 8}, {"cond": "ORI.L #n,D0", "cycles": 16}]
+    },
+    {
+      "mnemonic": "EOR",
+      "operands": "src, dst",
+      "category": "論理",
+      "summary": "排他的論理和（.B/.W/.L）。V/C は常に 0。",
+      "addressing": ["データレジスタ → メモリ"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "EOR.W D0,D1", "cycles": 4}, {"cond": "EOR.L D0,D1", "cycles": 8}]
+    },
+    {
+      "mnemonic": "EORI",
+      "operands": "#d, dst",
+      "category": "論理",
+      "summary": "即値との排他的論理和。EORI #n,CCR でフラグの反転も可能。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "EORI.W #n,D0", "cycles": 8}, {"cond": "EORI.L #n,D0", "cycles": 16}]
+    },
+    {
+      "mnemonic": "NOT",
+      "operands": "dst",
+      "category": "論理",
+      "summary": "ビット反転（1の補数、.B/.W/.L）。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "NOT.W D0", "cycles": 4}]
+    },
+    {
+      "mnemonic": "EXT",
+      "operands": "Dn",
+      "category": "データ転送",
+      "summary": "符号拡張（.W→.L は下位ワードの符号、.B→.W もある）。",
+      "addressing": ["レジスタ"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}]
+    },
+    {
+      "mnemonic": "TST",
+      "operands": "src",
+      "category": "比較",
+      "summary": "オペランドの判定（dst - 0 のフラグのみ反映）。X は不変。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "TST.W D0", "cycles": 4}, {"cond": "TST.L (A0)", "cycles": 8}]
+    },
+    {
+      "mnemonic": "CMP",
+      "operands": "src, dst",
+      "category": "比較",
+      "summary": "比較（dst - src のフラグのみ反映）。BHi/Bge 等の分岐で使う。X は不変。",
+      "addressing": ["データ可変（src）→ データレジスタ"],
+      "flags": ["‡", "‡", "‡", "‡", "-"],
+      "cycles": [{"cond": "CMP.W D0,D1", "cycles": 4}, {"cond": "CMP.L (A0),D0", "cycles": 12}]
+    },
+    {
+      "mnemonic": "CMPA",
+      "operands": "src, An",
+      "category": "比較",
+      "summary": "アドレスレジスタとの比較（.W/.L、32 ビット比較）。",
+      "addressing": ["全 EA（src）"],
+      "flags": ["‡", "‡", "‡", "‡", "-"],
+      "cycles": [{"cond": "CMPA.L src,A0", "cycles": 8}]
+    },
+    {
+      "mnemonic": "CMPI",
+      "operands": "#d, dst",
+      "category": "比較",
+      "summary": "即値との比較。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "‡", "‡", "-"],
+      "cycles": [{"cond": "CMPI.W #n,D0", "cycles": 8}, {"cond": "CMPI.L #n,D0", "cycles": 14}]
+    },
+    {
+      "mnemonic": "CMPM",
+      "operands": "(An)+, (Am)+",
+      "category": "比較",
+      "summary": "ポインタオートインクリメントでの比較（文字列比較ループ用）。",
+      "addressing": ["(An)+"],
+      "flags": ["‡", "‡", "‡", "‡", "-"],
+      "cycles": [{"cond": "CMPM.W (A0)+,(A1)+", "cycles": 12}]
+    },
+    {
+      "mnemonic": "ASL",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "算術左シフト（.B/.W/.L）。ビットごとに V を監視（有意ビット変化で V=1）。C/X = 最後に押し出されたビット。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "ASL.W #n,D0", "cycles": "8+2n"}, {"cond": "ASL.W (A0)（1 ビット）", "cycles": 12}]
+    },
+    {
+      "mnemonic": "ASR",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "算術右シフト（符号ビット保持）。C/X = 最後に押し出されたビット。V は常時 0（レジスタシフト時）。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["‡", "‡", "0", "‡", "‡"],
+      "cycles": [{"cond": "ASR.W #n,D0", "cycles": "8+2n"}]
+    },
+    {
+      "mnemonic": "LSL",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "論理左シフト。ASL と同等（下位ビットは 0）。V は常時 0（レジスタシフト時）。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["‡", "‡", "0", "‡", "‡"],
+      "cycles": [{"cond": "LSL.W #n,D0", "cycles": "8+2n"}]
+    },
+    {
+      "mnemonic": "LSR",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "論理右シフト（上位ビットは 0）。符号なし ÷2 相当。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["0", "‡", "0", "‡", "‡"],
+      "cycles": [{"cond": "LSR.W #n,D0", "cycles": "8+2n"}]
+    },
+    {
+      "mnemonic": "ROL",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "左ローテート（ビット内で循環、C に最後のビット、X は不変）。V は常時 0（レジスタ時）。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["‡", "‡", "0", "‡", "-"],
+      "cycles": [{"cond": "ROL.W #n,D0", "cycles": "8+2n"}]
+    },
+    {
+      "mnemonic": "ROR",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "右ローテート（C に最後のビット、X は不変）。ビットフィールドの回転に使う。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["‡", "‡", "0", "‡", "-"],
+      "cycles": [{"cond": "ROR.W #n,D0", "cycles": "8+2n"}]
+    },
+    {
+      "mnemonic": "ROXL",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "X 込み左ローテート（9/17/33 ビット循環）。多倍長シフトの連結に使う。C/X 同期。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["‡", "‡", "0", "‡", "‡"],
+      "cycles": [{"cond": "ROXL.W #n,D0", "cycles": "8+2n"}]
+    },
+    {
+      "mnemonic": "ROXR",
+      "operands": "dst / Dm, Dn",
+      "category": "シフト",
+      "summary": "X 込み右ローテート。多倍長右シフトの連結に使う。",
+      "addressing": ["レジスタ（1〜8 ビット）", "メモリ（1 ビット）"],
+      "flags": ["‡", "‡", "0", "‡", "‡"],
+      "cycles": [{"cond": "ROXR.W #n,D0", "cycles": "8+2n"}]
+    },
+    {
+      "mnemonic": "BTST",
+      "operands": "Dn/#d, dst",
+      "category": "シフト/ビット",
+      "summary": "ビットテスト（.B/.L）。Z フラグのみ更新（指定ビットが 0 で Z=1）。",
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["-", "‡", "-", "-", "-"],
+      "cycles": [{"cond": "BTST #n,D0", "cycles": 4}, {"cond": "BTST #n,(A0)", "cycles": 8}]
+    },
+    {
+      "mnemonic": "BSET",
+      "operands": "Dn/#d, dst",
+      "category": "シフト/ビット",
+      "summary": "ビットテスト後にそのビットを 1 にセット（アトミックに近いセマフォ操作に使える）。",
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["-", "‡", "-", "-", "-"],
+      "cycles": [{"cond": "BSET #n,D0", "cycles": 4}, {"cond": "BSET #n,(A0)", "cycles": 12}]
+    },
+    {
+      "mnemonic": "BCLR",
+      "operands": "Dn/#d, dst",
+      "category": "シフト/ビット",
+      "summary": "ビットテスト後にそのビットを 0 にクリア。",
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["-", "‡", "-", "-", "-"],
+      "cycles": [{"cond": "BCLR #n,D0", "cycles": 4}, {"cond": "BCLR #n,(A0)", "cycles": 12}]
+    },
+    {
+      "mnemonic": "BCHG",
+      "operands": "Dn/#d, dst",
+      "category": "シフト/ビット",
+      "summary": "ビットテスト後にそのビットを反転。",
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["-", "‡", "-", "-", "-"],
+      "cycles": [{"cond": "BCHG #n,D0", "cycles": 4}, {"cond": "BCHG #n,(A0)", "cycles": 12}]
+    },
+    {
+      "mnemonic": "BRA",
+      "operands": "d",
+      "category": "分岐",
+      "summary": "無条件相対分岐（.S: ±127 バイト、.W: ±32K）。",
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "BRA.S", "cycles": 10}, {"cond": "BRA.W", "cycles": 18}]
+    },
+    {
+      "mnemonic": "BSR",
+      "operands": "d",
+      "category": "サブルーチン",
+      "summary": "相対アドレスへのサブルーチンコール（位置独立コードに必須）。",
+      "addressing": ["相対分岐", "スタック"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "BSR.S", "cycles": 18}]
+    },
+    {
+      "mnemonic": "Bcc",
+      "operands": "d",
+      "category": "分岐",
+      "summary": "条件付き相対分岐。条件コード 16 種（eq ne hi hs lo ls gt ge lt le vc vs pl mi t）。.S は ±127、.W は ±32K。",
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "不成立", "cycles": 8}, {"cond": "成立（.S）", "cycles": 10}]
+    },
+    {
+      "mnemonic": "DBcc",
+      "operands": "Dn, d",
+      "category": "分岐",
+      "summary": "条件不成立の間、データレジスタをデクリメントし -1 でなければループ。ループカウンタ専用命令。",
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "不成立・分岐", "cycles": 10}, {"cond": "不成立・ループ終了", "cycles": 14}, {"cond": "成立（脱出）", "cycles": 12}]
+    },
+    {
+      "mnemonic": "Scc",
+      "operands": "dst",
+      "category": "分岐",
+      "summary": "条件成立なら dst を $FF（真）に、不成立なら $00 にセット（.B のみ）。",
+      "addressing": ["データ可変"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "SNE.B D0", "cycles": 4}, {"cond": "メモリ宛", "cycles": 12}]
+    },
+    {
+      "mnemonic": "JSR",
+      "operands": "ea",
+      "category": "サブルーチン",
+      "summary": "実効アドレスへのサブルーチンコール（戻りアドレスをスタックに退避）。",
+      "addressing": ["絶対", "相対(PC)", "間接"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "JSR (A0)", "cycles": 16}]
+    },
+    {
+      "mnemonic": "JMP",
+      "operands": "ea",
+      "category": "分岐",
+      "summary": "実効アドレスへの無条件ジャンプ（戻りアドレス退避なし）。",
+      "addressing": ["絶対", "相対(PC)", "間接"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "JMP (A0)", "cycles": 8}]
+    },
+    {
+      "mnemonic": "RTS",
+      "operands": "",
+      "category": "サブルーチン",
+      "summary": "スタックから戻りアドレスを POP して復帰。",
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 16}]
+    },
+    {
+      "mnemonic": "RTR",
+      "operands": "",
+      "category": "サブルーチン",
+      "summary": "スタックから CCR と戻りアドレスを POP して復帰（保存したフラグを復元する）。",
+      "addressing": ["スタック"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "常時", "cycles": 20}]
+    },
+    {
+      "mnemonic": "TRAP",
+      "operands": "#n",
+      "category": "システム制御",
+      "summary": "ソフトウェア例外（ベクタ 32+n）を発生させる。OS コールの入口。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 34}]
+    },
+    {
+      "mnemonic": "TRAPV",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "V フラグが 1 のときだけオーバーフロー例外（ベクタ 7）を発生させる。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "V=0", "cycles": 4}, {"cond": "V=1（トラップ）", "cycles": 34}]
+    },
+    {
+      "mnemonic": "RTE",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "例外からの復帰。スタックから SR と PC を復帰（スーパーバイザモード専用）。",
+      "addressing": ["スタック"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "常時", "cycles": 20}]
+    },
+    {
+      "mnemonic": "STOP",
+      "operands": "#d",
+      "category": "システム制御",
+      "summary": "SR を即値に設定して CPU を停止状態にする（スーパーバイザモード専用）。",
+      "addressing": ["暗黙"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "常時", "cycles": 4}]
+    },
+    {
+      "mnemonic": "NOP",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "何もしない命令。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}]
+    },
+    {
+      "mnemonic": "ILLEGAL",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "未定義命令例外（ベクタ 10）を意図的に発生させる。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}]
+    }
+  ]
+}

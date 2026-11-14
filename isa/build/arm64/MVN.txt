@@ -1,0 +1,16 @@
+MVN dst, src{, shift} — ARM64（論理）
+
+ビット反転転送（dst = NOT src）。実体は ORN #0。
+
+アドレッシング: レジスタ
+フラグ: N-  Z-  C-  V-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  実装依存: 1
+
+オペコード:
+  MVN Wd,Wn: ORN Wd,WZR,Wn
+
+（根拠: knowledge）

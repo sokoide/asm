@@ -12,3 +12,7 @@ node_modules/
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# ---- isa CLI: 生成ページはオフラインで読めるようコミットする ----
+!isa/build/
+!isa/build/**

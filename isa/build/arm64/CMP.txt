@@ -1,0 +1,19 @@
+CMP src1, src2 — ARM64（比較）
+
+比較（実体は SUBS WZR）。条件選択（B.cond/CSEL）の前提。
+
+アドレッシング: レジスタ、即値
+フラグ: N‡  Z‡  C‡  V‡
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  実装依存: 1
+
+オペコード:
+  CMP Xn,Xm: SUBS WZR,Xn,Xm
+
+備考:
+  符号付き比較は B.GE/B.LT/B.GT/B.LE、符号なしは B.HS/B.LO/B.HI/B.LS。
+
+（根拠: knowledge）

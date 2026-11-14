@@ -168,6 +168,22 @@ make runall   # 全シナリオをビルド + 実行
 make run S=s01_hello
 ```
 
+### デバッグ / トレース / サイクル計測
+
+```bash
+# 各プラットフォームのディレクトリで
+make debug S=s03_stack    # ステップ実行で CPU 状態を観察
+make trace S=s03_stack    # 全命令の実行トレース
+make cycles S=s04_loops   # サイクル/命令数の集計
+
+# またはトップレベルから（A= でディレクトリを指定）
+make debug A=z80/sim S=s03_stack
+make trace A=6502/sim65 S=s03_stack
+make cycles A=riscv64/qemu S=s01_hello
+```
+
+詳細は「デバッグガイド」の「make debug / trace / cycles (統一デバッグインターフェース)」を参照。
+
 ### クリーン
 
 ```bash
@@ -176,7 +192,48 @@ make clean
 
 ## デバッグガイド
 
-QEMU でプログラムをデバッグする方法を説明します。
+各アーキテクチャのプログラムをデバッグする方法を説明します。
+
+### make debug / trace / cycles (統一デバッグインターフェース)
+
+全アーキテクチャに共通のデバッグ用ターゲット。どの CPU でも同じコマンドでステップ実行・命令トレース・サイクル（命令数）集計ができる。
+
+```bash
+# 各プラットフォームのディレクトリで
+cd z80/sim && make debug S=s03_stack    # ステップ実行で CPU 状態を観察
+
+# またはトップレベルから A= でディレクトリを指定
+make trace A=6502/sim65 S=s03_stack     # 全命令の実行トレース
+make cycles A=riscv64/qemu S=s01_hello  # サイクル/命令数の集計
+```
+
+**アーキテクチャ別の実装**:
+
+| アーキテクチャ    | 実装                                  | 特記事項                                        |
+| :---              | :---                                  | :---                                            |
+| Z80               | simz80 対話ステッパー (`-debug`)      | フル対話型。レジスタ差分・フラグ変化・T-states 表示 |
+| 6502              | `sim65 --trace` + 差分 awk            | `make debug` はリプレイ型（下記）               |
+| QEMU 系 6 dir     | QEMU gdbstub + gdb / `-d in_asm,cpu`  | `make cycles` は実行命令数（下記）              |
+| x86_16/dos        | 対象外                                | dosbox-x は gdbstub を持たないため統一インターフェースに載せられない（将来 dosbox-x 内蔵デバッガで対応予定） |
+| darwin ネイティブ | 対象外                                | run 未整備のため対象外                          |
+
+QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` の各 `qemu/` ディレクトリ。
+
+**フラグ変化の観察例 (Z80)**: ステッパーは 1 命令ごとに変化したレジスタとフラグを old→new 形式で表示する。`LD A,7Fh` / `ADD A,01h` を実行すると:
+
+```text
+  A  7F → 80
+  F  00 → 94
+  S 0→1  H 0→1  P/V 0→1  (オーバーフロー)
+```
+
+7Fh + 01h は符号付き 8-bit で +127 + 1 = -128 となり、S（符号）・H（半キャリー）・P/V（オーバーフロー）が立つ。
+
+**6502 の make debug はリプレイ型**: sim65 に対話ステップ実行はないため、`make debug` は全命令トレースを `$(S).trace` に記録し、less の SPACE/Enter で 1 命令ずつ送って見る方式。実行中のプログラムへのライブ制御ではなく、実行済みトレースの「再生」である点に注意。
+
+**QEMU 系の make cycles は実行命令数**: QEMU TCG はサイクル精度のエミュレーションではないため、サイクル数は原理的に取得できない。`make cycles` は `-d in_asm` の記録から数えた実行命令数で代用する。
+
+**QEMU 系の make debug に必要なもの**: `gdb`（`brew install gdb`。Homebrew 版は --enable-targets=all ビルドで、リモートデバッグ専用に使う場合コード署名は不要）。使用する gdb は `GDB` 変数、接続ポートは `GDB_PORT` 変数（既定 1234）で変更できる。トレースの記録時間は `TRACE_SECS` 変数（既定 10 秒）で調整できる。
 
 ### QEMU Monitor の使い方
 
@@ -207,22 +264,19 @@ make run S=s01_hello QEMU_ARGS="-monitor stdio"
 x0000000000000048 x01=0000000004000040 ...
 ```
 
-### GDB によるリモートデバッグ
+### GDB によるリモートデバッグ (QEMU 系)
 
-QEMU に GDB サーバを内蔵させ、GDB で接続してデバッグできます。
-
-**手順**:
+QEMU 系の `make debug` は QEMU を `-S -gdb tcp::1234`（起動時停止 + GDB サーバ）で起動し、gdb を自動接続する。
 
 ```bash
-# ターミナル 1: QEMU を GDB サーバ付きで起動
-make run S=s01_hello QEMU_ARGS="-s -S"
+# gdb が起動して QEMU (tcp::1234) に接続される
+make debug A=arm64/qemu S=s01_hello
 
-# ターミナル 2: GDB で接続
-gdb -ex "target remote :1234" \
-    -ex "set architecture aarch64" \
-    -ex "b _start" \
-    -ex "c"
+# ポートや gdb を変える場合
+make debug A=arm64/qemu S=s01_hello GDB_PORT=1234 GDB=aarch64-none-elf-gdb
 ```
+
+> 注: 以前は `make run S=s01_hello QEMU_ARGS="-s -S"` で GDB サーバ付きで起動できると説明していたが、`QEMU_ARGS` を実装した Makefile は存在せず、これはサイレント no-op だった。QEMU 系の GDB デバッグには `make debug` を使うこと。
 
 **GDB よく使うコマンド**:
 
@@ -281,6 +335,7 @@ make dump32 S=s14_protected
 | `m68k-elf-as` `m68k-elf-ld` | M68000               | macOS: `brew install m68k-elf-gcc` / Linux: `apt install gcc-m68k-linux-gnu` |
 | `z80asm`                    | Z80                  | `brew install z80asm`                                                        |
 | `go`                        | Z80 (シミュレータ)   | `brew install go`                                                            |
+| `gdb`                       | QEMU 系の make debug | `brew install gdb`（--enable-targets=all ビルド、リモート専用ならコード署名不要） |
 | `qemu-system-aarch64`       | ARM64                | `brew install qemu`                                                          |
 | `qemu-system-ppc`           | PPC                  | `brew install qemu`                                                          |
 | `qemu-system-m68k`          | M68000               | `brew install qemu`                                                          |
@@ -311,5 +366,20 @@ asm/
 ├── x86_64/darwin/       # macOS x86_64
 ├── i386/darwin/         # macOS i386 (32-bit)
 ├── riscv32/qemu/        # RISC-V 32-bit bare-metal (QEMU virt)
-└── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
+├── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
+└── isa/                 # オフライン命令セット・リファレンス CLI 辞書
 ```
+
+## 命令リファレンス CLI (isa)
+
+オフラインで命令の仕様（動作・アドレッシングモード・消費クロック・フラグ変化・オペコード）を検索できる CLI 辞書。正本データは `isa/data/*.json`、詳細は `isa/README.md` を参照。
+
+```sh
+isa DJNZ        # 命令を検索（複数アーキに同名がある場合は一覧）
+isa -v DJNZ     # 詳細全文（クロック・オペコード・備考）
+isa z80 DJNZ    # アーキを限定
+isa             # fzf 対話モード（絞り込み + 詳細プレビュー）
+isa build       # isa/data/*.json から isa/build/ を再生成
+```
+
+常用する場合は `~/.zshrc` に `alias isa='~/repo/sokoide/asm/isa/isa'` を追加する（fzf は対話モードのみで必須）。

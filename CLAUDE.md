@@ -29,10 +29,15 @@ make                # Build all scenarios
 make run S=s01_hello  # Run single scenario
 make runall         # Build + run all scenarios
 make dump S=s01_hello # Disassemble
+make debug S=s03_stack  # Step debugger (QEMU: gdb / z80: interactive / 6502: replay)
+make trace S=s03_stack  # Per-instruction execution trace
+make cycles S=s04_loops # Cycle/instruction count
 make clean
 ```
 
-6502 omits `make dump`; x86_16 adds `make dump32` for 32-bit protected-mode sections.
+6502 omits `make dump`; x86_16 adds `make dump32` for 32-bit protected-mode sections. The `debug`/`trace`/`cycles` targets exist repo-wide (all core platform directories, plus a root-Makefile passthrough: `make debug A=<arch>/<platform> S=<scenario>`).
+
+Note: 6502 `make debug` is replay-based (records a trace, views it in less — no live stepping), and QEMU `make cycles` reports executed instruction count, not cycles (TCG is not cycle-accurate). x86_16/dos (dosbox-x) and darwin native dirs are outside the unified debug interface.
 
 ## Key Patterns
 
@@ -43,7 +48,12 @@ Each scenario has matching files across architectures:
 - S06 and S12 require interactive input (piped via `printf` in `make runall`)
 
 ### File Pairs
+
 Each architecture has `CPU.md` (instruction reference) at the arch root and `README.md` + `Makefile` + `linker.ld` in the platform subdirectory.
+
+### ISA Reference CLI
+
+`isa/` is an offline instruction-set dictionary CLI (`isa DJNZ`). Canonical data lives in `isa/data/<arch>.json`; run `isa build` (`python3 isa/tools/generate.py`) to regenerate `isa/build/` and validate the schema. Do not edit `isa/build/` directly.
 
 ### Documentation Conventions
 - Markdown tables use `| :--- |` alignment (with spaces around `---`)
