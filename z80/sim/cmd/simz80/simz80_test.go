@@ -703,6 +703,21 @@ func TestDDCBBITFlags(t *testing.T) {
 		t.Fatalf("BIT 0 of 00: S=1, want S=0 (値の bit7 = 0)")
 	}
 
+	// BIT 0,(IX+0) で値 0x80: Z=1, P/V=1, S=0 (S は BIT 7 でしか立たない)
+	z1b := NewZ80()
+	copy(z1b.mem[0x0100:], []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0xCB, 0x00, 0x46, 0x76})
+	z1b.wb(0x2000, 0x80)
+	z1b.pc = 0x0100
+	for i := 0; i < 3; i++ {
+		z1b.Step()
+	}
+	if z1b.f&ZF == 0 || z1b.f&PF == 0 {
+		t.Fatalf("BIT 0 of 80: Z=%d P/V=%d, want Z=1 P/V=1", z1b.f&ZF>>6, z1b.f&PF>>6)
+	}
+	if z1b.f&SF != 0 {
+		t.Fatalf("BIT 0 of 80: S=1, want S=0 (BIT 0 では S は立たない)")
+	}
+
 	// BIT 7,(IX+0) で値 0x80: Z=0, S=1
 	z2 := NewZ80()
 	copy(z2.mem[0x0100:], []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0xCB, 0x00, 0x7E, 0x76})
@@ -752,5 +767,17 @@ func TestDDCBNoHLAlias(t *testing.T) {
 	// HL 側メモリは一切変化しない
 	if got := z.rb(0x3000); got != 0x7F {
 		t.Fatalf("mem[3000]=%02X, want 7F (HL 側は不変のはず)", got)
+	}
+}
+
+// 通常 CB の BIT 0,A (A=0x80): Z=1, P/V=1, S=0。LD A,80h / BIT 0,A は
+// 実機では S を立てない (S が立つのは BIT 7 でビットが立つときのみ)。
+func TestCBBIT0HighValue(t *testing.T) {
+	z := runProg(t, []byte{0x3E, 0x80, 0xCB, 0x47, 0x76}, 3) // LD A,80; BIT 0,A
+	if z.f&ZF == 0 || z.f&PF == 0 {
+		t.Fatalf("BIT 0,A (A=80): Z=%d P/V=%d, want Z=1 P/V=1", z.f&ZF>>6, z.f&PF>>6)
+	}
+	if z.f&SF != 0 {
+		t.Fatalf("BIT 0,A (A=80): S=1, want S=0")
 	}
 }

@@ -210,9 +210,11 @@ func (z *Z80) szpFlags(v byte) byte {
 }
 
 // setFlagsBIT: BIT b,m のフラグ更新。N=0、H=1、C は不変、
-// Z = テストしたビットが 0 のとき 1、P/V = Z (UM0080 の BIT のフラグ表)、
-// S = テスト対象値の bit 7 (UM0080: 「S is set in the same manner as
-// bit 7 of the tested register」— ビット番号 y に依存しない)。
+// Z = テストしたビットが 0 のとき 1、P/V = Z (UM0080 の BIT のフラグ表)。
+// S は UM0080 では未規定だが、既知の実機挙動 (Z80 ファミリの動作資料で
+// 広く記録されている) は「BIT 7,m でビットが立っているときのみ S=1」。
+// つまり BIT 0..6 では検査値の bit 7 に関係なく S=0 になる
+// (例: LD A,80h / BIT 0,A -> Z=1, P/V=1, S=0)。実機互換を優先する。
 func (z *Z80) setFlagsBIT(val byte, y byte) {
 	f := z.f & CF
 	f |= HF
@@ -220,7 +222,7 @@ func (z *Z80) setFlagsBIT(val byte, y byte) {
 		f |= ZF
 		f |= PF // P/V = Z
 	}
-	if val&0x80 != 0 {
+	if y == 7 && val&0x80 != 0 {
 		f |= SF
 	}
 	z.f = f

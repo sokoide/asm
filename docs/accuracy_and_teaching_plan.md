@@ -27,7 +27,7 @@
 ## 再レビュー指摘への対応 第 2 次 (2026-11-14) — 正確性改善フェーズの区切り
 
 - **bdosCalls 未加算**: 前回のカウンタ導入パッチが bdosCalls++ を silent-fail していた（assert なし置換）。修正し、恒等式 `instrCount == cpuInsns + bdosCalls + intAccepts` を TestBDOSCounter で検証（未定義 BDOS ファンクション 0x1F で静かに呼び出すテスト設計）
-- **BIT フラグ**: setFlagsBIT ヘルパを新設（通常 CB / DD CB / FD CB の 3 経路共通）。Z = テストビットの反転、P/V = Z、S = テスト対象値の bit 7（UM0080「S is set in the same manner as bit 7 of the tested register」— 従来の y==7 専用実装を訂正）、N=0、H=1、C 不変
+- **BIT フラグ**: setFlagsBIT ヘルパを新設（通常 CB / DD CB / FD CB の 3 経路共通）。Z = テストビットの反転、P/V = Z、S = **BIT 7 でビットが立っているときのみ 1**（既知の実機挙動。UM0080 は S を未規定だが実機互換を優先。当初「S = テスト対象値の bit 7」と解釈していたが誤りで、BIT 0..6 では値の bit 7 に関係なく S=0 になる。第 3 次レビューで訂正）、N=0、H=1、C 不変
 - **DD/FD CB の setReg(6) 副作用**: rotate/SET/RES の z_==6 で setReg(6) が (HL) を書き換える誤副作用を除去（テスト: RLC (IX+0) と SET 0,(IX+0) で IX 側メモリのみ変化、HL 側不変）
 - **6502 icount 表示**: unsupported が「実行命令数: unsupported ...」と数値ラベルで包まれる表示を修正。完走 (PVExit) / 打ち切り (timeout 124 / -x 上限 126) を判定して「完走値」「打ち切り値」を区別表示。トレースは `.icount.trace` に分離（clean 対象 + gitignore）
 - **z80 icount の kill 時表示**: サマリ出力前にタイムアウト kill された場合の fallback を「0」から unsupported 表示に修正
@@ -141,3 +141,12 @@
 - [Abrash, Zen of Assembly Language Appendix A](https://www.jagregory.com/abrash-zen-of-asm/) — MOVS = 18、REP 系 9+17 の交差検証
 - Zilog Z80 CPU User Manual (UM0080) — 命令タイミング表（DJNZ 13/8、LD r,(HL) 7、ALU A,(HL) 7、BIT b,(HL) 12）と割り込み応答（IM 0/1 = 13T、IM 2 = 19T）
 - 22_Library の 8086 書籍（isa CLI の元資料）— REP MOVSB 行の照合用
+
+## 再レビュー指摘への対応 第 3 次 (2026-11-14)
+
+- **BIT の S フラグ（P1）**: `if val&0x80 != 0` を `if y == 7 && val&0x80 != 0` に修正。`LD A,80h / BIT 0,A` が S=0 になる既知の実機挙動に整合（UM0080 は S 未規定のため実機互換を明記）。検出テストを追加（BIT 0 of 0x80 で Z=1/P=1/S=0 を通常 CB と DD CB の両経路で検証）
+- **6502 icount の終了判定（P1）**:
+  - `TIMEOUT ?= timeout --foreground $(TIMEOUT_SECS)` を定義。未定義のまま `$(TIMEOUT)` を参照していたため feed_input（cycles/debug/trace）と icount にタイムアウトがかっていなかった
+  - 終了コード判定を訂正: 126 は「サイクル上限」ではなく GNU timeout の「コマンドを起動できない」。サイクル上限は sim65i の `SIM65_ERROR_TIMEOUT` = exit(-2) → シェルの **254**（レシピでは -x 未使用のため未使用の分岐）。0=完走 / 124=timeout 打ち切り / 125=timeout 失敗 / 126=起動不可 / 127=未検出 / 254=サイクル上限 / その他=完走と即断しない参考値、の表どおりに実装
+  - 修正過程で「継続行 (\) の途中の # コメントが継続を切断する」事故を踏んだため、終了コード表は make コメント（ターゲット定義の外）に退避
+- 検証: z80 make test PASS（BIT S の検出テスト 2 件追加）、6502 icount 4 シナリオで完走値、runall 8 アーキ PASS

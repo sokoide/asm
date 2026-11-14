@@ -20,6 +20,10 @@ SIM65I_SRCS = sim65src/simmain.c sim65src/6502.c sim65src/memory.c \
 # (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
 TIMEOUT_SECS ?= 1
 
+# feed_input / icount で使うタイムアウトコマンド。GNU coreutils の timeout。
+# (未定義だと $(TIMEOUT) が空展開され、タイムアウトなしで実行される)
+TIMEOUT ?= timeout --foreground $(TIMEOUT_SECS)
+
 .PHONY: all run runall debug trace cycles icount clean sim65i
 
 all: sim65i
@@ -92,7 +96,15 @@ cycles:
 # トレースはプログラム出力と混在するため、命令番号/サイクル/PC の並びを持つ
 # 行だけを集計対象にする。割り込みが必要な s103_irq_nmi も sim65i でそのまま動く。
 # icount: 実行命令数 (sim65i トレースの最終命令番号 + 1)。
-# 完走 (PVExit) と打ち切り (timeout / -x 上限) を区別して表示する。
+# 完走・打ち切り・計測不能を終了コードで区別して表示する
+# (GNU timeout の慣例 + sim65i の終了コード):
+#   0   = 正常終了 (完走値)
+#   124 = GNU timeout による打ち切り
+#   125 = timeout 自体の失敗
+#   126 = コマンドを起動できない / 127 = コマンドが見つからない
+#   254 = sim65i のサイクル上限到達 (-x 指定時。SIM65_ERROR_TIMEOUT=-2 が
+#         exit(-2) としてシェルに 254 で渡る。現在のレシピでは -x 未使用)
+#   その他 = 異常終了またはプログラムが返した終了コード (完走と即断しない)
 # 計測不能 (有効なトレース行なし) は数値の代わりに unsupported を出す。
 icount: sim65i
 	$(call build_one,$(S))
@@ -103,12 +115,20 @@ icount: sim65i
 	n=$$(awk '/^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+[0-9A-Fa-f]+[[:space:]]/ { m = $$1+0; found=1 } END { if (found) print m+1 }' $(S).icount.trace); \
 	if [ -z "$$n" ]; then \
 		echo "実行命令数: unsupported (有効なトレース行なし。異常終了の可能性)"; \
+	elif [ $$st -eq 0 ]; then \
+		echo "実行命令数: $$n (完走値: sim65i トレース実測)"; \
 	elif [ $$st -eq 124 ]; then \
 		echo "実行命令数: $$n (打ち切り値: TIMEOUT_SECS で強制終了。最後まで実行していない)"; \
+	elif [ $$st -eq 125 ]; then \
+		echo "実行命令数: unsupported (timeout 自体が失敗。終了コード 125)"; \
 	elif [ $$st -eq 126 ]; then \
+		echo "実行命令数: unsupported (sim65i を起動できない。終了コード 126)"; \
+	elif [ $$st -eq 127 ]; then \
+		echo "実行命令数: unsupported (sim65i が見つからない。終了コード 127)"; \
+	elif [ $$st -eq 254 ]; then \
 		echo "実行命令数: $$n (打ち切り値: サイクル上限で終了)"; \
 	else \
-		echo "実行命令数: $$n (完走値: sim65i トレース実測)"; \
+		echo "実行命令数: $$n (参考値: 終了コード $$st — 完走とは限らない)"; \
 	fi
 
 runall: all
