@@ -16,7 +16,12 @@
 ;         address read from the table (19 T-states response)
 ;
 ; On acceptance the CPU pushes the return PC and clears IFF1/IFF2, so
-; each handler ends with RETN (restores IFF1 from IFF2) and the main
+; each handler ends with RETI: RETI restores IFF1 from IFF2 like RETN,
+; but also signals "interrupt finished" to external daisy-chain devices.
+; Maskable-interrupt (INT) handlers conventionally return with RETI;
+; RETN is for NMI return. simz80 has no daisy chain so both behave the
+; same here - the point of the scenario is choosing the right instruction.
+; The main
 ; code executes EI before raising the next interrupt.
 ;
 ; Page zero notes (simz80 = CP/M layout):
@@ -89,7 +94,7 @@ _start:
 	ld	(0x0039), hl		; JP target (little-endian word)
 
 	im	1			; IM 02 -> 01
-	ei			; RETN cleared IFF1, re-enable
+	ei			; RETI cleared IFF1, re-enable
 	ld	a, 0x38
 	out	(INT_PORT), a		; INT! -> RST 38h -> 0x0038
 
@@ -125,7 +130,7 @@ _start:
 ; Interrupt service routines
 ; Entered with IFF1/IFF2 cleared by the CPU (no nested INTs).
 ; simz80 lets ISRs call the BDOS print trap safely; each ISR saves
-; the registers it clobbers and returns with RETN.
+; the registers it clobbers and returns with RETI.
 ; ================================================================
 
 isr_im2:
@@ -140,7 +145,7 @@ isr_im2:
 	pop	de
 	pop	bc
 	pop	af
-	retn			; IFF1 <- IFF2, PC <- stack
+	reti			; IFF1 <- IFF2, PC <- stack (daisy-chain EOI)
 
 isr_im1:
 	push	af
@@ -154,7 +159,7 @@ isr_im1:
 	pop	de
 	pop	bc
 	pop	af
-	retn
+	reti
 
 isr_im0:
 	push	af
@@ -168,7 +173,7 @@ isr_im0:
 	pop	de
 	pop	bc
 	pop	af
-	retn
+	reti
 
 ; ================================================================
 ; Common subroutines

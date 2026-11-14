@@ -18,7 +18,7 @@ func tstatesMain(op byte) int {
 		case 0:
 			switch {
 			case y == 2:
-				return 5 // DJNZ (not taken)
+				return 8 // DJNZ (not taken; UM0080: 8T)
 			case y == 3:
 				return 12 // JR d (always taken)
 			case y >= 4:
@@ -56,9 +56,18 @@ func tstatesMain(op byte) int {
 			return 4 // RLCA..CCF, DAA, CPL, SCF, CCF
 		}
 	case 1:
-		return 4 // HALT, LD r,r', LD r,(HL), LD (HL),r
+		if op == 0x76 {
+			return 4 // HALT
+		}
+		if y == 6 || z == 6 {
+			return 7 // LD r,(HL) / LD (HL),r (UM0080: 7T)
+		}
+		return 4 // LD r,r'
 	case 2:
-		return 4 // ALU A,r / ALU A,(HL)
+		if z == 6 {
+			return 7 // ALU A,(HL) (オペランド選択は z。UM0080: 7T)
+		}
+		return 4 // ALU A,r
 	default: // x == 3
 		switch z {
 		case 0:
@@ -115,7 +124,12 @@ func tstatesMain(op byte) int {
 // tstatesCB returns T-states for a CB-prefixed opcode.
 func tstatesCB(op byte) int {
 	if op&7 == 6 {
-		return 15 // operates on (HL)
+		// BIT b,(HL) (x == 1) は 12T、rotate/SET/RES 系 (HL) は 15T。
+		// (UM0080: BIT は S/Z/P/V 更新のみで 12T)
+		if (op >> 6) == 1 {
+			return 12
+		}
+		return 15
 	}
 	return 8
 }
@@ -261,7 +275,7 @@ func (z *Z80) conditionalDelta(start, end uint16) int {
 	switch op {
 	case 0x10: // DJNZ
 		if end != start+uint16(prefix+2) {
-			return 3 // 5 + 3 = 8 when taken
+			return 5 // 8 + 5 = 13 when taken (UM0080: 13T)
 		}
 	case 0x20, 0x28, 0x30, 0x38: // JR cc,d
 		if end != start+uint16(prefix+2) {

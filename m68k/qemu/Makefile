@@ -28,7 +28,7 @@ GDB_PORT   ?= 1234
 # QEMU はタイムアウトまで走り続ける(全サンプルに halt ラベルあり)。
 TRACE_SECS ?= 10
 
-.PHONY: all run runall dump debug trace cycles clean
+.PHONY: all run runall dump debug trace cycles icount clean
 
 all:
 	@for name in $(SOURCES); do \
@@ -66,7 +66,8 @@ dump:
 	$(OD) -d $(S).elf
 
 # ステップデバッガ: make debug S=s01_hello
-# QEMU を -S -gdb tcp::PORT (起動時停止 + gdbstub) でバックグラウンド起動し、
+# QEMU を -S -gdb tcp:127.0.0.1:PORT (起動時停止 + gdbstub) でバックグラウンド起動し、
+# gdb リモートプロトコルは認証を持たないため loopback (127.0.0.1) に限定する。
 # gdb をフォアグラウンドで接続する。UART出力は gdb プロンプトに混ざって表示される。
 # gdb: si=1命令実行 / c=continue / b *ADDR / info registers / x/5i $pc / Ctrl-D で終了
 debug:
@@ -74,7 +75,7 @@ debug:
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
-	@$(QEMU) $(QFLAGS) -kernel $(S).elf -S -gdb tcp::$(GDB_PORT) & \
+	@$(QEMU) $(QFLAGS) -kernel $(S).elf -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
 	  sleep 0.3; \
@@ -107,13 +108,21 @@ trace:
 	fi
 	@if [ -t 1 ]; then less $(S).trace; else cat $(S).trace; fi
 
-# 実行命令数: make cycles S=s01_hello
-# 注意: QEMU TCG はサイクル精度のエミュレーションでないため、CPUサイクル数では
-# なく実行命令数を報告する。halt ループ(bra halt)は無限に再実行されるため、
-# 同じ PC のダンプが3回連続したら halt 突入とみなし、それまでの実行命令数を
-# 数える(ループ反復は含まれる正確な値)。検出後も QEMU は TRACE_SECS 秒まで
-# 動き続ける(SIGPIPE 無視のため)。ログはファイル化せずパイプで直接集計する。
+# 実サイクル数: make cycles S=s01_hello
+# QEMU TCG はサイクル精度のエミュレーションを行わないため実サイクル数は
+# 取得できない。代替値を出さず unsupported を表示する。実行命令数の計測は
+# make icount を使用。
 cycles:
+	@echo "unsupported: QEMU TCG はサイクル非対応のため実サイクル数は計測できません (実行命令数は make icount)"
+
+# 実行命令数: make icount S=s01_hello
+# one-insn-per-tb で命令ごとに CPU 状態ダンプ (-d cpu) を出し、halt ループ
+# (bra halt) 突入または TRACE_SECS 打ち切りまでの行数を数える。
+# ループ反復を打ち切らずに数えた値だが、TRACE_SECS で打ち切った場合は
+# 最後まで実行していない点に注意(打ち切り値)。
+# 検出後も QEMU は TRACE_SECS 秒まで動き続ける(SIGPIPE 無視のため)。
+# ログはファイル化せずパイプで直接集計する。
+icount:
 	$(AS) $(ASFLAGS) -al=$(S).lst -o $(S).o $(S).s
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
@@ -124,7 +133,7 @@ cycles:
 	else \
 		n=$$(timeout --foreground $(TRACE_SECS) $(QEMU) $(QFLAGS) -kernel $(S).elf -accel tcg,one-insn-per-tb=on -d cpu 2>&1 >/dev/null | awk 'BEGIN{a="_";b="_"} /^PC = /{p=$$3; if(p==a&&a==b){n-=2; exit} b=a; a=p; n++} END{print n+0}'); \
 	fi; \
-	echo "実行命令数: $$n (halt ループ突入まで / QEMU TCG はサイクル非対応のため命令数で代替)"
+	echo "実行命令数: $$n (halt ループ突入まで = 完走値。halt ループ自体は含まない。halt を検出できず TRACE_SECS 秒で打ち切った場合は打ち切り値 = 最後まで実行していない)"
 
 clean:
 	rm -f *.elf *.o *.lst *.trace

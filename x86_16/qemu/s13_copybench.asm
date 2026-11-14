@@ -15,18 +15,24 @@
 ; Build: nasm -f elf32 + ld.lld (single sector, same as s01-s12)
 ;
 ; ---- Cycle breakdown of the COPY BODY (hand calculation) ----
-; Basis: Intel iAPX 86/88 instruction timing tables (8086 Family User's Manual);
-;        REP prefix overhead cross-checked with `isa x86_16 REP` (prefix = 2).
+; Basis: 8086 Family User's Manual Table 2-21 (MOVS: 18 OR 9+17n; the same
+;        table row appears in 8086マシン語秘伝の書(1990) 三の章ニモニック表,
+;        mirrored in `isa x86_16 MOVS`). Sanity check: an 8086 bus cycle is
+;        4 clocks, so a byte move (read + write) cannot be fewer than 8
+;        clocks/byte - 17 clocks/byte is the physically consistent figure.
 ;   cld                 =  2
 ;   mov si, imm16       =  4
 ;   mov di, imm16       =  4
 ;   mov cx, imm16       =  4
-;   rep movsb           = 17 + 4*n          (n = CX = 100)
-;                       = 17 + 400 = 417
-;   copy body total     = 2 + 4 + 4 + 4 + 417 = 431 cycles
+;   rep movsb           = 9 + 17*n          (n = CX = 100)
+;                       = 9 + 1700 = 1709
+;   copy body total     = 2 + 4 + 4 + 4 + 1709 = 1723 cycles (17.09 cyc/byte)
 ;
-; For comparison, a hand-rolled loop would cost ~18 (movsb) + loop overhead
-; per byte, i.e. several times more than REP MOVSB's 4.17 cycles/byte.
+; For comparison, a hand-rolled loop costs ~18 (movsb) + loop overhead per
+; byte - still more than REP MOVSB's 17.09, but the margin is small.
+; NOTE: cycles alone do not compare speed across CPUs. At the typical clock
+; rates (Z80 4 MHz / 8086 5 MHz) Z80's LDIR runs 21/4 MHz = 5.25 us/byte and
+; 8086 REP MOVSB runs 17.09/5 MHz = 3.42 us/byte - close in time per byte.
 ;
 ; ---- Cycle breakdown of the CHECKSUM LOOP (hand calculation) ----
 ;   xor bx, bx          =  3
@@ -60,7 +66,7 @@ _start:
     inc al
     loop .fill              ; CX--, repeat while CX != 0
 
-    ; --- Copy body: REP MOVSB (417 cycles, see breakdown above) ---
+    ; --- Copy body: REP MOVSB (9+17n = 1709 cycles for n=100, see breakdown above) ---
     mov si, src             ; DS:SI = source
     mov di, dst             ; ES:DI = destination
     mov cx, 100             ; byte count

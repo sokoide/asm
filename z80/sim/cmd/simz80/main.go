@@ -28,6 +28,7 @@ type Z80 struct {
 	// written value as the IM 2 vector byte and asserts INT until it
 	// is accepted at an instruction boundary.
 	intPending bool
+	eiDelay    bool // EI 直後の 1 命令は割り込みを禁止 (Z80 割り込み Window)
 	intVector  byte
 	// lastINT/lastINTText describe an interrupt acceptance performed
 	// by the most recent Step() (for trace/debug display, like lastBDOS).
@@ -232,9 +233,12 @@ func (z *Z80) setFlagsSub(a, b, cy byte) {
 	if (int(a&0x0F) - int(b&0x0F) - int(cy)) < 0 {
 		f |= HF
 	}
-	// Overflow
+	// P/V is signed overflow for SUB/SBC/CP (not parity). Clear the
+	// parity bit szpFlags() left behind when there is no overflow.
 	if (a^b)&(a^byte(r))&0x80 != 0 {
 		f |= PF
+	} else {
+		f &^= PF
 	}
 	z.f = f
 }
@@ -245,19 +249,29 @@ func (z *Z80) setFlagsLogic(v byte) {
 
 func (z *Z80) setFlagsInc(v byte) {
 	cf := z.f & CF
-	f := z.szpFlags(v)
+	f := z.szpFlags(v) &^ PF
 	if v&0x0F == 0 {
 		f |= HF
+	}
+	// P/V is signed overflow for INC: only 0x7F + 1 = 0x80 overflows.
+	// (the caller passes the result, so old value == v - 1)
+	if v == 0x80 {
+		f |= PF
 	}
 	z.f = f | cf
 }
 
 func (z *Z80) setFlagsDec(v byte) {
 	cf := z.f & CF
-	f := z.szpFlags(v)
+	f := z.szpFlags(v) &^ PF
 	f |= NF
 	if v&0x0F == 0x0F {
 		f |= HF
+	}
+	// P/V is signed overflow for DEC: only 0x80 - 1 = 0x7F overflows.
+	// (the caller passes the result, so old value == v + 1)
+	if v == 0x7F {
+		f |= PF
 	}
 	z.f = f | cf
 }
@@ -871,7 +885,12 @@ func (z *Z80) Step() bool {
 	// Interrupt acceptance: a pending INT is taken at the instruction
 	// boundary when IFF1 is set (i.e. after EI). The BDOS host call and
 	// the PC=0x0000 exit take priority over the interrupt.
-	if z.intPending && z.iff1 {
+	// EI の割り込み Window: EI 完了直後の 1 個の境界は受付をスキップする
+	// (UM0080: EI は「次の命令の後」まで割り込みを認識しない)。
+	// Window はこの境界で消費され、それ以降は通常の受付状態に戻る。
+	if z.eiDelay {
+		z.eiDelay = false
+	} else if z.intPending && z.iff1 {
 		z.acceptInterrupt()
 		return true
 	}
@@ -1456,6 +1475,7 @@ func (z *Z80) execMain(op byte) {
 				z.iff2 = false
 			} else if y == 7 { // EI
 				z.iff1 = true
+				z.eiDelay = true // 割り込み Window: EI の次の 1 命令は受付しない
 				z.iff2 = true
 			}
 		} else if z_ == 4 { // CALL cc, nn

@@ -35,17 +35,17 @@ make clean
 ## デバッグ
 
 ```bash
-# QEMU を -S -gdb tcp::1234 で起動し gdb を接続（ステップ実行）
+# QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
-# 実行命令数を集計
-make cycles S=s01_hello
+# 実行命令数を集計 (実サイクルは make cycles が unsupported を表示)
+make icount S=s01_hello
 ```
 
-`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。x86_16 はシンボルを持たないフラットバイナリだが、gdb の i8086 モードで 0x7C00 に自動ブレークする。`make cycles` が数えるのはサイクル数ではなく実行命令数（QEMU TCG はサイクル精度のエミュレーションではないため）。
+`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。x86_16 はシンボルを持たないフラットバイナリだが、gdb の i8086 モードで 0x7C00 に自動ブレークする。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
 ## ディレクトリ構造
 
@@ -336,6 +336,13 @@ AND / OR / XOR / SHL / SHR を使い、ビット単位の操作を理解する�
 
 **実行出力**: `COPY OK CHECKSUM=1356`（1 行のみ）
 
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: ソースコメントの手計算（コピー本体 1723 サイクル、`REP MOVSB = 9 + 17×100`）を読み、1 バイト当たり 17.09 クロックという数字を自分でも導いてから、`make icount S=s13_copybench` で総命令数を測る。REP MOVSB は 100 バイトを 1 命令として数えるので、命令数では極端に有利な点に注目する。
+- **STEP 2 観察**: `make trace S=s13_copybench` で `rep movsb` が 1 行として現れる（内部の 100 反復は展開されない）ことを確認する。ICOUNT の内訳を見て、「命令数が少ない = 速い」ではないことを確認する（1 命令の実行時間が長い）。
+- **STEP 3 改造**: `rep movsb` を `lodsb`/`stosb` + `loop` の手書きループに差し替える改造を設計し、icount と手計算サイクル（約 18 + ループオーバーヘッド/バイト）がどう変わるか予測してから試す。
+- **STEP 4 考察**: `compare/copybench.md` を参照。Z80 `LDIR` 21T/バイト ÷ 4MHz と 8086 `REP MOVSB` 17.09 クロック/バイト ÷ 5MHz を時間で比較すると差が僅かになる — 「クロック数」と「実行時間」を区別する練習。
+
 ---
 
 ### S101: セグメントアドレッシング
@@ -362,6 +369,13 @@ physical = seg*16 + offset
 Segment demo done
 ```
 
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `07C0:0000` と `0000:7C00` が同一物理アドレスになる式（0x07C0×16 = 0x7C00）を先に計算する。さらに `0xFFFF:0x0001` の物理アドレスは 20 ビットで表現できるか（1MB の壁とオフセットのラップアラウンドの違い）を予測する。
+- **STEP 2 観察**: `make debug S=s101_segments` で 0x7C00 に自動ブレークするので、`si` で進みながら `print_pair` の `shl`/`adc` の実行前後でレジスタ（BX=seg, CX=off, 出力値）を `info registers` で追う。`make trace S=s101_segments` で 4 つのペア計算の流れを一覧するのも有効。
+- **STEP 3 改造**: 新しいペア `0x1234:0x5678` の物理アドレスを手計算（0x12340 + 0x5678 = 0x179B8）してから、ソースに 5 番目のペアを追加して出力と突き合わせる。オフセット 0xFFFF の次のバイトが同じセグメントの 0x0000 に折り返す点も観察する。
+- **STEP 4 考察**: m68k/RISC-V/ARM64/PPC はフラットアドレス空間（セグメント計算なし）。x86 16-bit だけが「16 ビットレジスタで 20 ビット空間を張る」技巧を必要とした歴史的理由（8086 のレジスタ幅とアドレスバス幅の不整合）を考察する。
+
 ---
 
 ### S102: 割り込みベクタテーブル
@@ -385,6 +399,13 @@ Before INT 60h
   [INT 60h handler fired!]
 Back after IRET
 ```
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `int 0x60` 実行時にスタックに積まれる 3 つの word（FLAGS, CS, IP）の順序と積まれる方向を先に書き出す。IVT エントリ 0x60 が物理 0x0180 に置かれる理由（0x60 × 4）も計算する。ソフトウェア割り込みは IF=0 でも動く — その理由（trap であり maskable interrupt でない）も予測する。
+- **STEP 2 観察**: `make debug S=s102_vectors` で `int 0x60` のアドレス（`make dump S=s102_vectors` で確認）に `b *ADDR` を置き、`si` で突入時に `info registers` の SP とスタック内容（`x/3xw $ss:($sp)` 等）で FLAGS/CS/IP が積まれていることを確認する。`iret` で SP が 6 バイト戻ることも見る。
+- **STEP 3 改造**: ベクタ 0x61 に 2 つ目のハンドラを登録して `int 0x61` を呼ぶ改造。IVT 書き込みアドレスが 0x0184 になることを予測してから試す。ハンドラ内で `push ax` を `pop ax` し忘れた場合、main 側でどう壊れるかも考察する。
+- **STEP 4 考察**: m68k `TRAP #0`（ベクタ 32 は固定アドレス 0x80、フレームは SR+PC の 6 バイト）と x86 `INT 60h`（IVT、フレームは FLAGS+CS+IP の 6 バイト）は構造がよく似ている。RISC-V/PPC/ARM64 の「レジスタ渡し」への移行理由（フレームのメモリアクセス コスト）と並べて比較する。
 
 ---
 

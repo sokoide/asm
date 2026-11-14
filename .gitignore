@@ -17,3 +17,6 @@ yarn.lock
 # ---- isa CLI: 生成ページはオフラインで読めるようコミットする ----
 !isa/build/
 !isa/build/**
+
+# go test が cmd/simz80/ に生成するバイナリ
+z80/sim/cmd/simz80/simz80

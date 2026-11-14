@@ -25,7 +25,7 @@ GDB_PORT   ?= 1234
 # 通常はタイムアウト前に QEMU が抜ける。延長は export TRACE_SECS=20 等で可能。
 TRACE_SECS ?= 10
 
-.PHONY: all run runall dump debug trace cycles clean
+.PHONY: all run runall dump debug trace cycles icount clean
 
 all:
 	@for name in $(SOURCES); do \
@@ -63,7 +63,8 @@ dump:
 	llvm-objdump -d $(S).elf
 
 # ステップデバッガ: make debug S=s01_hello
-# QEMU を -S -gdb tcp::PORT (起動時停止 + gdbstub) でバックグラウンド起動し、
+# QEMU を -S -gdb tcp:127.0.0.1:PORT (起動時停止 + gdbstub) でバックグラウンド起動し、
+# gdb リモートプロトコルは認証を持たないため loopback (127.0.0.1) に限定する。
 # gdb をフォアグラウンドで接続する。UART出力は gdb プロンプトに混ざって表示される。
 # gdb: si=1命令実行 / c=continue / b *ADDR / info registers / x/5i $pc / Ctrl-D で終了
 debug:
@@ -71,7 +72,7 @@ debug:
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
-	@$(QEMU) $(QFLAGS) -kernel $(S).elf -S -gdb tcp::$(GDB_PORT) & \
+	@$(QEMU) $(QFLAGS) -kernel $(S).elf -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
 	  sleep 0.3; \
@@ -102,13 +103,19 @@ trace:
 	fi
 	@if [ -t 1 ]; then less $(S).trace; else cat $(S).trace; fi
 
-# 実行命令数: make cycles S=s01_hello
-# 注意: QEMU TCG はサイクル精度のエミュレーションでないため、CPUサイクル数では
-# なく実行命令数を報告する。one-insn-per-tb で命令ごとに CPU 状態ダンプ
-# (-d cpu) が記録されるので、その行数=実行命令数(ループ反復を含む正確な値)。
+# 実サイクル数: make cycles S=s01_hello
+# QEMU TCG はサイクル精度のエミュレーションを行わないため実サイクル数は
+# 取得できない。代替値を出さず unsupported を表示する。実行命令数の計測は
+# make icount を使用。
+cycles:
+	@echo "unsupported: QEMU TCG はサイクル非対応のため実サイクル数は計測できません (実行命令数は make icount)"
+
+# 実行命令数: make icount S=s01_hello
+# one-insn-per-tb で命令ごとに CPU 状態ダンプ (-d cpu) が記録されるので、
+# その行数=実行命令数(ループ反復を含む正確な値)。
 # semihosting で自己終了するサンプルは完走値、終了しないサンプルは
 # TRACE_SECS 秒時点までの値。
-cycles:
+icount:
 	$(AS) $(ASFLAGS) -o $(S).o $(S).s
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
@@ -122,7 +129,7 @@ cycles:
 	fi
 	@n=$$(grep -c '^ PC=' $(S).trace 2>/dev/null || true); \
 	[ -n "$$n" ] || n=0; \
-	echo "実行命令数: $$n (QEMU TCG はサイクル非対応のため命令数で代替)"; \
+	echo "実行命令数: $$n (QEMU 実行命令数の実測。自己終了するサンプルは完走値、打ち切られた場合は打ち切り値)"; \
 	echo "詳細: $(S).trace"
 
 clean:

@@ -104,7 +104,7 @@ func TestTstatesSpotValues(t *testing.T) {
 		{"ADD HL,rp", tstatesMain(0x09), 11},
 		{"INC rp", tstatesMain(0x23), 6},
 		{"INC (HL)", tstatesMain(0x34), 11},
-		{"DJNZ base", tstatesMain(0x10), 5},
+		{"DJNZ base", tstatesMain(0x10), 8},
 		{"JR d", tstatesMain(0x18), 12},
 		{"JR cc base", tstatesMain(0x20), 7},
 		{"RET cc base", tstatesMain(0xC0), 5},
@@ -117,7 +117,11 @@ func TestTstatesSpotValues(t *testing.T) {
 		{"JP (HL)", tstatesMain(0xE9), 4},
 		{"EX (SP),HL", tstatesMain(0xE3), 19},
 		{"CB r", tstatesCB(0x07), 8},
-		{"CB (HL)", tstatesCB(0x06), 15},
+		{"CB RLC (HL)", tstatesCB(0x06), 15},
+		{"CB BIT (HL)", tstatesCB(0x46), 12},
+		{"CB SET (HL)", tstatesCB(0xC6), 15},
+		{"LD A,(HL)", tstatesMain(0x7E), 7},
+		{"ADD A,(HL)", tstatesMain(0x86), 7},
 		{"ED IN r,(C)", tstatesED(0x40), 12},
 		{"ED SBC HL,rp", tstatesED(0x42), 15},
 		{"ED LD (nn),rp", tstatesED(0x43), 20},
@@ -185,14 +189,14 @@ func TestStepConditionalTstates(t *testing.T) {
 		t.Fatalf("JR NZ not taken: lastT = %d, want 7", z2.lastT)
 	}
 
-	// DJNZ with B=2, d=-1: taken, 5 + 3 = 8.
+	// DJNZ with B=2, d=-1: taken, 8 + 5 = 13 (UM0080).
 	z3 := NewZ80()
 	copy(z3.mem[0x0100:], []byte{0x10, 0xFF})
 	z3.pc = 0x0100
 	z3.b = 2
 	z3.Step()
-	if z3.lastT != 8 {
-		t.Fatalf("DJNZ taken: lastT = %d, want 8", z3.lastT)
+	if z3.lastT != 13 {
+		t.Fatalf("DJNZ taken: lastT = %d, want 13", z3.lastT)
 	}
 
 	// DD-prefixed JR NZ,-3 (executed via execMain fallback), taken:
@@ -543,5 +547,91 @@ func TestADDIndexRegisters(t *testing.T) {
 	z2 := runProg(t, prog2, 2) // LD IY,nn / ADD IY,IY
 	if z2.iy() != 0x2000 {
 		t.Fatalf("ADD IY,IY: IY=%04X, want 2000", z2.iy())
+	}
+}
+
+// P/V フラグの意味は命令ごとに変わる (UM0080):
+//
+//	ADD/ADC/SUB/SBC/CP/INC/DEC = 符号付きオーバーフロー
+//	AND/OR/XOR                 = パリティ
+//
+// オーバーフローなしの場合にパリティ由来のビットが残留しないことを
+// 次の 4 ケースで保証する (期待値は UM0080 のフラグ定義から作成)。
+func TestPVFlagOverflowCases(t *testing.T) {
+	// SUB 0x01 from 0x00: A=0xFF, V=0 (no overflow), parity of 0xFF is
+	// even so a parity-derived PF would wrongly be set.
+	z := runProg(t, []byte{0x3E, 0x00, 0xD6, 0x01, 0x76}, 3) // LD A,0; SUB 1
+	if z.a != 0xFF {
+		t.Fatalf("SUB: A=%02X, want FF", z.a)
+	}
+	if z.f&PF != 0 {
+		t.Fatalf("SUB 00-01: P/V set, want V=0 (A=FF)")
+	}
+
+	// ADD 0x7F + 1 = 0x80: V=1 (positive + positive -> negative).
+	z = runProg(t, []byte{0x3E, 0x7F, 0xC6, 0x01, 0x76}, 3) // LD A,7F; ADD 1
+	if z.a != 0x80 || z.f&PF == 0 {
+		t.Fatalf("ADD 7F+01: A=%02X P/V=%d, want A=80 V=1", z.a, z.f&PF>>6)
+	}
+
+	// INC 0x7F = 0x80: V=1.
+	z = runProg(t, []byte{0x3E, 0x7F, 0x3C, 0x76}, 3) // LD A,7F; INC A
+	if z.a != 0x80 || z.f&PF == 0 {
+		t.Fatalf("INC 7F: A=%02X P/V=%d, want A=80 V=1", z.a, z.f&PF>>6)
+	}
+
+	// DEC 0x80 = 0x7F: V=1.
+	z = runProg(t, []byte{0x3E, 0x80, 0x3D, 0x76}, 3) // LD A,80; DEC A
+	if z.a != 0x7F || z.f&PF == 0 {
+		t.Fatalf("DEC 80: A=%02X P/V=%d, want A=7F V=1", z.a, z.f&PF>>6)
+	}
+
+	// AND keeps parity semantics: AND of 0xFF with 0xFF = 0xFF (even
+	// parity) must set P/V as parity, not overflow.
+	z = runProg(t, []byte{0x3E, 0xFF, 0xE6, 0xFF, 0x76}, 3) // LD A,FF; AND FF
+	if z.a != 0xFF || z.f&PF == 0 {
+		t.Fatalf("AND FF FF: A=%02X P/V=%d, want A=FF P=1", z.a, z.f&PF>>6)
+	}
+}
+
+// EI の割り込み Window: EI が完了した直後の境界では割り込みを受け付けず、
+// EI の次の 1 命令が完了した後の境界で受付する (UM0080: EI は「次の命令の
+// 後」まで割り込みを認識しない)。INT が EI より前に pending している場合に
+// EI 直後の境界が飛ばされることを確認する。
+func TestEIDelayWindow(t *testing.T) {
+	// IM 1 (default), handler = RETI at 0x0038.
+	prog := []byte{
+		0xD3, 0x10, // OUT (0x10), A  -> INT が EI より先に pending
+		0xFB, // EI
+		0x00, // NOP: EI 直後の境界では受付しない (Window 中)
+		0x76, // HALT (ここには到達しない)
+	}
+	z := NewZ80()
+	copy(z.mem[0x0100:], prog)
+	z.im = 1 // IM 1 (default は IM 0)
+	z.mem[0x0038] = 0xED
+	z.mem[0x0039] = 0x4D // RETI
+	z.mem[0x003A] = 0x76 // HALT (insurance)
+	z.pc = 0x0100
+
+	z.Step() // OUT (0x10),A: intPending=1
+	if !z.intPending {
+		t.Fatal("OUT 0x10 should raise INT")
+	}
+	z.Step() // EI: iff1=1, eiDelay=true
+	if !z.iff1 {
+		t.Fatal("EI should set IFF1")
+	}
+	// このステップの冒頭の境界は EI 直後 = Window 中 → 受付せず NOP を実行
+	z.Step()
+	if z.pc != 0x0104 || z.lastINT {
+		t.Fatalf("EI window: PC=%04X lastINT=%v, want PC=0104 with no accept", z.pc, z.lastINT)
+	}
+	z.Step() // NOP 完了後の境界で受付 -> PC=0x0038
+	if !z.lastINT {
+		t.Fatalf("INT should be accepted after EI window, PC=%04X", z.pc)
+	}
+	if z.pc != 0x0038 {
+		t.Fatalf("INT accepted: PC=%04X, want 0038", z.pc)
 	}
 }

@@ -251,7 +251,7 @@ QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` の各 `
 
 #### 6502 のトレース出力の読み方（実行例）
 
-6502 だけ 3 つのコマンドの挙動を具体例で示す。`make trace` の 1 行は左から「命令の通番 / 累積サイクル数 / PC / オペコードバイト / 逆アセンブル / レジスタ (A, X, Y, S) / Flags / SP」で、レジスタ欄は**その命令を実行する前**の値。`▸` 行は `trace-diff.awk` が前の命令で変わったレジスタを差分として挿入したもの。
+6502 だけ 3 つのコマンドの挙動を具体例で示す。`make trace` の 1 行は左から「命令の通番 / 累積サイクル数 / PC / オペコードバイト / 逆アセンブル / レジスタ (A, X, Y, S) / Flags / SP」で、レジスタ欄は**その命令を実行する前**の値。`trace-diff.awk` は変化のあったレジスタについて `BEFORE:`（実行前値）/ `AFTER:`（実行後値 = 次の行の実行前値）/ `CHANGE:`（old→new の要約）の 3 行セットをその命令の直下に挿入する。
 
 ```bash
 cd 6502/sim65
@@ -261,24 +261,40 @@ make trace S=s03_stack
 ```text
            0             0  0200  D8        cld               A=00 X=00 Y=00 S=00 Flags=nvdizc    SP=FFFF
            1             2  0201  A2 FF     ldx  #$FF         A=00 X=00 Y=00 S=00 Flags=nvdizc    SP=FFFF
+        BEFORE: X=00
+        AFTER:  X=FF
+        CHANGE: X 00→FF
+        BEFORE: Flags=nvdizc
+        AFTER:  Flags=Nvdizc
+        CHANGE: Flags nvdizc→Nvdizc
            2             4  0203  9A        txs               A=00 X=FF Y=00 S=00 Flags=Nvdizc    SP=FFFF
-        ▸  X: 00→FF  Flags: nvdizc→Nvdizc
+        BEFORE: S=00
+        AFTER:  S=FF
+        CHANGE: S 00→FF
            3             6  0204  A9 C0     lda  #$C0         A=00 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFFF
-        ▸  S: 00→FF
+        BEFORE: A=00
+        AFTER:  A=C0
+        CHANGE: A 00→C0
            4             8  0206  A2 FF     ldx  #$FF         A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFFF
-        ▸  A: 00→C0
            5            10  0208  85 06     sta  $06          A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFFF
+        BEFORE: SP=FFFF
+        AFTER:  SP=FFC0
+        CHANGE: SP FFFF→FFC0
            6            13  020A  86 07     stx  $07          A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFC0
-        ▸  SP: FFFF→FFC0
            7            16  020C  20 B2 03  jsr  $03B2        A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFC0
+        BEFORE: S=FF
+        AFTER:  S=FD
+        CHANGE: S FF→FD
 ```
 
 この例の読み方:
 
-- 通番 1 の `ldx #$FF` は X=00 のときに実行され、結果は `▸ X: 00→FF` として**次の行の下**に現れる（差分行は直前の命令の結果を示す）。
-- 通番 2 の `txs` で X の値 (FF) がスタックポインタに転送される。直後の命令行の `SP=FFFF` は実行前の値で、`▸ SP: FFFF→FFC0` が転送結果。
-- Flags 欄は N（負）V（オーバーフロー）D（10 進）I（割り込み禁止）Z（ゼロ）C（キャリー）の順で、大文字 = 立、小文字 = 落ち。`ldx #$FF` の後、次の命令行で `N` が大文字になり、FF（負の数）をロードしたことで N フラグが立ったことが分かる。
-- 差分行は常に「直前の命令の結果」なので、例えばこのサンプルの直後 (`jsr $03B2` の実行後) には `▸ S: FF→FD` が現れ、リターンアドレス 2 バイト分スタックが減ったことが追跡できる。
+- 差分は**その命令自身の直下**に現れる。通番 1 の `ldx #$FF` の下の `BEFORE: X=00` / `AFTER: X=FF` / `CHANGE: X 00→FF` がその命令の実行結果で、「どの命令が何を変えたか」が 1 箇所で読める（`AFTER:` は次のトレース行の実行前値 = この命令の実行後値）。
+- 通番 2 の `txs` の `CHANGE: S 00→FF` は、TXS が X の値 (FF) を **CPU のハードウェアスタックポインタ S** に転送した結果。`SP=` 欄は変化していない。
+- 通番 5 の `sta $06` の `CHANGE: SP FFFF→FFC0` は TXS ではなく、cc65 ランタイムのスタートアップコードが**ソフトウェアスタックポインタを初期化**した結果である（ゼロページのランタイム変数 `sp` ($06-$07) に $C0 / $FF を書き込み、16 ビット値として $FFC0 を設定）。
+- **`S` と `SP` は別物**: `S` = CPU のハードウェアスタックポインタ（8 ビット。`TXS` / `TSX` / `PHA` / `PLA` / `JSR` / `RTS` が操作し、ハードウェアスタック $0100-$01FF を指す）。`SP` = cc65 ランタイムのソフトウェアスタックポインタ（16 ビット、ゼロページの `sp` 変数。C 関数呼び出しのローカル変数・パラメータ領域で、ランタイムの `pushax` / `popax` などが操作する）。
+- Flags 欄は N（負）V（オーバーフロー）D（10 進）I（割り込み禁止）Z（ゼロ）C（キャリー）の順で、大文字 = 立、小文字 = 落ち。通番 1 の `CHANGE: Flags nvdizc→Nvdizc` は、`ldx #$FF` が FF（負の数）をロードして N フラグを立てたことを示す。
+- 通番 7 の `jsr $03B2` の `CHANGE: S FF→FD` は、JSR がリターンアドレス 2 バイト分ハードウェアスタックを消費した（S を 2 減らした）ことを示す。
 
 **make debug (リプレイ再生)**: 同じ内容をページャで 1 命令ずつ送って見る。途中でスペースを連打して歩調を調整でき、`g` で先頭へ戻れる（トレース全体を巻き戻し再生できるのはリプレイ型の利点）。
 

@@ -20,7 +20,7 @@ SIM65I_SRCS = sim65src/simmain.c sim65src/6502.c sim65src/memory.c \
 # (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
 TIMEOUT_SECS ?= 1
 
-.PHONY: all run runall debug trace cycles clean sim65i
+.PHONY: all run runall debug trace cycles icount clean sim65i
 
 all: sim65i
 	@echo "=== helpers ==="; \
@@ -79,11 +79,23 @@ trace:
 	$(call feed_input,$$SIM --trace $(S)) >$(S).trace
 	@awk -f trace-diff.awk $(S).trace
 
-# サイクル数: make cycles S=s04_loops (最終行に合計サイクル)
+# 実サイクル数: make cycles S=s04_loops (最終行に合計サイクル)
+# 6502 はシミュレータがクロックサイクルを正確に計上するため「実サイクル」の実測値。
 cycles:
 	$(call build_one,$(S))
 	@SIM=$$($(call pick_sim)); \
-	$(call feed_input,$$SIM -c $(S))
+	$(call feed_input,$$SIM -c $(S)); \
+	echo "(実サイクル: sim65 が計上した 6502 クロックサイクルの実測値)"
+
+# 実行命令数: make icount S=s04_loops
+# sim65i -t トレースの 1 フィールド目 (命令番号) の最大値 + 1 を命令数とする。
+# トレースはプログラム出力と混在するため、命令番号/サイクル/PC の並びを持つ
+# 行だけを集計対象にする。割り込みが必要な s103_irq_nmi も sim65i でそのまま動く。
+icount: sim65i
+	$(call build_one,$(S))
+	@$(call feed_input,$(SIM65I) -t $(S)) | \
+	awk '/^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+[0-9A-Fa-f]+[[:space:]]/ { if ($$1+0 > m) m = $$1+0 } END { print m+1 }' | \
+	{ read n; echo "実行命令数: $$n (sim65i トレース実測)"; }
 
 runall: all
 	@for s in $(SCENARIOS); do \

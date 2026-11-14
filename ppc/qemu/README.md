@@ -32,17 +32,17 @@ make clean
 ## デバッグ
 
 ```bash
-# QEMU を -S -gdb tcp::1234 で起動し gdb を接続（ステップ実行）
+# QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
-# 実行命令数を集計
-make cycles S=s01_hello
+# 実行命令数を集計 (実サイクルは make cycles が unsupported を表示)
+make icount S=s01_hello
 ```
 
-`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` が数えるのはサイクル数ではなく実行命令数（QEMU TCG はサイクル精度のエミュレーションではないため）。
+`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
 ## ディレクトリ構造
 
@@ -289,6 +289,13 @@ PowerPC の特殊レジスタ（SPR）にアクセスしてタイムベースを
 | ブロック転送   | PPC に専用命令は無く LBZ/STB の繰り返し     |
 | チェックサム   | 宛先 100 バイトの総和でコピーを検証         |
 
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: コピー本体 `.Lcopy` は `lbz` → `stb` → `addi` × 2 → `bdnz` の 5 命令 × 100 回。ここにチェックサムループと出力ルーチンが加わる。`make icount S=s13_copybench` の総命令数はおよそ何命令になるか予測してから実行して比べる。
+- **STEP 2 観察**: `make trace S=s13_copybench` で `.Lcopy` が 5 命令の組み合わせを 100 回繰り返すことを確認する。`bdnz` が CTR を減らすだけで CR を汚さない点（ループ内で `cmpwi` を使っても干渉しない）もトレースで見る。
+- **STEP 3 改造**: ループ本体を `lwz`/`stw` 4 バイト転送に差し替えて反復 25 回にしたとき、icount がどれだけ減るか予測してから測る。100 が 4 で割り切れない場合の端数処理も含めて考える。
+- **STEP 4 考察**: Z80 `LDIR` は 1 命令/バイト、x86 `REP MOVSB` も 1 命令で複数バイト、PPC は 5 命令/バイト。`compare/copybench.md` を参照し、「命令数の多さ」と「クロック当たりの仕事」を区別して比較する練習をする。
+
 ---
 
 ### S101: CR とリンクレジスタ
@@ -303,6 +310,26 @@ PowerPC 特有の「命令は固定で、状態は CR とリンクレジスタ�
 | CR 論理命令         | `cror` などで複数フィールドの条件をビット単位で合成        |
 | mfcr / mtcrf        | CR 全体の読み書き（コンテキスト保存の基礎）                |
 | bdnz                | LR を壊さないカウンタ分岐（ループ中に bl しても安全）      |
+
+**各デモの観察ポイント**: ソースには 6 つのデモが直列に並ぶ。各デモの入口に `demo1_cr0_compare` 等のラベルを付けてあるので、`make debug` で目的のデモまで一気に進んでからステップ実行すると観察しやすい。
+
+| デモ | ラベル | break アドレス | 観察ポイント |
+| :--- | :--- | :--- | :--- |
+| 1 | `demo1_cr0_compare` | `0x8` | `cmpwi` 後の CR0（`cr 0x2` = EQ）。`beq` が CR0.EQ を見て分岐する |
+| 2 | `demo2_cr_field_compare` | `0x38` | 2 連続 `cmpwi` 後の CR = `0x28000000`（CR0=EQ, CR1=LT）。CR1 比較後も CR0.EQ が無傷で `beq` が通る |
+| 3 | `demo3_cr_logic` | `0x88` | `cror 2,2,6` で CR0.EQ (bit 2) に CR1.EQ (bit 6) を OR して EQ 分岐が通る |
+| 4 | `demo4_mfcr` | `0xc0` | `mfcr` の戻り値 `0x28000000` が CR のビットマップそのもの |
+| 5 | `demo5_mtcrf` | `0xe8` | `mtcrf 0x80` で CR0 <- 0b0100 (GT) に書き換わり `bgt` が通る |
+| 6 | `demo6_bdnz_bl` | `0x118` | ループ中の `bl ten` で LR が上書きされても `bdnz` が正常に回る（3 回 × 10 = 0x1E を出力） |
+
+アドレスは `make dump S=s101_cr_lr`（`llvm-objdump -t`）で確認できる（`demo1_cr0_compare` = 0x00000008 等）。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: Demo 2 の `cmpwi`（CR0）と `cmpwi cr1` を連続実行したとき、gdb の `info registers` で見える CR は何になるか（EQ は上位か下位のフィールドか）。Demo 3 の `cror 2,2,6` の 3 つのオペランドがそれぞれどのビットを指すか予測する。
+- **STEP 2 観察**: `make debug S=s101_cr_lr` を起動し、上の表の break アドレス（例: `b *0x38`）で Demo 2 に進み、`cmpwi cr1` 実行前後で `info registers` の `cr` の値を比べる。Demo 4 では `mfcr` が返す値が Demo 2 の CR と同じ形式であることを確認する。
+- **STEP 3 改造**: Demo 3 の `cror 2,2,6` を `crand 2,2,6` に変えると分岐が通らなくなるはず（CR0.EQ=0 AND CR1.EQ=1）。予測してから実行する。Demo 4 の `cmpwi cr1, 99` を `cmpwi cr1, 7` に変えると `mfcr` の戻り値がどう変わるかも予測してから観察する。
+- **STEP 4 考察**: x86/Z80 は FLAGS 1 個なので「比較結果の退避」は `pushfq` 等が必須、ARM64 も NZCV 1 個。PPC は 8 フィールドの CR で比較対象を指定でき、コンパイラが比較を再順序付けしやすい設計。`ppc/CPU.md` の CR 節と、S102（例外時の MSR 退避）との対比も読む。
 
 ---
 
@@ -320,6 +347,13 @@ PPC440 (Book E) の例外処理。ベクタは IVPR（64KB 境界）+ IVORn の�
 | SRR0 / SRR1     | 例外時の PC と MSR の自動保存（x86 のスタックフレーム対比）   |
 
 観察: `make trace S=s102_exceptions` で例外突入時の NIP と MSR の変化が追える。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `tw` トラップで SRR0 は tw 命令自身を指す。ハンドラの `SRR0 += 4` を外したら rfi 復帰後どうなるか。一方 `sc` は SRR0 が既に次の命令 — 両者の違いを先に予測する。
+- **STEP 2 観察**: `make trace S=s102_exceptions` で、`tw` 実行時に NIP がハンドラ（IVPR+IVOR6 = 0x01000100）へジャンプすること、ハンドラ内の `SRR0 += 4` で NIP が +4 されること、`rfi` で元の流れに戻ることを追う。`make icount S=s102_exceptions` で例外 2 回を含む総命令数も確認する。
+- **STEP 3 改造**: tw 側ハンドラの `SRR0 += 4`（スキップ）をコメントアウトして `make run` すると、「pre」表示の無限ループ（tw の再実行）になることを予測してから確認する。戻すのを忘れずに。
+- **STEP 4 考察**: x86 `INT n` / m68k `TRAP #n` / ARM64 `SVC` はいずれも例外時 PC が「次の命令」を指すが、PPC の `tw` は「例外を起こした命令自身」を指す（fault 型）。S102 の SRR0 と ARM64 S102 の ELR（`s102_svc`、+4 スキップ不要）を対比する。
 
 ---
 

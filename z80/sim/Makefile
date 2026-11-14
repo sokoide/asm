@@ -29,7 +29,7 @@ CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
             s13_copybench=S13COPY s101_blockops=S101BLK s101_shadow=S101SHAD \
             s102_interrupts=S102INTR
 
-.PHONY: all run runall dump debug trace cycles test cpm cpm-setup clean
+.PHONY: all run runall dump debug trace cycles icount test cpm cpm-setup clean
 
 all: $(SIM)
 	@for name in $(SOURCES); do \
@@ -57,9 +57,18 @@ trace: $(SIM)
 	$(TIMEOUT) $(SIM) -trace $(S).com
 
 # T-state summary: make cycles S=s04_loops
+# simz80 が計上する Z80 T-state の実測値を出す。命令数は make icount を使用。
+# (simz80 -cycles は instructions と T-states を両方出すため、ここでは
+#  T-states 側のみを表示して cycles と icount を分離する)
 cycles: $(SIM)
 	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
-	$(TIMEOUT) $(SIM) -cycles $(S).com
+	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '{ if ($$0 ~ /^instructions:/) next; print }'; \
+	echo "(実サイクル: simz80 が計上した Z80 T-state の実測値)"
+
+# 命令数: make icount S=s04_loops (simz80 の実行命令数)
+icount: $(SIM)
+	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '/^instructions:/ { print "実行命令数: " $$2 " (simz80 実測)"; found=1 } END { if (!found) print "実行命令数: 0 (simz80 実測)" }'
 
 # Unit tests for the simulator core (flags, T-states, .lst parser)
 test:

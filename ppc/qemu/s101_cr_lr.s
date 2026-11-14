@@ -16,12 +16,22 @@
 .section .text
 .global _start
 
+// 各デモの入口ラベル。make debug で b *demoN_xxx のようにブレークポイントを
+// 置くことで、目的のデモまで一気に進めてからステップ実行を始められる。
+.global demo1_cr0_compare
+.global demo2_cr_field_compare
+.global demo3_cr_logic
+.global demo4_mfcr
+.global demo5_mtcrf
+.global demo6_bdnz_bl
+
 _start:
     lis     %r1, 0x0000
     ori     %r1, %r1, 0x1000
 
     // ---- Demo 1: CR0 での比較と分岐 ----
     // cmpwi は暗黙で CR0 を更新する (LT/GT/EQ/SO)
+demo1_cr0_compare:
     lis     %r3, msg_d1@ha
     addi    %r3, %r3, msg_d1@l
     bl      print_str
@@ -38,6 +48,7 @@ _start:
 
     // ---- Demo 2: CR フィールド指定の比較 ----
     // 同じレジスタを CR0 と CR1 で別々に比較できる (x86 には不可能な操作)
+demo2_cr_field_compare:
     lis     %r3, msg_d2@ha
     addi    %r3, %r3, msg_d2@l
     bl      print_str
@@ -67,6 +78,7 @@ _start:
     // CR のビット番号: CR0=bits 0-3, CR1=bits 4-7 (LT,G T,EQ,SO の順)
     //   CR0.EQ = bit 2, CR1.EQ = bit 6
     // cror 2,2,6: CR0.EQ = CR0.EQ | CR1.EQ
+demo3_cr_logic:
     lis     %r3, msg_d3@ha
     addi    %r3, %r3, msg_d3@l
     bl      print_str
@@ -85,6 +97,7 @@ _start:
 
     // ---- Demo 4: mfcr で CR 全体を読み取り ----
     // CR 全 32 ビット (8 フィールド x LT/GT/EQ/SO) を GPR に取得
+demo4_mfcr:
     lis     %r3, msg_d4@ha
     addi    %r3, %r3, msg_d4@l
     bl      print_str
@@ -98,6 +111,7 @@ _start:
 
     // ---- Demo 5: mtcrf で CR を書き込み ----
     // CRM マスクでフィールド単位に GPR のビットを CR へ転送
+demo5_mtcrf:
     lis     %r3, msg_d5@ha
     addi    %r3, %r3, msg_d5@l
     bl      print_str
@@ -115,6 +129,7 @@ _start:
     // ---- Demo 6: bdnz — LR を壊さないカウンタループ ----
     // bl でサブルーチンに入ると LR は上書きされるが、bdnz は CTR を減らすだけ。
     // ループ中に bl でサブルーチンを呼んでも LR が保存される。
+demo6_bdnz_bl:
     lis     %r3, msg_d6@ha
     addi    %r3, %r3, msg_d6@l
     bl      print_str

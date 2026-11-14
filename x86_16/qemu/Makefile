@@ -34,7 +34,7 @@ GDB_PORT   ?= 1234
 # ログは停止時点で伸びなくなる(タイムアウトは QEMU プロセス回収用)。
 TRACE_SECS ?= 10
 
-.PHONY: all run runall dump dump32 debug trace cycles clean
+.PHONY: all run runall dump dump32 debug trace cycles icount clean
 
 all:
 	@for name in $(SINGLE); do \
@@ -90,7 +90,8 @@ dump32:
 	ndisasm -b 32 -o 0x7E00 -e 512 $(S).bin
 
 # ステップデバッガ: make debug S=s01_hello
-# QEMU を -S -gdb tcp::PORT (起動時停止 + gdbstub) でバックグラウンド起動し、
+# QEMU を -S -gdb tcp:127.0.0.1:PORT (起動時停止 + gdbstub) でバックグラウンド起動し、
+# gdb リモートプロトコルは認証を持たないため loopback (127.0.0.1) に限定する。
 # gdb をフォアグラウンドで接続する。シリアル出力は gdb プロンプトに混ざって表示される。
 # ELF/シンボルが無いため set architecture i8086 を明示し、BIOS を飛ばして
 # ブートセクタ先頭 (0x7C00) で break する。
@@ -111,7 +112,7 @@ debug:
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
-	@$(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none -S -gdb tcp::$(GDB_PORT) & \
+	@$(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
 	  sleep 0.3; \
@@ -152,16 +153,22 @@ trace:
 	fi
 	@if [ -t 1 ]; then less $(S).trace; else cat $(S).trace; fi
 
-# 実行命令数: make cycles S=s01_hello
-# 注意: QEMU TCG はサイクル精度のエミュレーションでないため、CPUサイクル数では
-# なく実行命令数を報告する。one-insn-per-tb で命令ごとに CPU 状態ダンプ
-# (-d cpu) が記録されるので、その行数=実行命令数(ループ反復を含む正確な値)。
+# 実サイクル数: make cycles S=s01_hello
+# QEMU TCG はサイクル精度のエミュレーションを行わないため実サイクル数は
+# 取得できない。代替値を出さず unsupported を表示する。実行命令数の計測は
+# make icount を使用。
+cycles:
+	@echo "unsupported: QEMU TCG はサイクル非対応のため実サイクル数は計測できません (実行命令数は make icount)"
+
+# 実行命令数: make icount S=s01_hello
+# one-insn-per-tb で命令ごとに CPU 状態ダンプ (-d cpu) が記録されるので、
+# その行数=実行命令数(ループ反復を含む正確な値)。
 # -dfilter でブートセクタ以降 (0x7C00+) に限定し BIOS 側の命令数を除外。
 # ブート後は cli/hlt で CPU が停止するため halt スピンによる水増しは発生しない。
 # ただし s06/s12 は入力が quits 条件に達しないと読み込みループから抜けないため、
 # 集計対象のログを head -c 32MB で打ち切る(打ち切り後も TRACE_SECS 秒まで
 # QEMU は動き続ける)。
-cycles:
+icount:
 	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
 	if [ "$$MODE" = "single" ]; then \
 		$(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
@@ -180,7 +187,7 @@ cycles:
 	fi
 	@n=$$(grep -c '^EIP=' $(S).trace 2>/dev/null || true); \
 	[ -n "$$n" ] || n=0; \
-	echo "実行命令数: $$n (QEMU TCG はサイクル非対応のため命令数で代替 / BIOS部分は除外)"; \
+	echo "実行命令数: $$n (QEMU 実行命令数の実測 / BIOS部分は除外)"; \
 	echo "詳細: $(S).trace"
 
 clean:

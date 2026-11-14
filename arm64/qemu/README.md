@@ -33,17 +33,17 @@ make clean
 ## デバッグ
 
 ```bash
-# QEMU を -S -gdb tcp::1234 で起動し gdb を接続（ステップ実行）
+# QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
-# 実行命令数を集計
-make cycles S=s01_hello
+# 実行命令数を集計 (実サイクルは make cycles が unsupported を表示)
+make icount S=s01_hello
 ```
 
-`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` が数えるのはサイクル数ではなく実行命令数（QEMU TCG はサイクル精度のエミュレーションではないため）。
+`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
 ## ディレクトリ構造
 
@@ -342,6 +342,13 @@ my_memset:
 | バイトコピー        | LDRB/STRB の post-index writeback ループ              |
 | チェックサム        | 宛先 100 バイトの総和でコピーを検証                   |
 
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `.cb_loop` は `ldrb` → `strb` → `subs` → `b.ne` の 4 命令 × 100 回。ポインタのインクリメントが `ldrb w3, [x0], #1` の writeback に吸収されている点に注目し、PPC（5 命令/バイト、`addi` が独立）と比べて 1 反復が何命令短いか予測する。`make icount S=s13_copybench` で総命令数も予測してから測る。
+- **STEP 2 観察**: `make trace S=s13_copybench` でループが 4 命令 × 100 回回ることを確認する。`subs` がフラグを set し `b.ne` が消費する「独立」関係がループ条件として機能している点も見る。
+- **STEP 3 改造**: `LDRB/STRB` → `LDR/STR`（4 バイト転送）+ 端数処理に替える改造を設計し、反復 25 回になったときの icount を予測してから測る。さらに ARM64 専用命令 `LDP/STP` で 8 バイト転送にするとどうなるかも考察する。
+- **STEP 4 考察**: `compare/copybench.md` を参照し、Z80 `LDIR`（1 命令/バイト）と ARM64（4 命令/バイトだが 1 反復が短い）を「命令数」と「実行時間」の両面で比べる。命令数が多い方が遅いとは限らないことを確認する。
+
 ---
 
 ### S101: NZCV と条件実行
@@ -356,6 +363,13 @@ ARM64 特有の「フラグを set する命令と消費する命令が独立し
 | CINC           | 条件成立時のみ +1                                      |
 | MRS NZCV       | N/Z/C/V フラグそのものの読み取り                       |
 | LDP / STP      | レジスタペアの 1 命令ロード/ストア                     |
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: Demo 4 の `subs w2, w1, #2`（1 - 2）の後、`MRS x3, NZCV` で読める値はどのビットが立つか（N/Z/C/V の組み合わせを 2 進で書く）。次の `adds w2, w1, w1`（0x80000000 + 0x80000000）ではどうか。
+- **STEP 2 観察**: `make debug S=s101_flags_cond` で Demo 4 の `mrs` 実行直後に `info registers` で NZCV を確認する（`make dump S=s101_flags_cond` で `mrs` のアドレスを調べて `b *ADDR`）。出力の `0x80000000` / `0x70000000` と自分の予測を突き合わせる。
+- **STEP 3 改造**: Demo 1 の `csel x3, x1, x2, gt` を `csel x3, x2, x1, gt`（オペランド交換）に変えると出力が 3 になることを予測してから試す。`csinc` を手書き展開（`csel` + `add` 相当）して CINC の等価コードを考える改造も有効。
+- **STEP 4 考察**: x86/Z80 には CSEL 相当がなく（8086 は分岐で選ぶしかない）、PPC は isel が近い存在。フラグ 1 個 + 条件消費命令が豊富、という ARM64 の設計が分岐予測ミスコストを下げる理由を、PPC S101（CR 8 フィールド）と並べて考察する。
 
 ---
 
@@ -373,6 +387,13 @@ ARM64 の例外ベクタテーブル。VBAR_EL1 が指す 16 エントリ x 0x80
 | ELR / ERET  | SVC は ELR が既に次の命令を指すため +4 スキップは不要        |
 
 観察: `make trace S=s102_svc` で例外突入時の PC と PSTATE の変化が追える。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `svc #0` が飛ぶエントリは VBAR_EL1 + いくつか。テーブルの 16 エントリ（+0x000 / +0x080 / ... / +0x780）のうち、current EL (SP_ELx) の同期例外がどれかを、ソースの `.balign 0x80` の並びから推定する。ハンドラが ELR に +4 しないと何が起きるかも予測する（答え: 起きない — ELR が既に次の命令）。
+- **STEP 2 観察**: `make trace S=s102_svc` で `svc` 実行時に PC が VBAR_EL1+0x200 エントリへジャンプすること、ハンドラ内の ESR_EL1 読み出しで EC = 0x15 が取れること、`eret` 復帰時の PC を追う。`make icount S=s102_svc` で例外 1 回を含む総命令数も確認する。
+- **STEP 3 改造**: `svc #0` の発行を SPSel=0 の状態に替えると +0x000 エントリ（current EL SP_EL0 sync）に飛ぶはず。テーブル側の `b sync_handler` の位置を替えた場合の挙動を予測してから試す。
+- **STEP 4 考察**: m68k S102 はベクタテーブルがメモリ上（0x80）でフレームはスタック渡し、RISC-V S101 は mtvec + mcause/mepc レジスタ渡し、PPC S102 は IVPR+IVOR + SRR0/SRR1。ARM64 は「固定レイアウトのベクタテーブル + レジスタ渡し」のハイブリッド。復帰アドレスが「次の命令」（SVC/sc/TRAP/INT 共通）か「fault 命令自身」（PPC tw）かの分類表を作る。
 
 ---
 

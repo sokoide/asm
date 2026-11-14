@@ -32,17 +32,17 @@ make clean
 ## デバッグ
 
 ```bash
-# QEMU を -S -gdb tcp::1234 で起動し gdb を接続（ステップ実行）
+# QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
-# 実行命令数を集計
-make cycles S=s01_hello
+# 実行命令数を集計 (実サイクルは make cycles が unsupported を表示)
+make icount S=s01_hello
 ```
 
-`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` が数えるのはサイクル数ではなく実行命令数（QEMU TCG はサイクル精度のエミュレーションではないため）。
+`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
 ## ディレクトリ構造
 
@@ -276,6 +276,13 @@ UART 入出力を使った対話型シェル。全要素の総合演習。
 | バイトコピー | LBU/SB と分岐の素朴なループ（専用命令は無い）   |
 | チェックサム | 宛先 100 バイトの総和でコピーを検証             |
 
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `.cp_loop` は `lbu` → `sb` → `addi` × 3 → `bnez` の 6 命令 × 100 回。RISC-V はポインタ更新も自分で書く（writeback アドレッシング無し）点に注目し、ARM64（4 命令/バイト）と比べ何命令多いか予測してから `make icount S=s13_copybench` で総命令数を測る。
+- **STEP 2 観察**: `make trace S=s13_copybench` でループが 6 命令 × 100 回回ることを確認する。`bnez` が汎用レジスタを直接テストする点（ARM64 の `subs` + `b.ne` と違い、`addi` はフラグを set しない）も見る。
+- **STEP 3 改造**: `lbu`/`sb` → `lw`/`sw`（4 バイト転送）に替えて反復 25 回にしたときの icount を予測してから測る。RISC-V に writeback が無いためポインタ更新が残り、命令数削減が 2 命令/反復どまりである点も確認する。
+- **STEP 4 考察**: `compare/copybench.md` を参照。RISC 系（PPC/ARM64/RISC-V/m68k はいずれも専用ブロック転送なし）と CISC 2 種（Z80 LDIR / x86 REP MOVSB）の「命令数/バイト」を並べ、命令数とクロック/実行時間の関係を整理する。
+
 ---
 
 ### S101: CSR と ECALL
@@ -292,6 +299,13 @@ RISC-V 特有の「制御は CSR とトラップ機構に集約される」設�
 | ECALL / MRET      | 環境呼び出しトラップと mepc + 4 での復帰                 |
 
 観察: `make trace S=s101_csr_ecall` で ecall → mtvec 突入 → mret の流れが追える。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: Demo 3 の `csrrc t0, mstatus, t1`（t1 = bit3 = MIE）の後、mstatus と t0 の値はどう違うか（CSRRC は旧値を t0 に残す）。`ecall` 実行時に mcause と mepc に何が入るか（11 と ecall 命令のアドレス）も予測する。
+- **STEP 2 観察**: `make trace S=s101_csr_ecall` で、`ecall` 実行時に PC が mtvec 先（trap_handler）へジャンプすること、ハンドラ内の `mepc += 4` と `mret` で復帰する流れを追う。`make icount S=s101_csr_ecall` でトラップ 1 回を含む総命令数も確認する。
+- **STEP 3 改造**: ハンドラの `mepc += 4` を外すと、mret で ecall 自身に戻り再実行 → 無限トラップになることを予測してから確認する（`make run` で出力が止まり、trace で ecall → handler のループが見える）。試したら必ず戻す。
+- **STEP 4 考察**: x86 S102 は IVT（メモリ上）+ スタック渡し、PPC S102 は IVPR+IVOR + SRR0/SRR1、ARM64 S102 は VBAR+0x200 + ELR/ESR。RISC-V は mtvec 1 本 + mcause/mepc/mstatus。4 アーキの「ベクタの決め方」と「状態の渡し方」を表にまとめる。
 
 ---
 
@@ -319,9 +333,12 @@ M-mode → S-mode 遷移 → S-mode でページテーブル構築 → ページ
 
 観察: `make run S=s102_paging` で M→S 遷移、satp 読み戻し、`PAGE FAULT scause=... stval=...` の 2 回のフォールトと sret 復帰が追える。
 
----
+**学習カード（予測 → 観察 → 改造 → 考察）**:
 
-## 関連ドキュメント
+- **STEP 1 予測**: `medeleg` の設定を外した場合、S-mode 中のページフォールトはどこに飛ぶか（M-mode の mtvec）。`mstatus.MPP = 01 (S)` を設定しないで `mret` するとどのモードに降りるか。PMP を設定しないと mret 直後の何が fault するか（fetch）も予測する。
+- **STEP 2 観察**: `make trace S=s102_paging` で、`mret` による M→S 遷移、`sfence.vma` の位置、未マップ VA (root[1] = 0x40000000) への load で stvec ハンドラ（scause=13, stval=フォールト VA）に入ること、`sepc += 4` + `sret` でフォールト命令をスキップして継続する流れを追う。`make run` の `PAGE FAULT` 出力 2 回と対応付ける。
+- **STEP 3 改造**: root[0]（0x00000000 の 1GB メガページ）の PTE の V ビットを落とすと、test デバイス書き込み（0x100000）の store がフォールトするはず — scause=15 (store) / stval=0x100000 になるか予測してから試す。satp.MODE=8 (Sv39) を 0 にして paging を無効化した場合の挙動も考察する。
+- **STEP 4 考察**: x86 は CR3 + ページング有効化は CR0.PG、ARM64 は TTBR0/1 + TCR_EL1、RISC-V は satp 1 本。rv32 版（Sv32: 2 段 + 4MB メガページ）との違い（satp.MODE、段数、1GB メガページ）をソース冒頭のコメントと突き合わせ、ページング有効化に「ソフトウェアの TLB 同期」（sfence.vma / invlpg / TLBI）が必要かどうかの違いも含めて比較する。
 
 - [`../CPU.md`](../CPU.md) — RV64IM 命令セット完全リファレンス
 
