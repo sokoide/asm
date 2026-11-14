@@ -231,6 +231,53 @@ QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` の各 `
 
 **6502 の make debug はリプレイ型**: sim65 に対話ステップ実行はないため、`make debug` は全命令トレースを `$(S).trace` に記録し、less の SPACE/Enter で 1 命令ずつ送って見る方式。実行中のプログラムへのライブ制御ではなく、実行済みトレースの「再生」である点に注意。
 
+#### 6502 のトレース出力の読み方（実行例）
+
+6502 だけ 3 つのコマンドの挙動を具体例で示す。`make trace` の 1 行は左から「命令の通番 / 累積サイクル数 / PC / オペコードバイト / 逆アセンブル / レジスタ (A, X, Y, S) / Flags / SP」で、レジスタ欄は**その命令を実行する前**の値。`▸` 行は `trace-diff.awk` が前の命令で変わったレジスタを差分として挿入したもの。
+
+```bash
+cd 6502/sim65
+make trace S=s03_stack
+```
+
+```text
+           0             0  0200  D8        cld               A=00 X=00 Y=00 S=00 Flags=nvdizc    SP=FFFF
+           1             2  0201  A2 FF     ldx  #$FF         A=00 X=00 Y=00 S=00 Flags=nvdizc    SP=FFFF
+           2             4  0203  9A        txs               A=00 X=FF Y=00 S=00 Flags=Nvdizc    SP=FFFF
+        ▸  X: 00→FF  Flags: nvdizc→Nvdizc
+           3             6  0204  A9 C0     lda  #$C0         A=00 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFFF
+        ▸  S: 00→FF
+           4             8  0206  A2 FF     ldx  #$FF         A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFFF
+        ▸  A: 00→C0
+           5            10  0208  85 06     sta  $06          A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFFF
+           6            13  020A  86 07     stx  $07          A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFC0
+        ▸  SP: FFFF→FFC0
+           7            16  020C  20 B2 03  jsr  $03B2        A=C0 X=FF Y=00 S=FF Flags=Nvdizc    SP=FFC0
+```
+
+この例の読み方:
+
+- 通番 1 の `ldx #$FF` は X=00 のときに実行され、結果は `▸ X: 00→FF` として**次の行の下**に現れる（差分行は直前の命令の結果を示す）。
+- 通番 2 の `txs` で X の値 (FF) がスタックポインタに転送される。直後の命令行の `SP=FFFF` は実行前の値で、`▸ SP: FFFF→FFC0` が転送結果。
+- Flags 欄は N（負）V（オーバーフロー）D（10 進）I（割り込み禁止）Z（ゼロ）C（キャリー）の順で、大文字 = 立、小文字 = 落ち。`ldx #$FF` の後、次の命令行で `N` が大文字になり、FF（負の数）をロードしたことで N フラグが立ったことが分かる。
+- 差分行は常に「直前の命令の結果」なので、例えばこのサンプルの直後 (`jsr $03B2` の実行後) には `▸ S: FF→FD` が現れ、リターンアドレス 2 バイト分スタックが減ったことが追跡できる。
+
+**make debug (リプレイ再生)**: 同じ内容をページャで 1 命令ずつ送って見る。途中でスペースを連打して歩調を調整でき、`g` で先頭へ戻れる（トレース全体を巻き戻し再生できるのはリプレイ型の利点）。
+
+```bash
+make debug S=s03_stack          # SPACE/Enter で 1 命令ずつ、q で終了
+PAGER=cat make debug S=s03_stack # ページャなしで全体を流す
+```
+
+**make cycles (実サイクル数)**: sim65 は 6502 の命令サイクルを正確にモデル化しているため、Z80 と同様「実サイクル数」が得られる（QEMU 系の命令数代替とは異なる）。
+
+```bash
+$ make cycles S=s03_stack
+38138 cycles
+```
+
+上記のトレースの最終行（通番 11055 の時点）で累積サイクルが 38138 になっており、`make cycles` の値と一致する。1 命令あたりのサイクル数は隣接行の累積値の差で読める（例: 通番 6→7 で 13→16 なので `stx $07` (zero page) は 3 サイクル）。
+
 **QEMU 系の make cycles は実行命令数**: QEMU TCG はサイクル精度のエミュレーションではないため、サイクル数は原理的に取得できない。`make cycles` は `-d in_asm` の記録から数えた実行命令数で代用する。
 
 **QEMU 系の make debug に必要なもの**: `gdb`（`brew install gdb`。Homebrew 版は --enable-targets=all ビルドで、リモートデバッグ専用に使う場合コード署名は不要）。使用する gdb は `GDB` 変数、接続ポートは `GDB_PORT` 変数（既定 1234）で変更できる。トレースの記録時間は `TRACE_SECS` 変数（既定 10 秒）で調整できる。
@@ -262,7 +309,7 @@ QEMU Monitor にアクセスすると、実行中のプログラムの状態を�
 
 **例（ARM64 のレジスタ確認）**:
 
-```
+```text
 (qemu) info registers
 x0000000000000048 x01=0000000004000040 ...
 ```
