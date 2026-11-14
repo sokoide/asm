@@ -426,13 +426,12 @@ set logging enabled off
 
 既存の同名ファイルは上書きされる。記録されるのは GDB の表示であり、QEMU の UART 出力や CPU のバスアクセス履歴ではない。変更箇所だけを表示するには Python 対応 GDB の `gdb.events.stop` と状態の比較を利用できるが、メモリの前後比較では書き込み順序は分からない。
 
-x86_16 では `make debug` が `set architecture i8086` を自動設定する。16 ビットのターゲット記述と Intel 形式を使うには、`x86_16/qemu/` にある `i8086.xml` と `i386-32bit.xml` を用意し、GDB プロンプトで次を入力する。`make debug` は同ディレクトリで GDB を起動する。
+x86_16 の `make debug` は `x86_16/qemu/` の `i8086.xml` と `i386-32bit.xml` を使い、GDB 接続後に次の設定を自動実行する。
 
 ```gdb
 set tdesc filename i8086.xml
 set architecture i8086
 set disassembly-flavor intel
-x/5i $pc
 ```
 
 ターゲット記述を指定しない場合、GDB 表示は 32 ビットのレジスタ名や逆アセンブルのずれに注意する。命令一覧には `make dump S=<scenario>` も利用できる。スタックのアドレスにもセグメントを考慮する。

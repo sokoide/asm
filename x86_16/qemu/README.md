@@ -47,22 +47,19 @@ make icount S=s01_hello
 
 `make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。x86_16 はシンボルを持たないフラットバイナリだが、gdb の i8086 モードで 0x7C00 に自動ブレークする。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
-`make debug` は `set architecture i8086` を自動設定する。16 ビットのターゲット記述と Intel 形式を使うには、このディレクトリに `i8086.xml` と、その参照先の `i386-32bit.xml` を用意し、GDB プロンプトで次を入力する。
+`make debug` は GDB 接続後に以下を自動設定する。ターゲット記述には、このディレクトリにある `i8086.xml` と、その参照先の `i386-32bit.xml` を使う。
+
+```gdb
+set tdesc filename i8086.xml
+set architecture i8086
+set disassembly-flavor intel
+```
 
 2 つの XML は [mrexodia/x86-real-mode-bootloader](https://github.com/mrexodia/x86-real-mode-bootloader) から取得した。再取得する場合は、このディレクトリで実行する。
 
 ```bash
 curl -LO https://raw.githubusercontent.com/mrexodia/x86-real-mode-bootloader/master/i8086.xml
 curl -LO https://raw.githubusercontent.com/mrexodia/x86-real-mode-bootloader/master/i386-32bit.xml
-```
-
-GDB の設定:
-
-```gdb
-set tdesc filename i8086.xml
-set architecture i8086
-set disassembly-flavor intel
-x/5i $pc
 ```
 
 自動表示やログ保存の使い方は、[GDB によるリモートデバッグ](../../README.md#gdb-によるリモートデバッグ-qemu-系)を参照。

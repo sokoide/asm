@@ -93,12 +93,8 @@ dump32:
 # QEMU を -S -gdb tcp:127.0.0.1:PORT (起動時停止 + gdbstub) でバックグラウンド起動し、
 # gdb リモートプロトコルは認証を持たないため loopback (127.0.0.1) に限定する。
 # gdb をフォアグラウンドで接続する。シリアル出力は gdb プロンプトに混ざって表示される。
-# ELF/シンボルが無いため set architecture i8086 を明示し、BIOS を飛ばして
-# ブートセクタ先頭 (0x7C00) で break する。
-# 注意: QEMU の gdbstub は常に 32bit (i386) のターゲット記述を返すため、gdb の
-# 逆アセンブル表示はレジスタ名が 32bit 表記 (eax/esp 等) になり、即値を持つ
-# 命令の「表示」が後続行でずれることがある。si 実行後の PC は常に命令境界なので
-# x/5i $pc の再実行で先頭行は常に正しく表示される。正確な 16bit リストは make dump (ndisasm) を併用。
+# 接続後に 16bit 用ターゲット記述と Intel 構文を設定し、BIOS を飛ばして
+# ブートセクタ先頭 (0x7C00) で break する。命令一覧には make dump も使える。
 # gdb: si=1命令実行 / c=continue / b *ADDR / info registers / x/5i $pc / Ctrl-D で終了
 debug:
 	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
@@ -118,12 +114,14 @@ debug:
 	  sleep 0.3; \
 	  $(GDB) -q \
 	    -ex 'set pagination off' \
-	    -ex 'set architecture i8086' \
 	    -ex 'target remote :$(GDB_PORT)' \
+	    -ex 'set tdesc filename i8086.xml' \
+	    -ex 'set architecture i8086' \
+	    -ex 'set disassembly-flavor intel' \
 	    -ex 'break *0x7c00' \
 	    -ex 'continue' \
 	    -ex 'set disassemble-next-line on' \
-	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc (表示がずれたら PC から再実行 / 16bitリストは make dump) ---\n"'; \
+	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc ---\n"'; \
 	  kill $$QPID 2>/dev/null || true
 
 # 実行トレース: make trace S=s01_hello
