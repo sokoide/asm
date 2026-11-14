@@ -724,7 +724,7 @@ func testDDFDCBBITFlagsWithPrefix(t *testing.T, prefix byte, name string) {
 		z1b.Step()
 	}
 	if z1b.f&ZF == 0 || z1b.f&PF == 0 {
-		t.Fatalf("%s BIT 0 of 80: Z=%d P/V=%d, want Z=1 P/V=1", name, (z1b.f&ZF)>>1, (z1b.f&PF)>>2)
+		t.Fatalf("%s BIT 0 of 80: Z=%d P/V=%d, want Z=1 P/V=1", name, (z1b.f&ZF)>>6, (z1b.f&PF)>>2)
 	}
 	if z1b.f&SF != 0 {
 		t.Fatalf("%s BIT 0 of 80: S=1, want S=0 (BIT 0 では S は立たない)", name)
@@ -793,7 +793,7 @@ func testNoHLAliasWithPrefix(t *testing.T, prefix byte) {
 func TestCBBIT0HighValue(t *testing.T) {
 	z := runProg(t, []byte{0x3E, 0x80, 0xCB, 0x47, 0x76}, 3) // LD A,80; BIT 0,A
 	if z.f&ZF == 0 || z.f&PF == 0 {
-		t.Fatalf("BIT 0,A (A=80): Z=%d P/V=%d, want Z=1 P/V=1", (z.f&ZF)>>1, (z.f&PF)>>2)
+		t.Fatalf("BIT 0,A (A=80): Z=%d P/V=%d, want Z=1 P/V=1", (z.f&ZF)>>6, (z.f&PF)>>2)
 	}
 	if z.f&SF != 0 {
 		t.Fatalf("BIT 0,A (A=80): S=1, want S=0")
