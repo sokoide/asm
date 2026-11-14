@@ -118,14 +118,16 @@ debug:
 	    -ex 'set tdesc filename i8086.xml' \
 	    -ex 'set architecture i8086' \
 	    -ex 'set disassembly-flavor intel' \
+	    -ex 'source utils.gdb' \
+	    -ex 'show user regs16' \
 	    -ex 'break *0x7c00' \
 	    -ex 'continue' \
 	    -ex 'set disassemble-next-line on' \
-	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc ---\n"'; \
+	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc / regs16 ---\n"'; \
 	  kill $$QPID 2>/dev/null || true
 
 # 実行トレース: make trace S=s01_hello
-# one-insn-per-tb (旧 -singlestep、QEMU 8.1 で置換) で1TB=1命令とし、
+# one-insn-per-tb () で1TB=1命令とし、
 # -d in_asm,cpu で命令ごとの逆アセンブルと CPU 状態を $(S).trace に記録して
 # less で表示する。-dfilter でブートセクタ以降のコード領域 (0x7C00+) に限定し、
 # BIOS (ROM 側) の命令を除外する。ブート後は cli/hlt で停止するためログは有限。
