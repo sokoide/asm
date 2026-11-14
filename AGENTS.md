@@ -41,13 +41,20 @@ make clean
 
 ## 主要パターン
 
-### 12 シナリオ構造
+### シナリオ構造と番号規約
 
 各シナリオはアーキテクチャ間で対応するファイルを持つ:
 
 - ソース: `s01_hello.s` 〜 `s12_minishell.s`
 - 難易度: S01-S02 ★、S03-S05 ★★、S06-S08 ★★★、S09-S11 ★★★★、S12 ★★★★★
 - S06 と S12 は対話入力が必要（`make runall` では `printf` でパイプされる）
+
+拡張シナリオの番号規約:
+
+- `s13`–`s99`: 共通課題の拡張。全アーキで同じ番号・同じ名前を使う（例: `s13_copybench`、x86_16 の先行例 `s13_multisector`）
+- `s101`+: アーキ固有の拡張シナリオ。番号はアーキごとの独立空間で他アーキと対応しない（例: Z80 `s101_shadow`、6502 `s101_zeropage`/`s102_selfmod`、x86_16 `s101_segments`/`s101_protected`/`s102_vectors`、m68k `s101_movem`/`s102_trap`、PPC `s101_cr_lr`/`s102_exceptions`、RISC-V `s101_csr_ecall`、ARM64 `s101_flags_cond`/`s102_svc`）
+
+`compare/copybench.md` は共通課題 s13（100 バイトメモリコピー）を全アーキで比較したドキュメント。QEMU の実行時間は実機性能の比較に使えないため、実測（sim65/simz80）とデータシート計算（8086/68000）を併記する方針で測定している。
 
 ### ファイルペア
 

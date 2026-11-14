@@ -1,4 +1,4 @@
-; s14_protected.asm - Scenario 14: 32-bit Protected Mode
+; s101_protected.asm - Scenario 101: 32-bit Protected Mode
 ; =======================================================
 ; Learning objectives:
 ;   - Global Descriptor Table (GDT) structure and purpose

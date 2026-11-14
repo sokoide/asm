@@ -5,7 +5,8 @@
 
 SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s05_strings s06_serial_in s07_subroutines s08_hardware \
-          s09_branching s10_bitwise s11_memory s12_minishell
+          s09_branching s10_bitwise s11_memory s12_minishell \
+          s13_copybench s101_movem s102_trap
 
 AS      = $(shell which m68k-elf-as m68k-linux-gnu-as 2>/dev/null | head -1)
 LD      = $(shell which m68k-elf-ld m68k-linux-gnu-ld 2>/dev/null | head -1)

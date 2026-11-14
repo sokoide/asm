@@ -1,10 +1,11 @@
 # --- Single-sector examples (ELF32 + linker, 512 bytes) ---
 SINGLE = s01_hello s02_registers s03_stack s04_loops \
          s05_strings s06_serial_in s07_subroutines s08_hardware \
-         s09_branching s10_bitwise s11_memory s12_minishell
+         s09_branching s10_bitwise s11_memory s12_minishell \
+         s13_copybench s101_segments s102_vectors
 
 # --- Multi-sector examples (flat binary, -f bin) ---
-MULTI = s13_multisector s14_protected
+MULTI = s13_multisector s101_protected
 
 AS      = nasm
 # リンカ: LLVM lld を使用。brainux(ARM ホスト) のシステム ld は elf_i386 を扱えず
@@ -53,7 +54,7 @@ all:
 		echo "  OK ($$(wc -c < $$name.bin) bytes)"; \
 	done
 
-# Run: make run S=s01_hello  OR  make run S=s14_protected
+# Run: make run S=s01_hello  OR  make run S=s101_protected
 run:
 	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
 	if [ "$$MODE" = "single" ]; then \

@@ -5,7 +5,8 @@
 
 SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s05_strings s06_serial_in s07_subroutines s08_hardware \
-          s09_branching s10_bitwise s11_memory s12_minishell s13_shadow
+          s09_branching s10_bitwise s11_memory s12_minishell \
+          s13_copybench s101_blockops s101_shadow
 
 AS      = z80asm
 SIM     = ./simz80
@@ -25,7 +26,7 @@ CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
             s04_loops=S04LOOPS s05_strings=S05STRS s06_serial_in=S06SERIN \
             s07_subroutines=S07SUBS s08_hardware=S08HARD s09_branching=S09BRNCH \
             s10_bitwise=S10BITS s11_memory=S11MEM s12_minishell=S12MSHL \
-            s13_shadow=S13SHAD
+            s13_copybench=S13COPY s101_blockops=S101BLK s101_shadow=S101SHAD
 
 .PHONY: all run runall dump debug trace cycles test cpm cpm-setup clean
 

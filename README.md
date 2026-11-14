@@ -7,19 +7,19 @@
 
 | アーキテクチャ   | ディレクトリ      | 実行環境                        | シナリオ数 |
 | :---             | :---              | :---                            | :---       |
-| **6502**         | `6502/sim65/`     | sim65 シミュレータ (cc65)       | 12         |
-| **ARM64**        | `arm64/qemu/`     | QEMU virt マシン (bare-metal)   | 12         |
-| **PowerPC**      | `ppc/qemu/`       | QEMU bamboo マシン (bare-metal) | 12         |
-| **M68000**       | `m68k/qemu/`      | QEMU virt マシン (bare-metal)   | 12         |
-| **Z80**          | `z80/sim/`        | Go製 CP/M シミュレータ          | 13         |
-| **x86 (16-bit)** | `x86_16/qemu/`    | QEMU i386 フロッピーブート      | 14         |
+| **6502**         | `6502/sim65/`     | sim65 シミュレータ (cc65)       | 15         |
+| **ARM64**        | `arm64/qemu/`     | QEMU virt マシン (bare-metal)   | 15         |
+| **PowerPC**      | `ppc/qemu/`       | QEMU bamboo マシン (bare-metal) | 15         |
+| **M68000**       | `m68k/qemu/`      | QEMU virt マシン (bare-metal)   | 15         |
+| **Z80**          | `z80/sim/`        | Go製 CP/M シミュレータ          | 15         |
+| **x86 (16-bit)** | `x86_16/qemu/`    | QEMU i386 フロッピーブート      | 17         |
 | **x86 (16-bit)** | `x86_16/dos/com/` | DOSBox (COM)                    | 1          |
 | **x86 (16-bit)** | `x86_16/dos/exe/` | DOSBox (MZ EXE)                 | 14         |
 | **x86 (64-bit)** | `x86_64/darwin/`  | macOS ネイティブ                | 1          |
 | **x86 (32-bit)** | `i386/darwin/`    | macOS ネイティブ                | 1          |
 | **ARM64**        | `arm64/darwin/`   | macOS ネイティブ                | 1          |
-| **RISC-V (32-bit)** | `riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 12         |
-| **RISC-V (64-bit)** | `riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 12         |
+| **RISC-V (32-bit)** | `riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
+| **RISC-V (64-bit)** | `riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
 
 ## 出力・入力の仕組み
 
@@ -91,13 +91,31 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 | s11  | メモリ                     | fill, copy, インデックスアドレッシング         |
 | s12  | インタラクティブ           | 簡易シェル (コマンド解析, 入力ループ)          |
 
+### シナリオ番号の規約
+
+- `s01`–`s12`: 全アーキ共通の 12 シナリオ
+- `s13`–`s99`: 共通課題の拡張。全アーキで同じ番号・同じ名前を使う
+- `s101`+: アーキ固有の拡張シナリオ（番号はアーキごとの独立空間）
+
+### 共通課題シナリオ
+
+| #    | テーマ                       | アーキテクチャ |
+| :--- | :---                         | :---           |
+| s13  | 100 バイトコピー (copybench) | 全アーキ (比較は `compare/copybench.md`) |
+| s13  | ファイルI/O / マルチセクタ   | x86_16         |
+
 ### アーキテクチャ固有シナリオ
 
-| #    | テーマ                     | アーキテクチャ |
-| :--- | :---                       | :---           |
-| s13  | 裏レジスタ                 | Z80            |
-| s13  | ファイルI/O / マルチセクタ | x86_16         |
-| s14  | PSP / プロテクトモード     | x86_16         |
+| #    | テーマ                        | アーキテクチャ |
+| :--- | :---                          | :---           |
+| s101 | 裏レジスタ                    | Z80            |
+| s101 | Zero Page / 自己書き換えコード | 6502          |
+| s101 | セグメントアドレス            | x86_16         |
+| s101 | MOVEM                         | m68k           |
+| s101 | CR とリンクレジスタ           | PPC            |
+| s101 | CSR と ECALL                  | RISC-V         |
+| s101 | NZCV と条件実行               | ARM64          |
+| s102 | ベクタ / 例外                 | 6502, x86_16, m68k, PPC, RISC-V, ARM64 |
 
 ### アーキテクチャ固有の補足
 
@@ -362,8 +380,8 @@ make debug A=arm64/qemu S=s01_hello GDB_PORT=1234 GDB=aarch64-none-elf-gdb
 # 逆アセンブル出力
 make dump S=s01_hello
 
-# x86_16 の 32-bit コード（S13/S14 用）
-make dump32 S=s14_protected
+# x86_16 の 32-bit コード（S13/S101 用）
+make dump32 S=s101_protected
 ```
 
 ### よくある問題と対処
@@ -417,6 +435,8 @@ asm/
 ├── i386/darwin/         # macOS i386 (32-bit)
 ├── riscv32/qemu/        # RISC-V 32-bit bare-metal (QEMU virt)
 ├── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
+├── compare/             # 共通課題のアーキ比較 (copybench)
+├── docs/                # 拡張シナリオの設計・計画ドキュメント
 └── isa/                 # オフライン命令セット・リファレンス CLI 辞書
 ```
 

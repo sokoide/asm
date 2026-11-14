@@ -1,4 +1,4 @@
-; s13_shadow.asm - Scenario 13: Shadow Registers (Alternate Register Set)
+; s101_shadow.asm - Scenario 101: Shadow Registers (Alternate Register Set)
 ; ================================================================
 ; The Z80 has two complete sets of registers: main and alternate (shadow):
 ;
@@ -276,7 +276,7 @@ save_hl:	defw	0
 save_a:		defb	0
 
 ; Messages
-msg_title:	defm	"=== s13: Shadow Registers ===$"
+msg_title:	defm	"=== s101: Shadow Registers ===$"
 msg_step1:	defm	"--- Step 1: Set main registers ---$"
 msg_main:	defm	"Main:     $"
 msg_exx:	defm	"--- Step 2: EXX + EX AF,AF' ---$"

@@ -13,3 +13,6 @@ s12_minishell
 test_putchar
 *.map
 *.lst
+s13_copybench
+s101_zeropage
+s102_selfmod

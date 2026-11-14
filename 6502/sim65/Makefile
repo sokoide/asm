@@ -1,6 +1,7 @@
 SCENARIOS = s01_hello s02_registers s03_stack s04_loops \
             s05_strings s06_serial_in s07_subroutines s08_hardware \
-            s09_branching s10_bitwise s11_memory s12_minishell
+            s09_branching s10_bitwise s11_memory s12_minishell \
+            s13_copybench s101_zeropage s102_selfmod
 
 HELPERS = helpers.s
 HELPER_OBJS = $(HELPERS:.s=.o)
