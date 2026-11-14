@@ -583,26 +583,26 @@ func TestPVFlagOverflowCases(t *testing.T) {
 	// ADD 0x7F + 1 = 0x80: V=1 (positive + positive -> negative).
 	z = runProg(t, []byte{0x3E, 0x7F, 0xC6, 0x01, 0x76}, 3) // LD A,7F; ADD 1
 	if z.a != 0x80 || z.f&PF == 0 {
-		t.Fatalf("ADD 7F+01: A=%02X P/V=%d, want A=80 V=1", z.a, z.f&PF>>6)
+		t.Fatalf("ADD 7F+01: A=%02X P/V=%d, want A=80 V=1", z.a, (z.f&PF)>>2)
 	}
 
 	// INC 0x7F = 0x80: V=1.
 	z = runProg(t, []byte{0x3E, 0x7F, 0x3C, 0x76}, 3) // LD A,7F; INC A
 	if z.a != 0x80 || z.f&PF == 0 {
-		t.Fatalf("INC 7F: A=%02X P/V=%d, want A=80 V=1", z.a, z.f&PF>>6)
+		t.Fatalf("INC 7F: A=%02X P/V=%d, want A=80 V=1", z.a, (z.f&PF)>>2)
 	}
 
 	// DEC 0x80 = 0x7F: V=1.
 	z = runProg(t, []byte{0x3E, 0x80, 0x3D, 0x76}, 3) // LD A,80; DEC A
 	if z.a != 0x7F || z.f&PF == 0 {
-		t.Fatalf("DEC 80: A=%02X P/V=%d, want A=7F V=1", z.a, z.f&PF>>6)
+		t.Fatalf("DEC 80: A=%02X P/V=%d, want A=7F V=1", z.a, (z.f&PF)>>2)
 	}
 
 	// AND keeps parity semantics: AND of 0xFF with 0xFF = 0xFF (even
 	// parity) must set P/V as parity, not overflow.
 	z = runProg(t, []byte{0x3E, 0xFF, 0xE6, 0xFF, 0x76}, 3) // LD A,FF; AND FF
 	if z.a != 0xFF || z.f&PF == 0 {
-		t.Fatalf("AND FF FF: A=%02X P/V=%d, want A=FF P=1", z.a, z.f&PF>>6)
+		t.Fatalf("AND FF FF: A=%02X P/V=%d, want A=FF P=1", z.a, (z.f&PF)>>2)
 	}
 }
 
@@ -688,81 +688,99 @@ func TestBDOSCounter(t *testing.T) {
 	}
 }
 
-// BIT b,(IX+d) のフラグ: Z = テストビットの反転、P/V = Z、
-// S = テスト対象値の bit 7 (UM0080)。
-func TestDDCBBITFlags(t *testing.T) {
-	// LD IX,2000h / BIT 0,(IX+0) / HALT。mem[0x2000] は 0 (初期化値)
-	z := runProg(t, []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0xCB, 0x00, 0x46, 0x76}, 3)
+// BIT b,(IX/IY+d) のフラグ: Z = テストビットの反転、P/V = Z、
+// S は BIT 7 でビットが立つときのみ 1。DD と FD の両経路を検証する。
+func TestDDFDCBBITFlags(t *testing.T) {
+	for _, tc := range []struct {
+		prefix byte
+		name   string
+	}{
+		{0xDD, "IX"},
+		{0xFD, "IY"},
+	} {
+		testDDFDCBBITFlagsWithPrefix(t, tc.prefix, tc.name)
+	}
+}
+
+func testDDFDCBBITFlagsWithPrefix(t *testing.T, prefix byte, name string) {
+	// LD IX/IY,2000h / BIT 0,(IX+0) / HALT。mem[0x2000] は 0 (初期化値)
+	z := runProg(t, []byte{prefix, 0x21, 0x00, 0x20, prefix, 0xCB, 0x00, 0x46, 0x76}, 3)
 	if z.f&ZF == 0 {
-		t.Fatalf("BIT 0 of 00: Z=0, want Z=1")
+		t.Fatalf("%s BIT 0 of 00: Z=0, want Z=1", name)
 	}
 	if z.f&PF == 0 {
-		t.Fatalf("BIT 0 of 00: P/V=0, want P/V=1 (=Z)")
+		t.Fatalf("%s BIT 0 of 00: P/V=0, want P/V=1 (=Z)", name)
 	}
 	if z.f&SF != 0 {
-		t.Fatalf("BIT 0 of 00: S=1, want S=0 (値の bit7 = 0)")
+		t.Fatalf("%s BIT 0 of 00: S=1, want S=0 (値の bit7 = 0)", name)
 	}
 
-	// BIT 0,(IX+0) で値 0x80: Z=1, P/V=1, S=0 (S は BIT 7 でしか立たない)
+	// BIT 0,(IX/IY+0) で値 0x80: Z=1, P/V=1, S=0 (S は BIT 7 でしか立たない)
 	z1b := NewZ80()
-	copy(z1b.mem[0x0100:], []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0xCB, 0x00, 0x46, 0x76})
+	copy(z1b.mem[0x0100:], []byte{prefix, 0x21, 0x00, 0x20, prefix, 0xCB, 0x00, 0x46, 0x76})
 	z1b.wb(0x2000, 0x80)
 	z1b.pc = 0x0100
 	for i := 0; i < 3; i++ {
 		z1b.Step()
 	}
 	if z1b.f&ZF == 0 || z1b.f&PF == 0 {
-		t.Fatalf("BIT 0 of 80: Z=%d P/V=%d, want Z=1 P/V=1", z1b.f&ZF>>6, z1b.f&PF>>6)
+		t.Fatalf("%s BIT 0 of 80: Z=%d P/V=%d, want Z=1 P/V=1", name, (z1b.f&ZF)>>1, (z1b.f&PF)>>2)
 	}
 	if z1b.f&SF != 0 {
-		t.Fatalf("BIT 0 of 80: S=1, want S=0 (BIT 0 では S は立たない)")
+		t.Fatalf("%s BIT 0 of 80: S=1, want S=0 (BIT 0 では S は立たない)", name)
 	}
 
-	// BIT 7,(IX+0) で値 0x80: Z=0, S=1
+	// BIT 7,(IX/IY+0) で値 0x80: Z=0, S=1
 	z2 := NewZ80()
-	copy(z2.mem[0x0100:], []byte{0xDD, 0x21, 0x00, 0x20, 0xDD, 0xCB, 0x00, 0x7E, 0x76})
+	copy(z2.mem[0x0100:], []byte{prefix, 0x21, 0x00, 0x20, prefix, 0xCB, 0x00, 0x7E, 0x76})
 	z2.wb(0x2000, 0x80)
 	z2.pc = 0x0100
 	for i := 0; i < 3; i++ {
 		z2.Step()
 	}
 	if z2.f&ZF != 0 {
-		t.Fatalf("BIT 7 of 80: Z=1, want Z=0")
+		t.Fatalf("%s BIT 7 of 80: Z=1, want Z=0", name)
 	}
 	if z2.f&PF != 0 {
-		t.Fatalf("BIT 7 of 80: P/V=1, want P/V=0")
+		t.Fatalf("%s BIT 7 of 80: P/V=1, want P/V=0", name)
 	}
 	if z2.f&SF == 0 {
-		t.Fatalf("BIT 7 of 80: S=0, want S=1 (値の bit7 = 1)")
+		t.Fatalf("%s BIT 7 of 80: S=0, want S=1 (値の bit7 = 1)", name)
 	}
 }
 
-// DD CB の rotate/SET/RES で z_==6 のとき setReg(6) = (HL) に誤書き込み
-// していた副作用の修正を検証する。
+// DD/FD CB の rotate/SET/RES で z_==6 のとき setReg(6) = (HL) に誤書き込み
+// していた副作用の修正を検証する。IX と IY の両経路で検証する。
 func TestDDCBNoHLAlias(t *testing.T) {
-	// LD IX,2000h / LD HL,3000h / mem[2000]=01 / mem[3000]=7F
+	for _, prefix := range []byte{0xDD, 0xFD} {
+		testNoHLAliasWithPrefix(t, prefix)
+	}
+}
+
+func testNoHLAliasWithPrefix(t *testing.T, prefix byte) {
+	// LD IX/IY,2000h / LD HL,3000h / mem[2000]=01 / mem[3000]=7F
 	z := NewZ80()
 	copy(z.mem[0x0100:], []byte{
-		0xDD, 0x21, 0x00, 0x20, // LD IX,2000h
+		prefix, 0x21, 0x00, 0x20, // LD IX/IY,2000h
 		0x21, 0x00, 0x30, // LD HL,3000h
-		0xDD, 0xCB, 0x00, 0x06, // RLC (IX+0)
-		0xDD, 0xCB, 0x00, 0xC6, // SET 0,(IX+0)
+		prefix, 0xCB, 0x00, 0x06, // RLC (IX/IY+0)
+		prefix, 0xCB, 0x00, 0xC6, // SET 0,(IX/IY+0)
 		0x76,
 	})
 	z.wb(0x2000, 0x01)
 	z.wb(0x3000, 0x7F)
 	z.pc = 0x0100
-	for i := 0; i < 3; i++ { // LD IX / LD HL / RLC (IX+0)
+	for i := 0; i < 3; i++ { // LD IX/IY / LD HL / RLC (IX/IY+0)
 		z.Step()
 	}
-	// RLC (IX+0): 0x01 -> 0x02。IX 側メモリのみ変化
+	// RLC (IX/IY+0): 0x01 -> 0x02。インデックス側メモリのみ変化
 	if got := z.rb(0x2000); got != 0x02 {
-		t.Fatalf("mem[2000]=%02X, want 02 (RLC (IX+0))", got)
+		t.Fatalf("mem[2000]=%02X, want 02 (RLC (IX/IY+0))", got)
 	}
-	// SET 0,(IX+0): 0x02 -> 0x03
+	// SET 0,(IX/IY+0): 0x02 -> 0x03
 	z.Step()
 	if got := z.rb(0x2000); got != 0x03 {
-		t.Fatalf("mem[2000]=%02X, want 03 (SET 0,(IX+0))", got)
+		t.Fatalf("mem[2000]=%02X, want 03 (SET 0,(IX/IY+0))", got)
 	}
 	// HL 側メモリは一切変化しない
 	if got := z.rb(0x3000); got != 0x7F {
@@ -775,7 +793,7 @@ func TestDDCBNoHLAlias(t *testing.T) {
 func TestCBBIT0HighValue(t *testing.T) {
 	z := runProg(t, []byte{0x3E, 0x80, 0xCB, 0x47, 0x76}, 3) // LD A,80; BIT 0,A
 	if z.f&ZF == 0 || z.f&PF == 0 {
-		t.Fatalf("BIT 0,A (A=80): Z=%d P/V=%d, want Z=1 P/V=1", z.f&ZF>>6, z.f&PF>>6)
+		t.Fatalf("BIT 0,A (A=80): Z=%d P/V=%d, want Z=1 P/V=1", (z.f&ZF)>>1, (z.f&PF)>>2)
 	}
 	if z.f&SF != 0 {
 		t.Fatalf("BIT 0,A (A=80): S=1, want S=0")
