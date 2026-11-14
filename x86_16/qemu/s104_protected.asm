@@ -1,4 +1,4 @@
-; s101_protected.asm - Scenario 101: 32-bit Protected Mode
+; s104_protected.asm - Scenario 104: 32-bit Protected Mode
 ; =======================================================
 ; Learning objectives:
 ;   - Global Descriptor Table (GDT) structure and purpose
@@ -14,6 +14,7 @@
 ;   Sector 1: 16-bit boot + GDT + mode switch
 ;   Sector 2: 32-bit protected mode code
 
+cpu 386
 bits 16
 org 0x7C00
 

@@ -1,4 +1,4 @@
-; s13_multisector.asm - Scenario 13: Multi-Sector Disk Loading
+; s103_multisector.asm - Scenario 103: Multi-Sector Disk Loading
 ; ==============================================================
 ; Learning objectives:
 ;   - INT 0x13 AH=02h: read sectors from disk into memory
@@ -10,9 +10,10 @@
 ;   Sector 1 (this file, bytes 0-511): boot sector, loads sector 2
 ;   Sector 2 (bytes 512-1023): additional code loaded at 0x7E00
 ;
-; Build: nasm -f bin -o s13_multisector.bin s13_multisector.asm
+; Build: nasm -f bin -o s103_multisector.bin s103_multisector.asm
 ;   (flat binary, no linker needed — ORG sets base address)
 
+cpu 8086
 bits 16
 org 0x7C00
 

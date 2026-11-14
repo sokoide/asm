@@ -6,6 +6,7 @@
 ;   - Stack pointer (SP) auto-adjustment
 ;   - Save/restore register pattern
 
+cpu 8086
 bits 16
 global _start
 
@@ -20,8 +21,10 @@ _start:
     ; --- PUSH: SP decreases by 2, value stored at [SS:SP] ---
     ; --- POP:  value loaded from [SS:SP], SP increases by 2 ---
 
-    push 0x1234             ; SP: 0x7C00 -> 0x7BFE, [0x7BFE] = 0x1234
-    push 0x5678             ; SP: 0x7BFE -> 0x7BFC, [0x7BFC] = 0x5678
+    mov ax, 0x1234
+    push ax                 ; SP: 0x7C00 -> 0x7BFE, [0x7BFE] = 0x1234
+    mov ax, 0x5678
+    push ax                 ; SP: 0x7BFE -> 0x7BFC, [0x7BFC] = 0x5678
 
     ; POP in reverse order (LIFO)
     pop bx                  ; BX = 0x5678 (last pushed = first popped)

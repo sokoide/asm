@@ -7,6 +7,7 @@
 ;   - LODSB instruction and null-terminated strings
 ;   - CPU halt loop (CLI + HLT)
 
+cpu 8086
 bits 16
 global _start
 

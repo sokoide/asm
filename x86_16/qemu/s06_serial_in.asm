@@ -6,6 +6,7 @@
 ;   - Echo typed characters back to terminal
 ;   - Enter key handling
 
+cpu 8086
 bits 16
 global _start
 

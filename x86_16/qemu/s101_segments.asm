@@ -30,6 +30,7 @@
 ;   0x0000:0x7C00. Both are physical 0x07C00, but CS (and thus the "default"
 ;   data segment for relative references) differs — a classic boot loader pit.
 
+cpu 8086
 bits 16
 global _start
 

@@ -23,6 +23,7 @@
 ; User-defined software interrupts conventionally start at 0x60 (unused
 ; range 0x60-0x66).
 
+cpu 8086
 bits 16
 global _start
 

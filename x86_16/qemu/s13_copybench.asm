@@ -45,6 +45,7 @@
 ;   checksum total      = 3 + 4 + 4 + 99*35 + 23 = 3499 cycles
 ; (I/O and print routines are excluded: their cost is UART-speed dependent.)
 
+cpu 8086
 bits 16
 global _start
 

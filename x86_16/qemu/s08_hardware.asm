@@ -6,6 +6,7 @@
 ;   - IN / OUT instructions for hardware register access
 ;   - 16-bit counter value: high byte / low byte read order
 
+cpu 8086
 bits 16
 global _start
 

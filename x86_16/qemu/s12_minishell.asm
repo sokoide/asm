@@ -6,6 +6,7 @@
 ;   - String comparison for command dispatch
 ;   - Building a read-eval-print loop (REPL)
 
+cpu 8086
 bits 16
 global _start
 
@@ -115,7 +116,13 @@ uart_getc:
 
 ; read_line: read chars into input buffer until Enter
 read_line:
-    pusha
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+    push bp
     mov di, input
 .rl_loop:
     call uart_getc
@@ -159,12 +166,24 @@ read_line:
     jmp .rl_loop
 .rl_enter:
     mov byte [di], 0
-    popa
+    pop bp
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
     ret
 
 ; strcmp: compare strings at SI and DI. ZF=1 if equal
 strcmp:
-    pusha
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+    push bp
 .sc_loop:
     mov al, [si]
     mov bl, [di]
@@ -177,7 +196,13 @@ strcmp:
     jmp .sc_loop
 .sc_done:
     cmp al, bl
-    popa
+    pop bp
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
     ret
 
 print_str:

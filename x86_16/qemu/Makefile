@@ -5,7 +5,7 @@ SINGLE = s01_hello s02_registers s03_stack s04_loops \
          s13_copybench s101_segments s102_vectors
 
 # --- Multi-sector examples (flat binary, -f bin) ---
-MULTI = s13_multisector s101_protected
+MULTI = s103_multisector s104_protected
 
 AS      = nasm
 # リンカ: LLVM lld を使用。brainux(ARM ホスト) のシステム ld は elf_i386 を扱えず
@@ -34,27 +34,27 @@ GDB_PORT   ?= 1234
 # ログは停止時点で伸びなくなる(タイムアウトは QEMU プロセス回収用)。
 TRACE_SECS ?= 10
 
-.PHONY: all run runall dump dump32 debug trace cycles icount clean
+.PHONY: all run runall test dump dump32 debug trace cycles icount clean
 
 all:
 	@for name in $(SINGLE); do \
 		echo "=== $$name [1 sector] ==="; \
-		$(AS) $(ASFLAGS) -l $$name.lst -o $$name.o $$name.asm && \
-		$(LK) $(LKFLAGS) -o $$name.bin $$name.o && \
-		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null && \
-		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null && \
-		rm -f $$name.o && \
+		$(AS) $(ASFLAGS) -l $$name.lst -o $$name.o $$name.asm || exit 1; \
+		$(LK) $(LKFLAGS) -o $$name.bin $$name.o || exit 1; \
+		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null || exit 1; \
+		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null || exit 1; \
+		rm -f $$name.o || exit 1; \
 		echo "  OK ($$(wc -c < $$name.bin) bytes)"; \
 	done
 	@for name in $(MULTI); do \
 		echo "=== $$name [multi] ==="; \
-		$(AS) -f bin -l $$name.lst -o $$name.bin $$name.asm && \
-		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null && \
-		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null && \
+		$(AS) -f bin -l $$name.lst -o $$name.bin $$name.asm || exit 1; \
+		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null || exit 1; \
+		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null || exit 1; \
 		echo "  OK ($$(wc -c < $$name.bin) bytes)"; \
 	done
 
-# Run: make run S=s01_hello  OR  make run S=s101_protected
+# Run: make run S=s01_hello  OR  make run S=s104_protected
 run:
 	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
 	if [ "$$MODE" = "single" ]; then \
@@ -63,7 +63,7 @@ run:
 		rm -f $(S).o; \
 	else \
 		$(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
-	fi
+	fi || exit 1
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
 	timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none || true
@@ -74,12 +74,16 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
-			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
+			printf '%s\n' "$$( [ "$$name" = s12_minishell ] && echo quit || echo q )" | timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none; status=$$?; \
 		else \
-			timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none 2>/dev/null || true; \
+			timeout --foreground $(TIMEOUT_SECS) $(QEMU) -drive file=$$name.img,format=raw,if=floppy -serial stdio -display none -monitor none; status=$$?; \
 		fi; \
+		if [ $$status -ne 0 ] && [ $$status -ne 124 ]; then exit $$status; fi; \
 		echo ""; \
 	done
+
+test: all
+	python3 test_scenarios.py --qemu $(QEMU) --timeout $(TIMEOUT_SECS)
 
 # Disassemble 16-bit code (single-sector examples)
 dump:

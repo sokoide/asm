@@ -7,6 +7,7 @@
 ;   - Hex display subroutine (print_hex16)
 ;   - COM1 UART output (16550 at I/O port 0x3F8)
 
+cpu 8086
 bits 16
 global _start
 

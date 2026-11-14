@@ -2,6 +2,8 @@
 
 作成日: 2026-11-14 / 状態: Phase 1・2・3 実装済み
 
+> この文書は当時の計画記録。x86_16/qemu の現行番号は `s103_multisector` と `s104_protected` に変更済み。
+
 ## 実施状況 (2026-11-14)
 
 - Phase 1: `s13_copybench` 全 8 アーキ + 6502/z80/x86_16/m68k の s101 シナリオ + `s13_shadow`→`s101_shadow`、`s14_protected`→`s101_protected` 改名 → 完了

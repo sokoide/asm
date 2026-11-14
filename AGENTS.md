@@ -31,13 +31,14 @@ make runall         # 全シナリオをビルド + 実行
 make dump S=s01_hello # 逆アセンブル
 make debug S=s03_stack  # ステップデバッガ (QEMU: gdb / z80: 対話 / 6502: リプレイ)
 make trace S=s03_stack  # 1 命令ごとの実行トレース
-make cycles S=s04_loops # サイクル/命令数の集計
+make cycles S=s04_loops # サイクル数（QEMU は unsupported）
+make icount S=s04_loops # 実行命令数（QEMU）
 make clean
 ```
 
 6502 は `make dump` を持たず、x86_16 は 32-bit プロテクトモード sections 向けに `make dump32` を追加で持つ。`debug`/`trace`/`cycles` ターゲットはリポジトリ全体で存在する（すべてのコアプラットフォームディレクトリ + root Makefile のパススルー: `make debug A=<arch>/<platform> S=<scenario>`）。
 
-注: 6502 の `make debug` はリプレイ型（トレースを記録して less で閲覧 — ライブステップ実行はなし）。QEMU の `make cycles` は実行命令数を報告しサイクル数ではない（TCG はサイクル精度のエミュレーションでない）。x86_16/dos (dosbox-x) と darwin ネイティブディレクトリは統一デバッグインターフェースの対象外。
+注: 6502 の `make debug` はリプレイ型（トレースを記録して less で閲覧 — ライブステップ実行はなし）。QEMU の `make cycles` は unsupported を表示し、命令数は `make icount` で報告する（TCG はサイクル精度のエミュレーションでない）。x86_16/dos (dosbox-x) と darwin ネイティブディレクトリは統一デバッグインターフェースの対象外。
 
 ## 主要パターン
 
@@ -51,8 +52,8 @@ make clean
 
 拡張シナリオの番号規約:
 
-- `s13`–`s99`: 共通課題の拡張。全アーキで同じ番号・同じ名前を使う（例: `s13_copybench`、x86_16 の先行例 `s13_multisector`）
-- `s101`+: アーキ固有の拡張シナリオ。番号はアーキごとの独立空間で他アーキと対応しない（例: Z80 `s101_shadow`、6502 `s101_zeropage`/`s102_selfmod`、x86_16 `s101_segments`/`s101_protected`/`s102_vectors`、m68k `s101_movem`/`s102_trap`、PPC `s101_cr_lr`/`s102_exceptions`、RISC-V `s101_csr_ecall`、ARM64 `s101_flags_cond`/`s102_svc`）
+- `s13`–`s99`: 共通課題の拡張。全アーキで同じ番号・同じ名前を使う（例: `s13_copybench`）
+- `s101`+: アーキ固有の拡張シナリオ。番号はアーキごとの独立空間で他アーキと対応しない（例: Z80 `s101_shadow`、6502 `s101_zeropage`/`s102_selfmod`、x86_16 `s101_segments`/`s102_vectors`/`s103_multisector`/`s104_protected`、m68k `s101_movem`/`s102_trap`、PPC `s101_cr_lr`/`s102_exceptions`、RISC-V `s101_csr_ecall`、ARM64 `s101_flags_cond`/`s102_svc`）
 
 `compare/copybench.md` は共通課題 s13（100 バイトメモリコピー）を全アーキで比較したドキュメント。QEMU の実行時間は実機性能の比較に使えないため、実測（sim65/simz80）とデータシート計算（8086/68000）を併記する方針で測定している。
 

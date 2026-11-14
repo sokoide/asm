@@ -6,6 +6,7 @@
 ;   - Building decision trees with branch instructions
 ;   - Signed vs unsigned comparison semantics
 
+cpu 8086
 bits 16
 global _start
 

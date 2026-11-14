@@ -5,8 +5,9 @@
 ;   - RET: pop return address, jump back
 ;   - Parameter passing via registers
 ;   - Nested subroutine calls
-;   - PUSHA/POPA: save/restore all registers
+;   - PUSH/POP: save and restore registers
 
+cpu 8086
 bits 16
 global _start
 
@@ -94,9 +95,15 @@ print_dots:
     ret
 
 ; print_str: print null-terminated string at DS:SI
-;   Uses PUSHA/POPA to preserve all registers
+;   Preserves general-purpose registers using 8086 PUSH/POP
 print_str:
-    pusha
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+    push bp
 .loop:
     lodsb
     or  al, al
@@ -104,7 +111,13 @@ print_str:
     call uart_putc
     jmp .loop
 .done:
-    popa
+    pop bp
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
     ret
 
 ; print_hex16: print AX as 4 hex digits

@@ -102,7 +102,7 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 | #    | テーマ                       | アーキテクチャ |
 | :--- | :---                         | :---           |
 | s13  | 100 バイトコピー (copybench) | 全アーキ (比較は `compare/copybench.md`) |
-| s13  | ファイルI/O / マルチセクタ   | x86_16         |
+| s13  | ファイル I/O（DOS 固有）     | x86_16/dos     |
 
 ### アーキテクチャ固有シナリオ
 
@@ -111,6 +111,8 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 | s101 | 裏レジスタ                    | Z80            |
 | s101 | Zero Page / 自己書き換えコード | 6502          |
 | s101 | セグメントアドレス            | x86_16         |
+| s103 | マルチセクタ読み込み          | x86_16/qemu    |
+| s104 | 32 ビットプロテクトモード      | x86_16/qemu    |
 | s101 | MOVEM                         | m68k           |
 | s101 | CR とリンクレジスタ           | PPC            |
 | s101 | CSR と ECALL                  | RISC-V         |
@@ -192,12 +194,12 @@ make run S=s01_hello
 # 各プラットフォームのディレクトリで
 make debug S=s03_stack    # ステップ実行で CPU 状態を観察
 make trace S=s03_stack    # 全命令の実行トレース
-make cycles S=s04_loops   # サイクル/命令数の集計
+make cycles S=s04_loops   # サイクル数（QEMU は unsupported）
 
 # またはトップレベルから（A= でディレクトリを指定）
 make debug A=z80/sim S=s03_stack
 make trace A=6502/sim65 S=s03_stack
-make cycles A=riscv64/qemu S=s01_hello
+make icount A=riscv64/qemu S=s01_hello
 ```
 
 詳細は「デバッグガイド」の「make debug / trace / cycles (統一デバッグインターフェース)」を参照。
@@ -222,7 +224,7 @@ cd z80/sim && make debug S=s03_stack    # ステップ実行で CPU 状態を観
 
 # またはトップレベルから A= でディレクトリを指定
 make trace A=6502/sim65 S=s03_stack     # 全命令の実行トレース
-make cycles A=riscv64/qemu S=s01_hello  # サイクル/命令数の集計
+make icount A=riscv64/qemu S=s01_hello  # 実行命令数の集計
 ```
 
 **アーキテクチャ別の実装**:
@@ -231,7 +233,7 @@ make cycles A=riscv64/qemu S=s01_hello  # サイクル/命令数の集計
 | :---              | :---                                  | :---                                            |
 | Z80               | simz80 対話ステッパー (`-debug`)      | フル対話型。レジスタ差分・フラグ変化・T-states 表示 |
 | 6502              | `sim65 --trace` + 差分 awk            | `make debug` はリプレイ型（下記）               |
-| QEMU 系 6 dir     | QEMU gdbstub + gdb / `-d in_asm,cpu`  | `make cycles` は実行命令数（下記）              |
+| QEMU 系 6 dir     | QEMU gdbstub + gdb / `-d in_asm,cpu`  | `make cycles` は unsupported、命令数は `make icount`              |
 | x86_16/dos        | 対象外                                | dosbox-x は gdbstub を持たないため統一インターフェースに載せられない（将来 dosbox-x 内蔵デバッガで対応予定） |
 | darwin ネイティブ | 対象外                                | run 未整備のため対象外                          |
 
@@ -303,7 +305,7 @@ make debug S=s03_stack          # SPACE/Enter で 1 命令ずつ、q で終了
 PAGER=cat make debug S=s03_stack # ページャなしで全体を流す
 ```
 
-**make cycles (実サイクル数)**: sim65 は 6502 の命令サイクルを正確にモデル化しているため、Z80 と同様「実サイクル数」が得られる（QEMU 系の命令数代替とは異なる）。
+**make cycles (実サイクル数)**: sim65 は 6502 の命令サイクルを正確にモデル化しているため、Z80 と同様「実サイクル数」が得られる（QEMU 系ではサイクル数を取得できない）。
 
 ```bash
 $ make cycles S=s03_stack
@@ -312,7 +314,7 @@ $ make cycles S=s03_stack
 
 上記のトレースの最終行（通番 11055 の時点）で累積サイクルが 38138 になっており、`make cycles` の値と一致する。1 命令あたりのサイクル数は隣接行の累積値の差で読める（例: 通番 6→7 で 13→16 なので `stx $07` (zero page) は 3 サイクル）。
 
-**QEMU 系の make cycles は実行命令数**: QEMU TCG はサイクル精度のエミュレーションではないため、サイクル数は原理的に取得できない。`make cycles` は `-d in_asm` の記録から数えた実行命令数で代用する。
+**QEMU 系の計測**: QEMU TCG はサイクル精度のエミュレーションではないため、`make cycles` は `unsupported` を表示する。実行命令数は別の `make icount` で計測する。
 
 **QEMU 系の make debug に必要なもの**: `gdb`（`brew install gdb`。Homebrew 版は --enable-targets=all ビルドで、リモートデバッグ専用に使う場合コード署名は不要）。使用する gdb は `GDB` 変数、接続ポートは `GDB_PORT` 変数（既定 1234）で変更できる。トレースの記録時間は `TRACE_SECS` 変数（既定 10 秒）で調整できる。
 
@@ -455,8 +457,8 @@ set disassembly-flavor intel
 # 逆アセンブル出力
 make dump S=s01_hello
 
-# x86_16 の 32-bit コード（S13/S101 用）
-make dump32 S=s101_protected
+# x86_16 の 32-bit コード（S104 用）
+make dump32 S=s104_protected
 ```
 
 ### よくある問題と対処

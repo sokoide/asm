@@ -6,6 +6,7 @@
 ;   - Conditional jumps: JE, JNE, JL, JG, JLE, JGE
 ;   - Count-up and countdown patterns
 
+cpu 8086
 bits 16
 global _start
 

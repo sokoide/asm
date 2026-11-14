@@ -8,6 +8,7 @@
 ;   - Direction flag: CLD (forward) / STD (backward)
 ;   - String length measurement, string copy
 
+cpu 8086
 bits 16
 global _start
 

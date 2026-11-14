@@ -6,6 +6,7 @@
 ;   - Addressing modes: [immediate], [register], [base+index]
 ;   - Buffer manipulation patterns
 
+cpu 8086
 bits 16
 global _start
 

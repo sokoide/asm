@@ -8,6 +8,7 @@
 ;   - SHL / SHR: shift left/right (multiply/divide by 2)
 ;   - Visual binary display subroutine
 
+cpu 8086
 bits 16
 global _start
 
