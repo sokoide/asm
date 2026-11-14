@@ -176,7 +176,9 @@ func tstatesED(op byte) int {
 // DD CB / FD CB is handled by the caller (fixed 23).
 func tstatesIX(op byte) int {
 	if op == 0x76 {
-		return 4 // DD 76: treated as HALT by this simulator
+		// DD 76: プレフィックス フェッチ 4T + HALT 4T = 8T (UM0080)。
+		// プレフィックスは HALT の機能に影響しないがフェッチは必要。
+		return 8
 	}
 
 	x := op >> 6
@@ -238,7 +240,14 @@ func (z *Z80) tstatesHere() int {
 				continue
 			}
 			if next == 0xCB {
-				return 23 + extra // DD CB d op / FD CB d op
+				// DD CB d op / FD CB d op。BIT b,(IX/IY+d) は 20T
+				// (メモリリード 1 回で済む)、rotate/SET/RES はリード+ライト
+				// で 23T (UM0080)。op は DD CB d の 3 バイト先にある。
+				cbop := z.rb(pc + 3)
+				if (cbop >> 6) == 1 {
+					return 20 + extra
+				}
+				return 23 + extra
 			}
 			return tstatesIX(next) + extra
 		}

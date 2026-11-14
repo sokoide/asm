@@ -50,6 +50,11 @@ type Z80 struct {
 	lastT      int
 	lastBDOS   bool
 	instrCount int
+	// 計測用カウンタ。instrCount はデバッガの通番 (BDOS トラップと割り込み
+	// 受付も 1 イベントとして数える)。icount 計測には cpuInsns を使う。
+	cpuInsns   int
+	bdosCalls  int
+	intAccepts int
 }
 
 // Flag bits
@@ -921,6 +926,7 @@ func (z *Z80) Step() bool {
 	z.lastT = t
 	z.cycles += t
 	z.instrCount++
+	z.cpuInsns++
 	return true
 }
 
@@ -932,6 +938,7 @@ func (z *Z80) Step() bool {
 func (z *Z80) acceptInterrupt() {
 	z.lastINT = true
 	z.lastPc = z.pc
+	z.intAccepts++
 	ret := z.pc
 	z.push(ret)
 	z.iff1 = false

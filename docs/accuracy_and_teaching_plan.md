@@ -14,6 +14,16 @@
 - **P2**: 学習カード（予測→観察→改造→考察）を 8 アーキの拡張シナリオ節に追加（計 24 枚）、ppc s101_cr_lr に 6 デモの入口ラベル + 観察ポイント・break アドレス表
 - 検証: 全 8 アーキ runall PASS、z80 make test PASS、markdownlint / textlint 0 エラー。riscv 系 icount は終了デバイスの非同期処理で数命令の実行間差があるため copybench 表に注記
 
+## 再レビュー指摘への対応 (2026-11-14 第 2 次)
+
+- **P0-1 isa MOVS**: 初回の修正スクリプトがメモリ上の辞書のみを書き換えファイルに書き出していなかった（generate.py と CLI 確認が未変更のファイルを参照して見逃した）。ファイル書き出し → isa build 再生成 → `isa/build/x86_16/MOVS.txt` に `9+17n` 反映を再確認。原因は検証対象がメモリ内データだったこと
+- **P0-2 BIT b,(IX/IY+d)**: tstatesHere の DD CB パスを op 依存に修正（BIT = 20T、rotate/SET/RES = 23T。op は DD CB d の 3 バイト先）
+- **P0-2 DD 76**: tstatesIX(0x76) を 4 → 8 T（プレフィックス フェッチ 4T + HALT 4T）
+- **P1 icount の物理量分離**: simz80 に cpuInsns / bdosCalls / intAccepts カウンタを導入。`make icount` は CPU 命令のみ（instrCount はデバッガの通番 = イベント数として維持）。z80 s13 は 2,344 → 2,280（BDOS 64 回を除外）。テストに intAccepts/cpuInsns の検証を追加
+- **P1 6502 icount**: 空トレース時に 1 を出すバグを修正（found ガード → unsupported 表示）。トレース番号は 0 起点のため最終番号 +1 が正しい命令数である点も確認
+- **P1 学習カード**: 6502 s101/s13 のカードの「make cycles でループ単位の実測」という誤記述を修正（make cycles はプログラム全体。ループ単位は trace の累積 T-state で入口・出口の差分を取る）。6 アーキのカードは全量 icount を正しく説明していたため無変更。**z80 の学習カード 4 枚（S13/S101×2/S102）が未追加だった**ため追加
+- 将来改善（未実施、記録）: `make measure S=... START=<label> END=<label>` の区間計測機能、計測コマンドの `|| true` 遮蔽の見直し、ppc/m68k halt 検出の明示的マーカー化
+
 ## 0. 指摘事項の検証結果（実コード・一次資料で裏付け済み）
 
 | 指摘 | 検証結果 |

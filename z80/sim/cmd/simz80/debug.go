@@ -423,7 +423,8 @@ func runTrace(z *Z80, lst *Listing) {
 func runCycles(z *Z80) {
 	for z.Step() {
 	}
-	fmt.Printf("instructions: %d\n", z.instrCount)
-	fmt.Printf("T-states:     %d (BDOS host calls excluded; interrupt acceptances included)\n", z.cycles)
+	fmt.Printf("instructions: %d\n", z.cpuInsns)
+	fmt.Printf("events:       %d (BDOS host calls: %d, interrupt acceptances: %d)\n", z.instrCount, z.bdosCalls, z.intAccepts)
+	fmt.Printf("T-states:     %d (BDOS host calls excluded; interrupt acceptance T included)\n", z.cycles)
 	fmt.Printf("@ 4 MHz:      %.3f ms\n", float64(z.cycles)/4000.0)
 }

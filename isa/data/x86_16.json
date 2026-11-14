@@ -1,16 +1,71 @@
 {
   "arch": "x86_16",
-  "flagNames": ["O", "D", "I", "S", "Z", "A", "P", "C"],
+  "flagNames": [
+    "O",
+    "D",
+    "I",
+    "S",
+    "Z",
+    "A",
+    "P",
+    "C"
+  ],
   "instructions": [
     {
       "mnemonic": "MOV",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "データ転送。レジスタ/メモリ/即値間で 8/16 ビットを転送する。フラグは一切変化しない。",
-      "addressing": ["即値", "レジスタ", "直接メモリ", "レジスタ間接 [BX+SI+disp]"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg,reg", "cycles": 2}, {"cond": "reg,imm", "cycles": 4}, {"cond": "mem,reg", "cycles": 9}, {"cond": "reg,mem", "cycles": 8}, {"cond": "mem,imm", "cycles": 10}],
-      "encodings": [{"syntax": "MOV reg,reg/mem", "opcode": "1000100w", "bytes": 2}, {"syntax": "MOV reg,imm", "opcode": "1011wrrr", "bytes": 2}],
+      "addressing": [
+        "即値",
+        "レジスタ",
+        "直接メモリ",
+        "レジスタ間接 [BX+SI+disp]"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,imm",
+          "cycles": 4
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 9
+        },
+        {
+          "cond": "reg,mem",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,imm",
+          "cycles": 10
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOV reg,reg/mem",
+          "opcode": "1000100w",
+          "bytes": 2
+        },
+        {
+          "syntax": "MOV reg,imm",
+          "opcode": "1011wrrr",
+          "bytes": 2
+        }
+      ],
       "notes": "メモリオペランドは +5〜12 クロックの実効アドレス計算（EA）が加算される。セグメントオーバーライドプレフィックス（26/2E/36/3E）で 2 クロック加算。",
       "src": "knowledge"
     },
@@ -19,10 +74,37 @@
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "2 つのオペランドを交換する（8/16 ビット）。",
-      "addressing": ["レジスタ", "レジスタ↔メモリ"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg,reg", "cycles": 4}, {"cond": "mem,reg", "cycles": 17}],
-      "encodings": [{"syntax": "XCHG AX,r", "opcode": "90+r", "bytes": 1}],
+      "addressing": [
+        "レジスタ",
+        "レジスタ↔メモリ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 4
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 17
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "XCHG AX,r",
+          "opcode": "90+r",
+          "bytes": 1
+        }
+      ],
       "notes": "XCHG AX,reg（オペコード 90〜97）は 1 バイト。",
       "src": "knowledge"
     },
@@ -31,10 +113,32 @@
       "operands": "reg, mem",
       "category": "アドレス計算",
       "summary": "メモリオペランドの実効アドレスを計算してレジスタに入れる（メモリを読まない）。",
-      "addressing": ["レジスタ間接"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "LEA r16,m", "opcode": "8D /r", "bytes": 2}],
+      "addressing": [
+        "レジスタ間接"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LEA r16,m",
+          "opcode": "8D /r",
+          "bytes": 2
+        }
+      ],
       "notes": "[BX+SI+disp] のような計算を 1 命令で済ませる技巧にも使われる。",
       "src": "knowledge"
     },
@@ -43,10 +147,32 @@
       "operands": "reg, mem",
       "category": "データ転送",
       "summary": "メモリからオフセット（reg）とセグメント（DS）を一括ロードする（far ポインタ用）。",
-      "addressing": ["直接メモリ"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 16}],
-      "encodings": [{"syntax": "LDS r16,m32", "opcode": "C5 /r", "bytes": 2}],
+      "addressing": [
+        "直接メモリ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LDS r16,m32",
+          "opcode": "C5 /r",
+          "bytes": 2
+        }
+      ],
       "notes": "LES は ES 版（C4 /r）。",
       "src": "knowledge"
     },
@@ -55,10 +181,32 @@
       "operands": "",
       "category": "データ転送",
       "summary": "テーブル変換。AL = [BX+AL]。256 バイト変換テーブル引き。",
-      "addressing": ["レジスタ間接"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 11}],
-      "encodings": [{"syntax": "XLAT", "opcode": "D7", "bytes": 1}],
+      "addressing": [
+        "レジスタ間接"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 11
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "XLAT",
+          "opcode": "D7",
+          "bytes": 1
+        }
+      ],
       "notes": "BX にテーブル先頭、AL にインデックス。",
       "src": "knowledge"
     },
@@ -67,10 +215,47 @@
       "operands": "src",
       "category": "スタック",
       "summary": "16 ビット値をスタックに退避（SP を -2 して書き込む）。",
-      "addressing": ["レジスタ", "直接メモリ", "即値(8086非公式)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg", "cycles": 10}, {"cond": "seg reg", "cycles": 10}, {"cond": "mem", "cycles": 15}],
-      "encodings": [{"syntax": "PUSH r/m16", "opcode": "FF /6", "bytes": 2}, {"syntax": "PUSH SP", "opcode": "54", "bytes": 1}],
+      "addressing": [
+        "レジスタ",
+        "直接メモリ",
+        "即値(8086非公式)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 10
+        },
+        {
+          "cond": "seg reg",
+          "cycles": 10
+        },
+        {
+          "cond": "mem",
+          "cycles": 15
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "PUSH r/m16",
+          "opcode": "FF /6",
+          "bytes": 2
+        },
+        {
+          "syntax": "PUSH SP",
+          "opcode": "54",
+          "bytes": 1
+        }
+      ],
       "notes": "PUSH SP の退避値は 8086 では SP-2 の新値（実装差あり、186 以降は元の値）。",
       "src": "knowledge"
     },
@@ -79,10 +264,37 @@
       "operands": "dst",
       "category": "スタック",
       "summary": "スタックから 16 ビット値を復帰（読み込んでから SP を +2）。",
-      "addressing": ["レジスタ", "直接メモリ"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg", "cycles": 8}, {"cond": "mem", "cycles": 17}],
-      "encodings": [{"syntax": "POP r/m16", "opcode": "8F /0", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "直接メモリ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 8
+        },
+        {
+          "cond": "mem",
+          "cycles": 17
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "POP r/m16",
+          "opcode": "8F /0",
+          "bytes": 2
+        }
+      ],
       "notes": "POP CS は存在しない（8086 固有の非公式挙動を除く）。",
       "src": "knowledge"
     },
@@ -91,10 +303,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "フラグレジスタ FLAGS をスタックに退避。",
-      "addressing": ["スタック"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 10}],
-      "encodings": [{"syntax": "PUSHF", "opcode": "9C", "bytes": 1}],
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 10
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "PUSHF",
+          "opcode": "9C",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -103,10 +337,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "スタックから FLAGS を復帰（全フラグ上書き）。",
-      "addressing": ["スタック"],
-      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 8}],
-      "encodings": [{"syntax": "POPF", "opcode": "9D", "bytes": 1}],
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 8
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "POPF",
+          "opcode": "9D",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -115,10 +371,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "FLAGS の下位バイト（SF ZF AF PF CF）を AH にコピー。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 4}],
-      "encodings": [{"syntax": "LAHF", "opcode": "9F", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 4
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LAHF",
+          "opcode": "9F",
+          "bytes": 1
+        }
+      ],
       "notes": "8080 互換の命令。OF DF IF TF は含まれない。",
       "src": "knowledge"
     },
@@ -127,10 +405,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "AH の内容で FLAGS の下位バイト（SF ZF AF PF CF）を設定。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 4}],
-      "encodings": [{"syntax": "SAHF", "opcode": "9E", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 4
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SAHF",
+          "opcode": "9E",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -139,10 +439,56 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "加算。dst = dst + src。全フラグ更新。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "reg,imm", "cycles": 4}, {"cond": "mem,reg", "cycles": 16}, {"cond": "reg,mem", "cycles": 9}],
-      "encodings": [{"syntax": "ADD r/m,r", "opcode": "0000000w /r", "bytes": 2}, {"syntax": "ADD AL,imm", "opcode": "04 ib", "bytes": 2}, {"syntax": "ADD AX,imm", "opcode": "05 iw", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "reg,imm",
+          "cycles": 4
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        },
+        {
+          "cond": "reg,mem",
+          "cycles": 9
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ADD r/m,r",
+          "opcode": "0000000w /r",
+          "bytes": 2
+        },
+        {
+          "syntax": "ADD AL,imm",
+          "opcode": "04 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "ADD AX,imm",
+          "opcode": "05 iw",
+          "bytes": 3
+        }
+      ],
       "notes": "EA はメモリオペランド実効アドレスの加算クロック。",
       "src": "knowledge"
     },
@@ -151,10 +497,42 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み加算。dst = dst + src + CF。多倍長演算用。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "reg,imm", "cycles": 4}, {"cond": "mem,reg", "cycles": 16}],
-      "encodings": [{"syntax": "ADC r/m,r", "opcode": "0001000w /r", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "reg,imm",
+          "cycles": 4
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ADC r/m,r",
+          "opcode": "0001000w /r",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -163,10 +541,38 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "減算。dst = dst - src。全フラグ更新。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "mem,reg", "cycles": 16}],
-      "encodings": [{"syntax": "SUB r/m,r", "opcode": "0010100w /r", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SUB r/m,r",
+          "opcode": "0010100w /r",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -175,10 +581,38 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み減算（borrow）。dst = dst - src - CF。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "mem,reg", "cycles": 16}],
-      "encodings": [{"syntax": "SBB r/m,r", "opcode": "0001100w /r", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SBB r/m,r",
+          "opcode": "0001100w /r",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -187,10 +621,42 @@
       "operands": "dst",
       "category": "算術",
       "summary": "1 加算（CF は不変）。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
-      "cycles": [{"cond": "reg", "cycles": 2}, {"cond": "mem", "cycles": 15}],
-      "encodings": [{"syntax": "INC r16", "opcode": "40+r", "bytes": 1}, {"syntax": "INC r/m8", "opcode": "FE /0", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 2
+        },
+        {
+          "cond": "mem",
+          "cycles": 15
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INC r16",
+          "opcode": "40+r",
+          "bytes": 1
+        },
+        {
+          "syntax": "INC r/m8",
+          "opcode": "FE /0",
+          "bytes": 2
+        }
+      ],
       "notes": "CF が変わらないためループカウンタに使える。",
       "src": "knowledge"
     },
@@ -199,10 +665,42 @@
       "operands": "dst",
       "category": "算術",
       "summary": "1 減算（CF は不変）。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
-      "cycles": [{"cond": "reg", "cycles": 2}, {"cond": "mem", "cycles": 15}],
-      "encodings": [{"syntax": "DEC r16", "opcode": "48+r", "bytes": 1}, {"syntax": "DEC r/m8", "opcode": "FE /1", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 2
+        },
+        {
+          "cond": "mem",
+          "cycles": 15
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DEC r16",
+          "opcode": "48+r",
+          "bytes": 1
+        },
+        {
+          "syntax": "DEC r/m8",
+          "opcode": "FE /1",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -211,10 +709,37 @@
       "operands": "dst",
       "category": "算術",
       "summary": "符号反転（dst = 0 - dst）。dst=0 以外のとき CF=1。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "mem", "cycles": 16}],
-      "encodings": [{"syntax": "NEG r/m", "opcode": "F6 /3, F7 /3", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "NEG r/m",
+          "opcode": "F6 /3, F7 /3",
+          "bytes": 2
+        }
+      ],
       "notes": "0x8000 の NEG はオーバーフロー（OF=1）で値は 0x8000 のまま。",
       "src": "knowledge"
     },
@@ -223,10 +748,47 @@
       "operands": "dst, src",
       "category": "比較",
       "summary": "比較（dst - src のフラグのみ反映、dst は不変）。JA/JB/JG/JL 等の分岐の前提。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "mem,reg", "cycles": 16}, {"cond": "reg,mem", "cycles": 9}],
-      "encodings": [{"syntax": "CMP r/m,r", "opcode": "0011100w /r", "bytes": 2}, {"syntax": "CMP AL,imm", "opcode": "3C ib", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        },
+        {
+          "cond": "reg,mem",
+          "cycles": 9
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMP r/m,r",
+          "opcode": "0011100w /r",
+          "bytes": 2
+        },
+        {
+          "syntax": "CMP AL,imm",
+          "opcode": "3C ib",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -235,10 +797,42 @@
       "operands": "src",
       "category": "算術",
       "summary": "符号なし乗算。8ビット: AX = AL×src、16ビット: DX:AX = AX×src。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["U", "U", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "8ビット reg", "cycles": "70〜77"}, {"cond": "16ビット reg", "cycles": "118〜133"}],
-      "encodings": [{"syntax": "MUL r/m8", "opcode": "F6 /4", "bytes": 2}, {"syntax": "MUL r/m16", "opcode": "F7 /4", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "U",
+        "U",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "8ビット reg",
+          "cycles": "70〜77"
+        },
+        {
+          "cond": "16ビット reg",
+          "cycles": "118〜133"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MUL r/m8",
+          "opcode": "F6 /4",
+          "bytes": 2
+        },
+        {
+          "syntax": "MUL r/m16",
+          "opcode": "F7 /4",
+          "bytes": 2
+        }
+      ],
       "notes": "CF=OF=1 は上位半分が非 0（結果がオーバーフロー）を示す。S/Z/A/P は未定義。",
       "src": "knowledge"
     },
@@ -247,10 +841,42 @@
       "operands": "src",
       "category": "算術",
       "summary": "符号付き乗算。8ビット: AX = AL×src、16ビット: DX:AX = AX×src。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["U", "U", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "8ビット reg", "cycles": "80〜98"}, {"cond": "16ビット reg", "cycles": "128〜154"}],
-      "encodings": [{"syntax": "IMUL r/m8", "opcode": "F6 /5", "bytes": 2}, {"syntax": "IMUL r/m16", "opcode": "F7 /5", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "U",
+        "U",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "8ビット reg",
+          "cycles": "80〜98"
+        },
+        {
+          "cond": "16ビット reg",
+          "cycles": "128〜154"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IMUL r/m8",
+          "opcode": "F6 /5",
+          "bytes": 2
+        },
+        {
+          "syntax": "IMUL r/m16",
+          "opcode": "F7 /5",
+          "bytes": 2
+        }
+      ],
       "notes": "CF=OF=1 は DX:AX の符号拡張として上位半分が有効（桁あふれ）。",
       "src": "knowledge"
     },
@@ -259,10 +885,42 @@
       "operands": "src",
       "category": "算術",
       "summary": "符号なし除算。16÷8: AL=商 AH=剰余、32÷16: AX=商 DX=剰余。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["U", "U", "-", "U", "U", "U", "U", "U"],
-      "cycles": [{"cond": "8ビット reg", "cycles": "80〜90"}, {"cond": "16ビット reg", "cycles": "144〜162"}],
-      "encodings": [{"syntax": "DIV r/m8", "opcode": "F6 /6", "bytes": 2}, {"syntax": "DIV r/m16", "opcode": "F7 /6", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "U",
+        "U",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U"
+      ],
+      "cycles": [
+        {
+          "cond": "8ビット reg",
+          "cycles": "80〜90"
+        },
+        {
+          "cond": "16ビット reg",
+          "cycles": "144〜162"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DIV r/m8",
+          "opcode": "F6 /6",
+          "bytes": 2
+        },
+        {
+          "syntax": "DIV r/m16",
+          "opcode": "F7 /6",
+          "bytes": 2
+        }
+      ],
       "notes": "商がオーバーフローまたは除算零のときは INT 0（例外ベクタ 0）が発生。",
       "src": "knowledge"
     },
@@ -271,10 +929,42 @@
       "operands": "src",
       "category": "算術",
       "summary": "符号付き除算。商の丸めは 0 方向。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["U", "U", "-", "U", "U", "U", "U", "U"],
-      "cycles": [{"cond": "8ビット reg", "cycles": "101〜112"}, {"cond": "16ビット reg", "cycles": "165〜184"}],
-      "encodings": [{"syntax": "IDIV r/m8", "opcode": "F6 /7", "bytes": 2}, {"syntax": "IDIV r/m16", "opcode": "F7 /7", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "U",
+        "U",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U"
+      ],
+      "cycles": [
+        {
+          "cond": "8ビット reg",
+          "cycles": "101〜112"
+        },
+        {
+          "cond": "16ビット reg",
+          "cycles": "165〜184"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IDIV r/m8",
+          "opcode": "F6 /7",
+          "bytes": 2
+        },
+        {
+          "syntax": "IDIV r/m16",
+          "opcode": "F7 /7",
+          "bytes": 2
+        }
+      ],
       "notes": "割算零・オーバーフローは INT 0。",
       "src": "knowledge"
     },
@@ -283,10 +973,32 @@
       "operands": "",
       "category": "算術",
       "summary": "AL の符号拡張を AX に入れる（8→16 ビット）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "CBW", "opcode": "98", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CBW",
+          "opcode": "98",
+          "bytes": 1
+        }
+      ],
       "notes": "IMUL/IDIV の前の符号拡張に必須。",
       "src": "knowledge"
     },
@@ -295,10 +1007,32 @@
       "operands": "",
       "category": "算術",
       "summary": "AX の符号拡張を DX に入れる（16→32 ビット）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 5}],
-      "encodings": [{"syntax": "CWD", "opcode": "99", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 5
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CWD",
+          "opcode": "99",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -307,10 +1041,32 @@
       "operands": "",
       "category": "BCD",
       "summary": "加算後の BCD 補正（AL をパック BCD に補正）。",
-      "addressing": ["暗黙"],
-      "flags": ["U", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 4}],
-      "encodings": [{"syntax": "DAA", "opcode": "27", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 4
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DAA",
+          "opcode": "27",
+          "bytes": 1
+        }
+      ],
       "notes": "ADD/ADC 直後に使用。",
       "src": "knowledge"
     },
@@ -319,10 +1075,32 @@
       "operands": "",
       "category": "BCD",
       "summary": "減算後の BCD 補正。",
-      "addressing": ["暗黙"],
-      "flags": ["U", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 4}],
-      "encodings": [{"syntax": "DAS", "opcode": "2F", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 4
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DAS",
+          "opcode": "2F",
+          "bytes": 1
+        }
+      ],
       "notes": "SUB/SBB 直後に使用。",
       "src": "knowledge"
     },
@@ -331,10 +1109,32 @@
       "operands": "",
       "category": "BCD",
       "summary": "加算後の ASCII 補正（非パック BCD）。",
-      "addressing": ["暗黙"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 8}],
-      "encodings": [{"syntax": "AAA", "opcode": "37", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 8
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "AAA",
+          "opcode": "37",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -343,10 +1143,32 @@
       "operands": "",
       "category": "BCD",
       "summary": "減算後の ASCII 補正（非パック BCD）。",
-      "addressing": ["暗黙"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 8}],
-      "encodings": [{"syntax": "AAS", "opcode": "3F", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 8
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "AAS",
+          "opcode": "3F",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -355,10 +1177,32 @@
       "operands": "",
       "category": "BCD",
       "summary": "乗算後の ASCII 補正（AX = AL÷10 で AH=商 AL=剰余）。",
-      "addressing": ["暗黙"],
-      "flags": ["U", "-", "-", "‡", "‡", "-", "‡", "-"],
-      "cycles": [{"cond": "常時", "cycles": 83}],
-      "encodings": [{"syntax": "AAM", "opcode": "D4 0A", "bytes": 2}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "-",
+        "‡",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 83
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "AAM",
+          "opcode": "D4 0A",
+          "bytes": 2
+        }
+      ],
       "notes": "第二オペランド（8086 では常に 0A）を変える非公式な除算使いが知られる。",
       "src": "knowledge"
     },
@@ -367,10 +1211,32 @@
       "operands": "",
       "category": "BCD",
       "summary": "除算前の ASCII 補正（AL = AH×10+AL、AH=0）。",
-      "addressing": ["暗黙"],
-      "flags": ["U", "-", "-", "‡", "‡", "-", "‡", "-"],
-      "cycles": [{"cond": "常時", "cycles": 60}],
-      "encodings": [{"syntax": "AAD", "opcode": "D5 0A", "bytes": 2}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "-",
+        "‡",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 60
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "AAD",
+          "opcode": "D5 0A",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -379,10 +1245,43 @@
       "operands": "dst, src",
       "category": "論理",
       "summary": "論理積。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "mem,reg", "cycles": 16}],
-      "encodings": [{"syntax": "AND r/m,r", "opcode": "0010000w /r", "bytes": 2}, {"syntax": "AND AL,imm", "opcode": "24 ib", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "AND r/m,r",
+          "opcode": "0010000w /r",
+          "bytes": 2
+        },
+        {
+          "syntax": "AND AL,imm",
+          "opcode": "24 ib",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -391,10 +1290,43 @@
       "operands": "dst, src",
       "category": "論理",
       "summary": "論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "mem,reg", "cycles": 16}],
-      "encodings": [{"syntax": "OR r/m,r", "opcode": "0000100w /r", "bytes": 2}, {"syntax": "OR AL,imm", "opcode": "0C ib", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "OR r/m,r",
+          "opcode": "0000100w /r",
+          "bytes": 2
+        },
+        {
+          "syntax": "OR AL,imm",
+          "opcode": "0C ib",
+          "bytes": 2
+        }
+      ],
       "notes": "OR AX,AX で値を保ったままフラグ更新。",
       "src": "knowledge"
     },
@@ -403,10 +1335,43 @@
       "operands": "dst, src",
       "category": "論理",
       "summary": "排他的論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "mem,reg", "cycles": 16}],
-      "encodings": [{"syntax": "XOR r/m,r", "opcode": "0011000w /r", "bytes": 2}, {"syntax": "XOR AL,imm", "opcode": "34 ib", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "XOR r/m,r",
+          "opcode": "0011000w /r",
+          "bytes": 2
+        },
+        {
+          "syntax": "XOR AL,imm",
+          "opcode": "34 ib",
+          "bytes": 2
+        }
+      ],
       "notes": "XOR AX,AX は AX=0 + フラグクリアの 1 バイト定番。",
       "src": "knowledge"
     },
@@ -415,10 +1380,37 @@
       "operands": "dst",
       "category": "論理",
       "summary": "ビット反転（1の補数）。フラグは一切変化しない。",
-      "addressing": ["レジスタ", "メモリ"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "mem", "cycles": 16}],
-      "encodings": [{"syntax": "NOT r/m", "opcode": "F6 /2, F7 /2", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "NOT r/m",
+          "opcode": "F6 /2, F7 /2",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -427,10 +1419,43 @@
       "operands": "dst, src",
       "category": "比較",
       "summary": "AND のフラグのみ反映（dst は不変）。ビットテスト用。",
-      "addressing": ["レジスタ", "メモリ", "即値"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg,reg", "cycles": 3}, {"cond": "mem,reg", "cycles": 16}],
-      "encodings": [{"syntax": "TEST r/m,r", "opcode": "1000010w /r", "bytes": 2}, {"syntax": "TEST AL,imm", "opcode": "A8 ib", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "即値"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 3
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "TEST r/m,r",
+          "opcode": "1000010w /r",
+          "bytes": 2
+        },
+        {
+          "syntax": "TEST AL,imm",
+          "opcode": "A8 ib",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -439,10 +1464,52 @@
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "左論理シフト（SAL と同一）。bit7 → CF、下位に 0。×2 相当。",
-      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
-      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg,1", "cycles": 2}, {"cond": "reg,CL", "cycles": 8}, {"cond": "mem,1", "cycles": 15}, {"cond": "mem,CL", "cycles": 20}],
-      "encodings": [{"syntax": "SHL r/m,1", "opcode": "D0/D1 /4", "bytes": 2}, {"syntax": "SHL r/m,CL", "opcode": "D2/D3 /4", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "1ビット",
+        "CL カウント"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,1",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,CL",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,1",
+          "cycles": 15
+        },
+        {
+          "cond": "mem,CL",
+          "cycles": 20
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SHL r/m,1",
+          "opcode": "D0/D1 /4",
+          "bytes": 2
+        },
+        {
+          "syntax": "SHL r/m,CL",
+          "opcode": "D2/D3 /4",
+          "bytes": 2
+        }
+      ],
       "notes": "CL シフトではシフト後の値に対してフラグ評価（8086 特有）。",
       "src": "knowledge"
     },
@@ -451,10 +1518,52 @@
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "右論理シフト。bit0 → CF、上位に 0。符号なし ÷2 相当。",
-      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
-      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg,1", "cycles": 2}, {"cond": "reg,CL", "cycles": 8}, {"cond": "mem,1", "cycles": 15}, {"cond": "mem,CL", "cycles": 20}],
-      "encodings": [{"syntax": "SHR r/m,1", "opcode": "D0/D1 /5", "bytes": 2}, {"syntax": "SHR r/m,CL", "opcode": "D2/D3 /5", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "1ビット",
+        "CL カウント"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,1",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,CL",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,1",
+          "cycles": 15
+        },
+        {
+          "cond": "mem,CL",
+          "cycles": 20
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SHR r/m,1",
+          "opcode": "D0/D1 /5",
+          "bytes": 2
+        },
+        {
+          "syntax": "SHR r/m,CL",
+          "opcode": "D2/D3 /5",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -463,10 +1572,52 @@
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "右算術シフト（符号ビット保持）。bit0 → CF。符号付き ÷2 相当。",
-      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg,1", "cycles": 2}, {"cond": "reg,CL", "cycles": 8}, {"cond": "mem,1", "cycles": 15}, {"cond": "mem,CL", "cycles": 20}],
-      "encodings": [{"syntax": "SAR r/m,1", "opcode": "D0/D1 /7", "bytes": 2}, {"syntax": "SAR r/m,CL", "opcode": "D2/D3 /7", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "1ビット",
+        "CL カウント"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,1",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,CL",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,1",
+          "cycles": 15
+        },
+        {
+          "cond": "mem,CL",
+          "cycles": 20
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SAR r/m,1",
+          "opcode": "D0/D1 /7",
+          "bytes": 2
+        },
+        {
+          "syntax": "SAR r/m,CL",
+          "opcode": "D2/D3 /7",
+          "bytes": 2
+        }
+      ],
       "notes": "SAR の OF は常に 0。",
       "src": "knowledge"
     },
@@ -475,10 +1626,52 @@
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "左ローテート（bit7 → CF → bit0、8/16 ビット内循環）。",
-      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg,1", "cycles": 2}, {"cond": "reg,CL", "cycles": 8}, {"cond": "mem,1", "cycles": 15}, {"cond": "mem,CL", "cycles": 20}],
-      "encodings": [{"syntax": "ROL r/m,1", "opcode": "D0/D1 /0", "bytes": 2}, {"syntax": "ROL r/m,CL", "opcode": "D2/D3 /0", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "1ビット",
+        "CL カウント"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,1",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,CL",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,1",
+          "cycles": 15
+        },
+        {
+          "cond": "mem,CL",
+          "cycles": 20
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ROL r/m,1",
+          "opcode": "D0/D1 /0",
+          "bytes": 2
+        },
+        {
+          "syntax": "ROL r/m,CL",
+          "opcode": "D2/D3 /0",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -487,10 +1680,52 @@
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "右ローテート（bit0 → CF → bit7）。",
-      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg,1", "cycles": 2}, {"cond": "reg,CL", "cycles": 8}, {"cond": "mem,1", "cycles": 15}, {"cond": "mem,CL", "cycles": 20}],
-      "encodings": [{"syntax": "ROR r/m,1", "opcode": "D0/D1 /1", "bytes": 2}, {"syntax": "ROR r/m,CL", "opcode": "D2/D3 /1", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "1ビット",
+        "CL カウント"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,1",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,CL",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,1",
+          "cycles": 15
+        },
+        {
+          "cond": "mem,CL",
+          "cycles": 20
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ROR r/m,1",
+          "opcode": "D0/D1 /1",
+          "bytes": 2
+        },
+        {
+          "syntax": "ROR r/m,CL",
+          "opcode": "D2/D3 /1",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -499,10 +1734,52 @@
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "キャリー込み左ローテート（9/17 ビット循環）。多倍長シフト用。",
-      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg,1", "cycles": 2}, {"cond": "reg,CL", "cycles": 8}, {"cond": "mem,1", "cycles": 15}, {"cond": "mem,CL", "cycles": 20}],
-      "encodings": [{"syntax": "RCL r/m,1", "opcode": "D0/D1 /2", "bytes": 2}, {"syntax": "RCL r/m,CL", "opcode": "D2/D3 /2", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "1ビット",
+        "CL カウント"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,1",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,CL",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,1",
+          "cycles": 15
+        },
+        {
+          "cond": "mem,CL",
+          "cycles": 20
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RCL r/m,1",
+          "opcode": "D0/D1 /2",
+          "bytes": 2
+        },
+        {
+          "syntax": "RCL r/m,CL",
+          "opcode": "D2/D3 /2",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -511,10 +1788,52 @@
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "キャリー込み右ローテート（9/17 ビット循環）。",
-      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg,1", "cycles": 2}, {"cond": "reg,CL", "cycles": 8}, {"cond": "mem,1", "cycles": 15}, {"cond": "mem,CL", "cycles": 20}],
-      "encodings": [{"syntax": "RCR r/m,1", "opcode": "D0/D1 /3", "bytes": 2}, {"syntax": "RCR r/m,CL", "opcode": "D2/D3 /3", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "メモリ",
+        "1ビット",
+        "CL カウント"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,1",
+          "cycles": 2
+        },
+        {
+          "cond": "reg,CL",
+          "cycles": 8
+        },
+        {
+          "cond": "mem,1",
+          "cycles": 15
+        },
+        {
+          "cond": "mem,CL",
+          "cycles": 20
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RCR r/m,1",
+          "opcode": "D0/D1 /3",
+          "bytes": 2
+        },
+        {
+          "syntax": "RCR r/m,CL",
+          "opcode": "D2/D3 /3",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -523,10 +1842,56 @@
       "operands": "dst",
       "category": "分岐",
       "summary": "無条件ジャンプ（short/near/far、レジスタ間接・メモリ間接）。",
-      "addressing": ["相対(short/near)", "絶対(far)", "間接"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "short/near", "cycles": 15}, {"cond": "far", "cycles": 15}, {"cond": "reg 間接", "cycles": 11}, {"cond": "mem 間接", "cycles": 18}],
-      "encodings": [{"syntax": "JMP short", "opcode": "EB rel8", "bytes": 2}, {"syntax": "JMP near", "opcode": "E9 rel16", "bytes": 3}, {"syntax": "JMP far", "opcode": "EA off seg", "bytes": 5}],
+      "addressing": [
+        "相対(short/near)",
+        "絶対(far)",
+        "間接"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "short/near",
+          "cycles": 15
+        },
+        {
+          "cond": "far",
+          "cycles": 15
+        },
+        {
+          "cond": "reg 間接",
+          "cycles": 11
+        },
+        {
+          "cond": "mem 間接",
+          "cycles": 18
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "JMP short",
+          "opcode": "EB rel8",
+          "bytes": 2
+        },
+        {
+          "syntax": "JMP near",
+          "opcode": "E9 rel16",
+          "bytes": 3
+        },
+        {
+          "syntax": "JMP far",
+          "opcode": "EA off seg",
+          "bytes": 5
+        }
+      ],
       "notes": "far は CS:EIP を書き換える（リアルモード）。",
       "src": "knowledge"
     },
@@ -535,10 +1900,36 @@
       "operands": "short",
       "category": "分岐",
       "summary": "条件付き相対分岐（±127 バイト）。条件コード一式（JA/JB/JE/JG/JL/JS/JZ と否定形 16 種）。",
-      "addressing": ["相対分岐"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "不成立", "cycles": 4}, {"cond": "成立", "cycles": 16}],
-      "encodings": [{"syntax": "Jcc rel8", "opcode": "70〜7F", "bytes": 2}],
+      "addressing": [
+        "相対分岐"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "不成立",
+          "cycles": 4
+        },
+        {
+          "cond": "成立",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "Jcc rel8",
+          "opcode": "70〜7F",
+          "bytes": 2
+        }
+      ],
       "notes": "70 JB, 71 JNB, 72 JE, 73 JNE, 74 JE(=JZ), 76 JBE, 77 JA, 7C JL, 7D JGE, 7E JLE, 7F JG など（8086 の一覧）。符号付き比較は JG/JGE/JL/JLE、符号なしは JA/JAE/JB/JBE。",
       "src": "knowledge"
     },
@@ -547,10 +1938,36 @@
       "operands": "short",
       "category": "分岐",
       "summary": "CX を -1 し、CX≠0 なら相対分岐（カウンタループ）。",
-      "addressing": ["相対分岐"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "分岐", "cycles": 17}, {"cond": "脱出", "cycles": 5}],
-      "encodings": [{"syntax": "LOOP rel8", "opcode": "E2 rel8", "bytes": 2}],
+      "addressing": [
+        "相対分岐"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "分岐",
+          "cycles": 17
+        },
+        {
+          "cond": "脱出",
+          "cycles": 5
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOOP rel8",
+          "opcode": "E2 rel8",
+          "bytes": 2
+        }
+      ],
       "notes": "LOOPE（E1、CX≠0 かつ ZF=1）/LOOPNE（E0、CX≠0 かつ ZF=0）もあり。",
       "src": "knowledge"
     },
@@ -559,10 +1976,36 @@
       "operands": "short",
       "category": "分岐",
       "summary": "CX = 0 のときだけ相対分岐（ループ事前脱出）。",
-      "addressing": ["相対分岐"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "CX≠0", "cycles": 6}, {"cond": "CX=0", "cycles": 18}],
-      "encodings": [{"syntax": "JCXZ rel8", "opcode": "E3 rel8", "bytes": 2}],
+      "addressing": [
+        "相対分岐"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CX≠0",
+          "cycles": 6
+        },
+        {
+          "cond": "CX=0",
+          "cycles": 18
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "JCXZ rel8",
+          "opcode": "E3 rel8",
+          "bytes": 2
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -571,10 +2014,51 @@
       "operands": "dst",
       "category": "サブルーチン",
       "summary": "サブルーチンコール（near/far、間接）。戻りアドレスをスタックに退避。",
-      "addressing": ["相対(near)", "絶対(far)", "間接"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "near", "cycles": 19}, {"cond": "far", "cycles": 28}, {"cond": "reg 間接", "cycles": 16}, {"cond": "mem 間接", "cycles": 21}],
-      "encodings": [{"syntax": "CALL rel16", "opcode": "E8 rel16", "bytes": 3}, {"syntax": "CALL far", "opcode": "9A off seg", "bytes": 5}],
+      "addressing": [
+        "相対(near)",
+        "絶対(far)",
+        "間接"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "near",
+          "cycles": 19
+        },
+        {
+          "cond": "far",
+          "cycles": 28
+        },
+        {
+          "cond": "reg 間接",
+          "cycles": 16
+        },
+        {
+          "cond": "mem 間接",
+          "cycles": 21
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CALL rel16",
+          "opcode": "E8 rel16",
+          "bytes": 3
+        },
+        {
+          "syntax": "CALL far",
+          "opcode": "9A off seg",
+          "bytes": 5
+        }
+      ],
       "notes": "far call は CS と IP の両方を退避。",
       "src": "knowledge"
     },
@@ -583,10 +2067,49 @@
       "operands": "[imm]",
       "category": "サブルーチン",
       "summary": "サブルーチン復帰。RET imm は復帰後に SP をさらに加算（引数破棄）。",
-      "addressing": ["スタック"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "near", "cycles": 8}, {"cond": "near imm", "cycles": 12}, {"cond": "far", "cycles": 17}, {"cond": "far imm", "cycles": 18}],
-      "encodings": [{"syntax": "RET", "opcode": "C3", "bytes": 1}, {"syntax": "RET imm16", "opcode": "C2 iw", "bytes": 3}],
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "near",
+          "cycles": 8
+        },
+        {
+          "cond": "near imm",
+          "cycles": 12
+        },
+        {
+          "cond": "far",
+          "cycles": 17
+        },
+        {
+          "cond": "far imm",
+          "cycles": 18
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RET",
+          "opcode": "C3",
+          "bytes": 1
+        },
+        {
+          "syntax": "RET imm16",
+          "opcode": "C2 iw",
+          "bytes": 3
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -595,22 +2118,84 @@
       "operands": "dst, src",
       "category": "文字列",
       "summary": "文字列転送（MOVS/MOVSB/MOVSW）。DS:SI → ES:DI、DF に応じて SI/DI を ±1/±2。",
-      "addressing": ["レジスタ間接(SI/DI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1回", "cycles": 18}, {"cond": "REP 時 1回ごと", "cycles": "17+4n"}],
-      "encodings": [{"syntax": "MOVSB", "opcode": "A4", "bytes": 1}, {"syntax": "MOVSW", "opcode": "A5", "bytes": 1}],
-      "notes": "REP と組み合わせてブロックコピー。ES:DI 側はセグメントオーバーライド不可。",
-      "src": "knowledge"
+      "addressing": [
+        "レジスタ間接(SI/DI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 18
+        },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "9+17n"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVSB",
+          "opcode": "A4",
+          "bytes": 1
+        },
+        {
+          "syntax": "MOVSW",
+          "opcode": "A5",
+          "bytes": 1
+        }
+      ],
+      "notes": "REP と組み合わせてブロックコピー。REP MOVSB 100 バイト = 9+17×100 = 1709 クロック (17.09 クロック/バイト)。8088 ではワード転送 (MOVSW) は 8 ビットバスのため 1 回ごと +8 クロック。単体実行は 18 クロック。根拠: 8086マシン語秘伝の書(1990) 三の章 8086ニモニック表 (18 OR 9+17n)。",
+      "src": "book"
     },
     {
       "mnemonic": "LODS",
       "operands": "src",
       "category": "文字列",
       "summary": "文字列ロード（LODSB/LODSW）。DS:SI から AL/AX に読み、SI を ±1/±2。",
-      "addressing": ["レジスタ間接(SI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1回", "cycles": 12}, {"cond": "REP 時 1回ごと", "cycles": "17+4n"}],
-      "encodings": [{"syntax": "LODSB", "opcode": "AC", "bytes": 1}, {"syntax": "LODSW", "opcode": "AD", "bytes": 1}],
+      "addressing": [
+        "レジスタ間接(SI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 12
+        },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "17+4n"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LODSB",
+          "opcode": "AC",
+          "bytes": 1
+        },
+        {
+          "syntax": "LODSW",
+          "opcode": "AD",
+          "bytes": 1
+        }
+      ],
       "notes": "REP LODS は無意味（結果が上書きされる）。",
       "src": "knowledge"
     },
@@ -619,10 +2204,41 @@
       "operands": "dst",
       "category": "文字列",
       "summary": "文字列ストア（STOSB/STOSW）。AL/AX を ES:DI に書き、DI を ±1/±2。",
-      "addressing": ["レジスタ間接(DI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1回", "cycles": 11}, {"cond": "REP 時 1回ごと", "cycles": "17+4n"}],
-      "encodings": [{"syntax": "STOSB", "opcode": "AA", "bytes": 1}, {"syntax": "STOSW", "opcode": "AB", "bytes": 1}],
+      "addressing": [
+        "レジスタ間接(DI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 11
+        },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "17+4n"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STOSB",
+          "opcode": "AA",
+          "bytes": 1
+        },
+        {
+          "syntax": "STOSW",
+          "opcode": "AB",
+          "bytes": 1
+        }
+      ],
       "notes": "REP STOSB でメモリの初期化（memset 相当）。",
       "src": "knowledge"
     },
@@ -631,10 +2247,41 @@
       "operands": "dst, src",
       "category": "文字列",
       "summary": "文字列比較（CMPSB/CMPSW）。DS:SI と ES:DI を比較（SUB と同じフラグ更新）。",
-      "addressing": ["レジスタ間接(SI/DI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1回", "cycles": 22}, {"cond": "REP 時 1回ごと", "cycles": "22+9n"}],
-      "encodings": [{"syntax": "CMPSB", "opcode": "A6", "bytes": 1}, {"syntax": "CMPSW", "opcode": "A7", "bytes": 1}],
+      "addressing": [
+        "レジスタ間接(SI/DI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 22
+        },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "22+9n"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMPSB",
+          "opcode": "A6",
+          "bytes": 1
+        },
+        {
+          "syntax": "CMPSW",
+          "opcode": "A7",
+          "bytes": 1
+        }
+      ],
       "notes": "REPE/REPNE と組み合わせて文字列一致探索。",
       "src": "knowledge"
     },
@@ -643,10 +2290,41 @@
       "operands": "dst",
       "category": "文字列",
       "summary": "文字列スキャン（SCASB/SCASW）。AL/AX と ES:DI を比較し、DI を ±1/±2。",
-      "addressing": ["レジスタ間接(DI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1回", "cycles": 15}, {"cond": "REP 時 1回ごと", "cycles": "15+9n"}],
-      "encodings": [{"syntax": "SCASB", "opcode": "AE", "bytes": 1}, {"syntax": "SCASW", "opcode": "AF", "bytes": 1}],
+      "addressing": [
+        "レジスタ間接(DI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 15
+        },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "15+9n"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SCASB",
+          "opcode": "AE",
+          "bytes": 1
+        },
+        {
+          "syntax": "SCASW",
+          "opcode": "AF",
+          "bytes": 1
+        }
+      ],
       "notes": "REPNE SCASB で特定文字の検索（memchr 相当）。",
       "src": "knowledge"
     },
@@ -655,10 +2333,37 @@
       "operands": "",
       "category": "文字列",
       "summary": "文字列命令の繰り返しプレフィックス（CX が 0 まで）。REPE/REPNE は ZF 条件も追加。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "プレフィックス", "cycles": 2}],
-      "encodings": [{"syntax": "REP/REPE", "opcode": "F3", "bytes": 1}, {"syntax": "REPNE", "opcode": "F2", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "プレフィックス",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "REP/REPE",
+          "opcode": "F3",
+          "bytes": 1
+        },
+        {
+          "syntax": "REPNE",
+          "opcode": "F2",
+          "bytes": 1
+        }
+      ],
       "notes": "REPE=F3、REPNE=F2。F3 は他の文脈でも PAUSE 等に流用される。",
       "src": "knowledge"
     },
@@ -667,10 +2372,41 @@
       "operands": "AL/AX, imm8/DX",
       "category": "I/O",
       "summary": "I/O ポートから入力。ポート番号は 8 ビット即値または DX 間接（16 ビット）。",
-      "addressing": ["I/O"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "AL,imm8", "cycles": 10}, {"cond": "AX,DX", "cycles": 8}],
-      "encodings": [{"syntax": "IN AL,imm8", "opcode": "E4 ib", "bytes": 2}, {"syntax": "IN AL,DX", "opcode": "EC", "bytes": 1}],
+      "addressing": [
+        "I/O"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "AL,imm8",
+          "cycles": 10
+        },
+        {
+          "cond": "AX,DX",
+          "cycles": 8
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IN AL,imm8",
+          "opcode": "E4 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "IN AL,DX",
+          "opcode": "EC",
+          "bytes": 1
+        }
+      ],
       "notes": "IO ポートは 64K 個（16 ビットアドレス）。DX 間接が推奨。",
       "src": "knowledge"
     },
@@ -679,10 +2415,41 @@
       "operands": "imm8/DX, AL/AX",
       "category": "I/O",
       "summary": "I/O ポートへ出力。",
-      "addressing": ["I/O"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "imm8,AL", "cycles": 10}, {"cond": "DX,AX", "cycles": 8}],
-      "encodings": [{"syntax": "OUT imm8,AL", "opcode": "E6 ib", "bytes": 2}, {"syntax": "OUT DX,AL", "opcode": "EE", "bytes": 1}],
+      "addressing": [
+        "I/O"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "imm8,AL",
+          "cycles": 10
+        },
+        {
+          "cond": "DX,AX",
+          "cycles": 8
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "OUT imm8,AL",
+          "opcode": "E6 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "OUT DX,AL",
+          "opcode": "EE",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -691,10 +2458,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグを 0 にクリア。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "0"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "CLC", "opcode": "F8", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CLC",
+          "opcode": "F8",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -703,10 +2492,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグを 1 にセット。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "1"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "STC", "opcode": "F9", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "1"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STC",
+          "opcode": "F9",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -715,10 +2526,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグを反転。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "CMC", "opcode": "F5", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMC",
+          "opcode": "F5",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -727,10 +2560,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "方向フラグ DF を 0（文字列操作で SI/DI を増加）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "0", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "CLD", "opcode": "FC", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "0",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CLD",
+          "opcode": "FC",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -739,10 +2594,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "方向フラグ DF を 1（文字列操作で SI/DI を減少）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "1", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "STD", "opcode": "FD", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "1",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STD",
+          "opcode": "FD",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -751,10 +2628,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "割り込みフラグ IF を 0（マスク可能割り込み禁止）。特権レベル依存。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "CLI", "opcode": "FA", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "0",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CLI",
+          "opcode": "FA",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -763,10 +2662,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "割り込みフラグ IF を 1（割り込み許可）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "1", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "STI", "opcode": "FB", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "1",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STI",
+          "opcode": "FB",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -775,10 +2696,41 @@
       "operands": "imm8",
       "category": "システム制御",
       "summary": "ソフトウェア割り込み（ベクタ imm8）。FLAGS/CS/IP を退避してハンドラへ。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "タイプ 3（INT 3）", "cycles": 51}, {"cond": "タイプ n（INT n）", "cycles": 51}],
-      "encodings": [{"syntax": "INT 3", "opcode": "CC", "bytes": 1}, {"syntax": "INT n", "opcode": "CD ib", "bytes": 2}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "0",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "タイプ 3（INT 3）",
+          "cycles": 51
+        },
+        {
+          "cond": "タイプ n（INT n）",
+          "cycles": 51
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INT 3",
+          "opcode": "CC",
+          "bytes": 1
+        },
+        {
+          "syntax": "INT n",
+          "opcode": "CD ib",
+          "bytes": 2
+        }
+      ],
       "notes": "退避時に IF=0、TF=0 にされる。DOS の INT 21h 等の OS API 入口。",
       "src": "knowledge"
     },
@@ -787,10 +2739,36 @@
       "operands": "",
       "category": "システム制御",
       "summary": "OF=1 のときだけオーバーフロー割り込み（ベクタ 4）を発生。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "OF=0", "cycles": 4}, {"cond": "OF=1", "cycles": 53}],
-      "encodings": [{"syntax": "INTO", "opcode": "CE", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "OF=0",
+          "cycles": 4
+        },
+        {
+          "cond": "OF=1",
+          "cycles": 53
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INTO",
+          "opcode": "CE",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -799,10 +2777,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "割り込みからの復帰。IP/CS/FLAGS をスタックから復帰。",
-      "addressing": ["スタック"],
-      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "常時", "cycles": "80〜90"}],
-      "encodings": [{"syntax": "IRET", "opcode": "CF", "bytes": 1}],
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": "80〜90"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IRET",
+          "opcode": "CF",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -811,10 +2811,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "CPU を停止状態にする（割り込みで再開）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 2}],
-      "encodings": [{"syntax": "HLT", "opcode": "F4", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "HLT",
+          "opcode": "F4",
+          "bytes": 1
+        }
+      ],
       "notes": "",
       "src": "knowledge"
     },
@@ -823,10 +2845,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "何もしない（XCHG AX,AX と同じオペコード）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 3}],
-      "encodings": [{"syntax": "NOP", "opcode": "90", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 3
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "NOP",
+          "opcode": "90",
+          "bytes": 1
+        }
+      ],
       "notes": "アライメント調整のパディングに使う。",
       "src": "knowledge"
     },
@@ -835,10 +2879,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "8087（FPU）がビジネスの間待機する。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 3}],
-      "encodings": [{"syntax": "WAIT", "opcode": "9B", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 3
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "WAIT",
+          "opcode": "9B",
+          "bytes": 1
+        }
+      ],
       "notes": "8086 では常時 NOP 同様に通過する（WAIT は FPU 有り環境で意味を持つ）。",
       "src": "knowledge"
     },
@@ -847,10 +2913,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "次の命令のバスをロックするプレフィックス（マルチプロセッサ同期用）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "プレフィックス", "cycles": 2}],
-      "encodings": [{"syntax": "LOCK", "opcode": "F0", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "プレフィックス",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOCK",
+          "opcode": "F0",
+          "bytes": 1
+        }
+      ],
       "notes": "XCHG や ADD [mem],reg など RMW 命令に付けるのが本来の用法。",
       "src": "knowledge"
     }

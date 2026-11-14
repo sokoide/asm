@@ -94,8 +94,8 @@ cycles:
 icount: sim65i
 	$(call build_one,$(S))
 	@$(call feed_input,$(SIM65I) -t $(S)) | \
-	awk '/^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+[0-9A-Fa-f]+[[:space:]]/ { if ($$1+0 > m) m = $$1+0 } END { print m+1 }' | \
-	{ read n; echo "実行命令数: $$n (sim65i トレース実測)"; }
+	awk '/^[[:space:]]*[0-9]+[[:space:]]+[0-9]+[[:space:]]+[0-9A-Fa-f]+[[:space:]]/ { m = $$1+0; found=1 } END { if (!found) { print "unsupported: 有効なトレース行がありません"; exit 0 } print m+1 }' | \
+	{ read n; echo "実行命令数: $$n (sim65i トレース実測 / 最終命令番号)"; }
 
 runall: all
 	@for s in $(SCENARIOS); do \

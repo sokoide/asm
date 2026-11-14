@@ -144,6 +144,7 @@ func TestTstatesSpotValues(t *testing.T) {
 		{"IX POP IX", tstatesIX(0xE1), 14},
 		{"IX EX (SP),IX", tstatesIX(0xE3), 23},
 		{"IX JP (IX)", tstatesIX(0xE9), 8},
+		{"IX DD 76 (HALT)", tstatesIX(0x76), 8},
 		{"IX LD SP,IX", tstatesIX(0xF9), 10},
 		{"IX plain LD B,C", tstatesIX(0x41), 8},
 	}
@@ -157,13 +158,24 @@ func TestTstatesSpotValues(t *testing.T) {
 // tstatesHere resolves prefixes from memory.
 func TestTstatesHere(t *testing.T) {
 	z := NewZ80()
+	// DD CB 05 06: RLC (IX+5) は 23T (リード+ライト、UM0080)
 	z.wb(0x0100, 0xDD)
 	z.wb(0x0101, 0xCB)
 	z.wb(0x0102, 0x05)
 	z.wb(0x0103, 0x06)
 	z.pc = 0x0100
 	if got := z.tstatesHere(); got != 23 {
-		t.Errorf("DD CB: got %d, want 23", got)
+		t.Errorf("DD CB RLC: got %d, want 23", got)
+	}
+	// DD CB 00 46: BIT 0,(IX+0) は 20T (リードのみ、UM0080)
+	z.wb(0x0103, 0x46)
+	if got := z.tstatesHere(); got != 20 {
+		t.Errorf("DD CB BIT: got %d, want 20", got)
+	}
+	// DD 76: プレフィックス フェッチ + HALT = 8T
+	z.wb(0x0101, 0x76)
+	if got := z.tstatesHere(); got != 8 {
+		t.Errorf("DD 76: got %d, want 8", got)
 	}
 }
 
@@ -633,5 +645,11 @@ func TestEIDelayWindow(t *testing.T) {
 	}
 	if z.pc != 0x0038 {
 		t.Fatalf("INT accepted: PC=%04X, want 0038", z.pc)
+	}
+	if z.intAccepts != 1 {
+		t.Fatalf("intAccepts=%d, want 1", z.intAccepts)
+	}
+	if z.cpuInsns != z.instrCount-1 { // 割り込み受付 1 回分の差
+		t.Fatalf("cpuInsns=%d instrCount=%d: cpuInsns は受付を含まないはず", z.cpuInsns, z.instrCount)
 	}
 }
