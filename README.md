@@ -240,9 +240,12 @@ QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` の各 `
 QEMU Monitor にアクセスすると、実行中のプログラムの状態を確認できます。
 
 ```bash
-# QEMU Monitor を標準入出力で起動
-make run S=s01_hello QEMU_ARGS="-monitor stdio"
+# make run 実行中に Ctrl-A C で monitor に切り替え（-nographic のシリアルと
+# monitor は同じ stdio に多重化されている）。Ctrl-A C でシリアルに戻る。
+# なお x86_16/qemu は -monitor none 固定のため monitor は使えない。
 ```
+
+> 注: 以前は `make run S=s01_hello QEMU_ARGS="-monitor stdio"` で起動できると説明していたが、`QEMU_ARGS` を実装した Makefile は存在せず、これはサイレント no-op だった。
 
 **よく使うコマンド**:
 

@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // Z80 CPU simulator
@@ -18,16 +20,26 @@ type Z80 struct {
 	// Stack pointer, program counter
 	sp, pc uint16
 	// Interrupt
-	i, r   byte
+	i, r       byte
 	iff1, iff2 bool
-	im      byte
-	halted bool
+	im         byte
+	halted     bool
 	// I/O
-	inputBuf   []byte
-	inputPos   int
-	// Cycle count limit to prevent infinite loops
-	cycles    int
-	maxCycles int
+	inputBuf []byte
+	inputPos int
+	// Shared stdin reader (a single bufio.Reader must be reused across
+	// BDOS calls, otherwise buffered bytes are lost between calls).
+	stdioIn *bufio.Reader
+	// lineReader supplies a program input line when inputBuf is exhausted
+	// (set by the step debugger to show an [INPUT]> prompt).
+	lineReader func() string
+	// Cumulative T-states (used as the runaway limit) and per-step info.
+	cycles     int
+	maxCycles  int
+	lastPc     uint16
+	lastT      int
+	lastBDOS   bool
+	instrCount int
 }
 
 // Flag bits
@@ -44,8 +56,11 @@ const (
 
 func NewZ80() *Z80 {
 	return &Z80{
-		sp:        0xFFFF,
-		maxCycles: 10_000_000,
+		sp: 0xFFFF,
+		// Runaway guard in T-states (was 10M instructions before the
+		// debugger rework; 100M T-states ~= 10M average instructions).
+		maxCycles: 100_000_000,
+		stdioIn:   bufio.NewReader(os.Stdin),
 	}
 }
 
@@ -185,8 +200,15 @@ func (z *Z80) setFlagsAdd(a, b byte, cy byte) {
 	if r&0x100 != 0 {
 		f |= CF
 	}
-	if (uint16(a)&0x0F+uint16(b)&0x0F+uint16(cy)) > 0x0F {
+	if (uint16(a)&0x0F + uint16(b)&0x0F + uint16(cy)) > 0x0F {
 		f |= HF
+	}
+	// P/V is overflow (not parity) for ADD/ADC: operands with the same
+	// sign producing a result of the opposite sign.
+	if ^(uint16(a)^uint16(b))&(uint16(a)^r)&0x0080 != 0 {
+		f |= PF
+	} else {
+		f &^= PF
 	}
 	z.f = f
 }
@@ -198,7 +220,7 @@ func (z *Z80) setFlagsSub(a, b, cy byte) {
 	if r < 0 {
 		f |= CF
 	}
-	if (int(a&0x0F)-int(b&0x0F)-int(cy)) < 0 {
+	if (int(a&0x0F) - int(b&0x0F) - int(cy)) < 0 {
 		f |= HF
 	}
 	// Overflow
@@ -367,6 +389,15 @@ func (z *Z80) portOut(port uint16, val byte) {
 // BDOS handler
 func (z *Z80) bdosCall() {
 	fn := z.c
+	if fn == 1 || fn == 10 {
+		// Input functions: in debug mode, exhausted program input
+		// falls back to an [INPUT]> prompt.
+		if z.inputPos >= len(z.inputBuf) && z.lineReader != nil {
+			if line := z.lineReader(); line != "" {
+				z.inputBuf = append(z.inputBuf[:z.inputPos], []byte(line)...)
+			}
+		}
+	}
 	switch fn {
 	case 1: // Console input
 		if z.inputPos < len(z.inputBuf) {
@@ -380,8 +411,7 @@ func (z *Z80) bdosCall() {
 			}
 			z.a = ch & 0x7F
 		} else {
-			reader := bufio.NewReader(os.Stdin)
-			ch, err := reader.ReadByte()
+			ch, err := z.stdioIn.ReadByte()
 			if err != nil {
 				z.a = 0x0D
 			} else {
@@ -434,8 +464,7 @@ func (z *Z80) bdosCall() {
 			z.wb(bufAddr+1, byte(len(line)))
 			fmt.Print(string(line) + "\r\n")
 		} else {
-			reader := bufio.NewReader(os.Stdin)
-			line, err := reader.ReadString('\n')
+			line, err := z.stdioIn.ReadString('\n')
 			if err != nil {
 				z.wb(bufAddr+1, 0)
 			} else {
@@ -626,7 +655,7 @@ func (z *Z80) execED() {
 				if result < 0 {
 					f |= CF
 				}
-				if (int(hl&0xFFF)-int(rpVal&0xFFF)-int(cy)) < 0 {
+				if (int(hl&0xFFF) - int(rpVal&0xFFF) - int(cy)) < 0 {
 					f |= HF
 				}
 				if (hl^rpVal)&(hl^uint16(result))&0x8000 != 0 {
@@ -650,7 +679,7 @@ func (z *Z80) execED() {
 				if result > 0xFFFF {
 					f |= CF
 				}
-				if (int(hl&0xFFF)+int(rpVal&0xFFF)+int(cy)) > 0xFFF {
+				if (int(hl&0xFFF) + int(rpVal&0xFFF) + int(cy)) > 0xFFF {
 					f |= HF
 				}
 				if (hl^uint16(result))&(rpVal^uint16(result))&0x8000 != 0 {
@@ -744,7 +773,7 @@ func (z *Z80) execED() {
 			z.setBc(z.bc() - 1)
 			f := z.szpFlags(byte(result))
 			f |= NF
-			if (z.a&0x0F) < (val & 0x0F) {
+			if (z.a & 0x0F) < (val & 0x0F) {
 				f |= HF
 			}
 			if z.bc() != 0 {
@@ -792,49 +821,62 @@ func (z *Z80) execED() {
 
 // Main execution
 func (z *Z80) Run() {
-	for !z.halted && z.cycles < z.maxCycles {
-		z.cycles++
+	for z.Step() {
+	}
+}
 
-		// BDOS trap at 0x0005
-		if z.pc == 0x0005 {
-			z.bdosCall()
-			z.pc = z.pop()
-			continue
-		}
+// Step executes exactly one instruction (or one BDOS trap) and reports
+// whether execution should continue. Timing and instruction bookkeeping
+// are recorded in lastPc/lastT/lastBDOS/cycles/instrCount.
+func (z *Z80) Step() bool {
+	if z.halted || z.cycles >= z.maxCycles {
+		return false
+	}
 
-		// Terminal trap at 0x0000
-		if z.pc == 0x0000 {
-			break
-		}
+	// BDOS trap at 0x0005 (host call, no T-states)
+	if z.pc == 0x0005 {
+		z.lastBDOS = true
+		z.lastPc = 0x0005
+		z.lastT = 0
+		z.instrCount++
+		z.bdosCall()
+		z.pc = z.pop()
+		return true
+	}
+	z.lastBDOS = false
 
-		op := z.fetch()
+	// Terminal trap at 0x0000
+	if z.pc == 0x0000 {
+		return false
+	}
 
-		// CB prefix
-		if op == 0xCB {
-			z.execCB()
-			continue
-		}
+	start := z.pc
+	z.lastPc = start
+	base := z.tstatesHere()
 
+	op := z.fetch()
+
+	// CB prefix
+	if op == 0xCB {
+		z.execCB()
+	} else if op == 0xDD {
 		// DD prefix (IX)
-		if op == 0xDD {
-			z.execIX()
-			continue
-		}
-
+		z.execIX()
+	} else if op == 0xED {
 		// ED prefix
-		if op == 0xED {
-			z.execED()
-			continue
-		}
-
+		z.execED()
+	} else if op == 0xFD {
 		// FD prefix (IY)
-		if op == 0xFD {
-			z.execIY()
-			continue
-		}
-
+		z.execIY()
+	} else {
 		z.execMain(op)
 	}
+
+	t := base + z.conditionalDelta(start, z.pc)
+	z.lastT = t
+	z.cycles += t
+	z.instrCount++
+	return true
 }
 
 func (z *Z80) execIX() {
@@ -1173,7 +1215,7 @@ func (z *Z80) execMain(op byte) {
 				if result > 0xFFFF {
 					f |= CF
 				}
-				if (hl&0xFFF+rpVal&0xFFF) > 0xFFF {
+				if (hl&0xFFF + rpVal&0xFFF) > 0xFFF {
 					f |= HF
 				}
 				z.f = f
@@ -1379,18 +1421,26 @@ func (z *Z80) loadCom(filename string) error {
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s <file.com> [input_text]\n", os.Args[0])
+	debugMode := flag.Bool("debug", false, "interactive step debugger")
+	traceMode := flag.Bool("trace", false, "print one block per executed instruction")
+	cyclesMode := flag.Bool("cycles", false, "run and print instruction/T-state summary")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] <file.com> [input_text]\n\nOptions:\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	if flag.NArg() < 1 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
-	filename := os.Args[1]
+	filename := flag.Arg(0)
 	cpu := NewZ80()
 
 	// Set up input from command line argument or stdin
-	if len(os.Args) >= 3 {
-		inputText := os.Args[2]
-		cpu.inputBuf = []byte(inputText)
+	if flag.NArg() >= 2 {
+		cpu.inputBuf = []byte(flag.Arg(1))
 		cpu.inputPos = 0
 	}
 
@@ -1400,5 +1450,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	cpu.Run()
+	switch {
+	case *debugMode:
+		lst, err := loadListing(strings.TrimSuffix(filename, ".com") + ".lst")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "warning: %v (disassembly unavailable)\n", err)
+		}
+		if lst == nil {
+			fmt.Fprintln(os.Stderr, "note: no .lst file found; assemble with z80asm -l for source display")
+		}
+		newDebugger(cpu, lst).run()
+	case *traceMode:
+		lst, _ := loadListing(strings.TrimSuffix(filename, ".com") + ".lst")
+		runTrace(cpu, lst)
+	case *cyclesMode:
+		runCycles(cpu)
+	default:
+		cpu.Run()
+	}
 }

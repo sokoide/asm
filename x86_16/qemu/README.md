@@ -32,6 +32,21 @@ make dump32 S=s14_protected
 make clean
 ```
 
+## デバッグ
+
+```bash
+# QEMU を -S -gdb tcp::1234 で起動し gdb を接続（ステップ実行）
+make debug S=s01_hello
+
+# 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
+make trace S=s01_hello
+
+# 実行命令数を集計
+make cycles S=s01_hello
+```
+
+`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。x86_16 はシンボルを持たないフラットバイナリだが、gdb の i8086 モードで 0x7C00 に自動ブレークする。`make cycles` が数えるのはサイクル数ではなく実行命令数（QEMU TCG はサイクル精度のエミュレーションではないため）。
+
 ## ディレクトリ構造
 
 ```text

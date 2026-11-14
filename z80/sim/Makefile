@@ -27,7 +27,7 @@ CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
             s10_bitwise=S10BITS s11_memory=S11MEM s12_minishell=S12MSHL \
             s13_shadow=S13SHAD
 
-.PHONY: all run runall dump cpm cpm-setup clean
+.PHONY: all run runall dump debug trace cycles test cpm cpm-setup clean
 
 all: $(SIM)
 	@for name in $(SOURCES); do \
@@ -35,13 +35,33 @@ all: $(SIM)
 		$(AS) -l -o $$name.com $$name.asm 2>$$name.lst && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; cat $$name.lst; rm -f $$name.lst; }; \
 	done
 
-$(SIM): $(GODIR)/main.go $(GODIR)/go.mod
+$(SIM): $(wildcard $(GODIR)/*.go) $(GODIR)/go.mod
 	cd $(GODIR) && go build -o ../../simz80 .
 
 # Run: make run S=s01_hello
 run: $(SIM)
 	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
 	$(TIMEOUT) $(SIM) $(S).com
+
+# Step debugger: make debug S=s03_stack
+# Commands: s=step n=next(call) c=continue b ADDR r=regs d [ADDR] x ADDR q=quit
+debug: $(SIM)
+	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(SIM) -debug $(S).com
+
+# Instruction trace: make trace S=s03_stack (pipe to less / a file as needed)
+trace: $(SIM)
+	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(TIMEOUT) $(SIM) -trace $(S).com
+
+# T-state summary: make cycles S=s04_loops
+cycles: $(SIM)
+	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(TIMEOUT) $(SIM) -cycles $(S).com
+
+# Unit tests for the simulator core (flags, T-states, .lst parser)
+test:
+	cd $(GODIR) && go test ./...
 
 # Run all scenarios (timeout 1s to prevent hangs)
 runall: all

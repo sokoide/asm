@@ -5,5 +5,5 @@
 *.lst
 *.err
 __pycache__/
-simz80
+/simz80
 cpm/

@@ -1,6 +1,7 @@
 *.o
 *.elf
 *.bin
+*.trace
 
 .claude/
 .omc/

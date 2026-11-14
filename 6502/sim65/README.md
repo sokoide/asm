@@ -22,6 +22,23 @@ make run S=s01_hello
 make clean
 ```
 
+## デバッグ
+
+```bash
+# 全命令の実行トレース（前命令との差分行付き）
+make trace S=s03_stack
+
+# トレースを less で 1 命令ずつ送って見る（リプレイ型）
+make debug S=s03_stack
+
+# 実サイクル数を表示
+make cycles S=s03_stack
+```
+
+- **make trace**: `sim65 --trace`（1 命令ごとに通番 / 累積サイクル / PC / オペコード / 逆アセンブル / 実行前レジスタ / Flags / SP を表示）に awk スクリプト (`trace-diff.awk`) で前命令との差分 `▸ A: 00→C0` 行を付けて表示する。
+- **make debug**: **リプレイ型**。トレースを `$(S).trace` に記録し、less の SPACE/Enter で 1 命令ずつ送って観察する。sim65 に対話ステップ実行はないため、これは実行済みトレースの「再生」であり、実行中のプログラムへのライブ制御ではない点に注意。
+- **make cycles**: `sim65 -c` による実サイクル数の表示（正確な値）。
+
 ## ディレクトリ構造
 
 ```text

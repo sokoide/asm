@@ -18,7 +18,7 @@ else
 ALL_DIRS := $(CORE_DIRS) $(HELLO_DIRS)
 endif
 
-.PHONY: all build runall clean lint format help
+.PHONY: all build runall clean debug trace cycles lint format help
 .default: all
 
 # 全アーキテクチャをビルド（ツール未インストールの環境では該当ディレクトリをスキップ）
@@ -42,6 +42,12 @@ clean:
 	  $(MAKE) --no-print-directory -C $$d clean 2>/dev/null || true; \
 	done
 
+# 任意アーキテクチャのデバッグ/トレース/サイクル計測へ横断
+# (例: make debug A=z80/sim S=s03_stack / make cycles A=riscv64/qemu S=s01_hello)
+debug trace cycles:
+	@test -n "$(A)" && test -n "$(S)" || { echo "usage: make $@ A=<arch/platform> S=<scenario>  例: make debug A=z80/sim S=s03_stack"; exit 1; }
+	$(MAKE) --no-print-directory -C $(A) $@ S=$(S)
+
 # Markdown リンター（pnpm があれば pnpm、なければ npx）
 RUNNER := $(shell command -v pnpm >/dev/null 2>&1 && echo "pnpm dlx" || echo "npx")
 EXEC   := $(shell command -v pnpm >/dev/null 2>&1 && echo "pnpm exec" || echo "npx")
@@ -63,6 +69,7 @@ help:
 	@echo "  make            全アーキテクチャをビルド"
 	@echo "  make runall     全シナリオを順に実行（コアアーキテクチャのみ）"
 	@echo "  make clean      全アーキテクチャのビルド成果物を削除"
+	@echo "  make debug/trace/cycles  任意アーキのデバッグ/トレース/サイクル計測（A= と S= が必須）"
 	@echo "  make lint       Markdown を textlint でチェック"
 	@echo "  make format     Markdown を textlint + markdownlint で整形"
 	@echo ""

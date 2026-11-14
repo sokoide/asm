@@ -75,6 +75,48 @@ Hello, Z80 World!
 A>e
 ```
 
+## デバッグ
+
+`make debug` / `make trace` / `make cycles` の 3 つのターゲットで simz80 の実行を観察できる。
+
+```bash
+# 対話ステッパー (simz80 -debug) で 1 命令ずつ実行
+make debug S=s03_stack
+
+# 全命令の実行トレースを非対話で表示（1 命令ごとに命令行 + 差分行）
+make trace S=s03_stack
+
+# 命令数と総 T-states を集計（4MHz 換算のミリ秒も表示）
+make cycles S=s04_loops
+```
+
+`make debug` のステッパーは 1 命令ごとに「実行した命令の逆アセンブル行 + 変化したレジスタ（old→new）+ フラグ変化 + 消費 T-states」を表示する。逆アセンブルには z80asm の出力する `.lst` を利用する。BDOS のコンソール入力が発生すると `[INPUT]>` プロンプトが現れる。
+
+**ステッパーのコマンド**:
+
+| コマンド   | 動作                                     |
+| :---       | :---                                     |
+| `s`        | 1 命令ステップ実行                       |
+| `n`        | next（CALL 先に入らずに進む）            |
+| `c`        | continue（次のブレークポイントまで実行） |
+| `b ADDR`   | アドレス ADDR にブレークポイント設定     |
+| `r`        | 全レジスタ表示                           |
+| `d [ADDR]` | 逆アセンブル表示                         |
+| `x ADDR`   | ADDR からメモリダンプ                    |
+| `q`        | 終了                                     |
+
+**フラグ変化の表示例**: `LD A,7Fh` → `ADD A,01h` を実行すると (`make trace` の実出力):
+
+```text
+#2     T+7   Σ14     0102  C6 01       add a, 0x01
+         A   7F → 80   F   00 → 94
+         flags S 0→1  H 0→1  P/V 0→1
+```
+
+7Fh + 01h は符号付き 8-bit で +127 + 1 = -128 となり、S（符号）・H（半キャリー）・P/V（オーバーフロー）が立つ。この挙動は `make test` のユニットテストで検証している。
+
+**T-states の精度**: `make cycles` の T-states 集計は正確な Z80 T-state 表に基づく（BDOS のホスト呼び出し部分は除外）。実機 Z80（4MHz）での実行時間の見積もりに使える。
+
 ## ディレクトリ構造
 
 ```text
