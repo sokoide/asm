@@ -1,0 +1,16 @@
+STMW rS, d(rA) — PowerPC（ストア）
+
+rS 以降の連続レジスタをメモリへ一括ストア（Store Multiple）。
+
+アドレッシング: D-Form
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1n
+
+備考:
+  Book E（PPC440）では非サポート。
+
+（根拠: knowledge）

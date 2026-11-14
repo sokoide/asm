@@ -1,0 +1,2268 @@
+{
+  "arch": "ppc",
+  "flagNames": [
+    "LT",
+    "GT",
+    "EQ",
+    "SO"
+  ],
+  "instructions": [
+    {
+      "mnemonic": "LBZ",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "1 バイトをゼロ拡張してロードする（Load Byte and Zero）。",
+      "addressing": [
+        "D-Form（d(rA)、rA=0 で d 絶対）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア（キャッシュヒット）",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "lbz rT,d(rA)",
+          "opcode": "0x22 D rA rT",
+          "bytes": 4
+        }
+      ],
+      "notes": "インデックス形式は lbzx（X-Form）、更新形式は lbzu/lbzux。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LBZX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "1 バイトをゼロ拡張してロード（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form（(rA)+(rB)）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LBZU",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "1 バイトロード後、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。",
+      "addressing": [
+        "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LBZUX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "レジスタインデックス形式のバイトロード + アドレス更新。",
+      "addressing": [
+        "X-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHZ",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "2 バイト（ハーフワード）をゼロ拡張してロードする。",
+      "addressing": [
+        "D-Form",
+        "X-Form（lhzx）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "lhz rT,d(rA)",
+          "opcode": "0x28 D rA rT",
+          "bytes": 4
+        }
+      ],
+      "notes": "符号拡張版は LHA。更新形式は lhzu/lhzux。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHZX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ハーフワードをゼロ拡張してロード（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHA",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "2 バイトを符号拡張してロードする（Load Halfword Algebraic）。",
+      "addressing": [
+        "D-Form",
+        "X-Form（lhax）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "lha rT,d(rA)",
+          "opcode": "0x2A D rA rT",
+          "bytes": 4
+        }
+      ],
+      "notes": "更新形式は lhau/lhaux。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHAX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ハーフワードを符号拡張してロード（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LWZ",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "4 バイト（ワード）をロードする。PowerPC の基本ワードロード。",
+      "addressing": [
+        "D-Form",
+        "X-Form（lwzx）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "lwz rT,d(rA)",
+          "opcode": "0x20 D rA rT",
+          "bytes": 4
+        }
+      ],
+      "notes": "ゼロ拡張という名前だがワードは 32 ビット全体。更新形式は lwzu/lwzx/lwzux。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LWZX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ワードをロード（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LWZU",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "ワードロード後、実効アドレスを rA に書き戻す（配列走査の定番）。",
+      "addressing": [
+        "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHBRX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ハーフワードをバイトリバース（ビッグ/リトルエンディアン変換）してロードする。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LWBRX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ワードをバイトリバースしてロードする。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LMW",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "連続ワードを rT 以降のレジスタへ一括ロード（Load Multiple）。",
+      "addressing": [
+        "D-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア（キャッシュに乗ればワード当たり 1）",
+          "cycles": "1n"
+        }
+      ],
+      "notes": "クラシック PowerPC の命令。Book E（PPC440）では非サポート — 440 では lswi/stswi を使う。",
+      "src": "knowledge"
+    },
+    {
+      "mnemonic": "STMW",
+      "operands": "rS, d(rA)",
+      "category": "ストア",
+      "summary": "rS 以降の連続レジスタをメモリへ一括ストア（Store Multiple）。",
+      "addressing": [
+        "D-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": "1n"
+        }
+      ],
+      "notes": "Book E（PPC440）では非サポート。",
+      "src": "knowledge"
+    },
+    {
+      "mnemonic": "LSWI",
+      "operands": "rT, rA, NB",
+      "category": "ロード",
+      "summary": "指定バイト数（NB=1〜32、0 は 32）を連続レジスタへロード（Load String Word Immediate）。",
+      "addressing": [
+        "X-Form（NB 即値）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": "1n"
+        }
+      ],
+      "notes": "rT から順に 4 バイトずつ詰める。Book E（440）でもサポート。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "STSWI",
+      "operands": "rS, rA, NB",
+      "category": "ストア",
+      "summary": "連続レジスタから指定バイト数をメモリへストア（Store String Word Immediate）。",
+      "addressing": [
+        "X-Form（NB 即値）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": "1n"
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STB",
+      "operands": "rS, d(rA)",
+      "category": "ストア",
+      "summary": "下位 1 バイトをストアする（Store Byte）。フラグは一切変化しない。",
+      "addressing": [
+        "D-Form",
+        "X-Form（stbx）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "stb rS,d(rA)",
+          "opcode": "0x38 D rA rT",
+          "bytes": 4
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STBX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "1 バイトストア（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STH",
+      "operands": "rS, d(rA)",
+      "category": "ストア",
+      "summary": "下位 2 バイトをストアする（Store Halfword）。",
+      "addressing": [
+        "D-Form",
+        "X-Form（sthx）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "sth rS,d(rA)",
+          "opcode": "0x3C D rA rT",
+          "bytes": 4
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STHX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "ハーフワードストア（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STW",
+      "operands": "rS, d(rA)",
+      "category": "ストア",
+      "summary": "ワードストア。スタック退避（stwu r1,-N(r1)）の基本形。",
+      "addressing": [
+        "D-Form",
+        "X-Form（stwx）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "stw rS,d(rA)",
+          "opcode": "0x90 D rA rT",
+          "bytes": 4
+        }
+      ],
+      "notes": "関連オペコード: stw=0x90, stb=0x38, sth=0x3C（D-Form は opcode/24ビットd/rA/rS）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "STWX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "ワードストア（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STWU",
+      "operands": "rS, d(rA)",
+      "category": "ストア",
+      "summary": "ワードストア + アドレス更新。関数プロローグ stwu r1,-N(r1) の定番。",
+      "addressing": [
+        "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STHBRX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "ハーフワードをバイトリバースしてストアする。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STWBRX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "ワードをバイトリバースしてストアする。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADD",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "rT = rA + rB。キャリーは使わず更新もしない。o 接尾で XER[SO/OV]、. 接尾で CR0 更新。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "add[o][.] rT,rA,rB",
+          "opcode": "0x1F（XO形式）266",
+          "bytes": 4
+        }
+      ],
+      "notes": "CR0 更新（. 版）は LT/GT/EQ = 結果の符号・零、SO = XER[SO] のコピー。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDC",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "加算して XER[CA] を更新する（Add Carrying）。CA は使わない。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDE",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "rT = rA + rB + XER[CA]。多倍長加算の上位ワード用。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "128 ビット加算は addc（下位）+ adde（上位）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDME",
+      "operands": "rT, rA",
+      "category": "算術",
+      "summary": "rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDZE",
+      "operands": "rT, rA",
+      "category": "算術",
+      "summary": "rT = rA + 0 + XER[CA]（Add to Zero Extended）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDI",
+      "operands": "rT, rA, s16",
+      "category": "算術",
+      "summary": "rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "addi rT,rA,s16",
+          "opcode": "0x0E",
+          "bytes": 4
+        }
+      ],
+      "notes": "拡張形式: li rT,s16（addi rT,0,s16）、la rT,d(rA)（アドレスロード）、subi rT,rA,s16（addi rT,rA,-s16）。\n32 ビット即値加算は下位ハーフの符号拡張に注意（addis の上位側で調整）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDIC",
+      "operands": "rT, rA, s16",
+      "category": "算術",
+      "summary": "即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "addic. は CR0 更新あり。addi とは違い r0 を 0 に置換しない（rA 必須）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDIS",
+      "operands": "rT, rA, s16",
+      "category": "算術",
+      "summary": "rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "lis + ori で 32 ビット即値を 2 命令で組み立てるのが定番。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SUBF",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "rT = rB - rA（Subtract From — オペランド順に注意）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "拡張形式 sub rT,rA,rB は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SUBFC",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "rT = rB - rA で XER[CA] 更新（borrow 方向）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "SUBFE",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "rT = rB - rA + XER[CA] - 1。多倍長減算用（subfme/subfze は定数版）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "SUBFIC",
+      "operands": "rT, rA, s16",
+      "category": "算術",
+      "summary": "rT = 符号拡張即値 - rA で XER[CA] 更新。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "NEG",
+      "operands": "rT, rA",
+      "category": "算術",
+      "summary": "rT = -(rA)（2 の補数）。o 接尾で 0x80000000 の NEG をオーバーフローとして検出可能。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULLW",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "32×32 ビット乗算の下位ワードを rT へ。符号付き/符号なし共通（下位は同じ）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア（3 サイクルレイテンシ、スループット 1）",
+          "cycles": 3
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "mullw[o][.] rT,rA,rB",
+          "opcode": "0x1F 235",
+          "bytes": 4
+        }
+      ],
+      "notes": "上位ワードは mulhw（符号付き）/mulhwu（符号なし）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULHW",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "符号付き 32×32 乗算の上位ワードを rT へ。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 3
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULHWU",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "符号なし 32×32 乗算の上位ワードを rT へ。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 3
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULLI",
+      "operands": "rT, rA, s16",
+      "category": "算術",
+      "summary": "rT = rA × 符号拡張即値（下位ワード）。上位は取得不能。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 3
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "DIVW",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "符号付き 32÷32 → 商（rT）。剰余は提供されない（divw→mullw→subf で計算）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601",
+          "cycles": 36
+        },
+        {
+          "cond": "440 コア",
+          "cycles": "実装依存（除算は唯一の例外）"
+        }
+      ],
+      "notes": "0 除算・オーバーフロー時の rT は未定義（o 版で SO/OV により検出）。商は 0 方向へ丸め。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DIVWU",
+      "operands": "rT, rA, rB",
+      "category": "算術",
+      "summary": "符号なし 32÷32 → 商（rT）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": "実装依存"
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "CNTLZW",
+      "operands": "rA, rS",
+      "category": "算術",
+      "summary": "先導ゼロカウント（0〜32 を rA へ）。正規化・優先度計算に使う。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "EXTSB",
+      "operands": "rA, rS",
+      "category": "算術",
+      "summary": "バイトをワードへ符号拡張する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "ハーフワード版は extsh。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "EXTSH",
+      "operands": "rA, rS",
+      "category": "算術",
+      "summary": "ハーフワードをワードへ符号拡張する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "CMP",
+      "operands": "crfT, L, rA, rB",
+      "category": "比較",
+      "summary": "符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "cmp crfT,L,rA,rB",
+          "opcode": "0x1F 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "拡張形式 cmpw（L=0 暗黙）。分岐は後続の bc 系や bne/beq など条件分岐で使う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CMPL",
+      "operands": "crfT, L, rA, rB",
+      "category": "比較",
+      "summary": "符号なし（logical）比較。拡張形式 cmplw。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "CMPI",
+      "operands": "crfT, L, rA, s16",
+      "category": "比較",
+      "summary": "符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "CMPLI",
+      "operands": "crfT, L, rA, u16",
+      "category": "比較",
+      "summary": "符号なし即値比較。拡張形式 cmplwi。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "AND",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "論理積。. 接尾で CR0 更新。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "andc（補数 AND）、nand、eqv、nor、orc、xor も同系。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ANDC",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "rA = rS AND NOT rB（ビットクリア）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "OR",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "論理和。or rA,rB,rB はレジスタ移動の推奨形（mr 拡張形式）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ORC",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "rA = rS OR NOT rB。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "XOR",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "排他的論理和。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "NOR",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "NOR。nor rA,rB,rB はビット反転（not 拡張形式）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "NAND",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "NAND。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "EQV",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "同値（XNOR）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ORI",
+      "operands": "rA, rS, u16",
+      "category": "論理",
+      "summary": "ゼロ拡張即値との論理和。ori r0,r0,0 が nop の実体。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "lis + ori で 32 ビット即値ロード。ORI は CR を更新しない（CR0 更新が必要なら or. を使う）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ORIS",
+      "operands": "rA, rS, u16",
+      "category": "論理",
+      "summary": "16 ビット左シフト即値との論理和（上位ハーフ設定）。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "XORI",
+      "operands": "rA, rS, u16",
+      "category": "論理",
+      "summary": "ゼロ拡張即値との排他的論理和。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "XORIS",
+      "operands": "rA, rS, u16",
+      "category": "論理",
+      "summary": "16 ビット左シフト即値との排他的論理和。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ANDI.",
+      "operands": "rA, rS, u16",
+      "category": "論理",
+      "summary": "ゼロ拡張即値との AND + CR0 更新（論理即値命令で唯一 CR0 を更新する系統）。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ANDIS.",
+      "operands": "rA, rS, u16",
+      "category": "論理",
+      "summary": "16 ビット左シフト即値との AND + CR0 更新。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "RLWINM",
+      "operands": "rA, rS, n, mB, mE",
+      "category": "回転/シフト",
+      "summary": "左回転 n ビット後、マスク mB..mE で AND（Rotate Left Word Immediate then AND with Mask）。ビットフィールド抽出の万能命令。",
+      "addressing": [
+        "即値回転 + 即値マスク"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "rlwinm[.] rA,rS,n,mB,mE",
+          "opcode": "0x17",
+          "bytes": 4
+        }
+      ],
+      "notes": "拡張形式: rotlwi/rotrwi（マスク全開）、slwi/srwi（シフト）、extrwi（抽出）。\nM = 1（mB=mE で 1 ビットマスク）のとき LT は抽出ビットそのもの。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "RLWIMI",
+      "operands": "rA, rS, n, mB, mE",
+      "category": "回転/シフト",
+      "summary": "左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。",
+      "addressing": [
+        "即値回転 + 即値マスク"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "RLWNM",
+      "operands": "rA, rS, rB, mB, mE",
+      "category": "回転/シフト",
+      "summary": "rB の下位 5 ビットで左回転後、マスクと AND。rotlw 拡張形式が全ビット回転。",
+      "addressing": [
+        "レジスタ回転 + 即値マスク"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "SLW",
+      "operands": "rA, rS, rB",
+      "category": "回転/シフト",
+      "summary": "左シフト。rB の下位 6 ビットがシフト量で、32 以上なら結果 0。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "即値版は拡張形式 slwi（rlwinm 展開）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SRW",
+      "operands": "rA, rS, rB",
+      "category": "回転/シフト",
+      "summary": "右論理シフト（上位 0）。符号なし ÷2 相当。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "SRAW",
+      "operands": "rA, rS, rB",
+      "category": "回転/シフト",
+      "summary": "右代数（算術）シフト。捨てられたビットがあれば XER[CA] をセット。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "符号付き ÷2 は sraw + . で CA から丸め方向を判定できる。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SRAWI",
+      "operands": "rA, rS, n",
+      "category": "回転/シフト",
+      "summary": "即値右代数シフト（XER[CA] 更新）。",
+      "addressing": [
+        "即値"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "B",
+      "operands": "target",
+      "category": "分岐",
+      "summary": "無条件分岐（I-Form）。bl で LR に復帰アドレスを保存。相対は ±32MB、ba は絶対。",
+      "addressing": [
+        "相対（AA=0）",
+        "絶対（ba/bla）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア（fold 時）",
+          "cycles": 0
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "b / ba / bl / bla",
+          "opcode": "18",
+          "bytes": 4
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "BC",
+      "operands": "BO, BI, target",
+      "category": "分岐",
+      "summary": "条件付き分岐（B-Form）。BO/BI の組合せで CTR 減算・CR ビットテストを制御する。",
+      "addressing": [
+        "相対",
+        "絶対（bca）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア（fold 時）",
+          "cycles": 0
+        }
+      ],
+      "notes": "拡張形式: bne/beq/blt/bge 等の CR 条件形、bdnz（CTR≠0 で減算分岐）、bdz。\nBO=16（CTR 減算のみ）、12（CR 真）、4（CR 偽）、20（減算+CR）等。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BCLR",
+      "operands": "BO, BI",
+      "category": "分岐",
+      "summary": "LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。",
+      "addressing": [
+        "レジスタ間接（LR）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア（fold 時）",
+          "cycles": 0
+        }
+      ],
+      "notes": "btlr/bflr（CR ビット条件復帰）などの拡張形式あり。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BCCTR",
+      "operands": "BO, BI",
+      "category": "分岐",
+      "summary": "CTR への条件分岐。bctr 拡張形式で関数ポインタ呼出・グローバルリンケージに使う。",
+      "addressing": [
+        "レジスタ間接（CTR）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア（fold 時）",
+          "cycles": 0
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "CRAND",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の論理積（条件レジスタ論理）。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror n,n,n はビットセット（crset）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CROR",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の論理和。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "CRXOR",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の排他的論理和。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MCRF",
+      "operands": "crfT, crfS",
+      "category": "CR操作",
+      "summary": "CR フィールド（4 ビット単位）のコピー。",
+      "addressing": [
+        "CR フィールド"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MFCR",
+      "operands": "rT",
+      "category": "レジスタ管理",
+      "summary": "CR 全体（32 ビット）を GPR へコピーする。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MTCRF",
+      "operands": "mask, rS",
+      "category": "レジスタ管理",
+      "summary": "GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0xFF の全フィールド版。",
+      "addressing": [
+        "CR フィールド"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MFSPR",
+      "operands": "rT, SPR",
+      "category": "レジスタ管理",
+      "summary": "特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式 mflr/mtctr/mfxer。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MTSPR",
+      "operands": "SPR, rS",
+      "category": "レジスタ管理",
+      "summary": "特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "SC",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "システムコール。スーパーバイザへ遷移しシステムコールハンドラへ分岐する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": "例外"
+        }
+      ],
+      "notes": "",
+      "src": "book"
+    },
+    {
+      "mnemonic": "TW",
+      "operands": "TO, rA, rB",
+      "category": "システム制御",
+      "summary": "条件付きトラップ。TO のビットパターン（lt/gt/eq の否定・肯定）でプログラム割り込みを発生。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "不成立",
+          "cycles": 1
+        },
+        {
+          "cond": "トラップ",
+          "cycles": "例外"
+        }
+      ],
+      "notes": "拡張形式 trap（tw 31,r0,r0 = 無条件トラップ）、tweq/twne 等。即値版は twi。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "TWI",
+      "operands": "TO, rA, s16",
+      "category": "システム制御",
+      "summary": "即値比較付き条件トラップ。範囲チェック（配列境界）の実装に使う。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "不成立",
+          "cycles": 1
+        },
+        {
+          "cond": "トラップ",
+          "cycles": "例外"
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ISYNC",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "命令同期。先行ストア後の命令フェッチを強制同期（自己書換コードやコンテキスト切替後）。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": "同期待ち"
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MSYNC",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "メモリ同期（Book E）。先行するすべての命令（ストア）の完了を保証する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": "同期待ち"
+        }
+      ],
+      "notes": "クラシック PowerPC の sync に相当。440 では msync が正規の名称。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCBZ",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "データキャッシュブロック（32 バイト）をゼロにして割り当てる。バッファ初期化の高速化に使う。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "クラシック PowerPC では特権命令だが Book E（440）ではユーザモードからも使用可。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCBT",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "データキャッシュブロックタッチ（プリフェッチ）。dcbtst はストア向けタッチ。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ICBT",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "命令キャッシュブロックタッチ（命令プリフェッチ）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "icbi（無効化）は自己書換コードの icbt→icbi→isync 手順で使う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACC",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "PPC440 の積和（multiply-accumulate）: rT = rT + rA×rB の 32 ビット結果。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 3
+        }
+      ],
+      "notes": "440 固有の割り当て済み算術（4xx 系標準）。サブセット: macchw（上位ハーフ）、macchws、macchwu、macchwsu などのハーフワード版も存在。ニーモニック詳細は IBM PPC440 リファレンスを参照。",
+      "src": "knowledge"
+    },
+    {
+      "mnemonic": "MACHHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "PPC440 のハーフワード積和（上位 32 ビット版）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 3
+        }
+      ],
+      "notes": "macxws/nmac など符号・否定・w/x 変種の一式がある。フィルタ・DSP ループ向け。",
+      "src": "knowledge"
+    },
+    {
+      "mnemonic": "MACLHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "PPC440 のハーフワード積和（下位 32 ビット版）。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 3
+        }
+      ],
+      "src": "knowledge"
+    }
+  ]
+}

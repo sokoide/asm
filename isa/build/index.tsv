@@ -266,6 +266,102 @@ m68k	TRAP	システム制御	ソフトウェア例外（ベクタ 32+n）を発�
 m68k	TRAPV	システム制御	V フラグが 1 のときだけオーバーフロー例外（ベクタ 7）を発生させる。
 m68k	TST	比較	オペランドの判定（dst - 0 のフラグのみ反映）。X は不変。
 m68k	UNLK	サブルーチン	LINK の逆。An を SP に戻し、退避していた旧 An を復帰する。
+ppc	ADD	算術	rT = rA + rB。キャリーは使わず更新もしない。o 接尾で XER[SO/OV]、. 接尾で CR0 更新。
+ppc	ADDC	算術	加算して XER[CA] を更新する（Add Carrying）。CA は使わない。
+ppc	ADDE	算術	rT = rA + rB + XER[CA]。多倍長加算の上位ワード用。
+ppc	ADDI	算術	rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。
+ppc	ADDIC	算術	即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。
+ppc	ADDIS	算術	rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。
+ppc	ADDME	算術	rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。
+ppc	ADDZE	算術	rT = rA + 0 + XER[CA]（Add to Zero Extended）。
+ppc	AND	論理	論理積。. 接尾で CR0 更新。
+ppc	ANDC	論理	rA = rS AND NOT rB（ビットクリア）。
+ppc	ANDI.	論理	ゼロ拡張即値との AND + CR0 更新（論理即値命令で唯一 CR0 を更新する系統）。
+ppc	ANDIS.	論理	16 ビット左シフト即値との AND + CR0 更新。
+ppc	B	分岐	無条件分岐（I-Form）。bl で LR に復帰アドレスを保存。相対は ±32MB、ba は絶対。
+ppc	BC	分岐	条件付き分岐（B-Form）。BO/BI の組合せで CTR 減算・CR ビットテストを制御する。
+ppc	BCCTR	分岐	CTR への条件分岐。bctr 拡張形式で関数ポインタ呼出・グローバルリンケージに使う。
+ppc	BCLR	分岐	LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。
+ppc	CMP	比較	符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
+ppc	CMPI	比較	符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。
+ppc	CMPL	比較	符号なし（logical）比較。拡張形式 cmplw。
+ppc	CMPLI	比較	符号なし即値比較。拡張形式 cmplwi。
+ppc	CNTLZW	算術	先導ゼロカウント（0〜32 を rA へ）。正規化・優先度計算に使う。
+ppc	CRAND	CR操作	CR ビット同士の論理積（条件レジスタ論理）。
+ppc	CROR	CR操作	CR ビット同士の論理和。
+ppc	CRXOR	CR操作	CR ビット同士の排他的論理和。
+ppc	DCBT	キャッシュ	データキャッシュブロックタッチ（プリフェッチ）。dcbtst はストア向けタッチ。
+ppc	DCBZ	キャッシュ	データキャッシュブロック（32 バイト）をゼロにして割り当てる。バッファ初期化の高速化に使う。
+ppc	DIVW	算術	符号付き 32÷32 → 商（rT）。剰余は提供されない（divw→mullw→subf で計算）。
+ppc	DIVWU	算術	符号なし 32÷32 → 商（rT）。
+ppc	EQV	論理	同値（XNOR）。
+ppc	EXTSB	算術	バイトをワードへ符号拡張する。
+ppc	EXTSH	算術	ハーフワードをワードへ符号拡張する。
+ppc	ICBT	キャッシュ	命令キャッシュブロックタッチ（命令プリフェッチ）。
+ppc	ISYNC	システム制御	命令同期。先行ストア後の命令フェッチを強制同期（自己書換コードやコンテキスト切替後）。
+ppc	LBZ	ロード	1 バイトをゼロ拡張してロードする（Load Byte and Zero）。
+ppc	LBZU	ロード	1 バイトロード後、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。
+ppc	LBZUX	ロード	レジスタインデックス形式のバイトロード + アドレス更新。
+ppc	LBZX	ロード	1 バイトをゼロ拡張してロード（レジスタインデックス形式）。
+ppc	LHA	ロード	2 バイトを符号拡張してロードする（Load Halfword Algebraic）。
+ppc	LHAX	ロード	ハーフワードを符号拡張してロード（レジスタインデックス形式）。
+ppc	LHBRX	ロード	ハーフワードをバイトリバース（ビッグ/リトルエンディアン変換）してロードする。
+ppc	LHZ	ロード	2 バイト（ハーフワード）をゼロ拡張してロードする。
+ppc	LHZX	ロード	ハーフワードをゼロ拡張してロード（レジスタインデックス形式）。
+ppc	LMW	ロード	連続ワードを rT 以降のレジスタへ一括ロード（Load Multiple）。
+ppc	LSWI	ロード	指定バイト数（NB=1〜32、0 は 32）を連続レジスタへロード（Load String Word Immediate）。
+ppc	LWBRX	ロード	ワードをバイトリバースしてロードする。
+ppc	LWZ	ロード	4 バイト（ワード）をロードする。PowerPC の基本ワードロード。
+ppc	LWZU	ロード	ワードロード後、実効アドレスを rA に書き戻す（配列走査の定番）。
+ppc	LWZX	ロード	ワードをロード（レジスタインデックス形式）。
+ppc	MACC	MAC(440)	PPC440 の積和（multiply-accumulate）: rT = rT + rA×rB の 32 ビット結果。
+ppc	MACHHW	MAC(440)	PPC440 のハーフワード積和（上位 32 ビット版）。
+ppc	MACLHW	MAC(440)	PPC440 のハーフワード積和（下位 32 ビット版）。
+ppc	MCRF	CR操作	CR フィールド（4 ビット単位）のコピー。
+ppc	MFCR	レジスタ管理	CR 全体（32 ビット）を GPR へコピーする。
+ppc	MFSPR	レジスタ管理	特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式 mflr/mtctr/mfxer。
+ppc	MSYNC	システム制御	メモリ同期（Book E）。先行するすべての命令（ストア）の完了を保証する。
+ppc	MTCRF	レジスタ管理	GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0xFF の全フィールド版。
+ppc	MTSPR	レジスタ管理	特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
+ppc	MULHW	算術	符号付き 32×32 乗算の上位ワードを rT へ。
+ppc	MULHWU	算術	符号なし 32×32 乗算の上位ワードを rT へ。
+ppc	MULLI	算術	rT = rA × 符号拡張即値（下位ワード）。上位は取得不能。
+ppc	MULLW	算術	32×32 ビット乗算の下位ワードを rT へ。符号付き/符号なし共通（下位は同じ）。
+ppc	NAND	論理	NAND。
+ppc	NEG	算術	rT = -(rA)（2 の補数）。o 接尾で 0x80000000 の NEG をオーバーフローとして検出可能。
+ppc	NOR	論理	NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
+ppc	OR	論理	論理和。or rA,rB,rB はレジスタ移動の推奨形（mr 拡張形式）。
+ppc	ORC	論理	rA = rS OR NOT rB。
+ppc	ORI	論理	ゼロ拡張即値との論理和。ori r0,r0,0 が nop の実体。
+ppc	ORIS	論理	16 ビット左シフト即値との論理和（上位ハーフ設定）。
+ppc	RLWIMI	回転/シフト	左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。
+ppc	RLWINM	回転/シフト	左回転 n ビット後、マスク mB..mE で AND（Rotate Left Word Immediate then AND with Mask）。ビットフィールド抽出の万能命令。
+ppc	RLWNM	回転/シフト	rB の下位 5 ビットで左回転後、マスクと AND。rotlw 拡張形式が全ビット回転。
+ppc	SC	システム制御	システムコール。スーパーバイザへ遷移しシステムコールハンドラへ分岐する。
+ppc	SLW	回転/シフト	左シフト。rB の下位 6 ビットがシフト量で、32 以上なら結果 0。
+ppc	SRAW	回転/シフト	右代数（算術）シフト。捨てられたビットがあれば XER[CA] をセット。
+ppc	SRAWI	回転/シフト	即値右代数シフト（XER[CA] 更新）。
+ppc	SRW	回転/シフト	右論理シフト（上位 0）。符号なし ÷2 相当。
+ppc	STB	ストア	下位 1 バイトをストアする（Store Byte）。フラグは一切変化しない。
+ppc	STBX	ストア	1 バイトストア（レジスタインデックス形式）。
+ppc	STH	ストア	下位 2 バイトをストアする（Store Halfword）。
+ppc	STHBRX	ストア	ハーフワードをバイトリバースしてストアする。
+ppc	STHX	ストア	ハーフワードストア（レジスタインデックス形式）。
+ppc	STMW	ストア	rS 以降の連続レジスタをメモリへ一括ストア（Store Multiple）。
+ppc	STSWI	ストア	連続レジスタから指定バイト数をメモリへストア（Store String Word Immediate）。
+ppc	STW	ストア	ワードストア。スタック退避（stwu r1,-N(r1)）の基本形。
+ppc	STWBRX	ストア	ワードをバイトリバースしてストアする。
+ppc	STWU	ストア	ワードストア + アドレス更新。関数プロローグ stwu r1,-N(r1) の定番。
+ppc	STWX	ストア	ワードストア（レジスタインデックス形式）。
+ppc	SUBF	算術	rT = rB - rA（Subtract From — オペランド順に注意）。
+ppc	SUBFC	算術	rT = rB - rA で XER[CA] 更新（borrow 方向）。
+ppc	SUBFE	算術	rT = rB - rA + XER[CA] - 1。多倍長減算用（subfme/subfze は定数版）。
+ppc	SUBFIC	算術	rT = 符号拡張即値 - rA で XER[CA] 更新。
+ppc	TW	システム制御	条件付きトラップ。TO のビットパターン（lt/gt/eq の否定・肯定）でプログラム割り込みを発生。
+ppc	TWI	システム制御	即値比較付き条件トラップ。範囲チェック（配列境界）の実装に使う。
+ppc	XOR	論理	排他的論理和。
+ppc	XORI	論理	ゼロ拡張即値との排他的論理和。
+ppc	XORIS	論理	16 ビット左シフト即値との排他的論理和。
 riscv32	ADD	算術	rs1 + rs2 を rd に代入する（32 ビット）。
 riscv32	ADDI	算術	rs1 + 符号拡張 12 ビット即値を rd に代入する（32 ビット）。
 riscv32	AND	論理	rs1 と rs2 の論理積を rd に入れる。

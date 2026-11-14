@@ -1,0 +1,19 @@
+LBZ rT, d(rA) — PowerPC（ロード）
+
+1 バイトをゼロ拡張してロードする（Load Byte and Zero）。
+
+アドレッシング: D-Form（d(rA)、rA=0 で d 絶対）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア（キャッシュヒット）: 1
+
+オペコード:
+  lbz rT,d(rA): 0x22 D rA rT  (4 バイト)
+
+備考:
+  インデックス形式は lbzx（X-Form）、更新形式は lbzu/lbzux。
+
+（根拠: book）

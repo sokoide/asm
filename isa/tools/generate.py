@@ -24,6 +24,7 @@ ARCH_DISPLAY = {
     "6502": "6502",
     "z80": "Z80",
     "m68k": "68000",
+    "ppc": "PowerPC",
     "x86_16": "8086",
     "i386": "80386",
     "x86_64": "x86-64",
@@ -74,8 +75,8 @@ def validate(path, doc):
             if key not in inst:
                 raise ValidationError(f"{where}: 必須フィールド {key} がありません")
         mnem = inst["mnemonic"]
-        if not isinstance(mnem, str) or not mnem or not re.fullmatch(r"[A-Z]+(\.cond|cc)?", mnem):
-            raise ValidationError(f"{where}: mnemonic は大文字のみ（条件接尾 cc/.cond は可）({mnem!r})")
+        if not isinstance(mnem, str) or not mnem or not re.fullmatch(r"[A-Z]+(\.cond|cc)?\.?", mnem):
+            raise ValidationError(f"{where}: mnemonic は大文字のみ（条件接尾 cc/.cond、記録接尾 . は可）({mnem!r})")
         if mnem in seen:
             raise ValidationError(f"{where}: mnemonic 重複 ({mnem})")
         seen.add(mnem)

@@ -1,0 +1,16 @@
+SUBF rT, rA, rB — PowerPC（算術）
+
+rT = rB - rA（Subtract From — オペランド順に注意）。
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1
+
+備考:
+  拡張形式 sub rT,rA,rB は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。
+
+（根拠: book）

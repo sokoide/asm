@@ -1,0 +1,13 @@
+STSWI rS, rA, NB — PowerPC（ストア）
+
+連続レジスタから指定バイト数をメモリへストア（Store String Word Immediate）。
+
+アドレッシング: X-Form（NB 即値）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1n
+
+（根拠: book）

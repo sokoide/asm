@@ -1,0 +1,16 @@
+STH rS, d(rA) — PowerPC（ストア）
+
+下位 2 バイトをストアする（Store Halfword）。
+
+アドレッシング: D-Form、X-Form（sthx）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1
+
+オペコード:
+  sth rS,d(rA): 0x3C D rA rT  (4 バイト)
+
+（根拠: book）

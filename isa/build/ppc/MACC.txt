@@ -1,0 +1,16 @@
+MACC rT, rA, rB — PowerPC（MAC(440)）
+
+PPC440 の積和（multiply-accumulate）: rT = rT + rA×rB の 32 ビット結果。
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 3
+
+備考:
+  440 固有の割り当て済み算術（4xx 系標準）。サブセット: macchw（上位ハーフ）、macchws、macchwu、macchwsu などのハーフワード版も存在。ニーモニック詳細は IBM PPC440 リファレンスを参照。
+
+（根拠: knowledge）

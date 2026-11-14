@@ -9,12 +9,15 @@
 | 6502 | `data/6502.json` | 公式命令セット全 56 ニーモニック |
 | z80 | `data/z80.json` | 8080 上位 + DD/CB プレフィックス含む 67 エントリ |
 | m68k | `data/m68k.json` | MC68000 コア 71 エントリ |
+| ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E）96 エントリ |
 | x86_16 | `data/x86_16.json` | 8086/8088 実モード 61 エントリ |
 | i386 | `data/i386.json` | 80386 32ビットプロテクトモード |
 | x86_64 | `data/x86_64.json` | x86-64 コア整数命令 |
 | riscv32 | `data/riscv32.json` | RV32I + M 拡張 |
 | riscv64 | `data/riscv64.json` | RV64I + M 拡張 |
 | arm64 | `data/arm64.json` | A64 コア整数命令の実用サブセット |
+
+ppc の根拠は `22_Library` の Optimizing PowerPC Code(1995)（クラシック部分）と PowerPC 440 プログラミングモデル(2001)（Book E・キャッシュ管理・440 コアのサイクル数）。QEMU `bamboo`（PPC440）を想定し、クラシック命令と 440 固有命令（MAC 系は知識ベース）を両方収録。クラシック専用の lmw/stmw は Book E 非サポートを notes に記載。
 
 ## 使い方
 

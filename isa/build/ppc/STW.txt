@@ -1,0 +1,19 @@
+STW rS, d(rA) — PowerPC（ストア）
+
+ワードストア。スタック退避（stwu r1,-N(r1)）の基本形。
+
+アドレッシング: D-Form、X-Form（stwx）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1
+
+オペコード:
+  stw rS,d(rA): 0x90 D rA rT  (4 バイト)
+
+備考:
+  関連オペコード: stw=0x90, stb=0x38, sth=0x3C（D-Form は opcode/24ビットd/rA/rS）。
+
+（根拠: book）

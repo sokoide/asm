@@ -1,0 +1,16 @@
+CRAND crbT, crbA, crbB — PowerPC（CR操作）
+
+CR ビット同士の論理積（条件レジスタ論理）。
+
+アドレッシング: CR ビット
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1
+
+備考:
+  同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror n,n,n はビットセット（crset）。
+
+（根拠: book）

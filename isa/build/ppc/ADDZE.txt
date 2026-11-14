@@ -1,0 +1,13 @@
+ADDZE rT, rA — PowerPC（算術）
+
+rT = rA + 0 + XER[CA]（Add to Zero Extended）。
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）
