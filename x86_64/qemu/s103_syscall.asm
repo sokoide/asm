@@ -3,7 +3,7 @@
 ; Learning objectives:
 ;   - SYSCALL 機能の CPUID 確認 (leaf 0x80000001, EDX bit 11) と EFER.SCE 有効化
 ;   - STAR / LSTAR / FMASK MSR の設定と STAR に埋め込むセレクタ配置
-;     (SYSCALL: CS=STAR[47:32], SS=STAR[63:48]+8 /
+;     (SYSCALL: CS=STAR[47:32], SS=STAR[47:32]+8 /
 ;      SYSRET:  CS=STAR[63:48]+16|RPL3, SS=STAR[63:48]+8|RPL3)
 ;   - ユーザコード・データ GDT エントリの追記 (DPL=3, L=1)
 ;   - 4 段ページング全階層と 2MB リーフへの U/S (bit 2) 設定と CR3 再書込
@@ -70,12 +70,12 @@ _start:
     lgdt [gdtr]
     ; セレクタの対応 (STAR[63:48]=0x0020 を U とする):
     ;   IRETQ   : CS=0x23 (GDT[0x20] 実ロード) / SS=0x2B (GDT[0x28] 実ロード)
-    ;   SYSCALL : CS=0x08 / SS=0x28 (隠し部はフラット 64-bit の固定値, GDT 不参照)
-    ;   SYSRETQ : CS=0x33 / SS=0x2B (隠し部は DPL=3 の固定値, GDT 不参照)
-    ; 実測 (gdb): QEMU 11.1 TCG は SYSCALL 後 SS を (STAR[47:32]+8)=0x10 にする
-    ; (実機仕様は STAR[63:48]+8=0x28)。どちらも本 GDT では有効なデータ
-    ; セグメント (0x10=カーネルデータ / 0x28=ユーザデータ) を指すため
-    ; 動作は同一。SYSRETQ の CS=0x33 / SS=0x2B は実測どおりマニュアル仕様。
+    ;   SYSCALL : CS=0x08 / SS=0x10 (Intel SDM: CS=STAR[47:32], SS=STAR[47:32]+8。
+    ;             隠し部はフラット 64-bit の固定値で GDT を参照しない)
+    ;   SYSRETQ : CS=0x33 / SS=0x2B (CS=STAR[63:48]+16|RPL3, SS=STAR[63:48]+8|RPL3。
+    ;             隠し部は DPL=3 の固定値, GDT 不参照)
+    ; 実測 (gdb): SYSCALL 後 SS=0x10 / SYSRETQ 後 CS=0x33・SS=0x2B は
+    ; いずれもマニュアル仕様どおり (QEMU 11.1 TCG で確認)。
 
     ; --- 4. ページテーブルへ U/S (bit 2) を設定 — 全階層と 2MB リーフ ---
     or  dword [0x1000], 0x04    ; PML4[0]  0x00002003 → 0x00002007
@@ -185,7 +185,7 @@ user_start:
     jmp  .user_no_return
 
 ; ==================== SYSCALL ハンドラ (CPL=0, LSTAR) ====================
-; 入口状態: CS=0x08 / SS=0x28 (STAR 由来), CPL=0, IF=0
+; 入口状態: CS=0x08 / SS=0x10 (STAR[47:32] 由来), CPL=0, IF=0
 ;           RSP=ユーザ RSP のまま (SYSCALL は RSP を切替えない!)
 ;           RCX=戻り RIP, R11=ユーザ RFLAGS — SYSRET 復帰に使うので保存のこと
 syscall_handler:

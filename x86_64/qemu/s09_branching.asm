@@ -20,47 +20,47 @@ global _start, scenario_halt
 section .text
 _start:
     ; --- テスト 1: JE / JNE (等しい / 等しくない) ---
-    mov  rsi, msg_eq
+    lea  rsi, [rel msg_eq]
     call print_str
     mov  rax, 42
     mov  rbx, 42
     cmp  rax, rbx            ; 注意: print_str 内の OR がフラグを壊すため
     je   .yes1               ;       CMP は分岐の直前に置く
-    mov  rsi, msg_no
+    lea  rsi, [rel msg_no]
     call print_str
     jmp  .next1
 .yes1:
-    mov  rsi, msg_yes
+    lea  rsi, [rel msg_yes]
     call print_str
 .next1:
 
     ; --- テスト 2: JL (符号あり「より小さい」) ---
-    mov  rsi, msg_slt
+    lea  rsi, [rel msg_slt]
     call print_str
     mov  rax, -5             ; 符号ありの負数 (0xFFFF...FB)
     mov  rbx, 10
     cmp  rax, rbx            ; -5 - 10 = 負 → JL 成立
     jl   .yes2
-    mov  rsi, msg_no
+    lea  rsi, [rel msg_no]
     call print_str
     jmp  .next2
 .yes2:
-    mov  rsi, msg_yes
+    lea  rsi, [rel msg_yes]
     call print_str
 .next2:
 
     ; --- テスト 3: JG (符号あり「より大きい」) ---
-    mov  rsi, msg_sgt
+    lea  rsi, [rel msg_sgt]
     call print_str
     mov  rax, 30
     mov  rbx, 10
     cmp  rax, rbx            ; 30 - 10 = 正 → JG 成立
     jg   .yes3
-    mov  rsi, msg_no
+    lea  rsi, [rel msg_no]
     call print_str
     jmp  .next3
 .yes3:
-    mov  rsi, msg_yes
+    lea  rsi, [rel msg_yes]
     call print_str
 .next3:
 
@@ -68,53 +68,53 @@ _start:
     ; 0xFFFFFFFFFFFFFFFF は符号付きでは -1、符号なしでは 2^64-1。
     mov  rax, 0xFFFFFFFFFFFFFFFF   ; 同じビットパターンを両方の解釈で使う
     mov  rbx, 1
-    mov  rsi, msg_jl
+    lea  rsi, [rel msg_jl]
     call print_str
     cmp  rax, rbx            ; 符号あり解釈: -1 < 1 → JL 成立
     jl   .yes4
-    mov  rsi, msg_no
+    lea  rsi, [rel msg_no]
     call print_str
     jmp  .next4
 .yes4:
-    mov  rsi, msg_yes
+    lea  rsi, [rel msg_yes]
     call print_str
 .next4:
 
     mov  rax, 0xFFFFFFFFFFFFFFFF   ; 同じ値を今度は符号なしで比較
     mov  rbx, 1
-    mov  rsi, msg_ja
+    lea  rsi, [rel msg_ja]
     call print_str
     cmp  rax, rbx            ; 符号なし解釈: 2^64-1 > 1 → JA 成立
     ja   .yes5
-    mov  rsi, msg_no
+    lea  rsi, [rel msg_no]
     call print_str
     jmp  .next5
 .yes5:
-    mov  rsi, msg_yes
+    lea  rsi, [rel msg_yes]
     call print_str
 .next5:
 
     ; --- テスト 5: if-else チェーン ---
-    mov  rsi, msg_ife
+    lea  rsi, [rel msg_ife]
     call print_str
     mov  rax, 50
     cmp  rax, 10
     jl   .small
     cmp  rax, 100
     jg   .big
-    mov  rsi, msg_mid
+    lea  rsi, [rel msg_mid]
     call print_str
     jmp  .done5
 .small:
-    mov  rsi, msg_small
+    lea  rsi, [rel msg_small]
     call print_str
     jmp  .done5
 .big:
-    mov  rsi, msg_big
+    lea  rsi, [rel msg_big]
     call print_str
 .done5:
 
-    mov  rsi, msg_dn
+    lea  rsi, [rel msg_dn]
     call print_str
 
 .halt:

@@ -35,7 +35,7 @@ _start:
     ;   port 0x43 に 0x00 を書き込む (カウンタ 0 選択 + ラッチ指示)
     ;   その後 port 0x40 から ローバイト → ハイバイト の順に読む
 
-    mov  rsi, msg_cnt
+    lea  rsi, [rel msg_cnt]
     call print_str
 
     ; カウンタ 0 をラッチ
@@ -55,7 +55,7 @@ _start:
     call print_crlf
 
     ; もう一度読んで、カウンタが動作中 (カウントダウン中) であることを示す
-    mov  rsi, msg_cnt2
+    lea  rsi, [rel msg_cnt2]
     call print_str
 
     mov  al, 0x00
@@ -72,7 +72,7 @@ _start:
     call print_hex64
     call print_crlf
 
-    mov  rsi, msg_done
+    lea  rsi, [rel msg_done]
     call print_str
 
 .halt:

@@ -172,7 +172,7 @@ print_crlf:
 
 ; ---- データ ----
 section .rodata
-msg1     db "mov rax, 0x1234567890ABCDEF -> RAX=", 0
+msg1     db "mov rax, 0x1234567890ABCDEF -> RAX=0x", 0
 msg2     db "mov al, 0xFF       -> RAX=0x", 0
 msg3     db "mov ax, 0xBEEF     -> RAX=0x", 0
 msg_eax  db "mov eax, 0x90ABCDEF -> RAX=0x", 0

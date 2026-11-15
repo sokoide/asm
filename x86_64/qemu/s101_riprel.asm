@@ -68,7 +68,7 @@ _start:
     ; lea r64, [rel label] は REX(1) + 8D(1) + ModRM(1) + disp32(4) = 7 バイト。
     ; disp32 = ラベル - (命令の次のアドレス)。命令先頭 +3 バイトから
     ; disp32 を直接読むと、エンコードされた「RIP との距離」そのものが見える。
-    ; 2 つの disp32 の差 = 2 つの lea の配置差 (ここでは 3 つの nop = 10 バイト)。
+    ; 2 つの disp32 の差 = 2 つの lea の配置差 (lea 7 バイト + nop 3 バイト = 10 バイト)。
     lea  rsi, [rel .lea1_site+3]
     movsxd rax, dword [rsi]    ; RAX = disp1 = message - (.lea1_site + 7)
     lea  rsi, [rel .lea2_site+3]

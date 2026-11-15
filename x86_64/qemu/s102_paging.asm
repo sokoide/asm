@@ -29,7 +29,7 @@ global _start, scenario_halt
 
 ; --- エントリのフィールドマスク (64-bit 即値はレジスタ経由で使う) ---
 MASK_ADDR equ 0x000FFFFFFFFFF000   ; PML4/PDPT/CR3: 次層テーブルの物理アドレス (bits 51:12)
-MASK_2MB  equ 0x000FFFFFE00000     ; 2MB ページエントリ: ページ物理アドレス (bits 51:21)
+MASK_2MB  equ 0x000FFFFFFFE00000   ; 2MB ページエントリ: ページ物理アドレス (bits 51:21)
 MASK_AD   equ 0xFFFFFFFFFFFFFF9F   ; ~(A | D) = ~(bit5 | bit6): 構築値表示用
 VA_WALK   equ 0x004123456          ; ウォークする VA: PD index = 0x4123456 >> 21 = 32,
                                   ; ページ内オフセット = 0x123456

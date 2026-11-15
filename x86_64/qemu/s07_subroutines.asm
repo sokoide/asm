@@ -30,20 +30,20 @@ _start:
     ; --- スタックアラインメントの観察 ---
     ; _start の時点で RSP = 0x90000 (16 の倍数)。CALL 直前の RSP が
     ; 16 の倍数という規約は、スタブ初期値のままで既に満たされている。
-    mov  rsi, msg_rsp0
+    lea  rsi, [rel msg_rsp0]
     call print_str              ; この呼び出しも CALL 直前 RSP%16 == 0
     mov  rax, rsp               ; 現在の RSP (= 0x90000) を表示
     call print_hex64
     call print_crlf
 
     ; 関数入口では CALL が戻りアドレスを PUSH 済み → RSP % 16 == 8
-    mov  rsi, msg_ent
+    lea  rsi, [rel msg_ent]
     call print_str
     call show_entry_rsp         ; 入口 RSP = 0x8FFF8 を表示
     call print_crlf
 
     ; PUSH が奇数個あると規約が崩れる。まず崩れた場合を実測:
-    mov  rsi, msg_un
+    lea  rsi, [rel msg_un]
     call print_str
     push rax                    ; ダミーで 1 つ PUSH → CALL 直前 RSP%16 == 8 (違反)
     call show_entry_rsp         ; 入口 RSP = 0x8FFF0 を表示 (規約違反の状態)
@@ -51,7 +51,7 @@ _start:
     call print_crlf
 
     ; sub rsp, 8 で CALL 直前の RSP%16 == 0 を作り直せば規約どおり:
-    mov  rsi, msg_fix
+    lea  rsi, [rel msg_fix]
     call print_str
     push rax                    ; ダミー PUSH (RSP%16 == 8)
     sub  rsp, 8                 ; 8 バイト調整 → CALL 直前 RSP%16 == 0
@@ -61,25 +61,27 @@ _start:
     call print_crlf
 
     ; --- 呼び出し 1: 文字列を出力 ---
-    mov  rsi, msg1              ; 引数: RSI = 文字列へのポインタ
+    lea  rsi, [rel msg1]              ; 引数: RSI = 文字列へのポインタ
     call print_str
     call print_crlf
 
     ; --- 呼び出し 2: 値を 16 桁の 16 進で出力 ---
-    mov  rsi, msg2
+    lea  rsi, [rel msg2]
     call print_str
-    mov  rax, 0xDEADBEEF        ; 引数: RAX = 表示する値 (imm64 ロード)
+    mov  rax, 0xDEADBEEF        ; 引数: RAX = 表示する値 (0x00000000DEADBEEF。
+                                ; NASM は 32-bit 値をゼロ拡張する mov eax,imm32 短縮形
+                                ; を選ぶ。真の imm64 は s02 の mov rax,0x1234567890ABCDEF)
     call print_hex64
     call print_crlf
 
-    mov  rsi, msg3
+    lea  rsi, [rel msg3]
     call print_str
     mov  rax, 0x00C0FFEE        ; 上位 48 ビットの 0 も 16 桁すべて出力される
     call print_hex64
     call print_crlf
 
     ; --- 呼び出し 3: ネストした呼び出し (print_dots が uart_putc を呼ぶ) ---
-    mov  rsi, msg4
+    lea  rsi, [rel msg4]
     call print_str
     mov  ecx, 5                 ; 引数: RCX = 個数 (64-bit の LOOP は RCX を減らす)
     call print_dots
@@ -90,7 +92,7 @@ _start:
     mov  edi, 42                ; 引数: RDI = 第 1 オペランド (SysV 第 1 引数)
     mov  esi, 13                ; 引数: RSI = 第 2 オペランド (SysV 第 2 引数)
     call add_values             ; 戻り値: RAX = RDI + RSI
-    mov  rsi, msg5
+    lea  rsi, [rel msg5]
     call print_str              ; print_str は使ったレジスタを退避する (RAX は無傷)
     call print_hex64            ; RAX = 42 + 13 = 55 = 0x37 を出力
     call print_crlf
@@ -98,13 +100,13 @@ _start:
     ; --- callee-saved の観察: RBX は一連の呼び出しをまたいで無傷 ---
     ; 本教材のルーチンは RBX を使わないため自然に保存される。
     ; RBX/RBP/R12-R15 を使う関数は入口で PUSH、出口で POP して返す義務がある。
-    mov  rsi, msg_rbx
+    lea  rsi, [rel msg_rbx]
     call print_str              ; この呼び出しをまたいでも RBX は変化しないはず
     mov  rax, rbx
     call print_hex64            ; 0x5A5A のまま → callee-saved 規約どおり
     call print_crlf
 
-    mov  rsi, msg_done
+    lea  rsi, [rel msg_done]
     call print_str
 
 .halt:

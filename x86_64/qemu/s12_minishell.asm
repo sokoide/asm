@@ -149,9 +149,10 @@ read_line:
     call uart_putc
     jmp  .rl_loop
 .rl_bs:
-    ; バッファが空なら無視
+    ; バッファが空なら無視 (入力長 = rdi - input の RIP 相対計算)
+    lea  rdx, [rel input]
     mov  rax, rdi
-    sub  rax, input
+    sub  rax, rdx
     or   rax, rax
     jz   .rl_loop
     dec  rdi
