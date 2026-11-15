@@ -44,7 +44,7 @@ _start:
     addi    %r6, %r6, 1
     bdnz    .Lsum
 
-    // ---- Report: COPY OK|FAIL CHECKSUM=xxxx ----
+    // ---- Report: COPY OK             | FAIL CHECKSUM=xxxx ----
     lis     %r3, msg_ok@ha
     addi    %r3, %r3, msg_ok@l
     cmpwi   %r31, 4950

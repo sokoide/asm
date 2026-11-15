@@ -39,7 +39,7 @@ _start:
     sw      t1, 0(t0)
 
 add3:
-    addi    a0, a0, 3
+	addi    a0, a0, 3
     ret
 
 double_val:
@@ -47,7 +47,7 @@ double_val:
     ret
 
 show_result:
-    addi    sp, sp, -32
+	addi    sp, sp, -32
     sd      ra, 24(sp)
     sd      s0, 16(sp)
     sd      s1, 8(sp)
@@ -61,11 +61,11 @@ show_result:
     ld      s1, 8(sp)
     ld      s0, 16(sp)
     ld      ra, 24(sp)
-    addi    sp, sp, 32
+	addi    sp, sp, 32
     ret
 
 print_str:
-    addi    sp, sp, -16
+	addi    sp, sp, -16
     sd      ra, 8(sp)
     sd      s0, 0(sp)
     mv      s0, a0
@@ -74,16 +74,16 @@ print_str:
     beqz    t1, .ps_ret
     mv      a0, t1
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     j       .ps_loop
 .ps_ret:
     ld      s0, 0(sp)
     ld      ra, 8(sp)
-    addi    sp, sp, 16
+	addi    sp, sp, 16
     ret
 
 print_hex64:
-    addi    sp, sp, -32
+	addi    sp, sp, -32
     sd      ra, 24(sp)
     sd      s0, 16(sp)
     sd      s1, 8(sp)
@@ -91,28 +91,28 @@ print_hex64:
     li      s1, 60
 .ph_loop:
     srl     a0, s0, s1
-    andi    a0, a0, 0xF
+	andi    a0, a0, 0xF
     li      t0, 9
-    bgt     a0, t0, .ph_alpha
-    addi    a0, a0, '0'
+	bgt     a0, t0, .ph_alpha
+	addi    a0, a0, '0'
     j       .ph_print
 .ph_alpha:
-    addi    a0, a0, ('A' - 10)
+	addi    a0, a0, ('A' - 10)
 .ph_print:
     jal     ra, uart_putc
-    addi    s1, s1, -4
+	addi    s1, s1, -4
     bgez    s1, .ph_loop
     ld      s1, 8(sp)
     ld      s0, 16(sp)
     ld      ra, 24(sp)
-    addi    sp, sp, 32
+	addi    sp, sp, 32
     ret
 
 uart_putc:
     li      t0, 0x10000000
 .wait:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
+	andi    t1, t1, 0x20
     beqz    t1, .wait
     sb      a0, 0(t0)
     ret

@@ -21,7 +21,7 @@ _start:
     jal     ra, print_dec
     li      a0, ' '
     jal     ra, uart_putc
-    addi    s0, s0, -1
+	addi    s0, s0, -1
     bnez    s0, .down
     la      a0, newline
     jal     ra, print_str
@@ -36,8 +36,8 @@ _start:
     jal     ra, print_dec
     li      a0, ' '
     jal     ra, uart_putc
-    addi    s0, s0, 1
-    blt     s0, s1, .up
+	addi    s0, s0, 1
+	blt     s0, s1, .up
     la      a0, newline
     jal     ra, print_str
 
@@ -48,9 +48,9 @@ _start:
     li      s1, 11
     li      s2, 0
 .sum:
-    add     s2, s2, s0
-    addi    s0, s0, 1
-    blt     s0, s1, .sum
+	add     s2, s2, s0
+	addi    s0, s0, 1
+	blt     s0, s1, .sum
     mv      a0, s2
     jal     ra, print_dec
     la      a0, newline
@@ -62,7 +62,7 @@ _start:
     sw      t1, 0(t0)
 
 print_str:
-    addi    sp, sp, -16
+	addi    sp, sp, -16
     sd      ra, 8(sp)
     sd      s0, 0(sp)
     mv      s0, a0
@@ -71,16 +71,16 @@ print_str:
     beqz    t1, .ps_ret
     mv      a0, t1
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     j       .ps_loop
 .ps_ret:
     ld      s0, 0(sp)
     ld      ra, 8(sp)
-    addi    sp, sp, 16
+	addi    sp, sp, 16
     ret
 
 print_dec:
-    addi    sp, sp, -32
+	addi    sp, sp, -32
     sd      ra, 24(sp)
     sd      s0, 16(sp)
     sd      s1, 8(sp)
@@ -95,31 +95,31 @@ print_dec:
     beqz    s0, .pd_print_digits
     li      t0, 10
     remu    t1, s0, t0
-    divu    s0, s0, t0
-    addi    t1, t1, '0'
-    addi    sp, sp, -8
+	divu    s0, s0, t0
+	addi    t1, t1, '0'
+	addi    sp, sp, -8
     sd      t1, 0(sp)
-    addi    s2, s2, 1
+	addi    s2, s2, 1
     j       .pd_extract
 .pd_print_digits:
     beqz    s2, .pd_done
     ld      a0, 0(sp)
-    addi    sp, sp, 8
-    addi    s2, s2, -1
+	addi    sp, sp, 8
+	addi    s2, s2, -1
     jal     ra, uart_putc
     j       .pd_print_digits
 .pd_done:
     ld      s1, 8(sp)
     ld      s0, 16(sp)
     ld      ra, 24(sp)
-    addi    sp, sp, 32
+	addi    sp, sp, 32
     ret
 
 uart_putc:
     li      t0, 0x10000000
 .wait:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
+	andi    t1, t1, 0x20
     beqz    t1, .wait
     sb      a0, 0(t0)
     ret

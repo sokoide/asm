@@ -19,7 +19,7 @@ _start:
 .read_loop:
     jal     ra, uart_getc         // a0 = received char
     li      t0, 'q'
-    beq     a0, t0, .done
+	beq     a0, t0, .done
 
     // Echo the character back
     jal     ra, uart_putc
@@ -28,9 +28,9 @@ _start:
 
     // Classify: digit?
     li      t0, '0'
-    blt     a0, t0, .not_digit
+	blt     a0, t0, .not_digit
     li      t0, '9'
-    bgt     a0, t0, .not_digit
+	bgt     a0, t0, .not_digit
     la      a0, msg_digit
     jal     ra, print_str
     j       .read_loop
@@ -38,9 +38,9 @@ _start:
 
     // Classify: uppercase?
     li      t0, 'A'
-    blt     a0, t0, .not_upper
+	blt     a0, t0, .not_upper
     li      t0, 'Z'
-    bgt     a0, t0, .not_upper
+	bgt     a0, t0, .not_upper
     la      a0, msg_upper
     jal     ra, print_str
     j       .read_loop
@@ -48,9 +48,9 @@ _start:
 
     // Classify: lowercase?
     li      t0, 'a'
-    blt     a0, t0, .not_lower
+	blt     a0, t0, .not_lower
     li      t0, 'z'
-    bgt     a0, t0, .not_lower
+	bgt     a0, t0, .not_lower
     la      a0, msg_lower
     jal     ra, print_str
     j       .read_loop
@@ -74,7 +74,7 @@ uart_putc:
     li      t0, 0x10000000
 .wait_tx:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
+	andi    t1, t1, 0x20
     beqz    t1, .wait_tx
     sb      a0, 0(t0)
     ret
@@ -83,7 +83,7 @@ uart_getc:
     li      t0, 0x10000000
 .wait_rx:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x01         // bit 0 = Data Ready
+	andi    t1, t1, 0x01         // bit 0 = Data Ready
     beqz    t1, .wait_rx
     lbu     a0, 0(t0)            // read RBR
     ret
@@ -91,7 +91,7 @@ uart_getc:
 // ---- Common subroutines ----
 
 print_str:
-    addi    sp, sp, -8
+	addi    sp, sp, -8
     sw      ra, 4(sp)
     sw      s0, 0(sp)
     mv      s0, a0
@@ -100,12 +100,12 @@ print_str:
     beqz    t1, .ret
     mv      a0, t1
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     j       .loop
 .ret:
     lw      s0, 0(sp)
     lw      ra, 4(sp)
-    addi    sp, sp, 8
+	addi    sp, sp, 8
     ret
 
 // ---- Data ----

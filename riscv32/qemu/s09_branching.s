@@ -18,7 +18,7 @@ _start:
     jal     ra, print_str
     li      a0, 5
     li      a1, 5
-    bne     a0, a1, .not_equal1
+	bne     a0, a1, .not_equal1
     la      a0, msg_yes
     jal     ra, print_str
     j       .next1
@@ -32,7 +32,7 @@ _start:
     jal     ra, print_str
     li      a0, -1
     li      a1, 1
-    blt     a0, a1, .less_yes
+	blt     a0, a1, .less_yes
     la      a0, msg_no
     jal     ra, print_str
     j       .next2
@@ -60,7 +60,7 @@ _start:
     jal     ra, print_str
     li      a0, -5
     li      a1, 3
-    slt     a2, a0, a1           // a2 = (-5 < 3) ? 1 : 0
+	slt     a2, a0, a1           // a2 = (-5 < 3) ? 1 : 0
     mv      a0, a2
     jal     ra, print_dec
     la      a0, newline
@@ -80,11 +80,11 @@ _start:
 // ---- Jump table demonstration ----
 
 jump_table_demo:
-    addi    sp, sp, -4
+	addi    sp, sp, -4
     sw      ra, 0(sp)
     la      t0, jt_base
     slli    a0, a0, 2            // index * 4 (word size)
-    add     t0, t0, a0
+	add     t0, t0, a0
     lw      t0, 0(t0)            // load target address
     jalr    x0, 0(t0)            // jump to target
 
@@ -113,13 +113,13 @@ jt_case3:
 
 jt_done:
     lw      ra, 0(sp)
-    addi    sp, sp, 4
+	addi    sp, sp, 4
     ret
 
 // ---- Common subroutines ----
 
 print_str:
-    addi    sp, sp, -8
+	addi    sp, sp, -8
     sw      ra, 4(sp)
     sw      s0, 0(sp)
     mv      s0, a0
@@ -128,16 +128,16 @@ print_str:
     beqz    t1, .ret
     mv      a0, t1
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     j       .loop
 .ret:
     lw      s0, 0(sp)
     lw      ra, 4(sp)
-    addi    sp, sp, 8
+	addi    sp, sp, 8
     ret
 
 print_dec:
-    addi    sp, sp, -12
+	addi    sp, sp, -12
     sw      ra, 8(sp)
     sw      s0, 4(sp)
     sw      s1, 0(sp)
@@ -152,31 +152,31 @@ print_dec:
     beqz    s0, .print_digits
     li      t0, 10
     remu    t1, s0, t0
-    divu    s0, s0, t0
-    addi    t1, t1, '0'
-    addi    sp, sp, -4
+	divu    s0, s0, t0
+	addi    t1, t1, '0'
+	addi    sp, sp, -4
     sw      t1, 0(sp)
-    addi    s2, s2, 1
+	addi    s2, s2, 1
     j       .extract
 .print_digits:
     beqz    s2, .done
     lw      a0, 0(sp)
-    addi    sp, sp, 4
-    addi    s2, s2, -1
+	addi    sp, sp, 4
+	addi    s2, s2, -1
     jal     ra, uart_putc
     j       .print_digits
 .done:
     lw      s1, 0(sp)
     lw      s0, 4(sp)
     lw      ra, 8(sp)
-    addi    sp, sp, 12
+	addi    sp, sp, 12
     ret
 
 uart_putc:
     li      t0, 0x10000000
 .wait:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
+	andi    t1, t1, 0x20
     beqz    t1, .wait
     sb      a0, 0(t0)
     ret

@@ -32,31 +32,31 @@ main_exit:
     sw      t1, 0(t0)
 
 read_line:
-    addi    sp, sp, -16
+	addi    sp, sp, -16
     sd      ra, 8(sp)
     la      s0, input_buf
     li      s1, 0
 .rl_loop:
     jal     ra, uart_getc
     li      t0, '\n'
-    beq     a0, t0, .rl_done
+	beq     a0, t0, .rl_done
     li      t0, '\r'
-    beq     a0, t0, .rl_done
+	beq     a0, t0, .rl_done
     li      t0, 0x7F
-    beq     a0, t0, .rl_bs
+	beq     a0, t0, .rl_bs
     li      t0, 0x08
-    beq     a0, t0, .rl_bs
+	beq     a0, t0, .rl_bs
     li      t0, 30
-    bge     s1, t0, .rl_loop
+	bge     s1, t0, .rl_loop
     sb      a0, 0(s0)
-    addi    s0, s0, 1
-    addi    s1, s1, 1
+	addi    s0, s0, 1
+	addi    s1, s1, 1
     jal     ra, uart_putc
     j       .rl_loop
 .rl_bs:
     beqz    s1, .rl_loop
-    addi    s0, s0, -1
-    addi    s1, s1, -1
+	addi    s0, s0, -1
+	addi    s1, s1, -1
     li      a0, 0x08
     jal     ra, uart_putc
     li      a0, ' '
@@ -69,11 +69,11 @@ read_line:
     li      a0, '\n'
     jal     ra, uart_putc
     ld      ra, 8(sp)
-    addi    sp, sp, 16
+	addi    sp, sp, 16
     ret
 
 dispatch:
-    addi    sp, sp, -16
+	addi    sp, sp, -16
     sd      ra, 8(sp)
 
     la      a0, input_buf
@@ -125,7 +125,7 @@ dispatch:
     li      s10, 0
 .disp_ret:
     ld      ra, 8(sp)
-    addi    sp, sp, 16
+	addi    sp, sp, 16
     ret
 
 streq:
@@ -134,10 +134,10 @@ streq:
 .se_loop:
     lbu     t2, 0(t0)
     lbu     t3, 0(t1)
-    bne     t2, t3, .se_ne
+	bne     t2, t3, .se_ne
     beqz    t2, .se_eq
-    addi    t0, t0, 1
-    addi    t1, t1, 1
+	addi    t0, t0, 1
+	addi    t1, t1, 1
     j       .se_loop
 .se_eq:
     li      a0, 1
@@ -147,26 +147,26 @@ streq:
     ret
 
 do_count:
-    addi    sp, sp, -16
+	addi    sp, sp, -16
     sd      ra, 8(sp)
     la      a0, msg_count
     jal     ra, print_str
     li      s0, 5
 .dc_loop:
-    addi    a0, s0, '0'
+	addi    a0, s0, '0'
     jal     ra, uart_putc
     li      a0, ' '
     jal     ra, uart_putc
-    addi    s0, s0, -1
+	addi    s0, s0, -1
     bnez    s0, .dc_loop
     la      a0, newline
     jal     ra, print_str
     ld      ra, 8(sp)
-    addi    sp, sp, 16
+	addi    sp, sp, 16
     ret
 
 do_hex:
-    addi    sp, sp, -32
+	addi    sp, sp, -32
     sd      ra, 24(sp)
     sd      s0, 16(sp)
     la      a0, msg_hex_hdr
@@ -177,21 +177,21 @@ do_hex:
     jal     ra, print_hex64
     li      a0, ' '
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     li      t0, 16
-    bne     s0, t0, .dh_loop
+	bne     s0, t0, .dh_loop
     la      a0, newline
     jal     ra, print_str
     ld      s0, 16(sp)
     ld      ra, 24(sp)
-    addi    sp, sp, 32
+	addi    sp, sp, 32
     ret
 
 uart_putc:
     li      t0, 0x10000000
 .wait_tx:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
+	andi    t1, t1, 0x20
     beqz    t1, .wait_tx
     sb      a0, 0(t0)
     ret
@@ -200,13 +200,13 @@ uart_getc:
     li      t0, 0x10000000
 .wait_rx:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x01
+	andi    t1, t1, 0x01
     beqz    t1, .wait_rx
     lbu     a0, 0(t0)
     ret
 
 print_str:
-    addi    sp, sp, -16
+	addi    sp, sp, -16
     sd      ra, 8(sp)
     sd      s0, 0(sp)
     mv      s0, a0
@@ -215,16 +215,16 @@ print_str:
     beqz    t1, .ps_ret
     mv      a0, t1
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     j       .ps_loop
 .ps_ret:
     ld      s0, 0(sp)
     ld      ra, 8(sp)
-    addi    sp, sp, 16
+	addi    sp, sp, 16
     ret
 
 print_hex64:
-    addi    sp, sp, -32
+	addi    sp, sp, -32
     sd      ra, 24(sp)
     sd      s0, 16(sp)
     sd      s1, 8(sp)
@@ -232,21 +232,21 @@ print_hex64:
     li      s1, 60
 .ph_loop:
     srl     a0, s0, s1
-    andi    a0, a0, 0xF
+	andi    a0, a0, 0xF
     li      t0, 9
-    bgt     a0, t0, .ph_alpha
-    addi    a0, a0, '0'
+	bgt     a0, t0, .ph_alpha
+	addi    a0, a0, '0'
     j       .ph_print
 .ph_alpha:
-    addi    a0, a0, ('A' - 10)
+	addi    a0, a0, ('A' - 10)
 .ph_print:
     jal     ra, uart_putc
-    addi    s1, s1, -4
+	addi    s1, s1, -4
     bgez    s1, .ph_loop
     ld      s1, 8(sp)
     ld      s0, 16(sp)
     ld      ra, 24(sp)
-    addi    sp, sp, 32
+	addi    sp, sp, 32
     ret
 
 // ---- Data ----

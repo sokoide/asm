@@ -42,7 +42,7 @@ start:
     mov si, msg_or2
     call print_str
     mov al, 0F0h
-    or  al, 0Ah             ; set bits: F0 | 0A = FA
+    or  al, 0Ah             ; set bits: F0  | 0A = FA
     call print_bin8
     call print_crlf
 
@@ -181,7 +181,7 @@ msg1:       db "Bitwise ops:", 13, 10, 0
 msg_and:    db "  AND: ", 0
 msg_and2:   db "& 0Fh = ", 0
 msg_or:     db "  OR:  ", 0
-msg_or2:    db "| 0Ah = ", 0
+msg_or2:    db "                            | 0Ah = ", 0
 msg_xor:    db "  XOR: ", 0
 msg_xor2:   db "^ 55h = ", 0
 msg_shl:    db "  SHL: 7 -> 14 -> 28 = ", 0

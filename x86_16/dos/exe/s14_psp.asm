@@ -115,7 +115,7 @@ start:
     mov dl, al
     jmp .env_print
 .env_null:
-    mov dl, '|'             ; show null as | separator
+    mov dl, '                           | '             ; show null as | separator
 .env_print:
     mov ah, 02h
     int 21h

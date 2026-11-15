@@ -25,7 +25,7 @@ _start:
     bl      print_bin8
     bl      print_crlf
 
-    // OR: 0xF0 | 0x0F = 0xFF
+    // OR: 0xF0                         | 0x0F = 0xFF
     lis     %r3, msg_or@ha; addi %r3, %r3, msg_or@l; bl print_str
     li      %r30, 0xF0
     ori     %r30, %r30, 0x0F
@@ -172,7 +172,7 @@ uart_putc:
 
 // ---- Data ----
 msg_and: .asciz "0xFF & 0x0F = "
-msg_or:  .asciz "0xF0 | 0x0F = "
+msg_or:  .asciz "0xF0                   | 0x0F = "
 msg_xor: .asciz "0xFF ^ 0x0F = "
 msg_shl: .asciz "1 << 4      = "
 msg_shr: .asciz "0x80 >> 3   = "

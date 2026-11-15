@@ -4,7 +4,7 @@
 ;   - SYSCALL 機能の CPUID 確認 (leaf 0x80000001, EDX bit 11) と EFER.SCE 有効化
 ;   - STAR / LSTAR / FMASK MSR の設定と STAR に埋め込むセレクタ配置
 ;     (SYSCALL: CS=STAR[47:32], SS=STAR[47:32]+8 /
-;      SYSRET:  CS=STAR[63:48]+16|RPL3, SS=STAR[63:48]+8|RPL3)
+;      SYSRET:  CS=STAR[63:48]+16                       | RPL3, SS=STAR[63:48]+8|RPL3)
 ;   - ユーザコード・データ GDT エントリの追記 (DPL=3, L=1)
 ;   - 4 段ページング全階層と 2MB リーフへの U/S (bit 2) 設定と CR3 再書込
 ;   - IRETQ による特権降格 (CPL 0 → 3) と専用ユーザスタック (0x200000)
@@ -77,7 +77,7 @@ _start:
     ;   IRETQ   : CS=0x23 (GDT[0x20] 実ロード) / SS=0x2B (GDT[0x28] 実ロード)
     ;   SYSCALL : CS=0x08 / SS=0x10 (Intel SDM: CS=STAR[47:32], SS=STAR[47:32]+8。
     ;             隠し部はフラット 64-bit の固定値で GDT を参照しない)
-    ;   SYSRETQ : CS=0x33 / SS=0x2B (CS=STAR[63:48]+16|RPL3, SS=STAR[63:48]+8|RPL3。
+    ;   SYSRETQ : CS=0x33 / SS=0x2B (CS=STAR[63:48]+16  | RPL3, SS=STAR[63:48]+8|RPL3。
     ;             隠し部は DPL=3 の固定値, GDT 不参照)
     ; 実測 (gdb): SYSCALL 後 SS=0x10 / SYSRETQ 後 CS=0x33・SS=0x2B は
     ; いずれもマニュアル仕様どおり (QEMU 11.1 TCG で確認)。
@@ -124,13 +124,13 @@ _start:
     lea  rsi, [rel msg_enter]
     call print_str
     call print_crlf
-    mov  rax, 0x2B              ; ユーザ SS = 0x28 | RPL3
+    mov  rax, 0x2B              ; ユーザ SS = 0x28      | RPL3
     push rax
     mov  rax, 0x200000          ; 専用ユーザスタック (identity map の RAM)
     push rax
     mov  rax, 0x2               ; RFLAGS: IF=0 — IDT 未構築のため割り込み不可のまま
     push rax
-    mov  rax, 0x23              ; ユーザ CS = 0x20 | RPL3
+    mov  rax, 0x23              ; ユーザ CS = 0x20      | RPL3
     push rax
     lea  rax, [rel user_start]  ; ユーザ RIP (canonical な下位アドレス)
     push rax

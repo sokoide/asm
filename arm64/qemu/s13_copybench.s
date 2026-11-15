@@ -39,7 +39,7 @@ _start:
     subs    w2, w2, #1
     b.ne    .sum_loop
 
-    // ---- Report: COPY OK|FAIL CHECKSUM=xxxx ----
+    // ---- Report: COPY OK             | FAIL CHECKSUM=xxxx ----
     ldr     x0, =msg_ok
     mov     w4, #4950
     cmp     w3, w4

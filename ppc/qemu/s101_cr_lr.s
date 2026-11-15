@@ -77,7 +77,7 @@ demo2_cr_field_compare:
     // ---- Demo 3: CR 論理命令で条件を合成 ----
     // CR のビット番号: CR0=bits 0-3, CR1=bits 4-7 (LT,G T,EQ,SO の順)
     //   CR0.EQ = bit 2, CR1.EQ = bit 6
-    // cror 2,2,6: CR0.EQ = CR0.EQ | CR1.EQ
+    // cror 2,2,6: CR0.EQ = CR0.EQ      | CR1.EQ
 demo3_cr_logic:
     lis     %r3, msg_d3@ha
     addi    %r3, %r3, msg_d3@l
@@ -85,7 +85,7 @@ demo3_cr_logic:
     li      %r3, 7
     cmpwi   %r3, 42     // CR0.EQ = 0 (7 != 42)
     cmpwi   cr1, %r3, 7 // CR1.EQ = 1 (7 == 7)
-    cror    2, 2, 6     // CR0.EQ |= CR1.EQ -> 1
+    cror    2, 2, 6     // CR0.EQ       | = CR1.EQ -> 1
     lis     %r3, msg_or@ha
     addi    %r3, %r3, msg_or@l
     beq     .Ld3
@@ -226,6 +226,6 @@ msg_d6:   .asciz "Demo6 bdnz+bl:     "
 msg_eq:   .asciz "EQ branch taken (42==42)"
 msg_lt1:  .asciz "CR1 LT taken (42<99), CR0.EQ kept -> "
 msg_keep: .asciz "EQ still set"
-msg_or:   .asciz "CR0.EQ |= CR1.EQ -> EQ branch taken"
+msg_or:   .asciz "CR0.EQ                | = CR1.EQ -> EQ branch taken"
 msg_gt:   .asciz "GT branch taken (CR0 <- 0b0100 via mtcrf)"
 msg_ng:   .asciz "FAIL"

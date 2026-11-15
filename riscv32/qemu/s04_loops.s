@@ -22,7 +22,7 @@ _start:
     jal     ra, print_dec
     li      a0, ' '
     jal     ra, uart_putc
-    addi    s0, s0, -1
+	addi    s0, s0, -1
     bnez    s0, .down
     la      a0, newline
     jal     ra, print_str
@@ -38,8 +38,8 @@ _start:
     jal     ra, print_dec
     li      a0, ' '
     jal     ra, uart_putc
-    addi    s0, s0, 1
-    blt     s0, s1, .up
+	addi    s0, s0, 1
+	blt     s0, s1, .up
     la      a0, newline
     jal     ra, print_str
 
@@ -51,9 +51,9 @@ _start:
     li      s1, 11                // limit = 11
     li      s2, 0                 // sum = 0
 .sum:
-    add     s2, s2, s0
-    addi    s0, s0, 1
-    blt     s0, s1, .sum
+	add     s2, s2, s0
+	addi    s0, s0, 1
+	blt     s0, s1, .sum
     mv      a0, s2
     jal     ra, print_dec
     la      a0, newline
@@ -67,7 +67,7 @@ _start:
 // ---- Common subroutines ----
 
 print_str:
-    addi    sp, sp, -8
+	addi    sp, sp, -8
     sw      ra, 4(sp)
     sw      s0, 0(sp)
     mv      s0, a0
@@ -76,16 +76,16 @@ print_str:
     beqz    t1, .ret
     mv      a0, t1
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     j       .loop
 .ret:
     lw      s0, 0(sp)
     lw      ra, 4(sp)
-    addi    sp, sp, 8
+	addi    sp, sp, 8
     ret
 
 print_dec:
-    addi    sp, sp, -12
+	addi    sp, sp, -12
     sw      ra, 8(sp)
     sw      s0, 4(sp)
     sw      s1, 0(sp)
@@ -102,31 +102,31 @@ print_dec:
     beqz    s0, .print_digits
     li      t0, 10
     remu    t1, s0, t0           // t1 = s0 % 10
-    divu    s0, s0, t0           // s0 = s0 / 10
-    addi    t1, t1, '0'
-    addi    sp, sp, -4
+	divu    s0, s0, t0           // s0 = s0 / 10
+	addi    t1, t1, '0'
+	addi    sp, sp, -4
     sw      t1, 0(sp)            // push digit
-    addi    s2, s2, 1
+	addi    s2, s2, 1
     j       .extract
 .print_digits:
     beqz    s2, .done
     lw      a0, 0(sp)            // pop digit
-    addi    sp, sp, 4
-    addi    s2, s2, -1
+	addi    sp, sp, 4
+	addi    s2, s2, -1
     jal     ra, uart_putc
     j       .print_digits
 .done:
     lw      s1, 0(sp)
     lw      s0, 4(sp)
     lw      ra, 8(sp)
-    addi    sp, sp, 12
+	addi    sp, sp, 12
     ret
 
 uart_putc:
     li      t0, 0x10000000
 .wait:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
+	andi    t1, t1, 0x20
     beqz    t1, .wait
     sb      a0, 0(t0)
     ret

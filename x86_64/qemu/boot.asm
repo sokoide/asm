@@ -176,23 +176,23 @@ stub_pm:
     mov  ecx, 3072             ; 3 テーブル x 4096B / 4 = 3072 dword
     rep  stosd                 ; [ES:EDI] = EAX を ECX 回書き込み (ES はフラット)
 
-    ; --- PML4[0] → PDPT (0x2000): P | RW = 0x003 ---
+    ; --- PML4[0] → PDPT (0x2000): P               | RW = 0x003 ---
     ; 64-bit エントリは low / high dword のペアで書く (上位 dword は 0)
     mov  dword [0x1000], 0x00002003
     mov  dword [0x1004], 0
-    ; --- PDPT[0] → PD (0x3000): P | RW = 0x003 ---
+    ; --- PDPT[0] → PD (0x3000): P                 | RW = 0x003 ---
     mov  dword [0x2000], 0x00003003
     mov  dword [0x2004], 0
-    ; --- PD[i] = 2MB ページ: P | RW | PS = 0x083, 下位 1GB を identity map ---
+    ; --- PD[i] = 2MB ページ: P                    | RW | PS = 0x083, 下位 1GB を identity map ---
     ; ロングモードの 2MB ページは PML4 → PDPT → PD で解決し PT は参照しない
     xor  ecx, ecx              ; ECX = i (0..511)
 .pd_loop:
     mov  eax, ecx
     shl  eax, 21               ; ページ物理アドレス = i x 2MB
-    or   eax, 0x83             ; P(bit0) | RW(bit1) | PS(bit7)
+    or   eax, 0x83             ; P(bit0)           | RW(bit1) | PS(bit7)
     mov  edx, ecx
     shl  edx, 3                ; エントリのオフセット = i x 8 バイト
-    mov  dword [0x3000+edx], eax   ; low dword (P|RW|PS | addr[31:21])
+    mov  dword [0x3000+edx], eax   ; low dword (P  | RW|PS | addr[31:21])
     mov  dword [0x3000+edx+4], 0   ; high dword = 0 (物理アドレス < 4GB)
     inc  ecx
     cmp  ecx, 512

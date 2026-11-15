@@ -59,8 +59,8 @@ _start:
     jal     ra, print_hex32
     li      a0, ' '
     jal     ra, uart_putc
-    addi    s0, s0, 4
-    addi    s1, s1, -1
+	addi    s0, s0, 4
+	addi    s1, s1, -1
     j       .print_fill
 .fill_done:
     la      a0, newline
@@ -85,8 +85,8 @@ _start:
 memfill:
     beqz    a1, .mf_ret
     sw      a2, 0(a0)
-    addi    a0, a0, 4
-    addi    a1, a1, -1
+	addi    a0, a0, 4
+	addi    a1, a1, -1
     j       memfill
 .mf_ret:
     ret
@@ -95,15 +95,15 @@ memcpy:
     beqz    a2, .mc_ret
     lbu     t0, 0(a1)
     sb      t0, 0(a0)
-    addi    a0, a0, 1
-    addi    a1, a1, 1
-    addi    a2, a2, -1
+	addi    a0, a0, 1
+	addi    a1, a1, 1
+	addi    a2, a2, -1
     j       memcpy
 .mc_ret:
     ret
 
 print_str:
-    addi    sp, sp, -16
+	addi    sp, sp, -16
     sd      ra, 8(sp)
     sd      s0, 0(sp)
     mv      s0, a0
@@ -112,16 +112,16 @@ print_str:
     beqz    t1, .ps_ret
     mv      a0, t1
     jal     ra, uart_putc
-    addi    s0, s0, 1
+	addi    s0, s0, 1
     j       .ps_loop
 .ps_ret:
     ld      s0, 0(sp)
     ld      ra, 8(sp)
-    addi    sp, sp, 16
+	addi    sp, sp, 16
     ret
 
 print_hex64:
-    addi    sp, sp, -32
+	addi    sp, sp, -32
     sd      ra, 24(sp)
     sd      s0, 16(sp)
     sd      s1, 8(sp)
@@ -129,25 +129,25 @@ print_hex64:
     li      s1, 60
 .ph_loop:
     srl     a0, s0, s1
-    andi    a0, a0, 0xF
+	andi    a0, a0, 0xF
     li      t0, 9
-    bgt     a0, t0, .ph_alpha
-    addi    a0, a0, '0'
+	bgt     a0, t0, .ph_alpha
+	addi    a0, a0, '0'
     j       .ph_print
 .ph_alpha:
-    addi    a0, a0, ('A' - 10)
+	addi    a0, a0, ('A' - 10)
 .ph_print:
     jal     ra, uart_putc
-    addi    s1, s1, -4
+	addi    s1, s1, -4
     bgez    s1, .ph_loop
     ld      s1, 8(sp)
     ld      s0, 16(sp)
     ld      ra, 24(sp)
-    addi    sp, sp, 32
+	addi    sp, sp, 32
     ret
 
 print_hex32:
-    addi    sp, sp, -32
+	addi    sp, sp, -32
     sd      ra, 24(sp)
     sd      s0, 16(sp)
     sd      s1, 8(sp)
@@ -155,28 +155,28 @@ print_hex32:
     li      s1, 28
 .ph32_loop:
     srl     a0, s0, s1
-    andi    a0, a0, 0xF
+	andi    a0, a0, 0xF
     li      t0, 9
-    bgt     a0, t0, .ph32_alpha
-    addi    a0, a0, '0'
+	bgt     a0, t0, .ph32_alpha
+	addi    a0, a0, '0'
     j       .ph32_print
 .ph32_alpha:
-    addi    a0, a0, ('A' - 10)
+	addi    a0, a0, ('A' - 10)
 .ph32_print:
     jal     ra, uart_putc
-    addi    s1, s1, -4
+	addi    s1, s1, -4
     bgez    s1, .ph32_loop
     ld      s1, 8(sp)
     ld      s0, 16(sp)
     ld      ra, 24(sp)
-    addi    sp, sp, 32
+	addi    sp, sp, 32
     ret
 
 uart_putc:
     li      t0, 0x10000000
 .wait:
     lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
+	andi    t1, t1, 0x20
     beqz    t1, .wait
     sb      a0, 0(t0)
     ret

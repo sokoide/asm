@@ -40,7 +40,7 @@ _start:
     addi    t2, t2, -1
     bnez    t2, .sum_loop
 
-    // ---- Report: COPY OK|FAIL CHECKSUM=xxxx ----
+    // ---- Report: COPY OK             | FAIL CHECKSUM=xxxx ----
     la      a0, msg_ok
     li      t0, 4950
     beq     s2, t0, .report

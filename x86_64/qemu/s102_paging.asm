@@ -17,7 +17,7 @@
 ; boot.asm が構築したテーブル (先頭 1GB を 512 個の 2MB ページで identity map):
 ;   PML4 @ 0x1000: PML4[0] = 0x0000000000002003 (PDPT @ 0x2000 へ)
 ;   PDPT @ 0x2000: PDPT[0] = 0x0000000000003003 (PD   @ 0x3000 へ)
-;   PD   @ 0x3000: PD[i]   = (i << 21) | 0x083  (P | RW | PS)
+;   PD   @ 0x3000: PD[i]   = (i << 21)    | 0x083  (P | RW | PS)
 ;
 ; 物理 0x1000 / 0x2000 / 0x3000 は identity map 済みで CPL=0 なので
 ; リニアアドレス経由で直接読める。64-bit では絶対アドレス指定を
@@ -30,7 +30,7 @@ global _start, scenario_halt
 ; --- エントリのフィールドマスク (64-bit 即値はレジスタ経由で使う) ---
 MASK_ADDR equ 0x000FFFFFFFFFF000   ; PML4/PDPT/CR3: 次層テーブルの物理アドレス (bits 51:12)
 MASK_2MB  equ 0x000FFFFFFFE00000   ; 2MB ページエントリ: ページ物理アドレス (bits 51:21)
-MASK_AD   equ 0xFFFFFFFFFFFFFF9F   ; ~(A | D) = ~(bit5 | bit6): 構築値表示用
+MASK_AD   equ 0xFFFFFFFFFFFFFF9F   ; ~(A  | D) = ~(bit5 | bit6): 構築値表示用
 VA_WALK   equ 0x004123456          ; ウォークする VA: PD index = 0x4123456 >> 21 = 32,
                                   ; ページ内オフセット = 0x123456
 

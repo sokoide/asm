@@ -28,7 +28,7 @@
 // 他アーキとの対比:
 //   - x86: CR3 + 4 段 (x86-64)。ページング有効化は CR0.PG
 //   - ARM: TTBR0/TTBR1 + TCR_EL1。例外は VBAR 経由
-//   - RISC-V: satp 1 本 (MODE|ASID|PPN) + stvec 1 本。ページテーブル形式は
+//   - RISC-V: satp 1 本 (MODE                                    | ASID|PPN) + stvec 1 本。ページテーブル形式は
 //     satp.MODE で選択 (rv32 は Sv32 のみ / rv64 は Sv39/Sv48/Sv57)
 //
 // 実行の流れ: M-mode (PMP/medeleg/mstatus.MPP) --mret--> S-mode (ページテーブル
@@ -51,7 +51,7 @@ _start:
     // QEMU virt は PMP エントリなしでリセットされ、S-mode からのアクセス
     // (mret の戻り先 fetch チェックも含む) が PMP で拒否される。 virt の
     // メモリマップに合わせて 2 つの NAPOT エントリで全空間を許可する:
-    //   entry0: pmpaddr0 = 0x0fffffff, pmpcfg0[7:0]   = 0x0f (R|W|X|A=NAPOT)
+    //   entry0: pmpaddr0 = 0x0fffffff, pmpcfg0[7:0]   = 0x0f (R  | W|X|A=NAPOT)
     //           → 0x00000000-0x7fffffff (MMIO: test/CLINT/PLIC/UART/flash/PCI)
     //   entry1: pmpaddr1 = 0x2fffffff, pmpcfg0[15:8]  = 0x0f
     //           → 0x80000000-0xbfffffff (DRAM)
@@ -74,11 +74,11 @@ _start:
     // ---- medeleg: ページフォールトを S-mode へ委譲 ----
     // bit 12 = instruction page fault, bit 13 = load page fault,
     // bit 15 = store/AMO page fault。WARL のため書いて読み戻して確認する
-    li      t0, (1 << 12) | (1 << 13) | (1 << 15)
+    li      t0, (1 << 12)                                         | (1 << 13) | (1 << 15)
     csrw    medeleg, t0
     la      a0, msg_medeleg
     jal     ra, print_str
-    li      t0, (1 << 12) | (1 << 13) | (1 << 15)
+    li      t0, (1 << 12)                                         | (1 << 13) | (1 << 15)
     mv      a0, t0
     jal     ra, print_hex32
     la      a0, msg_arrow
@@ -136,11 +136,11 @@ s_main:
     addi    t1, t1, -1
     bnez    t1, .zero_root
 
-    // root[0] = PPN 0 << 10 | 0xCF  (V|R|W|X|A|D, 1GB-aligned leaf)
+    // root[0] = PPN 0 << 10                                      | 0xCF  (V|R|W|X|A|D, 1GB-aligned leaf)
     li      t1, 0xCF
     la      t0, root_pt
     sd      t1, 0(t0)
-    // root[2] = PPN 0x80000 << 10 | 0xCF
+    // root[2] = PPN 0x80000 << 10                                | 0xCF
     //   (PPN = 0x80000000/4096 = 0x80000, 下位 18 ビット 0 = 1GB アライメント)
     li      t1, 0x80000
     slli    t1, t1, 10
@@ -148,7 +148,7 @@ s_main:
     sd      t1, 16(t0)             // entry 2 * 8 bytes = offset 16
 
     // サンプル PTE 表示: root[2] = 0x200000CF
-    //   (PPN=0x80000, V|R|W|X|A|D — 1GB leaf, 0x80000000 を指す)
+    //   (PPN=0x80000, V                                          | R|W|X|A|D — 1GB leaf, 0x80000000 を指す)
     la      a0, msg_pte
     jal     ra, print_str
     la      t0, root_pt
@@ -157,7 +157,7 @@ s_main:
     la      a0, newline
     jal     ra, print_str
 
-    // ---- satp 設定: MODE=8 (Sv39, bits 63:60) | PPN(root_pt>>12) ----
+    // ---- satp 設定: MODE=8 (Sv39, bits 63:60)                  | PPN(root_pt>>12) ----
     la      t0, root_pt
     srli    t0, t0, 12
     li      t1, 8

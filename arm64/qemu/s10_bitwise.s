@@ -26,7 +26,7 @@ _start:
     ldr     x0, =newline
     bl      print_str
 
-    // ORR: 0xF0 | 0x0F = 0xFF
+    // ORR: 0xF0                        | 0x0F = 0xFF
     ldr     x0, =msg_or
     bl      print_str
     mov     x19, #0xF0
@@ -155,7 +155,7 @@ uart_putc:
 
 // ---- Data ----
 msg_and: .asciz "0xFF & 0x0F = "
-msg_or:  .asciz "0xF0 | 0x0F = "
+msg_or:  .asciz "0xF0                   | 0x0F = "
 msg_xor: .asciz "0xFF ^ 0x0F = "
 msg_shl: .asciz "1 << 4      = "
 msg_shr: .asciz "0x80 >> 3   = "
