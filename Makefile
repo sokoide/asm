@@ -1,6 +1,6 @@
 # Multi-architecture assembly learning materials
 # トップレベル便利 Makefile。各アーキテクチャのビルド/実行/掃除を一括で行います。
-# 個別アーキテクチャの詳細制御は各ディレクトリ (`cd arm64/qemu && make ...`) で行ってください。
+# 個別アーキテクチャの詳細制御は各ディレクトリ (`cd arch/arm64/qemu && make ...`) で行ってください。
 
 # 全シナリオ（s01〜s12/13/14）を実装するコアアーキテクチャ: all / runall / clean を持つ
 CORE_DIRS := 6502/sim65 arm64/qemu ppc/qemu m68k/qemu z80/sim \
@@ -13,9 +13,9 @@ HELLO_DIRS := x86_16/dos/com
 # macOS(Darwin) でのみビルド対象に含める。それ以外の OS では make しない。
 DARWIN_DIRS := arm64/darwin x86_64/darwin x86_32/darwin
 ifeq ($(shell uname -s),Darwin)
-ALL_DIRS := $(CORE_DIRS) $(HELLO_DIRS) $(DARWIN_DIRS)
+ALL_DIRS := $(addprefix arch/,$(CORE_DIRS) $(HELLO_DIRS) $(DARWIN_DIRS))
 else
-ALL_DIRS := $(CORE_DIRS) $(HELLO_DIRS)
+ALL_DIRS := $(addprefix arch/,$(CORE_DIRS) $(HELLO_DIRS))
 endif
 
 .PHONY: all build runall clean debug trace cycles icount lint format help
@@ -30,7 +30,7 @@ all build:
 
 # 全シナリオを順に実行（コアアーキテクチャのみ。入力は各 Makefile がパイプ処理）
 runall:
-	@for d in $(CORE_DIRS); do \
+	@for d in $(addprefix arch/,$(CORE_DIRS)); do \
 	  echo ""; \
 	  echo "═══ 実行: $$d ═══"; \
 	  $(MAKE) --no-print-directory -C $$d runall || echo "  (スキップ: $$d)"; \
@@ -47,7 +47,7 @@ clean:
 # (例: make debug A=z80/sim S=s03_stack / make icount A=riscv64/qemu S=s01_hello)
 debug trace cycles icount:
 	@test -n "$(A)" && test -n "$(S)" || { echo "usage: make $@ A=<arch/platform> S=<scenario>  例: make debug A=z80/sim S=s03_stack"; exit 1; }
-	$(MAKE) --no-print-directory -C $(A) $@ S=$(S)
+	$(MAKE) --no-print-directory -C arch/$(A) $@ S=$(S)
 
 # Markdown リンター（pnpm があれば pnpm、なければ npx）
 RUNNER := $(shell command -v pnpm >/dev/null 2>&1 && echo "pnpm dlx" || echo "npx")
@@ -81,5 +81,5 @@ help:
 	@echo "  make format     全アーキの .s/.asm を asmfmt で整形 + Markdown を textlint + markdownlint で整形"
 	@echo ""
 	@echo "個別アーキテクチャは各ディレクトリで実行してください。例:"
-	@echo "  cd arm64/qemu && make runall   # 全シナリオ実行"
-	@echo "  cd arm64/qemu && make run S=s01_hello"
+	@echo "  cd arch/arm64/qemu && make runall   # 全シナリオ実行"
+	@echo "  cd arch/arm64/qemu && make run S=s01_hello"

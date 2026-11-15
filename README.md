@@ -7,21 +7,21 @@
 
 | アーキテクチャ   | ディレクトリ      | 実行環境                        | シナリオ数 |
 | :---             | :---              | :---                            | :---       |
-| **6502**         | `6502/sim65/`     | sim65 シミュレータ (cc65)       | 15         |
-| **ARM64**        | `arm64/qemu/`     | QEMU virt マシン (bare-metal)   | 15         |
-| **PowerPC**      | `ppc/qemu/`       | QEMU bamboo マシン (bare-metal) | 15         |
-| **M68000**       | `m68k/qemu/`      | QEMU virt マシン (bare-metal)   | 15         |
-| **Z80**          | `z80/sim/`        | Go製 CP/M シミュレータ          | 15         |
-| **x86 (16-bit)** | `x86_16/qemu/`    | QEMU i386 フロッピーブート      | 17         |
-| **x86 (16-bit)** | `x86_16/dos/com/` | DOSBox (COM)                    | 1          |
-| **x86 (16-bit)** | `x86_16/dos/exe/` | DOSBox (MZ EXE)                 | 14         |
-| **x86 (32-bit)** | `x86_32/qemu/`    | QEMU i386 フロッピーブート      | 13         |
-| **x86 (64-bit)** | `x86_64/qemu/`    | QEMU x86_64 フロッピーブート    | 17         |
-| **x86 (64-bit)** | `x86_64/darwin/`  | macOS ネイティブ                | 1          |
-| **x86 (32-bit)** | `x86_32/darwin/`  | macOS ネイティブ                | 1          |
-| **ARM64**        | `arm64/darwin/`   | macOS ネイティブ                | 1          |
-| **RISC-V (32-bit)** | `riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
-| **RISC-V (64-bit)** | `riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
+| **6502**         | `arch/6502/sim65/`     | sim65 シミュレータ (cc65)       | 15         |
+| **ARM64**        | `arch/arm64/qemu/`     | QEMU virt マシン (bare-metal)   | 15         |
+| **PowerPC**      | `arch/ppc/qemu/`       | QEMU bamboo マシン (bare-metal) | 15         |
+| **M68000**       | `arch/m68k/qemu/`      | QEMU virt マシン (bare-metal)   | 15         |
+| **Z80**          | `arch/z80/sim/`        | Go製 CP/M シミュレータ          | 15         |
+| **x86 (16-bit)** | `arch/x86_16/qemu/`    | QEMU i386 フロッピーブート      | 17         |
+| **x86 (16-bit)** | `arch/x86_16/dos/com/` | DOSBox (COM)                    | 1          |
+| **x86 (16-bit)** | `arch/x86_16/dos/exe/` | DOSBox (MZ EXE)                 | 14         |
+| **x86 (32-bit)** | `arch/x86_32/qemu/`    | QEMU i386 フロッピーブート      | 13         |
+| **x86 (64-bit)** | `arch/x86_64/qemu/`    | QEMU x86_64 フロッピーブート    | 17         |
+| **x86 (64-bit)** | `arch/x86_64/darwin/`  | macOS ネイティブ                | 1          |
+| **x86 (32-bit)** | `arch/x86_32/darwin/`  | macOS ネイティブ                | 1          |
+| **ARM64**        | `arch/arm64/darwin/`   | macOS ネイティブ                | 1          |
+| **RISC-V (32-bit)** | `arch/riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
+| **RISC-V (64-bit)** | `arch/riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
 
 ## 出力・入力の仕組み
 
@@ -107,8 +107,8 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 
 | #    | テーマ                       | アーキテクチャ |
 | :--- | :---                         | :---           |
-| s13  | 100 バイトコピー (copybench) | 全アーキ (比較は `_docs/copybench.md`) |
-| s13  | ファイル I/O（DOS 固有）     | x86_16/dos     |
+| s13  | 100 バイトコピー (copybench) | 全アーキ (比較は `doc/copybench.md`) |
+| s13  | ファイル I/O（DOS 固有）     | arch/x86_16/dos     |
 
 ### アーキテクチャ固有シナリオ
 
@@ -117,8 +117,8 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 | s101 | 裏レジスタ                    | Z80            |
 | s101 | Zero Page / 自己書き換えコード | 6502          |
 | s101 | セグメントアドレス            | x86_16         |
-| s103 | マルチセクタ読み込み          | x86_16/qemu    |
-| s104 | 32 ビットプロテクトモード      | x86_16/qemu    |
+| s103 | マルチセクタ読み込み          | arch/x86_16/qemu    |
+| s104 | 32 ビットプロテクトモード      | arch/x86_16/qemu    |
 | s101 | MOVEM                         | m68k           |
 | s101 | CR とリンクレジスタ           | PPC            |
 | s101 | CSR と ECALL                  | RISC-V         |
@@ -248,7 +248,7 @@ make -C <repo root> format
 
 ```bash
 # 各プラットフォームのディレクトリで
-cd z80/sim && make debug S=s03_stack    # ステップ実行で CPU 状態を観察
+cd arch/z80/sim && make debug S=s03_stack    # ステップ実行で CPU 状態を観察
 
 # またはトップレベルから A= でディレクトリを指定
 make trace A=6502/sim65 S=s03_stack     # 全命令の実行トレース
@@ -262,7 +262,7 @@ make icount A=riscv64/qemu S=s01_hello  # 実行命令数の集計
 | Z80               | simz80 対話ステッパー (`-debug`)      | フル対話型。レジスタ差分・フラグ変化・T-states 表示 |
 | 6502              | sim65i 対話ステッパー (`-g`)          | フル対話型。レジスタ差分・フラグ変化・サイクル表示（下記） |
 | QEMU 系 8 dir     | QEMU gdbstub + gdb / `-d in_asm,cpu`  | `make cycles` は unsupported、命令数は `make icount`              |
-| x86_16/dos        | 対象外                                | dosbox-x は gdbstub を持たないため統一インターフェースに載せられない（将来 dosbox-x 内蔵デバッガで対応予定） |
+| arch/x86_16/dos        | 対象外                                | dosbox-x は gdbstub を持たないため統一インターフェースに載せられない（将来 dosbox-x 内蔵デバッガで対応予定） |
 | darwin ネイティブ | 対象外                                | run 未整備のため対象外                          |
 
 QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` / `x86_32` / `x86_64` の各 `qemu/` ディレクトリ。
@@ -284,7 +284,7 @@ QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` / `x86_3
 6502 だけ 3 つのコマンドの挙動を具体例で示す。`make trace` の 1 行は左から「命令の通番 / 累積サイクル数 / PC / オペコードバイト / 逆アセンブル / レジスタ (A, X, Y, S) / Flags / SP」で、レジスタ欄は**その命令を実行する前**の値。`trace-diff.awk` は変化のあったレジスタについて `BEFORE:`（実行前値）/ `AFTER:`（実行後値 = 次の行の実行前値）/ `CHANGE:`（old→new の要約）の 3 行セットをその命令の直下に挿入する。
 
 ```bash
-cd 6502/sim65
+cd arch/6502/sim65
 make trace S=s03_stack
 ```
 
@@ -353,7 +353,7 @@ QEMU Monitor にアクセスすると、実行中のプログラムの状態を�
 ```bash
 # make run 実行中に Ctrl-A C で monitor に切り替え（-nographic のシリアルと
 # monitor は同じ stdio に多重化されている）。Ctrl-A C でシリアルに戻る。
-# なお x86_16/qemu は -monitor none 固定のため monitor は使えない。
+# なお arch/x86_16/qemu は -monitor none 固定のため monitor は使えない。
 ```
 
 > 注: 以前は `make run S=s01_hello QEMU_ARGS="-monitor stdio"` で起動できると説明していたが、`QEMU_ARGS` を実装した Makefile は存在せず、これはサイレント no-op だった。
@@ -473,7 +473,7 @@ set logging enabled off
 
 既存の同名ファイルは上書きされる。記録されるのは GDB の表示であり、QEMU の UART 出力や CPU のバスアクセス履歴ではない。変更箇所だけを表示するには Python 対応 GDB の `gdb.events.stop` と状態の比較を利用できるが、メモリの前後比較では書き込み順序は分からない。
 
-x86_16 の `make debug` は `x86_16/qemu/` の `i8086.xml` と `i386-32bit.xml` を使い、gdb 起動時に `-x debug.gdb` でマクロ定義ファイルを明示的に読み込む（`.gdbinit` の自動ロードは使わない）。`debug.gdb` には次の設定と `regs16`/`regs32` マクロが定義されている。
+x86_16 の `make debug` は `arch/x86_16/qemu/` の `i8086.xml` と `i386-32bit.xml` を使い、gdb 起動時に `-x debug.gdb` でマクロ定義ファイルを明示的に読み込む（`.gdbinit` の自動ロードは使わない）。`debug.gdb` には次の設定と `regs16`/`regs32` マクロが定義されている。
 
 ```gdb
 set tdesc filename i8086.xml
@@ -544,39 +544,32 @@ make dump32 S=s104_protected
 
 ```text
 asm/
-├── 6502/sim65/          # MOS 6502 アセンブリ (ca65構文) + helpers.s
-├── arm64/
-│   ├── darwin/          # macOS ARM64 (System ABI)
-│   └── qemu/            # ARM64 bare-metal (QEMU virt)
-├── m68k/qemu/           # M68000 bare-metal (QEMU virt)
-├── z80/sim/             # Z80 + Go製CP/Mシミュレータ (z80asm)
-├── ppc/qemu/            # PowerPC bare-metal (QEMU bamboo)
-├── x86_16/
-│   ├── qemu/            # 16-bit x86 フロッピーブート
-│   └── dos/
-│       ├── com/         # DOS COM 形式
-│       └── exe/         # DOS MZ EXE 形式
-├── x86_64/darwin/       # macOS x86_64
-├── x86_32/qemu/         # 32-bit x86 フロッピーブート
-├── x86_64/qemu/         # 64-bit x86 フロッピーブート
-├── x86_32/darwin/       # macOS i386 (32-bit)
-├── riscv32/qemu/        # RISC-V 32-bit bare-metal (QEMU virt)
-├── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
-├── _common/             # 共通コード
-├── _docs/               # 共通資料・計画文書
-└── _bin/isa/            # オフライン命令セット・リファレンス CLI 辞書
+├── arch/                # CPU 別教材
+│   ├── 6502/            # sim65
+│   ├── arm64/           # QEMU / macOS
+│   ├── m68k/            # QEMU
+│   ├── ppc/             # QEMU
+│   ├── riscv32/         # QEMU
+│   ├── riscv64/         # QEMU
+│   ├── x86_16/          # QEMU / DOS
+│   ├── x86_32/          # QEMU / macOS
+│   ├── x86_64/          # QEMU / macOS
+│   └── z80/             # CP/M シミュレータ
+├── bin/isa/             # オフライン命令セット辞書
+├── common/              # 共通コード
+└── doc/                 # 比較資料・計画文書
 ```
 
 ## 命令リファレンス CLI (isa)
 
-オフラインで命令の仕様（動作・アドレッシングモード・消費クロック・フラグ変化・オペコード）を検索できる CLI 辞書。正本データは `_bin/isa/data/*.json`、詳細は `_bin/isa/README.md` を参照。
+オフラインで命令の仕様（動作・アドレッシングモード・消費クロック・フラグ変化・オペコード）を検索できる CLI 辞書。正本データは `bin/isa/data/*.json`、詳細は `bin/isa/README.md` を参照。
 
 ```sh
 isa DJNZ        # 命令を検索（複数アーキに同名がある場合は一覧）
 isa -v DJNZ     # 詳細全文（クロック・オペコード・備考）
 isa z80 DJNZ    # アーキを限定
 isa             # fzf 対話モード（絞り込み + 詳細プレビュー）
-isa build       # _bin/isa/data/*.json から _bin/isa/build/ を再生成
+isa build       # bin/isa/data/*.json から bin/isa/build/ を再生成
 ```
 
-常用する場合は `~/.zshrc` に `alias isa='~/repo/sokoide/asm/_bin/isa/isa'` を追加する（fzf は対話モードのみで必須）。
+常用する場合は `~/.zshrc` に `alias isa='~/repo/sokoide/asm/bin/isa/isa'` を追加する（fzf は対話モードのみで必須）。

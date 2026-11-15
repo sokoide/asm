@@ -3,8 +3,8 @@
 *.bin
 *.trace
 
-# _common/c/c*.c を gcc -S で生成したアセンブリ (各アーキの Makefile が生成・make clean で削除)
-_common/c/c*.s
+# common/c/c*.c を gcc -S で生成したアセンブリ (各アーキの Makefile が生成・make clean で削除)
+common/c/c*.s
 
 .claude/
 .omc/
@@ -18,8 +18,8 @@ pnpm-lock.yaml
 yarn.lock
 
 # ---- isa CLI: 生成ページはオフラインで読めるようコミットする ----
-!_bin/isa/build/
-!_bin/isa/build/**
+!bin/isa/build/
+!bin/isa/build/**
 
 # go test が cmd/simz80/ に生成するバイナリ
-z80/sim/cmd/simz80/simz80
+arch/z80/sim/cmd/simz80/simz80
