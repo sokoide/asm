@@ -1,3 +1,7 @@
+set tdesc filename i8086.xml
+set architecture i8086
+set disassembly-flavor intel
+
 define hook-stop
     regs16
 end
