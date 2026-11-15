@@ -7,7 +7,7 @@
 ## 実施状況 (2026-11-14)
 
 - Phase 1: `s13_copybench` 全 8 アーキ + 6502/z80/x86_16/m68k の s101 シナリオ + `s13_shadow`→`s101_shadow`、`s14_protected`→`s101_protected` 改名 → 完了
-- Phase 2: ppc/riscv/arm64 の s101 シナリオ + `doc/copybench.md` → 完了
+- Phase 2: ppc/riscv/arm64 の s101 シナリオ + `docs/copybench.md` → 完了
 - 未決事項の決定: (1) ARM64 は軸 A・軸 B ともに含めた。(2) 既存シナリオの改名を実施した。(3) 割り込み系は観察まで（IM/IFF の debug 観察、simz80/sim65 の拡張は未実施）。(4) RISC-V ページングは未実施
 - チェックサム仕様: 0+1+...+99 = 4950 = `0x1356`（当初の 0x1352 は 16 進変換の誤り）
 - m68k のみリンカスクリプトを 0x0 → 0x400 に変更（例外ベクタテーブル 0x0-0x3FF と .text の重複解消。既存シナリオ出力は変化なし）
@@ -86,12 +86,12 @@ QEMU の実行時間は実機 CPU 性能の比較に使えないため、実測�
 | 68000 | 68000 タイミング表に基づく手計算。同上 |
 | ppc / arm64 / riscv | 測らない。スーパースケーラ等でコア依存のため、命令数とコードサイズのみで比較し README に明記 |
 
-- 成果物: `doc/copybench.md` に比較表 + 各実装の逆アセンブル対比。「QEMU の実行時間を性能比較に使わない」方針も明記する
+- 成果物: `docs/copybench.md` に比較表 + 各実装の逆アセンブル対比。「QEMU の実行時間を性能比較に使わない」方針も明記する
 
 ## 実装フェーズ
 
 1. **Phase 1**: `s13_copybench` + 6502/z80/x86_16/m68k の s101 シナリオ（既存ツールだけで完結）+ 既存シナリオの改名（s13_shadow / s14_protected）
-2. **Phase 2**: ppc/riscv/arm64 の s101 シナリオ + `doc/copybench.md` 完成
+2. **Phase 2**: ppc/riscv/arm64 の s101 シナリオ + `docs/copybench.md` 完成
 3. **Phase 3（任意）**: simz80 割り込み注入（Z80 IM 2 実演）、sim65 の IRQ/NMI 対応、RISC-V S-mode ページング — いずれもシミュレータ側の作業を伴う
 
 実装は sub agent 2 体並行の既存慣行に従う（例: Phase 1 は 6502+z80 / m68k+x86_16、Phase 2 は ppc+riscv / arm64）。
@@ -101,7 +101,7 @@ QEMU の実行時間は実機 CPU 性能の比較に使えないため、実測�
 - 各プラットフォーム README のシナリオ一覧に s13+ / s101+ を追記
 - root README のディレクトリ一覧・出力テーブル
 - AGENTS.md の「12 シナリオ構造」節（12 + 拡張の番号規約の説明へ修正）
-- `doc/copybench.md` 新設
+- `docs/copybench.md` 新設
 
 ## 未決事項
 

@@ -83,7 +83,7 @@ QEMU 起動フラグは共通の QFLAGS（`-machine pc -accel tcg -cpu 486 -no-r
 
 1. **ブート基盤**: s01、build/run/test/debug を実装。署名・ロード範囲・CR0.PE・CS 属性・32 ビット命令のステップ・UART 出力を確認する。bin/ELF の配置一致を確認する。x86_16 の gdb マクロ移行（`debug.gdb` 方式）もこの Phase で実施する。
 2. **共通教材**: s02〜s12 を実装し、入力・期待出力のテストを追加する。全 12 件が成功する。
-3. **比較と統合**: s13、dump/trace/icount/cycles、README、CPU.md の補足を実装する。全 13 件と失敗注入を確認する。ルート README/AGENTS.md/Makefile の CORE_DIRS と doc/copybench.md に追加する。
+3. **比較と統合**: s13、dump/trace/icount/cycles、README、CPU.md の補足を実装する。全 13 件と失敗注入を確認する。ルート README/AGENTS.md/Makefile の CORE_DIRS と docs/copybench.md に追加する。
 4. **x86_64 への移行**: 実測済みのロード、GDT、配置、UART、テストの仕様を x86_64 計画に反映する。コード共有は実装の重複と差分を確認して判断し、先に汎用化しない。
 
 QEMU の実行確認は 80386 実機互換性や実サイクル数の証明にしない。TCG の実行時間をアーキテクチャ性能比較に用いない。

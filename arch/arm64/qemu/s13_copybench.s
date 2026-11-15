@@ -1,6 +1,6 @@
 // s13_copybench.s - Scenario 13: Copy Benchmark (Common Exercise)
 // ================================================================
-// 共通課題: 100 バイトのメモリコピーとチェックサム検証 (doc/copybench.md 参照)
+// 共通課題: 100 バイトのメモリコピーとチェックサム検証 (docs/copybench.md 参照)
 //
 //   - Source: 100 bytes where byte i = i (0..99)
 //   - Copy src -> dst byte by byte (LDRB/STRB loop with writeback)

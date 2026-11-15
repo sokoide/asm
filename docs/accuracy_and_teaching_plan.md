@@ -4,7 +4,7 @@
 
 ## 実施状況 (2026-11-14)
 
-- **1-1**: isa `x86_16.json` の MOVS を 9+17n に修正し `src: book` に昇格（8086 マシン語秘伝の書(1990) 三の章ニモニック表「18 OR 9+17 N」で裏取り、isa build 再生成）。`s13_copybench.asm` の内訳を 1709（セットアップ込み 1723、17.09 クロック/バイト）に修正。`doc/copybench.md` に「命令数 ≠ サイクル数 ≠ 実行時間」節と実行時間列（6502 約 1.60ms / Z80 約 0.65ms / 8086 約 0.34ms / 68000 約 0.28ms @基準クロック）を追加
+- **1-1**: isa `x86_16.json` の MOVS を 9+17n に修正し `src: book` に昇格（8086 マシン語秘伝の書(1990) 三の章ニモニック表「18 OR 9+17 N」で裏取り、isa build 再生成）。`s13_copybench.asm` の内訳を 1709（セットアップ込み 1723、17.09 クロック/バイト）に修正。`docs/copybench.md` に「命令数 ≠ サイクル数 ≠ 実行時間」節と実行時間列（6502 約 1.60ms / Z80 約 0.65ms / 8086 約 0.34ms / 68000 約 0.28ms @基準クロック）を追加
 - **1-2**: tstates.go を UM0080 準拠に修正（DJNZ base 5→8・taken 8→13、LD r,(HL)/LD (HL),r 4→7、ALU A,(HL) 4→7、BIT b,(HL) 15→12。全行照合の結果、不正はこの 4 箇所のみ）。テスト期待値を出典コメント付きで更新。再計測: z80 s13 16,012→16,486 T、s101_blockops 30,961→32,623 T（LDI 26T/バイト・LDIR 2095T は不変）
 - **1-3**: setFlagsSub に非オーバーフロー時の PF クリア、setFlagsInc/Dec をオーバーフロー P/V に修正。指定 4 ケース + AND パリティ対比の 5 テスト追加
 - **1-4**: trace-diff.awk を BEFORE/AFTER/CHANGE 形式に（2 パス化）。root README の TXS と `SP: FFFF→FFC0` の誤結合を修正 — `SP` は cc65 ランタイムのソフトウェア SP（ゼロページ $06-$07 の `sp` 変数、`sta $06` で初期化される）で、TXS が書くのはハードウェア `S` のみ
@@ -38,7 +38,7 @@
 
 | 指摘 | 検証結果 |
 | :--- | :--- |
-| 1-1 8086 REP MOVSB | **誤りを確認**。`bin/isa/data/x86_16.json` の MOVS エントリ自体が `17+4n`（`src: knowledge`）で、`s13_copybench.asm` と `doc/copybench.md` に波及。正しくは 8086 で **9+17n**（iAPX 86/88 User's Manual 210201 Table 2-21、Abrash Zen of Assembly Appendix A も同値）。物理的裏付け: 8086 のバスサイクルは 4 クロックで、read+write だけで最低 8 クロック/バイト → 4.17 クロック/バイトは不可能 |
+| 1-1 8086 REP MOVSB | **誤りを確認**。`bin/isa/data/x86_16.json` の MOVS エントリ自体が `17+4n`（`src: knowledge`）で、`s13_copybench.asm` と `docs/copybench.md` に波及。正しくは 8086 で **9+17n**（iAPX 86/88 User's Manual 210201 Table 2-21、Abrash Zen of Assembly Appendix A も同値）。物理的裏付け: 8086 のバスサイクルは 4 クロックで、read+write だけで最低 8 クロック/バイト → 4.17 クロック/バイトは不可能 |
 | 1-2 Z80 T-state | **誤りを確認**。`tstatesMain`: DJNZ base=5（正: 8）、x==1 が LD r,(HL)/LD (HL),r をまとめて 4（正: 7）、x==2 が ALU A,(HL) を 4（正: 7）、`tstatesCB` が BIT b,(HL) を 15（正: 12）。`simz80_test.go` の `{"DJNZ base", tstatesMain(0x10), 5}` も誤期待値。LDIR 21/16 と 2095T は正しい |
 | 1-3 P/V フラグ | **誤りを確認**。`setFlagsSub` はオーバーフロー時に PF を立てるが非オーバーフロー時に `szpFlags` 由来のパリティをクリアしていない。`setFlagsInc`/`setFlagsDec` はパリティのまま（`setFlagsAdd` は既に修正済み） |
 | 1-4 6502 トレース | **確認**。root README が TXS と `▸ SP: FFFF→FFC0` を結びつけているが、トレースの `SP=` は cc65 ランタイムのソフトウェア SP（ゼロページ SPAddr の 16 ビット値）、TXS が書くのは CPU のハードウェア S（8 ビット）で別物。trace-diff.awk は「実行前値の連鎖」表示 |
@@ -49,7 +49,7 @@
 
 - `bin/isa/data/x86_16.json`: MOVS の cycles を `{REP 時 1回ごと: 9+17n}` に修正。22_Library の 8086 書籍（秘伝の書/ハンドブック）で Table 2-21 を照合し、確認できたら `src` を `knowledge` → `book` に昇格。MOVSW（9+25n と予想 — 実装時に照合）も合わせて確認。`isa build` で再生成
 - `arch/x86_16/qemu/s13_copybench.asm`: コメントの内訳を修正（REP MOVSB 100 バイト = 1709、cld/mov×3 のセットアップ 14 込み = **1723**、17.09 クロック/バイト）
-- `doc/copybench.md`:
+- `docs/copybench.md`:
   - 8086 行を修正
   - **実行時間の列を追加**: サイクル数 ÷ 基準クロック周波数（µs/100 バイト）。基準は明示的に仮定として書く（6502 1MHz / Z80 4MHz / 8086 5MHz / 68000 8MHz / PPC440 はコア依存のため除外）
   - 読みどころを書き直す: Z80 LDIR は 5.25µs/バイト（21T÷4MHz）、8086 REP MOVSB は 3.42µs/バイト（17.09÷5MHz）→「命令 1 回の強さ」と「クロック当たりの仕事」を区別する比較に
@@ -63,7 +63,7 @@
   - x==2: ALU A,(HL) → **7**
   - `tstatesCB`: x==0（rotate/shift 系、(HL)）= 15、x==1（BIT）で (HL) = **12**、SET/RES (HL) = 15 を区別
 - `simz80_test.go`: **期待値を Zilog UM0080 の命令表から作り直す**（出典をテストコメントに記載）。`{"DJNZ base", 5}` を 8 に修正し、LD A,(HL)=7、ADD A,(HL)=7、BIT 0,(HL)=12 を追加。tstatesIX/ED の既存値も表照合の監査結果をコメント化
-- **掲載済み計測値の再計測**: 修正後に z80 シナリオを `make cycles` で再計測し、`doc/copybench.md` の Z80 行（16,012T 等）と z80 README の数値を更新。s101_blockops の LDIR 2095T は変化しないことを確認
+- **掲載済み計測値の再計測**: 修正後に z80 シナリオを `make cycles` で再計測し、`docs/copybench.md` の Z80 行（16,012T 等）と z80 README の数値を更新。s101_blockops の LDIR 2095T は変化しないことを確認
 
 ### 1-3. Z80 P/V フラグ
 
@@ -115,7 +115,7 @@
   - **STEP 1 予測**: 命令長・サイクル差などを先に予想させる設問
   - **STEP 2 観察**: 使うコマンド（`make trace` / `make debug` / `make icount`）と見るべき場所
   - **STEP 3 改造**: 具体的な変更例（ループ回数、アドレッシングモードの差し替え）
-  - **STEP 4 考察**: 他アーキとの対比（doc/copybench.md やアーキ間の参照）
+  - **STEP 4 考察**: 他アーキとの対比（docs/copybench.md やアーキ間の参照）
 - 1 ファイル多デモのシナリオには分割せず以下を用意:
   - ppc `s101_cr_lr`: デモ入口に分かりやすいグローバルラベル（`demo1_cr0_compare:` 等）を付与し、README に各デモの観察ポイントと `make debug` での break 先アドレスを記載
   - z80 `s102_interrupts` / 6502 `s103_irq_nmi` / x86_16 `s101_segments` も同様に各デモの観察ポイントを追記

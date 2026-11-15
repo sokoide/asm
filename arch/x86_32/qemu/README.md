@@ -392,7 +392,7 @@ AND / OR / XOR / SHL / SHR / ROR を 32 ビット幅で使い、ビット単位�
 
 **実行出力**: `COPY OK CHECKSUM=1356`（1 行のみ）
 
-**ポイント**: QEMU TCG はサイクル精度ではないため実サイクルは測れない。REP MOVSB の手計算サイクル内訳（8086: 9+17n = 17.09 クロック/バイト）は [`../../../doc/copybench.md`](../../../doc/copybench.md) と x86_16 版に記載しており、386 のブロック転送タイミングは比較表の対象外である。
+**ポイント**: QEMU TCG はサイクル精度ではないため実サイクルは測れない。REP MOVSB の手計算サイクル内訳（8086: 9+17n = 17.09 クロック/バイト）は [`../../../docs/copybench.md`](../../../docs/copybench.md) と x86_16 版に記載しており、386 のブロック転送タイミングは比較表の対象外である。
 
 ---
 
@@ -433,8 +433,8 @@ make clean            # 生成物とともに common/c/c*.s を削除
 ## 関連ドキュメント
 
 - [`../CPU.md`](../CPU.md) — 80386 命令セットリファレンス（末尾に保護モード関連の補足あり）
-- [`../../../doc/x86_32_qemu_plan.md`](../../../doc/x86_32_qemu_plan.md) — 本ディレクトリの整備計画（フェーズと受入条件）
-- [`../../../doc/copybench.md`](../../../doc/copybench.md) — 共通課題 s13（100 バイトコピー）の全アーキ比較
+- [`../../../docs/x86_32_qemu_plan.md`](../../../docs/x86_32_qemu_plan.md) — 本ディレクトリの整備計画（フェーズと受入条件）
+- [`../../../docs/copybench.md`](../../../docs/copybench.md) — 共通課題 s13（100 バイトコピー）の全アーキ比較
 - [`../../../README.md`](../../../README.md) — リポジトリ全体のガイド（デバッグガイド・シナリオ規約）
 - [`../darwin/README.md`](../darwin/README.md) — macOS ネイティブ版（Mach-O とホスト ABI）
 - [`../../x86_16/qemu/README.md`](../../x86_16/qemu/README.md) — 16-bit リアルモード版（本教材の対照）
@@ -532,4 +532,4 @@ int  0x13            ; CF = 1 ならエラー → AH=0 でリセットして再�
 3. `make debug S=s01_hello` で `_start` に止め、`info registers cr0` で CR0.PE = 1 と CS = 0x08 を確認する
 4. S03 で `print_hex32` を使って ESP の 4 バイトステップを観察し、16-bit 版（x86_16、SP の 2 バイトステップ）と対比する
 5. メッセージやテスト値を書き換えて `make run S=...` と `make test` で確認する
-6. リアルモードの基本（セグメント計算、IVT）は [`../../x86_16/qemu/README.md`](../../x86_16/qemu/README.md) から、ホスト ABI は [`../darwin/README.md`](../darwin/README.md) から入る。x86_64 QEMU 版は `doc/x86_64_qemu_plan.md` に整備計画がある
+6. リアルモードの基本（セグメント計算、IVT）は [`../../x86_16/qemu/README.md`](../../x86_16/qemu/README.md) から、ホスト ABI は [`../darwin/README.md`](../darwin/README.md) から入る。x86_64 QEMU 版は `docs/x86_64_qemu_plan.md` に整備計画がある
