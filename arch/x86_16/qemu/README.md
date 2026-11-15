@@ -76,6 +76,7 @@ curl -LO https://raw.githubusercontent.com/mrexodia/x86-real-mode-bootloader/mas
 ├── linker.ld           # リンカスクリプト（0x7C00 配置, binary 出力）
 ├── Makefile
 ├── README.md
+├── s00.asm             # 導入: 動作確認用スクラッチ
 ├── s01_hello.asm       # シナリオ 1: Hello World
 ├── s02_registers.asm   # シナリオ 2: レジスタと算術
 ├── s03_stack.asm       # シナリオ 3: スタック操作
@@ -371,7 +372,7 @@ AND / OR / XOR / SHL / SHR を使い、ビット単位の操作を理解する�
 - **STEP 1 予測**: ソースコメントの手計算（コピー本体 1723 サイクル、`REP MOVSB = 9 + 17×100`）を読み、1 バイト当たり 17.09 クロックという数字を自分でも導いてから、`make icount S=s13_copybench` で総命令数を測る。REP MOVSB は 100 バイトを 1 命令として数えるので、命令数では極端に有利な点に注目する。
 - **STEP 2 観察**: `make trace S=s13_copybench` で `rep movsb` が 1 行として現れる（内部の 100 反復は展開されない）ことを確認する。ICOUNT の内訳を見て、「命令数が少ない = 速い」ではないことを確認する（1 命令の実行時間が長い）。
 - **STEP 3 改造**: `rep movsb` を `lodsb`/`stosb` + `loop` の手書きループに差し替える改造を設計し、icount と手計算サイクル（約 18 + ループオーバーヘッド/バイト）がどう変わるか予測してから試す。
-- **STEP 4 考察**: `docs/copybench.md` を参照。Z80 `LDIR` 21T/バイト ÷ 4MHz と 8086 `REP MOVSB` 17.09 クロック/バイト ÷ 5MHz を時間で比較すると差が僅かになる — 「クロック数」と「実行時間」を区別する練習。
+- **STEP 4 考察**: [docs/copybench.md](../../../docs/copybench.md) を参照。Z80 `LDIR` 21T/バイト ÷ 4MHz と 8086 `REP MOVSB` 17.09 クロック/バイト ÷ 5MHz を時間で比較すると差が僅かになる — 「クロック数」と「実行時間」を区別する練習。
 
 ---
 
@@ -535,7 +536,7 @@ Offset  Size  Field
 
 **難易度**: ★☆☆☆☆
 
-リポジトリ root の `common/c/` にある C ソースを `clang -m16 -g -O0 -S`（`.code16` 出力）でアセンブリに変換し、crt0.asm と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。ブートセクタは 512 バイトのため C コードも 510 バイト上限（超過時はビルドエラー）。
+リポジトリ root の `common/c/` にある C ソースを `clang -m16 -g -O0 -S`（`.code16` 出力）でアセンブリに変換し、crt0.asm と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `build/x86_16/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。ブートセクタは 512 バイトのため C コードも 510 バイト上限（超過時はビルドエラー）。
 
 | 学習項目                     | 説明                                                            |
 | :---                         | :---                                                            |
@@ -551,14 +552,14 @@ Offset  Size  Field
 make run S=c01        # QEMU で実行（UART 出力なし、HLT 到達で timeout 回収）
 make dump S=c01       # crt0 + clang 生成コードの逆アセンブル (16-bit)
 make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
-make clean            # 生成物とともに common/c/c*.s を削除
+make clean            # 生成物とともに build/x86_16/ を削除
 ```
 
-**ポイント**: clang `-m16` の出力は 386 以降の命令（66/67 プレフィックス付き 32-bit オペランド）を含むため、QEMU の既定 CPU（qemu32）では動くが実 8086 では動かない。手書きシナリオ（`cpu 8086`）と命令セット前提が変わる点に注意。引数は x86_32 と同じスタック渡し（`8(%ebp)` 相当）だが 16-bit モードなので `67 66` の二重プレフィックスが付く。同じ `common/c/c01.c` から生成した x86_32/x86_64 版と `common/c/c01.s` を見比べると、モードごとの命令エンコーディングの違いが読み取れる。crt0 は UART 出力を持たず main 復帰後に `cli/hlt` で停止するため、C シナリオは runall に含めない。
+**ポイント**: clang `-m16` の出力は 386 以降の命令（66/67 プレフィックス付き 32-bit オペランド）を含むため、QEMU の既定 CPU（qemu32）では動くが実 8086 では動かない。手書きシナリオ（`cpu 8086`）と命令セット前提が変わる点に注意。引数は x86_32 と同じスタック渡し（`8(%ebp)` 相当）だが 16-bit モードなので `67 66` の二重プレフィックスが付く。同じ `common/c/c01.c` から生成した `build/x86_32/c01.s` / `build/x86_64/c01.s` が `build/x86_16/c01.s` と共存するので見比べると、モードごとの命令エンコーディングの違いが読み取れる。crt0 は UART 出力を持たず main 復帰後に `cli/hlt` で停止するため、C シナリオは runall に含めない。
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
-- **STEP 1 予測**: `common/c/c01.s` を開き、`main` のプロローグ（`pushl %ebp` = `66 55`、`movl %esp, %ebp`）と `movl $0, -4(%ebp)` が 16-bit モードでどうエンコードされるか（何バイト消費するか）先に予測する。
+- **STEP 1 予測**: `build/x86_16/c01.s` を開き、`main` のプロローグ（`pushl %ebp` = `66 55`、`movl %esp, %ebp`）と `movl $0, -4(%ebp)` が 16-bit モードでどうエンコードされるか（何バイト消費するか）先に予測する。
 - **STEP 2 観察**: `make debug S=c01` で `break *0x7c00` → `break main` → `step` と進め、`x/5i $pc` で 66/67 プレフィックス付き命令を確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20` を見る。`make dump S=c02` で `66 E8 rel32`（4 バイト戻りアドレスの call）と crt0 の `o32 call` が一致することも確認する。
 - **STEP 3 改造**: `common/c/c01.c` に文字配列の初期化を追加して再ビルドし、`.rodata`/`.data` がイメージに加わって 510 バイト上限に近づく様子を `make build-c S=c01` の出力サイズで観察する。
 - **STEP 4 考察**: `mov sp, 0x7C00` のスタックで 32-bit push（4 バイト単位）がどう SP を動かすかを gdb の regs16 で追う。実 8086 で動かすには何が不足するか（66/67 プレフィックス、`o32 call`）をソースと突き合わせて考える。

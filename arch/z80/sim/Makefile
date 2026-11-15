@@ -17,10 +17,12 @@ TIMEOUT = timeout --foreground $(TIMEOUT_SECS)
 GODIR   = cmd/simz80
 
 # C シナリオ: リポジトリ root の common/c/c*.c を sdcc -mz80 -S で
-# common/c/c*.s (sdasz80 構文) に生成してから crt0_z80.s と一緒に
-# アセンブル・リンクする (make run/debug S=c01 等)。
+# リポジトリ root の build/z80/c*.s (sdasz80 構文) に生成してから
+# crt0_z80.s と一緒にアセンブル・リンクする (make run/debug S=c01 等)。
 # コンソール出力しない (main の戻り値は DE で確認) ため runall には含めない。
 COMMON_C = ../../../common/c
+CTAG = z80
+BUILD_C = ../../../build/$(CTAG)
 CSOURCES = $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
 
 SDCC = sdcc
@@ -46,6 +48,9 @@ CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
             s10_bitwise=S10BITS s11_memory=S11MEM s12_minishell=S12MSHL \
             s13_copybench=S13COPY s101_blockops=S101BLK s101_shadow=S101SHAD \
             s102_interrupts=S102INTR
+
+# 既定ターゲット (format 定義がファイル先頭にあるため明示指定)
+.DEFAULT_GOAL := all
 
 .PHONY: all run runall dump debug trace cycles icount test cpm cpm-setup clean format build build-s build-c
 
@@ -85,17 +90,19 @@ build:
 build-s:
 	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
 
-# C シナリオ: $(COMMON_C)/$(S).c -sdcc -S-> $(COMMON_C)/$(S).s + crt0_z80.s
-# -> $(S).com。生成された $(COMMON_C)/$(S).s は学習対象なのでビルド後に残す
-# (make clean で削除)。sdasz80 に -l (リスト出力) を付けないのは、リンク前の
-# アドレス (0x0000 基準) を持つ $(S).lst が simz80 -debug が読む $(S).lst と
-# 衝突して逆アセンブル表示を誤らせるため。-g は未定義シンボル (_main など)
-# を外部参照 (global) にするために必須。$(S).lbl はリンクの .map からシンボル
-# (_add, _main) を抽出し z80asm --label と同じ形式で作る (debug で b _main が使える)
+# C シナリオ: $(COMMON_C)/$(S).c -sdcc -S-> $(BUILD_C)/$(S).s + crt0_z80.s
+# -> $(S).com。生成された $(BUILD_C)/$(S).s (例: build/z80/c01.s) は学習対象
+# なのでビルド後に残す (make clean で削除)。sdasz80 に -l (リスト出力) を
+# 付けないのは、リンク前のアドレス (0x0000 基準) を持つ $(S).lst が simz80
+# -debug が読む $(S).lst と衝突して逆アセンブル表示を誤らせるため。-g は
+# 未定義シンボル (_main など) を外部参照 (global) にするために必須。
+# $(S).lbl はリンクの .map からシンボル (_add, _main) を抽出し z80asm
+# --label と同じ形式で作る (debug で b _main が使える)
 build-c:
-	$(SDCC) $(CFLAGS) -S -o $(COMMON_C)/$(S).s $(COMMON_C)/$(S).c
+	@mkdir -p $(BUILD_C)
+	$(SDCC) $(CFLAGS) -S -o $(BUILD_C)/$(S).s $(COMMON_C)/$(S).c
 	$(SDAS) -go crt0_z80.rel crt0_z80.s
-	$(SDAS) -go $(S).rel $(COMMON_C)/$(S).s
+	$(SDAS) -go $(S).rel $(BUILD_C)/$(S).s
 	$(SDCC) $(LINKFLAGS) -o $(S).ihx crt0_z80.rel $(S).rel
 	makebin -p -o 256 $(S).ihx $(S).com
 	@awk 'NF==3 && $$2 ~ /^_/ { printf "%s: equ $$%s\n", $$2, substr($$1,5) }' $(S).map > $(S).lbl
@@ -129,9 +136,11 @@ cycles: $(SIM) build
 icount: $(SIM) build
 	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '/^instructions:/ { print "実行命令数: " $$2 " (simz80 実測 / CPU 命令のみ。BDOS 呼び出し・割り込み受付は含まない)"; found=1 } END { if (!found) print "実行命令数: unsupported (simz80 がサマリを出力せず終了。タイムアウト等で計測不能)" }'
 
-# Unit tests for the simulator core (flags, T-states, .lst parser)
-test:
+# Unit tests for the simulator core (flags, T-states, .lst parser) +
+# scenario output tests (test_scenarios.py: 各シナリオの期待出力照合)
+test: all
 	cd $(GODIR) && go test ./...
+	python3 test_scenarios.py --timeout $(TIMEOUT_SECS)
 
 # Run all scenarios (timeout 1s to prevent hangs)
 runall: all
@@ -188,7 +197,7 @@ cpm: all
 clean:
 	rm -f *.com *.bin *.sym *.lbl *.lst *.lis *.err $(SIM)
 	rm -f *.ihx *.rel *.map *.noi *.lk
-	rm -f $(COMMON_C)/c*.s
+	rm -rf $(BUILD_C)
 	rm -rf $(CPMDIR)
 
 # One-time setup: copy yaze-ag disk images to ~/cpm/

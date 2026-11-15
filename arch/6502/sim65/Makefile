@@ -7,13 +7,16 @@ HELPERS = helpers.s
 HELPER_OBJS = $(HELPERS:.s=.o)
 HELPER_LST = $(HELPERS:.s=.lst)
 
-# C シナリオ: リポジトリ root の common/c/c*.c を cc65 で common/c/c*.s に
+# C シナリオ: リポジトリ root の common/c/c*.c を cc65 で build/6502/c*.s に
 # 生成してから cl65 でアセンブル・リンクする (make run S=c01 / make debug S=c01 等)。
 # カスタム crt0 は不要 (cl65 が cc65 のスタートアップを自動リンクし、sp 設定 →
 # _main 呼び出し → main の戻り値で _exit を担う)。sim65 は main の戻り値
 # (A レジスタ) を終了コードにするため UART 出力はなく、runall には含めない。
 COMMON_C = ../../../common/c
 CSOURCES = $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+# 生成 .s の出力先 (並行ビルドでの共通ファイル上書きを防ぐ)
+CTAG    = 6502
+BUILD_C = ../../../build/$(CTAG)
 
 # C シナリオ用: cc65 は -S オプションを持たず、常にアセンブリ (ca65 構文の .s) を
 # 出力する。-o で出力先を指定できる。cc65 に -O0 は無く、「-O 無指定 = 最適化なし」
@@ -39,6 +42,9 @@ TIMEOUT_SECS ?= 1
 # (未定義だと $(TIMEOUT) が空展開され、タイムアウトなしで実行される)
 TIMEOUT ?= timeout --foreground $(TIMEOUT_SECS)
 
+# 既定ターゲット (format 定義がファイル先頭にあるため明示指定)
+.DEFAULT_GOAL := all
+
 .PHONY: all run runall debug replay trace cycles icount clean sim65i format build build-s build-c
 
 # アセンブリソースを nvim の保存時整形と同一ロジックで整形
@@ -56,14 +62,14 @@ format:
 
 all: sim65i
 	@echo "=== helpers ==="; \
-	cl65 -t sim6502 -c -l $(HELPER_LST) -o $(HELPER_OBJS) $(HELPERS) && echo "  OK" || echo "  FAIL"; \
+	cl65 -t sim6502 -c -l $(HELPER_LST) -o $(HELPER_OBJS) $(HELPERS) && echo "  OK" || exit 1; \
 	for s in $(SCENARIOS) $(CSOURCES); do \
 		echo "=== $$s ==="; \
 		if [ -f $(COMMON_C)/$$s.c ]; then \
-			$(MAKE) --no-print-directory build-c S=$$s && echo "  OK" || echo "  FAIL"; \
+			$(MAKE) --no-print-directory build-c S=$$s && echo "  OK" || exit 1; \
 		else \
 			cl65 -t sim6502 -c -l $$s.lst -o $$s.o $$s.s && \
-			cl65 -t sim6502 -o $$s --mapfile $$s.map $$s.o $(HELPER_OBJS) && echo "  OK" || echo "  FAIL"; \
+			cl65 -t sim6502 -o $$s --mapfile $$s.map $$s.o $(HELPER_OBJS) && echo "  OK" || exit 1; \
 		fi; \
 	done
 
@@ -88,14 +94,15 @@ build:
 build-s:
 	$(call build_one,$(S))
 
-# C シナリオ: $(COMMON_C)/$(S).c -cc65-> $(COMMON_C)/$(S).s -cl65-> $(S) + $(S).map
-# cc65 -o で common/c/$(S).s へ直接出力する (生成 .s は学習対象なので残す)。
+# C シナリオ: $(COMMON_C)/$(S).c -cc65-> $(BUILD_C)/$(S).s -cl65-> $(S) + $(S).map
+# cc65 -o で build/6502/$(S).s へ直接出力する (生成 .s は学習対象なので残す)。
 # cl65 は .s を ca65 でアセンブルし、cc65 のスタートアップ + ランタイム
 # (lib/sim6502.lib) を自動リンクする。c01/c02 は helpers.s の print_str を
 # 使わないため helpers.o は結合しない
 build-c:
-	$(CC65) $(CFLAGS) -o $(COMMON_C)/$(S).s $(COMMON_C)/$(S).c
-	cl65 -t sim6502 -o $(S) --mapfile $(S).map $(COMMON_C)/$(S).s
+	@mkdir -p $(BUILD_C)
+	$(CC65) $(CFLAGS) -o $(BUILD_C)/$(S).s $(COMMON_C)/$(S).c
+	cl65 -t sim6502 -o $(S) --mapfile $(S).map $(BUILD_C)/$(S).s
 
 # s103_irq_nmi は割り込みトリガが必要なため sim65i を使う
 # (sim65 は main の戻り値 = A レジスタを終了コードにする。C シナリオ c01/c02 は return 0)
@@ -211,4 +218,4 @@ sim65i:
 clean:
 	rm -f $(SCENARIOS) $(HELPER_OBJS) $(SCENARIOS:=.o) $(SCENARIOS:=.lst) $(HELPER_LST) $(SCENARIOS:=.trace) $(SCENARIOS:=.icount.trace) $(SCENARIOS:=.map)
 	rm -f $(CSOURCES) $(CSOURCES:=.map) $(CSOURCES:=.trace) $(CSOURCES:=.icount.trace)
-	rm -f $(COMMON_C)/c*.s
+	rm -rf $(BUILD_C)

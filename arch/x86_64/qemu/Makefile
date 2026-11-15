@@ -33,15 +33,21 @@ ICOUNT_SECS  ?= 5
 GDB          ?= gdb
 GDB_PORT     ?= 1234
 
-# --- C シナリオ: リポジトリ root の common/c/c*.c を clang -S で common/c/c*.s に
+# --- C シナリオ: リポジトリ root の common/c/c*.c を clang -S で build/x86_64/c*.s に
 # 生成してから crt0.asm (+ boot.o) と一緒にアセンブル・リンクする (make debug S=c01 等)。
 # UART 出力しない (main の戻り値は RAX で確認) ため runall には含めない。
 COMMON_C   = ../../../common/c
 CSCENARIOS := $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+# 生成 .s の出力先 (並行ビルドでの共通ファイル上書きを防ぐ)
+CTAG       = x86_64
+BUILD_C    = ../../../build/$(CTAG)
 CC         = clang
 # -mno-red-zone: IDT 未構築で割り込みは無いが、カーネルコードの作法として。
 # -fno-asynchronous-unwind-tables: .eh_frame を出させない (bare-metal では不要)
 CFLAGS     = --target=x86_64-pc-none-elf -mno-red-zone -g -O0 -fno-asynchronous-unwind-tables
+
+# 既定ターゲット (format 定義がファイル先頭にあるため明示指定)
+.DEFAULT_GOAL := all
 
 .PHONY: linkcheck  all run runall test debug trace icount cycles dump clean format build-c
 
@@ -80,14 +86,15 @@ all: boot.o
 	done
 
 # C シナリオのビルド: make build-c S=c01
-# clang -S の出力 common/c/$(S).s は学習対象なので $(COMMON_C)/ に残す (make clean で削除)。
+# clang -S の出力 build/x86_64/$(S).s は学習対象なので $(BUILD_C)/ に残す (make clean で削除)。
 # .bin はブートセクタ + crt0 + C コード、.elf は gdb 用 (linker-debug.ld + DWARF)。
 build-c: boot.o
 	@set -e; \
 	echo "=== $(S) [C] ==="; \
-	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(COMMON_C)/$(S).s; \
+	mkdir -p $(BUILD_C); \
+	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(BUILD_C)/$(S).s; \
 	$(AS) $(ASFLAGS) -g -F dwarf -l crt0.lst -o crt0.o crt0.asm; \
-	$(CC) --target=x86_64-pc-none-elf -c -o $(S).o $(COMMON_C)/$(S).s; \
+	$(CC) --target=x86_64-pc-none-elf -c -o $(S).o $(BUILD_C)/$(S).s; \
 	$(LK) $(LKFLAGS) -o $(S).bin boot.o crt0.o $(S).o; \
 	$(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o crt0.o $(S).o; \
 	rm -f crt0.o $(S).o; \
@@ -243,7 +250,7 @@ linkcheck:
 
 clean:
 	rm -f *.bin *.img *.o *.lst *.elf *.trace *.icount.trace .linkcheck.tmp1 .linkcheck.tmp2
-	rm -f $(COMMON_C)/c*.s
+	rm -rf $(BUILD_C)
 
 # boot.o は全シナリオで共通のブートセクタ + 移行スタブ
 boot.o: boot.asm

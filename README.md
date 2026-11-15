@@ -7,11 +7,11 @@
 
 | アーキテクチャ   | ディレクトリ      | 実行環境                        | シナリオ数 |
 | :---             | :---              | :---                            | :---       |
-| **6502**         | `arch/6502/sim65/`     | sim65 シミュレータ (cc65)       | 15         |
+| **6502**         | `arch/6502/sim65/`     | sim65 シミュレータ (cc65)       | 16         |
 | **ARM64**        | `arch/arm64/qemu/`     | QEMU virt マシン (bare-metal)   | 15         |
 | **PowerPC**      | `arch/ppc/qemu/`       | QEMU bamboo マシン (bare-metal) | 15         |
 | **M68000**       | `arch/m68k/qemu/`      | QEMU virt マシン (bare-metal)   | 15         |
-| **Z80**          | `arch/z80/sim/`        | Go製 CP/M シミュレータ          | 15         |
+| **Z80**          | `arch/z80/sim/`        | Go製 CP/M シミュレータ          | 16         |
 | **x86 (16-bit)** | `arch/x86_16/qemu/`    | QEMU i386 フロッピーブート      | 17         |
 | **x86 (16-bit)** | `arch/x86_16/dos/com/` | DOSBox (COM)                    | 1          |
 | **x86 (16-bit)** | `arch/x86_16/dos/exe/` | DOSBox (MZ EXE)                 | 14         |
@@ -20,8 +20,8 @@
 | **x86 (64-bit)** | `arch/x86_64/darwin/`  | macOS ネイティブ                | 1          |
 | **x86 (32-bit)** | `arch/x86_32/darwin/`  | macOS ネイティブ                | 1          |
 | **ARM64**        | `arch/arm64/darwin/`   | macOS ネイティブ                | 1          |
-| **RISC-V (32-bit)** | `arch/riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
-| **RISC-V (64-bit)** | `arch/riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
+| **RISC-V (32-bit)** | `arch/riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 15         |
+| **RISC-V (64-bit)** | `arch/riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 15         |
 
 ## 出力・入力の仕組み
 

@@ -799,3 +799,125 @@ func TestCBBIT0HighValue(t *testing.T) {
 		t.Fatalf("BIT 0,A (A=80): S=1, want S=0")
 	}
 }
+
+// ---- アキュムレータ演算グループ (00 yyy 111) のフラグ ----
+
+// stepAccumulatorOp は op を A/F を設定したうえで 1 命令実行する。
+func stepAccumulatorOp(t *testing.T, op, a, f byte) *Z80 {
+	t.Helper()
+	z := NewZ80()
+	z.mem[0x0100] = op
+	z.mem[0x0101] = 0x76 // HALT
+	z.pc = 0x0100
+	z.a, z.f = a, f
+	if !z.Step() {
+		t.Fatalf("op %02X should execute", op)
+	}
+	return z
+}
+
+// RLCA/RRCA/RLA/RRA は C (と H=0/N=0) のみ変化し S/Z/P/V は不変
+// (UM0080)。修正前は RLCA/RRCA が szpFlags で S/Z/P を更新しており、
+// RLA/RRA/DAA/CPL/SCF/CCF はサイレント no-op だった。
+// 入力 F に S/Z/P/V+H/N/C をすべて立てたケース (0xD7) で「不変」を
+// 検証する。期待 F は手計算 (SZP は入力値を引き継ぎ、C/H/N のみ再構成)。
+func TestAccumulatorRotatesFlags(t *testing.T) {
+	cases := []struct {
+		name         string
+		op           byte
+		a, f         byte
+		wantA, wantF byte
+	}{
+		// RLCA: A 左回転、C = 旧 bit7
+		{"RLCA 85 (C=1)", 0x07, 0x85, 0xD7, 0x0B, 0xC5},
+		{"RLCA 15 (C=0, N クリア)", 0x07, 0x15, 0x02, 0x2A, 0x00},
+		// RRCA: A 右回転、C = 旧 bit0
+		{"RRCA 03 (C=1)", 0x0F, 0x03, 0xD7, 0x81, 0xC5},
+		{"RRCA 42 (C=0)", 0x0F, 0x42, 0x02, 0x21, 0x00},
+		// RLA: A = (A<<1)|旧C、C = 旧 bit7。旧 C を通す回転を検証
+		{"RLA 80 C=1 → 01", 0x17, 0x80, 0xD7, 0x01, 0xC5},
+		{"RLA 80 C=0 → 00 (C=bit7)", 0x17, 0x80, 0xD6, 0x00, 0xC5},
+		{"RLA 42 C=1 → 85 (C=bit7=0)", 0x17, 0x42, 0x01, 0x85, 0x00},
+		// RRA: A = (A>>1)|(旧C<<7)、C = 旧 bit0。旧 C を通す回転を検証
+		{"RRA 01 C=1 → 80", 0x1F, 0x01, 0xD7, 0x80, 0xC5},
+		{"RRA 01 C=0 → 00 (C=bit0)", 0x1F, 0x01, 0xD6, 0x00, 0xC5},
+		{"RRA 82 C=1 → C1 (C=bit0=0)", 0x1F, 0x82, 0x01, 0xC1, 0x00},
+	}
+	for _, c := range cases {
+		z := stepAccumulatorOp(t, c.op, c.a, c.f)
+		if z.a != c.wantA || z.f != c.wantF {
+			t.Errorf("%s: A=%02X F=%02X, want A=%02X F=%02X", c.name, z.a, z.f, c.wantA, c.wantF)
+		}
+	}
+}
+
+// CPL/SCF/CCF: S/Z/P/V (と C for CPL) は不変、H/N のみ変化 (UM0080)。
+func TestAccumulatorLogicFlags(t *testing.T) {
+	cases := []struct {
+		name         string
+		op           byte
+		a, f         byte
+		wantA, wantF byte
+	}{
+		{"CPL 55 (C 保持, H=N=1)", 0x2F, 0x55, 0x04, 0xAA, 0x16},
+		{"CPL 55 (全フラグ保持)", 0x2F, 0x55, 0xD7, 0xAA, 0xD7},
+		{"SCF (C=1, H=N クリア)", 0x37, 0x55, 0xD7, 0x55, 0xC5},
+		{"SCF (C=0 → C=1)", 0x37, 0x42, 0x00, 0x42, 0x01},
+		{"CCF C=1 → C=0, H=1", 0x3F, 0x55, 0xD7, 0x55, 0xD4},
+		{"CCF C=0 → C=1, H=0", 0x3F, 0x55, 0x00, 0x55, 0x01},
+	}
+	for _, c := range cases {
+		z := stepAccumulatorOp(t, c.op, c.a, c.f)
+		if z.a != c.wantA || z.f != c.wantF {
+			t.Errorf("%s: A=%02X F=%02X, want A=%02X F=%02X", c.name, z.a, z.f, c.wantA, c.wantF)
+		}
+	}
+}
+
+// DAA: BCD 調整。N=0 (加算後) は 旧A>0x99 または旧 C で +0x60、
+// 旧 H または下位ニブル>9 で +0x06、C はその条件値。
+// N=1 (減算後) は 旧 C で -0x60、旧 H で -0x06、C は旧値を保持。
+// H=0、N 不変、S/Z/P は結果から (fuse の実機検証済み実装と同一)。
+// 期待値はすべて手計算。
+func TestDAAFlags(t *testing.T) {
+	cases := []struct {
+		name         string
+		a, f         byte
+		wantA, wantF byte
+	}{
+		{"加算後 調整不要", 0x15, 0x00, 0x15, 0x00},
+		{"加算後 下位ニブル>9 → +06", 0x1E, 0x00, 0x24, 0x04},
+		{"加算後 H → +06", 0x20, 0x10, 0x26, 0x00},
+		{"加算後 A>99h → +66, C=1", 0x9A, 0x00, 0x00, 0x45},
+		{"加算後 C=1 → +60, C=1", 0x50, 0x01, 0xB0, 0x81},
+		{"減算後 H → -06", 0x46, 0x12, 0x40, 0x02},
+		{"減算後 C=1 → -60, C 保持", 0x12, 0x03, 0xB2, 0x87},
+		{"減算後 borrow → -66, C 保持", 0x00, 0x13, 0x9A, 0x87},
+	}
+	for _, c := range cases {
+		z := stepAccumulatorOp(t, 0x27, c.a, c.f)
+		if z.a != c.wantA || z.f != c.wantF {
+			t.Errorf("DAA %s: A=%02X F=%02X, want A=%02X F=%02X", c.name, z.a, z.f, c.wantA, c.wantF)
+		}
+	}
+}
+
+// 実 BCD 演算の代表例: 09h+01h → 10h (加算後 DAA)、40h-07h → 33h (減算後 DAA)。
+func TestDAABCDSequences(t *testing.T) {
+	// LD A,09h / ADD A,01h / DAA: 0x0A (下位ニブル>9) → 0x10, F=00
+	z := runProg(t, []byte{0x3E, 0x09, 0xC6, 0x01, 0x27, 0x76}, 3)
+	if z.a != 0x10 {
+		t.Fatalf("BCD 09+01: A=%02X, want 10", z.a)
+	}
+	if z.f != 0x00 {
+		t.Fatalf("BCD 09+01: F=%02X, want 00", z.f)
+	}
+	// LD A,40h / SUB 07h / DAA: 0x39 with H=1 → 0x33, F=06 (N=1, P=1)
+	z = runProg(t, []byte{0x3E, 0x40, 0xD6, 0x07, 0x27, 0x76}, 3)
+	if z.a != 0x33 {
+		t.Fatalf("BCD 40-07: A=%02X, want 33", z.a)
+	}
+	if z.f != 0x06 {
+		t.Fatalf("BCD 40-07: F=%02X, want 06 (N+P)", z.f)
+	}
+}

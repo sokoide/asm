@@ -19,7 +19,7 @@ ALL_DIRS := $(addprefix arch/,$(CORE_DIRS) $(HELLO_DIRS))
 endif
 
 .PHONY: all build runall clean debug trace cycles icount lint format help
-.default: all
+.DEFAULT_GOAL := all
 
 # 全アーキテクチャをビルド（ツール未インストールの環境では該当ディレクトリをスキップ）
 all build:

@@ -1405,18 +1405,68 @@ func (z *Z80) execMain(op byte) {
 				z.setReg(y, val)
 			}
 		} else if z_ == 7 {
-			if y == 0 { // RLCA
+			// 00 yyy 111 グループ (UM0080 のフラグ定義に基づく実装)。
+			// このグループは S/Z/P/V を一切変えないため F は
+			// (S|Z|P/V) を保存し、C/H/N を命令ごとに再構成する。
+			// (F の bit3/bit5 は本シミュレータではモデル化しない)
+			switch y {
+			case 0: // RLCA: A 左回転 (bit7 → C)。C と H=0/N=0 のみ変化
 				cy := (z.a >> 7) & 1
 				z.a = (z.a << 1) | cy
-				f := z.szpFlags(z.a)
-				f |= cy
-				z.f = f
-			} else if y == 1 { // RRCA
+				z.f = (z.f & (SF | ZF | PF)) | cy
+			case 1: // RRCA: A 右回転 (bit0 → C)。C と H=0/N=0 のみ変化
 				cy := z.a & 1
 				z.a = (z.a >> 1) | (cy << 7)
-				f := z.szpFlags(z.a)
-				f |= cy
-				z.f = f
+				z.f = (z.f & (SF | ZF | PF)) | cy
+			case 2: // RLA: A = (A<<1)|旧C、C = 旧 bit7
+				cy := (z.a >> 7) & 1
+				oldCarry := byte(0)
+				if z.f&CF != 0 {
+					oldCarry = 1
+				}
+				z.a = (z.a << 1) | oldCarry
+				z.f = (z.f & (SF | ZF | PF)) | cy
+			case 3: // RRA: A = (A>>1)|(旧C<<7)、C = 旧 bit0
+				cy := z.a & 1
+				oldCarry := byte(0)
+				if z.f&CF != 0 {
+					oldCarry = 1
+				}
+				z.a = (z.a >> 1) | (oldCarry << 7)
+				z.f = (z.f & (SF | ZF | PF)) | cy
+			case 4: // DAA: BCD 調整。N=0 は加算後 (A>0x99 または C で +0x60、
+				// H または下位ニブル>9 で +0x06)、N=1 は減算後 (C で -0x60、
+				// H で -0x06)。H=0、N 不変。C は加算後 = (旧 A>0x99 or 旧 C)、
+				// 減算後は旧 C を保持 (fuse 等の実機検証済み実装と同一)
+				old := z.a
+				var corr byte
+				if old > 0x99 || z.f&CF != 0 {
+					corr |= 0x60
+				}
+				if old&0x0F > 0x09 || z.f&HF != 0 {
+					corr |= 0x06
+				}
+				carry := z.f & CF
+				if z.f&NF == 0 {
+					// 加算後: C は調整条件 (旧 A>0x99 or 旧 C) から再計算
+					if old > 0x99 || z.f&CF != 0 {
+						carry = CF
+					} else {
+						carry = 0
+					}
+				} else {
+					corr = 0 - corr // 減算後は負の調整値 (mod 256)
+				}
+				z.a = old + corr
+				z.f = z.szpFlags(z.a) | (z.f & NF) | carry
+			case 5: // CPL: A 反転。H=1、N=1、他は不変
+				z.a = ^z.a
+				z.f = (z.f & (SF | ZF | PF | CF)) | HF | NF
+			case 6: // SCF: C=1、H=0、N=0、他は不変
+				z.f = (z.f & (SF | ZF | PF)) | CF
+			case 7: // CCF: C 反転、H=旧 C、N=0、他は不変
+				oldCarry := z.f & CF
+				z.f = (z.f & (SF | ZF | PF)) | oldCarry ^ CF | oldCarry<<4
 			}
 		}
 

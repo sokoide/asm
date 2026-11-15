@@ -58,6 +58,8 @@ make icount S=s01_hello
 ├── linker.ld
 ├── crt0.s               # C シナリオ共通のスタートアップ（スタック設定・.bss クリア・main 呼び出し）
 ├── README.md
+├── debug.gdb            # gdb マクロ（make debug が -x で読み込む）
+├── s00.s                # 導入: 動作確認用スクラッチ
 ├── s01_hello.s          # シナリオ 1: Hello World
 ├── s02_registers.s      # シナリオ 2: レジスタとデータ転送
 ├── s03_stack.s          # シナリオ 3: スタック操作
@@ -276,7 +278,7 @@ UART 入出力を使った対話型シェル。全要素の総合演習。
 
 **難易度**: ★★★☆☆
 
-全アーキ共通の比較課題。100 バイトのメモリコピーを行い、宛先の総和（チェックサム `0x1356`）を検証する。詳細と他アーキとの比較は `docs/copybench.md` を参照。
+全アーキ共通の比較課題。100 バイトのメモリコピーを行い、宛先の総和（チェックサム `0x1356`）を検証する。詳細と他アーキとの比較は [docs/copybench.md](../../../docs/copybench.md) を参照。
 
 | 学習項目     | 説明                                            |
 | :---         | :---                                            |
@@ -288,7 +290,7 @@ UART 入出力を使った対話型シェル。全要素の総合演習。
 - **STEP 1 予測**: `.cp_loop` は `lbu` → `sb` → `addi` × 3 → `bnez` の 6 命令 × 100 回。RISC-V はポインタ更新も自分で書く（writeback アドレッシング無し）点に注目し、ARM64（4 命令/バイト）と比べ何命令多いか予測してから `make icount S=s13_copybench` で総命令数を測る。
 - **STEP 2 観察**: `make trace S=s13_copybench` でループが 6 命令 × 100 回回ることを確認する。`bnez` が汎用レジスタを直接テストする点（ARM64 の `subs` + `b.ne` と違い、`addi` はフラグを set しない）も見る。
 - **STEP 3 改造**: `lbu`/`sb` → `lw`/`sw`（4 バイト転送）に替えて反復 25 回にしたときの icount を予測してから測る。RISC-V に writeback が無いためポインタ更新が残り、命令数削減が 2 命令/反復どまりである点も確認する。
-- **STEP 4 考察**: `docs/copybench.md` を参照。RISC 系（PPC/ARM64/RISC-V/m68k はいずれも専用ブロック転送なし）と CISC 2 種（Z80 LDIR / x86 REP MOVSB）の「命令数/バイト」を並べ、命令数とクロック/実行時間の関係を整理する。
+- **STEP 4 考察**: [docs/copybench.md](../../../docs/copybench.md) を参照。RISC 系（PPC/ARM64/RISC-V/m68k はいずれも専用ブロック転送なし）と CISC 2 種（Z80 LDIR / x86 REP MOVSB）の「命令数/バイト」を並べ、命令数とクロック/実行時間の関係を整理する。
 
 ---
 
@@ -353,7 +355,7 @@ M-mode → S-mode 遷移 → S-mode でページテーブル構築 → ページ
 
 **難易度**: ★☆☆☆☆
 
-リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（rv64im 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（rv64im 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `build/riscv64/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
 
 | 学習項目                          | 説明                                                            |
 | :--- | :--- | :--- |
@@ -369,14 +371,14 @@ M-mode → S-mode 遷移 → S-mode でページテーブル構築 → ページ
 make run S=c01        # QEMU で実行（UART 出力なし、main 復帰後に test finisher で自力終了）
 make dump S=c01       # crt0 + clang 生成コードの逆アセンブル
 make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
-make clean            # 生成物とともに common/c/c*.s を削除
+make clean            # 生成物とともに build/riscv64/ を削除
 ```
 
-**ポイント**: main 復帰後は crt0 が SiFive test finisher（0x100000 へ 0x5555 書き込み）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する（m68k 版は halt ループ + timeout なので違いにも注目）。RISC-V の呼び出し規約は引数を a0/a1 レジスタ渡し・戻り値 a0 で、手書きシナリオ S07 と同じ規約。同じ `common/c/c02.c` から生成した m68k 版（引数スタック渡し）と `common/c/c02.s` を見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
+**ポイント**: main 復帰後は crt0 が SiFive test finisher（0x100000 へ 0x5555 書き込み）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する（m68k 版は halt ループ + timeout なので違いにも注目）。RISC-V の呼び出し規約は引数を a0/a1 レジスタ渡し・戻り値 a0 で、手書きシナリオ S07 と同じ規約。同じ `common/c/c02.c` から生成した `build/m68k/c02.s`（引数スタック渡し）と `build/riscv64/c02.s` が共存するので見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
-- **STEP 1 予測**: `common/c/c01.s` を開き、`main` のプロローグ（`addi sp, sp, -32` / `sd ra, 24(sp)` / `sd s0, 16(sp)`）、`li a0, 0`、エピローグ（`ld` × 2 + `ret`）がそれぞれ何をするか先に予測する。
+- **STEP 1 予測**: `build/riscv64/c01.s` を開き、`main` のプロローグ（`addi sp, sp, -32` / `sd ra, 24(sp)` / `sd s0, 16(sp)`）、`li a0, 0`、エピローグ（`ld` × 2 + `ret`）がそれぞれ何をするか先に予測する。
 - **STEP 2 観察**: `make debug S=c01` で `break main` → `step` → main 復帰後 a0=0・sp が復元されることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`、`make dump S=c02` で確認した `jal` / `jalr <main>` の次のアドレスに `b *ADDR` を置いて a0=0（c-42）を見る。
 - **STEP 3 改造**: `common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、crt0 の .bss クリアループ（`.Lbss`）が実行される様子とリンクアドレスの変化を観察する。
 - **STEP 4 考察**: `make build S=c01 CFLAGS='--target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -g -O2'` でビルドし直し、`make dump S=c01` / `make icount S=c01` で命令数を -O0 と比べる。RISC-V では -g 付きでも -O2 だとプロローグが消えて `li a0, 0` + `ret` だけになる（m68k 版 gcc は -g 付きだとフレームポインタが残る、の対比）。

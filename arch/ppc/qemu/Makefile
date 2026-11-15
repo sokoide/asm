@@ -6,11 +6,14 @@ SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s09_branching s10_bitwise s11_memory s12_minishell \
           s13_copybench s101_cr_lr s102_exceptions
 
-# C シナリオ: リポジトリ root の common/c/c*.c を clang -S で common/c/c*.s に
+# C シナリオ: リポジトリ root の common/c/c*.c を clang -S で build/ppc/c*.s に
 # 生成してから crt0.s と一緒にアセンブル・リンクする (make debug S=c01 等)。
 # UART 出力しない (main の戻り値は r3 で確認) ため runall には含めない。
 COMMON_C = ../../../common/c
 CSOURCES = $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+# 生成 .s の出力先 (並行ビルドでの共通ファイル上書きを防ぐ)
+CTAG    = ppc
+BUILD_C = ../../../build/$(CTAG)
 
 AS      = clang
 LD      = ld.lld
@@ -36,6 +39,9 @@ GDB_PORT   ?= 1234
 # QEMU はタイムアウトまで走り続ける(全サンプルに halt ラベルあり)。
 TRACE_SECS ?= 10
 
+# 既定ターゲット (format 定義がファイル先頭にあるため明示指定)
+.DEFAULT_GOAL := all
+
 .PHONY: all run runall dump debug trace cycles icount clean format build build-s build-c
 
 # 共通ビルド: S=s01_hello 等はカレントの .s を、S=c01 等 $(COMMON_C) に .c が
@@ -53,12 +59,13 @@ build-s:
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
 
-# C シナリオ: $(COMMON_C)/$(S).c -clang -S-> $(COMMON_C)/$(S).s + crt0.s -> $(S).elf
-# clang -S の出力 (c01.s 等) は学習対象なので $(COMMON_C)/ に残す (make clean で削除)
+# C シナリオ: $(COMMON_C)/$(S).c -clang -S-> $(BUILD_C)/$(S).s + crt0.s -> $(S).elf
+# clang -S の出力 (c01.s 等) は学習対象なので $(BUILD_C)/ に残す (make clean で削除)
 build-c:
-	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(COMMON_C)/$(S).s
+	@mkdir -p $(BUILD_C)
+	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(BUILD_C)/$(S).s
 	$(AS) $(ASFLAGS) -o crt0.o crt0.s
-	$(AS) $(ASFLAGS) -o $(S).o $(COMMON_C)/$(S).s
+	$(AS) $(ASFLAGS) -o $(S).o $(BUILD_C)/$(S).s
 	$(LD) $(LDFLAGS) -o $(S).elf crt0.o $(S).o
 	rm -f crt0.o $(S).o
 
@@ -91,11 +98,11 @@ runall: all
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_serial_in" ]; then \
-			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
+			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		elif [ "$$name" = "s12_minishell" ]; then \
-			printf 'help\nquit\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
+			printf 'help\nquit\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		else \
-			timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
+			timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
 		fi; \
 		echo ""; \
 	done
@@ -169,4 +176,4 @@ icount: build
 
 clean:
 	rm -f *.elf *.o *.bin *.trace
-	rm -f $(COMMON_C)/c*.s
+	rm -rf $(BUILD_C)

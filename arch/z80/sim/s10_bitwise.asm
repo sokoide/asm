@@ -57,7 +57,7 @@ _start:
 
     ; SRA (shift right, keep sign)
 	ld      a, 0x82
-	sra     a                 ; A = 0x41
+	sra     a                 ; A = 0xC1 (bit7=1 を保持して右シフト)
 	ld      hl, msg_sra
 	call    print_str
 	call    print_hex8
@@ -79,7 +79,10 @@ _start:
 	call    print_hex8
 	call    newline
 
-	res     3, a              ; clear bit 3 -> A = 0x00
+    ; print_hex8 は A を壊す (戻り時 A = 下位ニブルの ASCII 文字)。
+    ; RES の入力値 0x08 を再ロードしてからデモする。
+	ld      a, 0x08
+	res     3, a              ; clear bit 3 -> A = 0x08 & ~0x08 = 0x00
 	ld      hl, msg_res
 	call    print_str
 	call    print_hex8

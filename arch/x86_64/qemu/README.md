@@ -540,7 +540,7 @@ SSE done!
 
 **難易度**: ★☆☆☆☆
 
-リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（x86-64 向け）でアセンブリに変換し、crt0.asm と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（x86-64 向け）でアセンブリに変換し、crt0.asm と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `build/x86_64/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
 
 | 学習項目                     | 説明                                                            |
 | :---                         | :---                                                            |
@@ -556,14 +556,14 @@ SSE done!
 make run S=c01        # QEMU で実行（UART 出力なし、HLT 到達で timeout 回収）
 make dump S=c01       # crt0 + clang 生成コードの逆アセンブル (0x8000〜)
 make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
-make clean            # 生成物とともに common/c/c*.s を削除
+make clean            # 生成物とともに build/x86_64/ を削除
 ```
 
-**ポイント**: ここはレジスタ渡し ABI（引数 RDI/RSI、戻り値 RAX）で、RISC-V（a0/a1、戻り値 a0）と同じ方式。同じ `common/c/c02.c` から生成した m68k 版・x86_32 版（引数スタック渡し）と `common/c/c02.s` を見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たず main 復帰後に `cli/hlt` で停止するため、C シナリオは runall に含めない（`trace`/`icount` は他シナリオと同じく `scenario_halt` シンボルで完走判定する）。
+**ポイント**: ここはレジスタ渡し ABI（引数 RDI/RSI、戻り値 RAX）で、RISC-V（a0/a1、戻り値 a0）と同じ方式。同じ `common/c/c02.c` から生成した `build/m68k/c02.s`・`build/x86_32/c02.s`（引数スタック渡し）が `build/x86_64/c02.s` と共存するので見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たず main 復帰後に `cli/hlt` で停止するため、C シナリオは runall に含めない（`trace`/`icount` は他シナリオと同じく `scenario_halt` シンボルで完走判定する）。
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
-- **STEP 1 予測**: `common/c/c01.s` を開き、`main` のプロローグ（`pushq %rbp` / `movq %rsp, %rbp`）、`movl $0, -4(%rbp)`、エピローグ（`popq %rbp` / `retq`）がそれぞれ何をするか先に予測する。
+- **STEP 1 予測**: `build/x86_64/c01.s` を開き、`main` のプロローグ（`pushq %rbp` / `movq %rsp, %rbp`）、`movl $0, -4(%rbp)`、エピローグ（`popq %rbp` / `retq`）がそれぞれ何をするか先に予測する。
 - **STEP 2 観察**: `make debug S=c01` で `hbreak *_start` 到達後に `break main` → `step` → main 復帰後 RAX=0・RSP が 0x90000 側に戻ることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`、`break scenario_halt` で RAX=0（c-42）を見る。
 - **STEP 3 改造**: `common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、boot.asm スタブの .bss クリア（`rep stosb`）が実行される様子を `make debug` で観察する。
 - **STEP 4 考察**: `make build-c S=c01 CFLAGS='--target=x86_64-pc-none-elf -mno-red-zone -g -O2 -fno-asynchronous-unwind-tables'` で最適化を変えてビルドし、`make dump S=c01` / `make icount S=c01` で命令数を -O0 と比べる。この clang は -O2 でもフレームポインタ（`pushq %rbp`/`popq %rbp`）を保持するため、`-fomit-frame-pointer` を追加すると `xorl %eax, %eax` + `retq` だけになる（RISC-V 版は -g 付きでもフレームが消える、の対比）。

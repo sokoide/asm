@@ -59,6 +59,7 @@ make icount S=s01_hello
 ├── Makefile
 ├── crt0.s              # C シナリオ共通のスタートアップ（スタック設定・.bss クリア・main 呼び出し）
 ├── README.md
+├── debug.gdb           # gdb マクロ（make debug が -x で読み込む）
 ├── s01_hello.s         # シナリオ 1: Hello World
 ├── s02_registers.s     # シナリオ 2: レジスタと算術
 ├── s03_stack.s         # シナリオ 3: スタック操作
@@ -342,7 +343,7 @@ my_memset:
 
 **難易度**: ★★★☆☆
 
-全アーキ共通の比較課題。100 バイトのメモリコピーを行い、宛先の総和（チェックサム `0x1356`）を検証する。詳細と他アーキとの比較は `docs/copybench.md` を参照。
+全アーキ共通の比較課題。100 バイトのメモリコピーを行い、宛先の総和（チェックサム `0x1356`）を検証する。詳細と他アーキとの比較は [docs/copybench.md](../../../docs/copybench.md) を参照。
 
 | 学習項目            | 説明                                                  |
 | :---                | :---                                                  |
@@ -354,7 +355,7 @@ my_memset:
 - **STEP 1 予測**: `.cb_loop` は `ldrb` → `strb` → `subs` → `b.ne` の 4 命令 × 100 回。ポインタのインクリメントが `ldrb w3, [x0], #1` の writeback に吸収されている点に注目し、PPC（5 命令/バイト、`addi` が独立）と比べて 1 反復が何命令短いか予測する。`make icount S=s13_copybench` で総命令数も予測してから測る。
 - **STEP 2 観察**: `make trace S=s13_copybench` でループが 4 命令 × 100 回回ることを確認する。`subs` がフラグを set し `b.ne` が消費する「独立」関係がループ条件として機能している点も見る。
 - **STEP 3 改造**: `LDRB/STRB` → `LDR/STR`（4 バイト転送）+ 端数処理に替える改造を設計し、反復 25 回になったときの icount を予測してから測る。さらに ARM64 専用命令 `LDP/STP` で 8 バイト転送にするとどうなるかも考察する。
-- **STEP 4 考察**: `docs/copybench.md` を参照し、Z80 `LDIR`（1 命令/バイト）と ARM64（4 命令/バイトだが 1 反復が短い）を「命令数」と「実行時間」の両面で比べる。命令数が多い方が遅いとは限らないことを確認する。
+- **STEP 4 考察**: [docs/copybench.md](../../../docs/copybench.md) を参照し、Z80 `LDIR`（1 命令/バイト）と ARM64（4 命令/バイトだが 1 反復が短い）を「命令数」と「実行時間」の両面で比べる。命令数が多い方が遅いとは限らないことを確認する。
 
 ---
 
@@ -408,7 +409,7 @@ ARM64 の例外ベクタテーブル。VBAR_EL1 が指す 16 エントリ x 0x80
 
 **難易度**: ★☆☆☆☆
 
-リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（AArch64 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（AArch64 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `build/arm64/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
 
 | 学習項目                                    | 説明                                                       |
 | :---                                        | :---                                                       |
@@ -424,14 +425,14 @@ ARM64 の例外ベクタテーブル。VBAR_EL1 が指す 16 エントリ x 0x80
 make run S=c01        # QEMU で実行（UART 出力なし、main 復帰後に semihosting で自力終了）
 make dump S=c01       # crt0 + clang 生成コードの逆アセンブル
 make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
-make clean            # 生成物とともに common/c/c*.s を削除
+make clean            # 生成物とともに build/arm64/ を削除
 ```
 
-**ポイント**: main 復帰後は crt0 が semihosting SYS_EXIT（x0=0x18 + `{ ADP_Stopped_ApplicationExit, subcode }` ブロック）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する。QEMU は ApplicationExit の subcode をホストの終了コードに伝播するため、crt0 は main の戻り値 w0 を subcode に渡す（検証: subcode 42 で終了コード 42 を確認。`make run` は `|| true` で回収するため終了コードを見るときは QEMU を直接実行する）。AArch64 の呼び出し規約は引数 w0/w1 レジスタ渡し・戻り値 w0 で、手書きシナリオ S07（X0-X7 / X0）と同じ規約。同じ `common/c/c02.c` から生成した m68k 版（引数スタック渡し）と `common/c/c02.s` を見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
+**ポイント**: main 復帰後は crt0 が semihosting SYS_EXIT（x0=0x18 + `{ ADP_Stopped_ApplicationExit, subcode }` ブロック）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する。QEMU は ApplicationExit の subcode をホストの終了コードに伝播するため、crt0 は main の戻り値 w0 を subcode に渡す（検証: subcode 42 で終了コード 42 を確認。`make run` は `|| true` で回収するため終了コードを見るときは QEMU を直接実行する）。AArch64 の呼び出し規約は引数 w0/w1 レジスタ渡し・戻り値 w0 で、手書きシナリオ S07（X0-X7 / X0）と同じ規約。同じ `common/c/c02.c` から生成した `build/m68k/c02.s`（引数スタック渡し）と `build/arm64/c02.s` が共存するので見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
-- **STEP 1 予測**: `common/c/c01.s` を開き、`main` のプロローグ（`sub sp, sp, #16`）、`mov w0, wzr` + `str wzr, [sp, #12]`、エピローグ（`add sp, sp, #16` + `ret`）がそれぞれ何をするか先に予測する。main はリーフ関数なので x30 (LR) の退避がないこと、c02 の `main` は `bl add` するため `sub sp, sp, #32` + `stp x29, x30, [sp, #16]` で LR とフレームポインタを退避することも予測する。
+- **STEP 1 予測**: `build/arm64/c01.s` を開き、`main` のプロローグ（`sub sp, sp, #16`）、`mov w0, wzr` + `str wzr, [sp, #12]`、エピローグ（`add sp, sp, #16` + `ret`）がそれぞれ何をするか先に予測する。main はリーフ関数なので x30 (LR) の退避がないこと、c02 の `main` は `bl add` するため `sub sp, sp, #32` + `stp x29, x30, [sp, #16]` で LR とフレームポインタを退避することも予測する。
 - **STEP 2 観察**: `make debug S=c01` で `break main`（gdb はプロローグをスキップして prologue_end に置く）→ `list` で C ソース行表示 → `step` → main 復帰後 x0=0・sp が 0x48000000 に戻ることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`（`printf "a=%d b=%d\n", a, b`）、`make dump S=c02` で確認した `bl main` の次のアドレス（0x40000024）に `b *0x40000024` を置いて x0=0（c-42）を見る。
 - **STEP 3 改造**: `common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、crt0 の .bss クリアループ（`.Lbss`）が実行される様子とリンクアドレスの変化を観察する。
 - **STEP 4 考察**: `make build S=c01 CFLAGS='--target=aarch64-none-elf -g -O2'` でビルドし直し、`make dump S=c01` / `make icount S=c01` で命令数を -O0 と比べる。AArch64 では -g 付きでも -O2 だとプロローグが消えて `mov w0, wzr` + `ret` だけになる（c02 では `add` が `add w0, w1, w0` + `ret` まで縮み、`main` の 2 回の呼び出しは定数畳み込みで消える。m68k 版 gcc は -g 付きだとフレームポインタが残る、の対比）。

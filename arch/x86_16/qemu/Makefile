@@ -35,17 +35,23 @@ GDB_PORT   ?= 1234
 # ログは停止時点で伸びなくなる(タイムアウトは QEMU プロセス回収用)。
 TRACE_SECS ?= 10
 
-# --- C シナリオ: リポジトリ root の common/c/c*.c を clang -m16 で common/c/c*.s に
+# --- C シナリオ: リポジトリ root の common/c/c*.c を clang -m16 で build/x86_16/c*.s に
 # 生成してから crt0.asm と一緒にアセンブル・リンクする (make debug S=c01 等)。
 # UART 出力しない (main の戻り値は AX で確認) ため runall には含めない。
 COMMON_C   = ../../../common/c
 CSCENARIOS := $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+# 生成 .s の出力先 (並行ビルドでの共通ファイル上書きを防ぐ)
+CTAG       = x86_16
+BUILD_C    = ../../../build/$(CTAG)
 CC         = clang
 # -m16: .code16 (16-bit real mode) のコードを生成。386 以降の命令を含むため
 # QEMU 既定 CPU (qemu32) では動くが実 8086 では動かない (crt0.asm の注意参照)。
 # -fno-asynchronous-unwind-tables: .eh_frame を出させない (orphan セクションが
 # linker.ld の .text の前に置かれてイメージが壊れるため)
 CFLAGS     = --target=i386-pc-none-elf -m16 -g -O0 -fno-asynchronous-unwind-tables
+
+# 既定ターゲット (format 定義がファイル先頭にあるため明示指定)
+.DEFAULT_GOAL := all
 
 .PHONY: all run runall test dump dump32 debug trace cycles icount clean format build-c
 
@@ -84,16 +90,17 @@ all:
 	done
 
 # C シナリオのビルド: make build-c S=c01
-# clang -m16 (-g -O0) で common/c/$(S).s を生成し crt0.asm とリンクする。
-# .s は学習対象なので $(COMMON_C)/ に残す (make clean で削除)。
+# clang -m16 (-g -O0) で build/x86_16/$(S).s を生成し crt0.asm とリンクする。
+# .s は学習対象なので $(BUILD_C)/ に残す (make clean で削除)。
 # ブート署名 (0xAA55 @ 510) はリンク後に Makefile 側で追記する (ELF リンクでは
 # イメージ末尾位置が確定しないため)。510 バイト = 512 バイト - 署名 2 バイト。
 build-c:
 	@set -e; \
 	echo "=== $(S) [C] ==="; \
-	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(COMMON_C)/$(S).s; \
+	mkdir -p $(BUILD_C); \
+	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(BUILD_C)/$(S).s; \
 	$(AS) $(ASFLAGS) -g -F dwarf -l crt0.lst -o crt0.o crt0.asm; \
-	$(CC) --target=i386-pc-none-elf -m16 -c -o $(S).o $(COMMON_C)/$(S).s; \
+	$(CC) --target=i386-pc-none-elf -m16 -c -o $(S).o $(BUILD_C)/$(S).s; \
 	$(LK) $(LKFLAGS) -o $(S).bin crt0.o $(S).o; \
 	$(LK) -m elf_i386 -T linker-debug.ld -o $(S).elf crt0.o $(S).o; \
 	rm -f crt0.o $(S).o; \
@@ -170,20 +177,30 @@ debug:
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
+	@if nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; then \
+		echo "ERROR: ポート $(GDB_PORT) が使用中 (既存サーバーへの誤接続を防ぐため起動しません)"; exit 1; \
+	fi
 	@$(QEMU) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
-	  sleep 0.3; \
+	  i=0; while [ $$i -lt 50 ] && ! nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; do \
+	    if ! kill -0 $$QPID 2>/dev/null; then \
+	      echo "ERROR: QEMU が gdbstub を開く前に終了した (起動失敗)"; exit 1; \
+	    fi; \
+	    sleep 0.1; i=$$((i+1)); done; \
+	  if ! kill -0 $$QPID 2>/dev/null; then \
+	    echo "ERROR: QEMU が終了している (gdbstub に接続できません)"; exit 1; \
+	  fi; \
 	  $(GDB) -q $(S).elf \
 	    -x debug.gdb \
 	    -ex 'set pagination off' \
-	    -ex 'target remote :$(GDB_PORT)' \
+	    -ex 'target remote 127.0.0.1:$(GDB_PORT)' \
 	    -ex 'set disassembly-flavor intel' \
 	    -ex 'break *0x7c00' \
 	    -ex 'continue' \
 	    -ex 'set disassemble-next-line on' \
-	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc / regs16 ---\n"'; \
-	  kill $$QPID 2>/dev/null || true
+	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc / regs16 ---\n"'; status=$$?; \
+	  kill $$QPID 2>/dev/null || true; exit $$status
 
 # 実行トレース: make trace S=s01_hello
 # one-insn-per-tb () で1TB=1命令とし、
@@ -252,5 +269,5 @@ icount:
 	echo "詳細: $(S).trace"
 
 clean:
-	rm -f *.bin *.img *.o *.lst *.trace
-	rm -f $(COMMON_C)/c*.s
+	rm -f *.bin *.img *.o *.lst *.elf *.trace
+	rm -rf $(BUILD_C)

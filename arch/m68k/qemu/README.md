@@ -63,6 +63,7 @@ make icount S=s01_hello
 ├── crt0.s              # C シナリオ共通のスタートアップ（スタック設定・.bss クリア・main 呼び出し）
 ├── Makefile
 ├── README.md
+├── s00.s              # 導入: 動作確認用スクラッチ
 ├── s01_hello.s        # シナリオ 1: Hello World
 ├── s02_registers.s    # シナリオ 2: レジスタと算術
 ├── s03_stack.s        # シナリオ 3: スタック操作
@@ -396,7 +397,7 @@ my_memcpy:
 - **STEP 1 予測**: ソースコメントの手計算（コピー本体 2238 サイクル）の内訳を先に読み、1 バイト当たり `MOVE.B (An)+,(An)+` 12 + `DBRA` 10 = 22 サイクルという数字を自分でも導いてから、`make icount S=s13_copybench` で総命令数を測る（サイクルとは別物である点に注意）。
 - **STEP 2 観察**: `make trace S=s13_copybench` で `.Lcopy` ループが `move.b` + `dbra` の 2 命令 × 100 回であることを確認する。`dbra` が比較命令なしでカウンタを減らしながら分岐する点（D2 が -1 になったら抜ける）もトレースで見る。
 - **STEP 3 改造**: `MOVE.B` → `MOVE.L` に替えて 4 バイト/反復にする改造を考える（反復 25 回 + 端数）。`MOVE.L (An)+,(An)+` は 16 サイクル/4 バイト = 4 サイクル/バイトと 3 倍速いはず — この論理の落とし穴（アラインメント、端数処理）をソースコメントの記載と突き合わせて考える。
-- **STEP 4 考察**: 68000 にもブロック転送命令は無い（PPC/RISC-V/ARM64 と同じ素朴ループ）。`docs/copybench.md` を参照し、手計算サイクル（2238）と実サイクロジック（Z80 LDIR 21T/バイト等）を同じ土俵で比べる練習をする。
+- **STEP 4 考察**: 68000 にもブロック転送命令は無い（PPC/RISC-V/ARM64 と同じ素朴ループ）。[docs/copybench.md](../../../docs/copybench.md) を参照し、手計算サイクル（2238）と実サイクロジック（Z80 LDIR 21T/バイト等）を同じ土俵で比べる練習をする。
 
 ---
 
@@ -477,7 +478,7 @@ Back after RTE
 
 **難易度**: ★☆☆☆☆
 
-リポジトリ root の `common/c/` にある C ソースを `gcc -g -O0 -m68000 -S` でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+リポジトリ root の `common/c/` にある C ソースを `gcc -g -O0 -m68000 -S` でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `build/m68k/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
 
 | 学習項目                     | 説明                                                              |
 | :---                         | :---                                                              |
@@ -493,14 +494,14 @@ Back after RTE
 make run S=c01        # QEMU で実行（UART 出力なし、timeout で終了）
 make dump S=c01       # crt0 + gcc 生成コードの逆アセンブル
 make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
-make clean            # 生成物とともに common/c/c*.s を削除
+make clean            # 生成物とともに build/m68k/ を削除
 ```
 
 **ポイント**: 手書きの S07 は引数を D0/D1 のレジスタ渡しにしているが、gcc の m68k 呼び出し規約は引数スタック渡し（戻り値のみ D0）。同じ「サブルーチン」でも ABI が違うことを `make dump S=c02` の `jsr add` 前後（`move.l #1,-(%sp)` での引数積みと `addq.l #8,%sp` の後始末）で確認できる。crt0 は UART 出力を持たないため、C シナリオは `make debug` でレジスタ・変数を観察する使い方を想定している（このため runall には含めない）。
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
-- **STEP 1 予測**: `common/c/c01.s` を開き、`main` のプロローグ（`link.w`）、`moveq #0,%d0`、エピローグ（`unlk`/`rts`）がそれぞれ何をするか先に予測する。
+- **STEP 1 予測**: `build/m68k/c01.s` を開き、`main` のプロローグ（`link.w`）、`moveq #0,%d0`、エピローグ（`unlk`/`rts`）がそれぞれ何をするか先に予測する。
 - **STEP 2 観察**: `make debug S=c01` で `break main` → `step` → main 復帰後 D0=0・A7 が 0x4000 に戻ることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`、`break halt` で D0=0（c-42）を `printf` で見る。
 - **STEP 3 改造**: `common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、crt0 の .bss クリアループ（`.Lbss`）が実行される様子とデータアドレッシングの変化を観察する。
 - **STEP 4 考察**: `make build S=c01 CFLAGS='-g -O2 -m68000'` で最適化を変えてビルドし、`make dump S=c01` / `make icount S=c01` で命令数・コードサイズを -O0 と比べる。`-g` 付きだと `-O2` でもフレームポインタ（`link.w`/`unlk`）が残り、`-g` なしだと消えて `moveq`+`rts` だけになることも確認する。

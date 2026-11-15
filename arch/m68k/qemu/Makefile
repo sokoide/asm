@@ -8,11 +8,14 @@ SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s09_branching s10_bitwise s11_memory s12_minishell \
           s13_copybench s101_movem s102_trap
 
-# C シナリオ: リポジトリ root の common/c/c*.c を gcc -S で common/c/c*.s に
+# C シナリオ: リポジトリ root の common/c/c*.c を gcc -S で build/m68k/c*.s に
 # 生成してから crt0.s と一緒にアセンブル・リンクする (make debug S=c01 等)。
 # UART 出力しない (main の戻り値は d0 で確認) ため runall には含めない。
 COMMON_C = ../../../common/c
 CSOURCES = $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+# 生成 .s の出力先 (並行ビルドでの共通ファイル上書きを防ぐ)
+CTAG    = m68k
+BUILD_C = ../../../build/$(CTAG)
 
 AS      = $(shell which m68k-elf-as m68k-linux-gnu-as 2>/dev/null | head -1)
 LD      = $(shell which m68k-elf-ld m68k-linux-gnu-ld 2>/dev/null | head -1)
@@ -36,6 +39,9 @@ GDB_PORT   ?= 1234
 # trace/cycles 用タイムアウト(秒)。halt ループ(bra halt)で無限スピンするため
 # QEMU はタイムアウトまで走り続ける(全サンプルに halt ラベルあり)。
 TRACE_SECS ?= 10
+
+# 既定ターゲット (format 定義がファイル先頭にあるため明示指定)
+.DEFAULT_GOAL := all
 
 .PHONY: all run runall dump debug trace cycles icount clean format build build-s build-c
 
@@ -67,13 +73,14 @@ build-s:
 	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
 	rm -f $(S).o
 
-# C シナリオ: $(COMMON_C)/$(S).c -gcc -S-> $(COMMON_C)/$(S).s + crt0.s -> $(S).elf
-# gcc -S の出力 (c01.s 等) は学習対象なので $(COMMON_C)/ に残す (make clean で削除)
+# C シナリオ: $(COMMON_C)/$(S).c -gcc -S-> $(BUILD_C)/$(S).s + crt0.s -> $(S).elf
+# gcc -S の出力 (c01.s 等) は学習対象なので $(BUILD_C)/ に残す (make clean で削除)
 build-c:
 	@test -n "$(CC)" || { echo "m68k gcc が見つかりません: brew install m68k-elf-gcc"; exit 1; }
-	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(COMMON_C)/$(S).s
+	@mkdir -p $(BUILD_C)
+	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(BUILD_C)/$(S).s
 	$(AS) $(ASFLAGS) -o crt0.o crt0.s
-	$(AS) $(ASFLAGS) -al=$(S).lst -o $(S).o $(COMMON_C)/$(S).s
+	$(AS) $(ASFLAGS) -al=$(S).lst -o $(S).o $(BUILD_C)/$(S).s
 	$(LD) $(LDFLAGS) -o $(S).elf crt0.o $(S).o
 	rm -f crt0.o $(S).o
 
@@ -171,4 +178,4 @@ icount: build
 
 clean:
 	rm -f *.elf *.o *.lst *.trace
-	rm -f $(COMMON_C)/c*.s
+	rm -rf $(BUILD_C)

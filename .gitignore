@@ -3,8 +3,8 @@
 *.bin
 *.trace
 
-# common/c/c*.c を gcc -S で生成したアセンブリ (各アーキの Makefile が生成・make clean で削除)
-common/c/c*.s
+# common/c/c*.c を各アーキの Makefile が -S 生成したアセンブリ (build/<arch>/c*.s。make clean で削除)
+build/
 
 .claude/
 .omc/

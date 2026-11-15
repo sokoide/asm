@@ -284,7 +284,7 @@ PowerPC の特殊レジスタ（SPR）にアクセスしてタイムベースを
 
 **難易度**: ★★★☆☆
 
-全アーキ共通の比較課題。100 バイトのメモリコピーを行い、宛先の総和（チェックサム `0x1356`）を検証する。詳細と他アーキとの比較は `docs/copybench.md` を参照。
+全アーキ共通の比較課題。100 バイトのメモリコピーを行い、宛先の総和（チェックサム `0x1356`）を検証する。詳細と他アーキとの比較は [docs/copybench.md](../../../docs/copybench.md) を参照。
 
 | 学習項目       | 説明                                        |
 | :---           | :---                                        |
@@ -297,7 +297,7 @@ PowerPC の特殊レジスタ（SPR）にアクセスしてタイムベースを
 - **STEP 1 予測**: コピー本体 `.Lcopy` は `lbz` → `stb` → `addi` × 2 → `bdnz` の 5 命令 × 100 回。ここにチェックサムループと出力ルーチンが加わる。`make icount S=s13_copybench` の総命令数はおよそ何命令になるか予測してから実行して比べる。
 - **STEP 2 観察**: `make trace S=s13_copybench` で `.Lcopy` が 5 命令の組み合わせを 100 回繰り返すことを確認する。`bdnz` が CTR を減らすだけで CR を汚さない点（ループ内で `cmpwi` を使っても干渉しない）もトレースで見る。
 - **STEP 3 改造**: ループ本体を `lwz`/`stw` 4 バイト転送に差し替えて反復 25 回にしたとき、icount がどれだけ減るか予測してから測る。100 が 4 で割り切れない場合の端数処理も含めて考える。
-- **STEP 4 考察**: Z80 `LDIR` は 1 命令/バイト、x86 `REP MOVSB` も 1 命令で複数バイト、PPC は 5 命令/バイト。`docs/copybench.md` を参照し、「命令数の多さ」と「クロック当たりの仕事」を区別して比較する練習をする。
+- **STEP 4 考察**: Z80 `LDIR` は 1 命令/バイト、x86 `REP MOVSB` も 1 命令で複数バイト、PPC は 5 命令/バイト。[docs/copybench.md](../../../docs/copybench.md) を参照し、「命令数の多さ」と「クロック当たりの仕事」を区別して比較する練習をする。
 
 ---
 
@@ -364,7 +364,7 @@ PPC440 (Book E) の例外処理。ベクタは IVPR（64KB 境界）+ IVORn の�
 
 **難易度**: ★☆☆☆☆
 
-リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（powerpc-none-elf 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+リポジトリ root の `common/c/` にある C ソースを `clang -g -O0 -S`（powerpc-none-elf 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `build/ppc/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
 
 | 学習項目                                       | 説明                                                                     |
 | :---                                           | :---                                                                     |
@@ -380,14 +380,14 @@ PPC440 (Book E) の例外処理。ベクタは IVPR（64KB 境界）+ IVORn の�
 make run S=c01        # QEMU で実行（UART 出力なし、main 復帰後の halt ループを timeout で回収）
 make dump S=c01       # crt0 + clang 生成コードの逆アセンブル
 make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
-make clean            # 生成物とともに common/c/c*.s を削除
+make clean            # 生成物とともに build/ppc/ を削除
 ```
 
-**ポイント**: `make run S=c01` は UART 出力がなく、crt0 の halt ループ（`b halt`）で QEMU が止まり続けるため timeout（既定 1 秒）で回収される（他の PPC シナリオと同じ挙動）。`add()` の引数が呼び出し側で `li 4, 1` + `mr 3, 4` のように R3/R4 に置かれ、callee 側で `stw 3, 24(31)` / `stw 4, 20(31)` としてローカル変数領域に退避されるさまを `make dump S=c02` で確認できる。手書きの S07 も R3 渡しという点では同じだが、リーフ関数はフレームを作らないのに対し、clang -O0 は `add()` のような 1 行関数でも必ず `stwu` フレーム + R31 フレームポインタを作る。同じ `common/c/c02.c` から生成した m68k 版・x86_32 版（引数スタック渡し）と `common/c/c02.s` を見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない（`all` ではビルドだけ行う）。
+**ポイント**: `make run S=c01` は UART 出力がなく、crt0 の halt ループ（`b halt`）で QEMU が止まり続けるため timeout（既定 1 秒）で回収される（他の PPC シナリオと同じ挙動）。`add()` の引数が呼び出し側で `li 4, 1` + `mr 3, 4` のように R3/R4 に置かれ、callee 側で `stw 3, 24(31)` / `stw 4, 20(31)` としてローカル変数領域に退避されるさまを `make dump S=c02` で確認できる。手書きの S07 も R3 渡しという点では同じだが、リーフ関数はフレームを作らないのに対し、clang -O0 は `add()` のような 1 行関数でも必ず `stwu` フレーム + R31 フレームポインタを作る。同じ `common/c/c02.c` から生成した `build/m68k/c02.s`・`build/x86_32/c02.s`（引数スタック渡し）が `build/ppc/c02.s` と共存するので見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない（`all` ではビルドだけ行う）。
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
-- **STEP 1 予測**: `common/c/c01.s` を開き、`main` のプロローグ（`stwu 1, -16(1)` / `stw 31, 12(1)` / `mr 31, 1`）、`li 3, 0`、エピローグ（`lwz 31, 12(1)` / `addi 1, 1, 16` / `blr`）がそれぞれ何をするか先に予測する。
+- **STEP 1 予測**: `build/ppc/c01.s` を開き、`main` のプロローグ（`stwu 1, -16(1)` / `stw 31, 12(1)` / `mr 31, 1`）、`li 3, 0`、エピローグ（`lwz 31, 12(1)` / `addi 1, 1, 16` / `blr`）がそれぞれ何をするか先に予測する。
 - **STEP 2 観察**: `make debug S=c01` で `break main`（`../../../common/c/c01.c` の 1 行目で停止）→ `list` → `step` → main 復帰後 R3=0・R1 が 0x1000 に戻ることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`（`printf "a=%d b=%d\n", a, b`）、`make dump S=c02` で確認した main の最後の `blr` アドレスに `b *ADDR` を置いて R3=0（c-42）を見る。なお `make icount S=c01` の実測は 18 命令（bss ループは範囲外で即抜け、main の 8 命令を含む完走値）。
 - **STEP 3 改造**: `common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、crt0 の .bss クリアループ（`.bss_loop`）が回る様子と `lis/addi` の `@ha/@l` アドレス参照の変化を観察する。
 - **STEP 4 考察**: `make build S=c01 CFLAGS='--target=powerpc-none-elf -g -O2'` でビルドし直し、`make dump S=c01` / `make icount S=c01` で命令数を -O0 と比べる。PPC でも -O2 だとプロローグが消えて c01 は `li 3, 0` + `blr` だけになり、c02 は定数伝播で `add()` 呼び出しごと畳まれる（x86_64/RISC-V 版と同じ条件）。

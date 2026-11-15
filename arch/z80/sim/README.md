@@ -135,6 +135,7 @@ C シナリオ（`make debug S=c01` / `S=c02`）は z80asm の `.lst` を持た�
 │   ├── main.go              # Go 製 Z80 + CP/M シミュレータ
 │   └── go.mod               # Go モジュール定義
 ├── crt0_z80.s               # C シナリオ用起動ルーチン (sdasz80 構文)
+├── s00.asm                  # 動作確認用スクラッチ (ビルド対象外)
 ├── s01_hello.asm            # シナリオ 1: Hello World
 ├── s02_registers.asm        # シナリオ 2: レジスタと算術
 ├── s03_stack.asm            # シナリオ 3: スタック操作
@@ -150,7 +151,9 @@ C シナリオ（`make debug S=c01` / `S=c02`）は z80asm の `.lst` を持た�
 ├── s13_copybench.asm        # 拡張: 100 バイトコピーベンチ（共通比較課題）
 ├── s101_blockops.asm        # 拡張: LDIR vs LDI ループ
 ├── s101_shadow.asm          # 拡張: 裏レジスタ
-└── s102_interrupts.asm      # 拡張: 割り込み（IM 0/1/2）
+├── s102_interrupts.asm      # 拡張: 割り込み（IM 0/1/2）
+├── simz80.py                # 旧 Python 版シミュレータ（現行は Go 版を使用）
+└── test_scenarios.py        # シナリオ期待出力テスト（make test から呼ぶ）
 ```
 
 ## シナリオ一覧
@@ -466,7 +469,7 @@ inbuf:
 - **STEP 1 予測**: LDI ループは 16 + 10 = 26 T/バイト。100 バイトのコピー本体が何 T になるか、また `make icount` の総命令数（CPU 命令のみ）は何命令になるか予測してから実行して比べる
 - **STEP 2 観察**: `make cycles S=s13_copybench` の合計 T-states は**プログラム全体**（チェックサム照合ループと BDOS 出力を含む）で、コピー本体だけではない。コピー本体 2,600 T は `make trace S=s13_copybench` の累積 T-state でループ入口・出口の差分を取るか、ソースコメントの内訳と照合する。`make icount` は CPU 命令のみ（BDOS 呼び出しを含まない）
 - **STEP 3 改造**: LDI ループを `LDIR` 1 命令に置き換えたとき、コピー本体が 2,600 T → 2,095 T に減ることを予測し、`s101_blockops` で実測して比べる
-- **STEP 4 考察**: Z80 LDIR は 21 T/バイト。8086 REP MOVSB（17.09 クロック/バイト）とクロック数では僅差だが、実行時間（@4 MHz vs @5 MHz）ではどうか。`docs/copybench.md` で「サイクル数」と「実行時間」を区別して比較する
+- **STEP 4 考察**: Z80 LDIR は 21 T/バイト。8086 REP MOVSB（17.09 クロック/バイト）とクロック数では僅差だが、実行時間（@4 MHz vs @5 MHz）ではどうか。[docs/copybench.md](../../../docs/copybench.md) で「サイクル数」と「実行時間」を区別して比較する
 
 ---
 ---
@@ -586,7 +589,7 @@ Z80 の 3 つの割り込みモードを simz80 の INT 注入（ポート 0x10 
 
 **難易度**: ★☆☆☆☆
 
-リポジトリ root の `common/c/` にある C ソースを `sdcc -mz80 --no-peep -S`（sdasz80 構文）でアセンブリに変換し、crt0_z80.s と一緒にアセンブル・リンクして simz80 で観察する。C01 は `main` だけの最小構成（生成コード 8 バイト）、C02 は関数呼び出し `add()` とローカル変数を含む。SDCC の Z80 出力は z80asm ではアセンブルできないため、SDCC 同梱の `sdasz80` / `sdldz80` / `makebin` を使う。生成された `common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される（`common/c/` は全アーキ共有のため、他アーキのビルドが同じファイルを書き換える点に注意）。
+リポジトリ root の `common/c/` にある C ソースを `sdcc -mz80 --no-peep -S`（sdasz80 構文）でアセンブリに変換し、crt0_z80.s と一緒にアセンブル・リンクして simz80 で観察する。C01 は `main` だけの最小構成（生成コード 8 バイト）、C02 は関数呼び出し `add()` とローカル変数を含む。SDCC の Z80 出力は z80asm ではアセンブルできないため、SDCC 同梱の `sdasz80` / `sdldz80` / `makebin` を使う。生成された `build/z80/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される（生成先はリポジトリ root の `build/z80/` で本アーキ専用のため、他アーキのビルドと干渉しない）。
 
 | 学習項目                                    | 説明                                                            |
 | :---                                        | :---                                                            |
@@ -602,14 +605,14 @@ Z80 の 3 つの割り込みモードを simz80 の INT 注入（ポート 0x10 
 **使い方**:
 
 ```bash
-make build S=c01      # common/c/c01.c → c01.s (sdasz80 構文) → c01.com
+make build S=c01      # common/c/c01.c → build/z80/c01.s (sdasz80 構文) → c01.com
 make run S=c01        # simz80 で実行（出力なし。main 復帰後 ret → 0x0000 で停止）
 make debug S=c01      # 対話ステッパー（b _main / b _add のシンボルブレークポイント可）
 make trace S=c01      # 全命令トレース（.lst がないため生バイト列表示）
 make cycles S=c01     # T-states 集計（c01 全体で 47 T）
 make icount S=c02     # 実行命令数（c02 全体で 25 命令）
 make dump S=c01       # hexdump
-make clean            # 生成物とともに common/c/c*.s を削除
+make clean            # 生成物とともに build/z80/ を削除
 ```
 
 **SDCC Z80 呼び出し規約（実生成物 c02.s からの観察）**: SDCC 4.6.0 の `-mz80` 既定は sdcccall(1)（レジスタ渡し）。`add(int a, int b)` は第 1 引数 a を HL、第 2 引数 b を DE で受け取り、本体は `add hl, de` + `ex de, hl` + `ret` の 3 命令だけ。呼び出し側は `ld de, #0x0001` / `ld hl, #0x0001` で引数を設定して `call _add` する。**16-bit 戻り値は DE に返る**——根拠は 3 つあり、(1) `_add` 末尾の `ex de, hl` が計算結果を HL から DE へ移す、(2) main 側は `pop hl`（保存していた a）+ `add hl, de`（b を加算）で戻り値を使う、(3) `make trace S=c02` で main 復帰時 `DE 0000` を観測できる（`c - 42 = 0`）。`c - 42` の 16-bit 減算は `add a, #0xd6`（0xd6 = -42）+ `adc a, #0xff` という下位/上位バイトの 2 段階で行われる。関数属性 `__sdcccall(0)` で旧来のスタック渡し規約（全引数をスタック、戻り値は HL）に切り替え可能。`int` は 16-bit（Z80 のネイティブワード）。S07 の手書き規約（戻り値は A または HL）とは異なるので混同しないこと。
@@ -618,7 +621,7 @@ make clean            # 生成物とともに common/c/c*.s を削除
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
-- **STEP 1 予測**: `int main() { return 0; }` の戻り値 0 はどのレジスタに、何命令で設定されるか。`common/c/c01.s` を開く前に予測し、`make dump S=c01` の 8 バイト（`CD 04 01 C9 11 00 00 C9`）と突き合わせる。
+- **STEP 1 予測**: `int main() { return 0; }` の戻り値 0 はどのレジスタに、何命令で設定されるか。`build/z80/c01.s` を開く前に予測し、`make dump S=c01` の 8 バイト（`CD 04 01 C9 11 00 00 C9`）と突き合わせる。
 - **STEP 2 観察**: `make debug S=c01` で `b _main` → `c` → `s` と進め、`ld de,#0x0000` を確認する。`make debug S=c02` では `b _add` → `c` → `r` で第 1/第 2 引数が HL/DE に入ったことを確認し、`s` × 3 で `add hl, de`（HL 1→2）→ `ex de, hl`（戻り値を DE へ）→ `ret` を追う。ブレークポイントから `c` で continue すると同じアドレスで即座に止まる（既存ステッパーの仕様）ため、続きは `b _add` の再入力（トグル解除）や `n`（ステップオーバー）を使う。
 - **STEP 3 改造**: crt0_z80.s の `ret` を `jp 0x0000`（CP/M ウォームブートの入口）に変えても終了挙動は同じになることを確認する。また Makefile の CFLAGS から `--no-peep` を外して再ビルドし、c02 の生成コードがどう変わるか（引数コピー命令の置換）を diff で比べる。
 - **STEP 4 考察**: sdcccall(1) の「第 1 引数 HL、第 2 引数 DE、16-bit 戻り値 DE」は S07 の手書き規約（引数は A/BC/DE/HL またはスタック、戻り値 A または HL）とどこが違うか。戻り値が DE の場合、HL を自由に使いながら値を返せる利点と、A 単独では返せない 16-bit 値の扱いを考える。同じ `common/c/c01.c` から生成した他アーキ版（x86_16 など）の c01.s とスタックフレーム構造（Z80 は IX フレームなしでレジスタ渡しが完結する）を比較する。
