@@ -16,7 +16,7 @@
 | **x86 (16-bit)** | `x86_16/dos/com/` | DOSBox (COM)                    | 1          |
 | **x86 (16-bit)** | `x86_16/dos/exe/` | DOSBox (MZ EXE)                 | 14         |
 | **x86 (64-bit)** | `x86_64/darwin/`  | macOS ネイティブ                | 1          |
-| **x86 (32-bit)** | `i386/darwin/`    | macOS ネイティブ                | 1          |
+| **x86 (32-bit)** | `x86_32/darwin/`    | macOS ネイティブ                | 1          |
 | **ARM64**        | `arm64/darwin/`   | macOS ネイティブ                | 1          |
 | **RISC-V (32-bit)** | `riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
 | **RISC-V (64-bit)** | `riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
@@ -485,7 +485,7 @@ make dump32 S=s104_protected
 | `qemu-system-ppc`           | PPC                  | `brew install qemu`                                                          |
 | `qemu-system-m68k`          | M68000               | `brew install qemu`                                                          |
 | `qemu-system-i386`          | x86_16               | `brew install qemu`                                                          |
-| `nasm`                      | x86_16, x86_64, i386 | `brew install nasm`                                                          |
+| `nasm`                      | x86_16, x86_64, x86_32 | `brew install nasm`                                                          |
 | `qemu-system-riscv32`       | RISC-V 32-bit        | `brew install qemu`                                                          |
 | `qemu-system-riscv64`       | RISC-V 64-bit        | `brew install qemu`                                                          |
 | `dosbox`                    | x86_16 DOS           | `brew install dosbox`                                                        |
@@ -509,7 +509,7 @@ asm/
 │       ├── com/         # DOS COM 形式
 │       └── exe/         # DOS MZ EXE 形式
 ├── x86_64/darwin/       # macOS x86_64
-├── i386/darwin/         # macOS i386 (32-bit)
+├── x86_32/darwin/         # macOS i386 (32-bit)
 ├── riscv32/qemu/        # RISC-V 32-bit bare-metal (QEMU virt)
 ├── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
 ├── compare/             # 共通課題のアーキ比較 (copybench)

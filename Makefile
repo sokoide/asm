@@ -11,7 +11,7 @@ HELLO_DIRS := x86_16/dos/com
 
 # macOS(darwin) ネイティブバイナリ（Mach-O）。darwin ツールチェーンが必要なため
 # macOS(Darwin) でのみビルド対象に含める。それ以外の OS では make しない。
-DARWIN_DIRS := arm64/darwin x86_64/darwin i386/darwin
+DARWIN_DIRS := arm64/darwin x86_64/darwin x86_32/darwin
 ifeq ($(shell uname -s),Darwin)
 ALL_DIRS := $(CORE_DIRS) $(HELLO_DIRS) $(DARWIN_DIRS)
 else
