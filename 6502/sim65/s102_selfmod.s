@@ -45,14 +45,14 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; ---- original behavior: prints the assembled operand 'A' ----
+; ---- original behavior: prints the assembled operand 'A' ----
     lda #<msg_before
     ldx #>msg_before
     jsr print_str
     jsr self_char          ; prints 'A'
     jsr print_nl
 
-    ; ---- patch the immediate operand, behavior changes ----
+; ---- patch the immediate operand, behavior changes ----
     lda #'Z'
     sta self_char+1        ; rewrite the operand byte in RAM!
     lda #<msg_after
@@ -61,7 +61,7 @@ _main:
     jsr self_char          ; prints 'Z'
     jsr print_nl
 
-    ; ---- loop: increment the operand byte in place ----
+; ---- loop: increment the operand byte in place ----
     lda #'A'
     sta self_char+1
     lda #<msg_loop

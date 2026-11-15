@@ -216,6 +216,28 @@ make icount A=riscv64/qemu S=s01_hello
 make clean
 ```
 
+### コード整形 (make format)
+
+アセンブリソース (.s/.asm) は nvim で `:w` したときに走る保存時整形と同一ロジックで整形できる。フォーマッタの実体は nvim 設定の `lua/config/asm.lua`（`~/.config/nvim` は dotfiles リポジトリ `~/repo/sokoide/dotfiles/home/config/nvim` への symlink）:
+
+- 6502 (ca65): `format_ca65` — 命令行をタブインデント、ラベル・疑似命令・コメントは列 0 に
+- m68k: `format_m68k` — 命令行をタブインデント + `align_pipe_comments` による `|` コメント整列
+- ca65 判定は `.segment` などの疑似命令の有無で行い、6502 の `.s` を GAS と区別する
+- その他のアーキ (z80/x86/RISC-V/ARM64 等): `align_pipe_comments` のみ（`|` を持たないファイルは無変更）
+- 汎用フォーマッタの asmfmt は使わない（GAS や ca65 のソースを壊すため conform.nvim からは除外済み）
+
+各プラットフォームの Makefile はこの `asm.lua` の autocmd を headless nvim で再実行する（nvim の `:w` と完全に同じ整形になる）:
+
+```bash
+# 各プラットフォームのディレクトリで（6502 は ca65 形式、m68k は m68k 形式で整形）
+make format
+
+# 全アーキ + Markdown (textlint + markdownlint) をまとめて整形
+make -C <repo root> format
+```
+
+前提: `nvim` と上記の nvim 設定（`asm.lua`）が存在すること。asm.lua が見つからない場合は `ASM_LUA=...` で別パスを指定できる。
+
 ## デバッグガイド
 
 各アーキテクチャのプログラムをデバッグする方法を説明します。

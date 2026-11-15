@@ -30,7 +30,7 @@ msg_inx:   .asciiz "INX x2, DEX: X=$"
 
 .segment "CODE"
 _main:
-    ; ---- Demo 1: Load immediate values ----
+; ---- Demo 1: Load immediate values ----
     lda #$42
     ldx #$07
     ldy #$FF
@@ -59,7 +59,7 @@ _main:
 
     jsr print_nl
 
-    ; ---- Demo 2: Register transfers ----
+; ---- Demo 2: Register transfers ----
     lda #$10
     tax
     inx
@@ -82,7 +82,7 @@ _main:
 
     jsr print_nl
 
-    ; ---- Demo 3: 8-bit arithmetic ----
+; ---- Demo 3: 8-bit arithmetic ----
     clc
     lda #$30
     adc #$28
@@ -107,7 +107,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ---- Demo 4: 16-bit addition ----
+; ---- Demo 4: 16-bit addition ----
     clc
     lda #$FF
     adc #$03
@@ -125,7 +125,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ---- Demo 5: INX / DEX ----
+; ---- Demo 5: INX / DEX ----
     ldx #$08
     inx
     inx

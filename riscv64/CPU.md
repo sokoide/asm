@@ -53,9 +53,9 @@ RISC-V はオープンアーキテクチャの ISA。RV64I は64ビットの基�
 | `add rd, rs1, rs2`   | rd ← rs1 + rs2（64ビット）      |
 | `sub rd, rs1, rs2`   | rd ← rs1 - rs2（64ビット）      |
 | `addi rd, rs1, imm`  | rd ← rs1 + imm（64ビット）      |
-| `addw rd, rs1, rs2`  | rd ← signext((rs1 + rs2)[31:0]) |
-| `subw rd, rs1, rs2`  | rd ← signext((rs1 - rs2)[31:0]) |
-| `addiw rd, rs1, imm` | rd ← signext((rs1 + imm)[31:0]) |
+| `addw rd, rs1, rs2`  | rd ← signext([rs1 + rs2](31:0)) |
+| `subw rd, rs1, rs2`  | rd ← signext([rs1 - rs2](31:0)) |
+| `addiw rd, rs1, imm` | rd ← signext([rs1 + imm](31:0)) |
 | `mul rd, rs1, rs2`   | rd ← rs1 × rs2（下位64ビット）  |
 | `div rd, rs1, rs2`   | rd ← rs1 ÷ rs2（符号付き）      |
 | `divu rd, rs1, rs2`  | rd ← rs1 ÷ rs2（符号なし）      |
@@ -147,6 +147,7 @@ RISC-V のメモリアクセスは即値オフセット1種類のみ:
 | レジスタ間接（オフセット0） | `ld t0, 0(a0)` | addr = a0     |
 
 より複雑なアドレッシングは命令の組み合わせで実現:
+
 - インデックス付き: `add t0, a0, t1` → `ld t2, 0(t0)`
 - 絶対アドレス: `lui t0, %hi(addr)` → `ld t1, %lo(addr)(t0)`
 - 64ビットアドレス: `auipc t0, %pcrel_hi(addr)` → `ld t1, %pcrel_lo(addr)(t0)`

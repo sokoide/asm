@@ -12,7 +12,7 @@
 ;   IM 0  device supplies an opcode on the data bus - here fixed
 ;         RST 10h -> handler at 0x0010 (13 T-states response)
 ;   IM 1  fixed RST 38h -> handler at 0x0038 (13 T-states response)
-;   IM 2  vectored: table address = (I << 8) | vector byte, handler
+;   IM 2  vectored: table address = (I << 8)  | vector byte, handler
 ;         address read from the table (19 T-states response)
 ;
 ; On acceptance the CPU pushes the return PC and clears IFF1/IFF2, so

@@ -23,7 +23,7 @@ msg_big:  .asciiz "big (>=$80)"
 
 .segment "CODE"
 _main:
-    ; ---- Demo 1: BEQ ----
+; ---- Demo 1: BEQ ----
     lda #$42
     cmp #$42
     bne @skip_beq
@@ -33,7 +33,7 @@ _main:
     jsr print_nl
 @skip_beq:
 
-    ; ---- Demo 2: BNE ----
+; ---- Demo 2: BNE ----
     lda #$42
     cmp #$50
     beq @skip_bne
@@ -43,7 +43,7 @@ _main:
     jsr print_nl
 @skip_bne:
 
-    ; ---- Demo 3: BCC (borrow) ----
+; ---- Demo 3: BCC (borrow) ----
     lda #$10
     cmp #$20
     bcs @skip_bcc
@@ -53,7 +53,7 @@ _main:
     jsr print_nl
 @skip_bcc:
 
-    ; ---- Demo 4: BCS (no borrow) ----
+; ---- Demo 4: BCS (no borrow) ----
     lda #$20
     cmp #$10
     bcc @skip_bcs
@@ -63,7 +63,7 @@ _main:
     jsr print_nl
 @skip_bcs:
 
-    ; ---- Demo 5: If-else chain ----
+; ---- Demo 5: If-else chain ----
     lda #<msg_ife
     ldx #>msg_ife
     jsr print_str

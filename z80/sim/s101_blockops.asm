@@ -117,7 +117,7 @@ verify_sum:
 	xor	a			; Z=1: all bytes matched
 	ret
 .vs_mismatch:
-	or	1			; Z=0 (A|1 is never 0)
+	or	1			; Z=0 (A  | 1 is never 0)
 	ret
 
 ; ================================================================

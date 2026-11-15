@@ -33,4 +33,4 @@ _syscall:
 
 section .data
 msg:    db "Hello World!", 10
-len:    equ $ - msg
+len     equ $ - msg    ; コロンなし (asmfmt が "label: equ" を分割し NASM がエラーになるため)

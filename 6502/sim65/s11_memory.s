@@ -34,7 +34,7 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; ---- Initialize source array ----
+; ---- Initialize source array ----
     ldx #0
     lda #$10
 @init_loop:
@@ -45,7 +45,7 @@ _main:
     cpx #8
     bne @init_loop
 
-    ; ---- Print source array ----
+; ---- Print source array ----
     lda #<msg_src
     ldx #>msg_src
     jsr print_str
@@ -62,7 +62,7 @@ _main:
     bne @print_src
     jsr print_nl
 
-    ; ---- Block copy: src -> dst ----
+; ---- Block copy: src -> dst ----
     ldx #0
 @copy_loop:
     lda src_array,x
@@ -71,7 +71,7 @@ _main:
     cpx #8
     bne @copy_loop
 
-    ; ---- Print copy result ----
+; ---- Print copy result ----
     lda #<msg_dst
     ldx #>msg_dst
     jsr print_str
@@ -88,7 +88,7 @@ _main:
     bne @print_dst
     jsr print_nl
 
-    ; ---- Memory fill: dst with $AA ----
+; ---- Memory fill: dst with $AA ----
     ldx #0
     lda #$AA
 @fill_loop:
@@ -97,7 +97,7 @@ _main:
     cpx #8
     bne @fill_loop
 
-    ; ---- Print fill result ----
+; ---- Print fill result ----
     lda #<msg_fill
     ldx #>msg_fill
     jsr print_str
@@ -114,7 +114,7 @@ _main:
     bne @print_fill
     jsr print_nl
 
-    ; ---- Sum src_array with 16-bit carry ----
+; ---- Sum src_array with 16-bit carry ----
     clc
     lda #0
     sta sum_lo
@@ -132,7 +132,7 @@ _main:
     cpx #8
     bne @sum_loop
 
-    ; ---- Print sum ----
+; ---- Print sum ----
     lda #<msg_sum
     ldx #>msg_sum
     jsr print_str

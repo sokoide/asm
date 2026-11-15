@@ -28,7 +28,7 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; AND
+; AND
     lda #<msg_and
     ldx #>msg_and
     jsr print_str
@@ -37,7 +37,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ORA
+; ORA
     lda #<msg_ora
     ldx #>msg_ora
     jsr print_str
@@ -46,7 +46,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; EOR
+; EOR
     lda #<msg_eor
     ldx #>msg_eor
     jsr print_str
@@ -55,7 +55,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ASL
+; ASL
     lda #<msg_asl
     ldx #>msg_asl
     jsr print_str
@@ -64,7 +64,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; LSR
+; LSR
     lda #<msg_lsr
     ldx #>msg_lsr
     jsr print_str
@@ -73,7 +73,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ROL
+; ROL
     lda #<msg_rol
     ldx #>msg_rol
     jsr print_str
@@ -83,7 +83,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ROR
+; ROR
     lda #<msg_ror
     ldx #>msg_ror
     jsr print_str

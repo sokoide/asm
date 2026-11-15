@@ -8,7 +8,7 @@ section .text
 
 _main:
     ; write(1, msg, len)
-    mov     rax, 0x2000004      ; SYS_write = 4 | 0x20000000 (BSD class)
+    mov     rax, 0x2000004      ; SYS_write = 4  | 0x20000000 (BSD class)
     mov     rdi, 1              ; fd = stdout
     lea     rsi, [rel msg]      ; buf (RIP-relative)
     mov     rdx, len            ; count
@@ -21,4 +21,4 @@ _main:
 
 section .data
 msg:    db "Hello World!", 10
-len:    equ $ - msg
+len     equ $ - msg    ; コロンなし (asmfmt が "label: equ" を分割し NASM がエラーになるため)

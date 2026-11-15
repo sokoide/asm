@@ -37,7 +37,7 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; ---- Demo 1: String length ----
+; ---- Demo 1: String length ----
     lda #<src_str
     sta src_ptr
     lda #>src_str
@@ -53,7 +53,7 @@ _main:
     jsr _putchar
     jsr print_nl
 
-    ; ---- Demo 2: String copy ----
+; ---- Demo 2: String copy ----
     lda #<src_str
     sta src_ptr
     lda #>src_str
@@ -75,7 +75,7 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; ---- Demo 3: Uppercase -> Lowercase ----
+; ---- Demo 3: Uppercase -> Lowercase ----
     lda #<msg_upper
     ldx #>msg_upper
     jsr print_str
@@ -100,7 +100,7 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; ---- Demo 4: Compare results ----
+; ---- Demo 4: Compare results ----
     lda #<msg_cmp_eq
     ldx #>msg_cmp_eq
     jsr print_str

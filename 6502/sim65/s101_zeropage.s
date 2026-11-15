@@ -51,7 +51,7 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; ---- Demo 1: zp-addressed loop (15 cycles/iter) ----
+; ---- Demo 1: zp-addressed loop (15 cycles/iter) ----
     lda #0
     sta zp_val
     ldy #10            ; 2
@@ -62,7 +62,7 @@ _main:
     sta zp_val         ; 3
     dey                ; 2
     bne @zp_loop       ; 3 taken / 2 last
-    ; total: 2 + 15 x 9 + 14 = 151 cycles
+; total: 2 + 15 x 9 + 14 = 151 cycles
 
     lda #<msg_zp
     ldx #>msg_zp
@@ -71,7 +71,7 @@ _main:
     jsr print_dec
     jsr print_nl
 
-    ; ---- Demo 2: absolute-addressed loop (17 cycles/iter) ----
+; ---- Demo 2: absolute-addressed loop (17 cycles/iter) ----
     lda #0
     sta abs_val
     ldy #10            ; 2
@@ -82,7 +82,7 @@ _main:
     sta abs_val        ; 4
     dey                ; 2
     bne @abs_loop      ; 3 taken / 2 last
-    ; total: 2 + 17 x 9 + 16 = 171 cycles
+; total: 2 + 17 x 9 + 16 = 171 cycles
 
     lda #<msg_abs
     ldx #>msg_abs
@@ -91,7 +91,7 @@ _main:
     jsr print_dec
     jsr print_nl
 
-    ; ---- Demo 3: (zp),Y pointer walk over a table ----
+; ---- Demo 3: (zp),Y pointer walk over a table ----
     lda #<table
     sta zp_ptr
     lda #>table

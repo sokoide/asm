@@ -24,7 +24,7 @@ msg_save:  .asciiz "Save/restore: push $42 -> overwrite -> pull=$"
 
 .segment "CODE"
 _main:
-    ; ---- Demo 1: Stack pointer movement ----
+; ---- Demo 1: Stack pointer movement ----
     tsx
     stx sp_before
 
@@ -49,7 +49,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ---- Demo 2: LIFO order ----
+; ---- Demo 2: LIFO order ----
     pla
     sta val1
     pla
@@ -68,7 +68,7 @@ _main:
     jsr print_hex8
     jsr print_nl
 
-    ; ---- Demo 3: Save/restore ----
+; ---- Demo 3: Save/restore ----
     lda #$42
     pha
     lda #$FF

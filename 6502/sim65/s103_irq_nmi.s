@@ -40,7 +40,7 @@ msg_d3c:    .asciiz "  -> nmi_count = "
 
 .segment "CODE"
 _main:
-    ; ---- Vector setup: write handler addresses into $FFFA/$FFFE ----
+; ---- Vector setup: write handler addresses into $FFFA/$FFFE ----
     lda #<irq_handler
     sta $FFFE               ; IRQ vector low
     lda #>irq_handler
@@ -58,9 +58,9 @@ _main:
     jsr print_str
     jsr print_nl
 
-    ; ---- Demo 1: IRQ taken while I=0 ----
-    ; IRQ entry (7) -> handler -> RTI (6). The STA $FFF0 completes first,
-    ; the interrupt is taken at the next instruction boundary.
+; ---- Demo 1: IRQ taken while I=0 ----
+; IRQ entry (7) -> handler -> RTI (6). The STA $FFF0 completes first,
+; the interrupt is taken at the next instruction boundary.
     lda #<msg_d1
     ldx #>msg_d1
     jsr print_str
@@ -74,8 +74,8 @@ _main:
     jsr print_dec
     jsr print_nl
 
-    ; ---- Demo 2: IRQ masked by I=1, delivered after CLI ----
-    ; SEI masks the IRQ (latched in sim65i), CLI hands it over immediately.
+; ---- Demo 2: IRQ masked by I=1, delivered after CLI ----
+; SEI masks the IRQ (latched in sim65i), CLI hands it over immediately.
     lda #<msg_d2
     ldx #>msg_d2
     jsr print_str
@@ -90,8 +90,8 @@ _main:
     jsr print_dec
     jsr print_nl
 
-    ; ---- Demo 3: NMI ignores the I flag ----
-    ; NMI is edge-triggered and non-maskable: taken even with I=1.
+; ---- Demo 3: NMI ignores the I flag ----
+; NMI is edge-triggered and non-maskable: taken even with I=1.
     lda #<msg_d3
     ldx #>msg_d3
     jsr print_str

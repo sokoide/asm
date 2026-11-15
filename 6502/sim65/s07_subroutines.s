@@ -21,7 +21,7 @@ add_tmp: .res 1
 
 .segment "CODE"
 _main:
-    ; ---- Demo 1: Basic subroutine ----
+; ---- Demo 1: Basic subroutine ----
     lda #<msg_sum
     ldx #>msg_sum
     jsr print_str
@@ -32,7 +32,7 @@ _main:
     jsr print_dec
     jsr print_nl
 
-    ; ---- Demo 2: Return value ----
+; ---- Demo 2: Return value ----
     lda #<msg_dbl
     ldx #>msg_dbl
     jsr print_str
@@ -42,7 +42,7 @@ _main:
     jsr print_dec
     jsr print_nl
 
-    ; ---- Demo 3: Nested call ----
+; ---- Demo 3: Nested call ----
     lda #<msg_nest
     ldx #>msg_nest
     jsr print_str

@@ -19,7 +19,7 @@ msg_even:  .asciiz "Even (0-8): "
 
 .segment "CODE"
 _main:
-    ; ---- Demo 1: Countdown (DEX + BNE) ----
+; ---- Demo 1: Countdown (DEX + BNE) ----
     lda #<msg_count
     ldx #>msg_count
     jsr print_str
@@ -38,7 +38,7 @@ _main:
     bne @loop1
     jsr print_nl
 
-    ; ---- Demo 2: Even numbers ----
+; ---- Demo 2: Even numbers ----
     lda #<msg_even
     ldx #>msg_even
     jsr print_str

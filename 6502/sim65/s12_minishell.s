@@ -110,7 +110,7 @@ rl_done:
 
 ; ---- Dispatch ----
 dispatch:
-    ; Check hello
+; Check hello
     lda #<cmd_hello
     sta cmp_cmd
     lda #>cmd_hello
@@ -124,7 +124,7 @@ dispatch:
     rts
 @not_hello:
 
-    ; Check count
+; Check count
     lda #<cmd_count
     sta cmp_cmd
     lda #>cmd_count
@@ -135,7 +135,7 @@ dispatch:
     rts
 @not_count:
 
-    ; Check hex
+; Check hex
     lda #<cmd_hex
     sta cmp_cmd
     lda #>cmd_hex
@@ -146,7 +146,7 @@ dispatch:
     rts
 @not_hex:
 
-    ; Check help
+; Check help
     lda #<cmd_help
     sta cmp_cmd
     lda #>cmd_help
@@ -160,7 +160,7 @@ dispatch:
     rts
 @not_help:
 
-    ; Check quit
+; Check quit
     lda #<cmd_quit
     sta cmp_cmd
     lda #>cmd_quit

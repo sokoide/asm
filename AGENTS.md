@@ -35,6 +35,7 @@ make debug S=s03_stack  # ステップデバッガ (QEMU: gdb / z80・6502: 対�
 make trace S=s03_stack  # 1 命令ごとの実行トレース
 make cycles S=s04_loops # サイクル数（QEMU は unsupported）
 make icount S=s04_loops # 実行命令数（QEMU）
+make format          # .s/.asm を nvim 保存時整形と同一ロジックで整形（root は全アーキ + Markdown 整形）
 make clean
 ```
 
