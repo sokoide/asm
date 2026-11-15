@@ -398,7 +398,7 @@ make debug A=arm64/qemu S=s01_hello GDB_PORT=1234 GDB=aarch64-none-elf-gdb
 
 | コマンド | 短縮形 | 説明 |
 | :--- | :--- | :--- |
-| `break _start` | `b _start` | ブレークポイント設定 |
+| `break *_start` | `b *_start` | `_start` の先頭命令にブレークポイント設定 |
 | `continue` | `c` | 実行再開 |
 | `stepi` | `si` | 1 命令ステップ実行 |
 | `nexti` | `ni` | 1 命令ステップ（コール先に入らない） |
@@ -408,6 +408,12 @@ make debug A=arm64/qemu S=s01_hello GDB_PORT=1234 GDB=aarch64-none-elf-gdb
 | `x/16xb $sp` | — | スタックを 16 バイト表示 |
 | `layout asm` | — | アセンブリ表示レイアウトに切替 |
 | `quit` | `q` | GDB 終了 |
+
+> **Note — `_start` の停止位置**
+>
+> `b _start` は関数名として解決され、GDB のプロローグ解析やデバッグ情報によって先頭命令より後にブレークポイントが設定されることがある。例えば RISC-V で `_start` の先頭が `0x80000000` でも、`b _start` が `0x80000010` の `ret` を選ぶ場合がある。`b *_start` はシンボルのアドレスを直接指定し、先頭命令に設定する。表示された設定アドレスを確認すること。すでに先頭を通過している場合はターゲットを再起動し、そこに到達する前に設定する。
+>
+> 参照: [GDB のアドレス指定](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Address-Locations.html)
 
 #### 停止時にレジスタとメモリを自動表示する
 
