@@ -1,6 +1,6 @@
 # RISC-V 64-bit アセンブラ ワークショップ
 
-QEMU virt マシン上で RV64IM アセンブリを 12 のシナリオで段階的に学ぶ。
+QEMU virt マシン上で RV64IM アセンブリを 12 のシナリオで段階的に学ぶ。共通課題（s13 帯）と RISC-V 固有の拡張シナリオ（s101+ 帯）に加え、`_common/c` の C ソースを clang でアセンブリに変換して観察する C シナリオ（c01+）もある。
 
 ## 前提条件
 
@@ -35,6 +35,10 @@ make clean
 # QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
+# C シナリオ: _common/c/c01.c を clang -S でアセンブリ生成してからステップ実行
+# (-g 付きのため break main / list / step で C ソース行が見える)
+make debug S=c01
+
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
@@ -52,6 +56,7 @@ make icount S=s01_hello
 .
 ├── Makefile
 ├── linker.ld
+├── crt0.s               # C シナリオ共通のスタートアップ（スタック設定・.bss クリア・main 呼び出し）
 ├── README.md
 ├── s01_hello.s          # シナリオ 1: Hello World
 ├── s02_registers.s      # シナリオ 2: レジスタとデータ転送
@@ -342,6 +347,42 @@ M-mode → S-mode 遷移 → S-mode でページテーブル構築 → ページ
 - **STEP 3 改造**: root[0]（0x00000000 の 1GB メガページ）の PTE の V ビットを落とすと、test デバイス書き込み（0x100000）の store がフォールトするはず — scause=15 (store) / stval=0x100000 になるか予測してから試す。satp.MODE=8 (Sv39) を 0 にして paging を無効化した場合の挙動も考察する。
 - **STEP 4 考察**: x86 は CR3 + ページング有効化は CR0.PG、ARM64 は TTBR0/1 + TCR_EL1、RISC-V は satp 1 本。rv32 版（Sv32: 2 段 + 4MB メガページ）との違い（satp.MODE、段数、1GB メガページ）をソース冒頭のコメントと突き合わせ、ページング有効化に「ソフトウェアの TLB 同期」（sfence.vma / invlpg / TLBI）が必要かどうかの違いも含めて比較する。
 
+---
+
+### C01/C02: C → アセンブリ (clang -S)
+
+**難易度**: ★☆☆☆☆
+
+リポジトリ root の `_common/c/` にある C ソースを `clang -g -O0 -S`（rv64im 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `_common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+
+| 学習項目                          | 説明                                                            |
+| :--- | :--- | :--- |
+| `clang --target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -g -O0 -S` | 最適化なし・DWARF 付きで RV64IM 用アセンブリを生成 |
+| `addi sp, sp, -32` + `sd ra, 24(sp)` | -O0 の関数プロローグ/エピローグ（ra・s0 の退避と復元、rv64 は 8 バイト幅） |
+| レジスタ渡し ABI                  | RISC-V 呼び出し規約: 引数は a0/a1、戻り値は a0                 |
+| crt0.s                            | SP=0x80200000 → .bss クリア → `call main` → test finisher で終了 |
+| DWARF デバッグ情報                | `break main` / `list` / `step` で C ソース行単位のステップ実行  |
+
+**使い方**:
+
+```bash
+make run S=c01        # QEMU で実行（UART 出力なし、main 復帰後に test finisher で自力終了）
+make dump S=c01       # crt0 + clang 生成コードの逆アセンブル
+make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
+make clean            # 生成物とともに _common/c/c*.s を削除
+```
+
+**ポイント**: main 復帰後は crt0 が SiFive test finisher（0x100000 へ 0x5555 書き込み）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する（m68k 版は halt ループ + timeout なので違いにも注目）。RISC-V の呼び出し規約は引数を a0/a1 レジスタ渡し・戻り値 a0 で、手書きシナリオ S07 と同じ規約。同じ `_common/c/c02.c` から生成した m68k 版（引数スタック渡し）と `_common/c/c02.s` を見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `_common/c/c01.s` を開き、`main` のプロローグ（`addi sp, sp, -32` / `sd ra, 24(sp)` / `sd s0, 16(sp)`）、`li a0, 0`、エピローグ（`ld` × 2 + `ret`）がそれぞれ何をするか先に予測する。
+- **STEP 2 観察**: `make debug S=c01` で `break main` → `step` → main 復帰後 a0=0・sp が復元されることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`、`make dump S=c02` で確認した `jal` / `jalr <main>` の次のアドレスに `b *ADDR` を置いて a0=0（c-42）を見る。
+- **STEP 3 改造**: `_common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、crt0 の .bss クリアループ（`.Lbss`）が実行される様子とリンクアドレスの変化を観察する。
+- **STEP 4 考察**: `make build S=c01 CFLAGS='--target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -g -O2'` でビルドし直し、`make dump S=c01` / `make icount S=c01` で命令数を -O0 と比べる。RISC-V では -g 付きでも -O2 だとプロローグが消えて `li a0, 0` + `ret` だけになる（m68k 版 gcc は -g 付きだとフレームポインタが残る、の対比）。
+
+---
+
 - [`../CPU.md`](../CPU.md) — RV64IM 命令セット完全リファレンス
 
 ## ハードウェア情報
@@ -439,7 +480,9 @@ LDFLAGS = -T linker.ld -nostdlib
 | :--- | :--- | :--- |
 | `AS`       | `clang`                                                         | アセンブラとして Clang を使用       |
 | `LD`       | `ld.lld`                                                        | LLVM リンカ                         |
+| `CC`       | `clang`                                                         | C シナリオ (_common/c/c*.c) のアセンブリ生成 (`-S`) |
 | `ASFLAGS`  | `--target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -c -nostdlib` | RISC-V 64-bit クロスコンパイル      |
+| `CFLAGS`   | `--target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -g -O0` | C シナリオ: デバッグ情報付き・最適化なし |
 | `LDFLAGS`  | `-T linker.ld -nostdlib`                                        | リンカスクリプト指定、stdlib 無効   |
 | `QEMU`     | `qemu-system-riscv64`                                           | RISC-V 64-bit エミュレータ           |
 | `QFLAGS`   | `-machine virt -nographic -bios none`                           | virt マシン、GUI 無効、BIOS 無し    |
