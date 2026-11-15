@@ -98,7 +98,9 @@ UART 出力はステップ実行の進行に応じて同じターミナルに表
 ├── Makefile
 ├── README.md
 ├── debug.gdb          # gdb マクロ（`-x` で明示ロード）
-├── test_scenarios.py  # シリアル出力の期待値照合
+├── test_scenarios.py  # シリアル出力の期待値照合 (make test)
+├── count_instructions.py # 実行命令数計測 (make icount。scenario_halt 到達で完走判定)
+├── trace_scenario.py  # トレース記録 (make trace)
 ├── s01_hello.asm      # S01: Hello World
 ├── s02_registers.asm  # S02: レジスタと算術
 ├── s03_stack.asm      # S03: スタック操作
@@ -174,7 +176,7 @@ EAX〜EDI の 32-bit 汎用レジスタと基本算術を体験する。16-bit �
 | `print_hex32`                     | EAX を 8 桁の 16 進で表示（ニブル単位の ASCII 変換）     |
 | `uart_putc`                       | COM1 への 1 文字出力                                     |
 
-**ポイント**: `mov al, 0x5A` の後でも EAX の bit 31-8 は変化しない。部分レジスタ書き込みが 32-bit 値の残りを壊さないことを `print_hex32` で確認する。
+**ポイント**: `mov al, 0xFF` の後でも EAX の bit 31-8 は変化しない。部分レジスタ書き込みが 32-bit 値の残りを壊さないことを `print_hex32` で確認する。
 
 ---
 

@@ -66,7 +66,7 @@ boot_entry:
     xor  dx, dx
     mov  cx, HEADS * SECTORS_PER_TRACK  ; 36
     div  cx                    ; AX = cyl, DX = LBA % 36
-    mov  ch, al                ; CH = シリンダ (0 始まり)
+    push ax                    ; シリンダを保存 (下の div が CX ごと CH を壊すため)
     mov  ax, dx
     xor  dx, dx
     mov  cx, SECTORS_PER_TRACK ; 18
@@ -74,6 +74,8 @@ boot_entry:
     mov  dh, al                ; DH = ヘッド
     inc  dx                    ; セクタ番号は 1 始まり
     mov  cl, dl                ; CL = セクタ番号 (1 始まり)
+    pop  ax                    ; AX = シリンダ
+    mov  ch, al                ; CH = シリンダ (0 始まり)
     mov  dl, [boot_drive]      ; DL = ドライブ番号
     mov  ah, 0x02              ; AH = 機能番号: セクタ読み込み
     mov  al, 1                 ; AL = 読み込むセクタ数 (毎回 1 セクタ)
