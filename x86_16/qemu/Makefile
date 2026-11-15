@@ -28,7 +28,8 @@ QFLAGS  = -drive file=$(1).img,format=raw,if=floppy -serial stdio -display none 
 TIMEOUT_SECS ?= 1
 
 # デバッグ/トレース用変数
-GDB        ?= gdb
+# gdb-multiarch があれば優先し、なければ gdb を使用
+GDB ?= $(shell command -v gdb-multiarch >/dev/null 2>&1 && echo gdb-multiarch || echo gdb)
 GDB_PORT   ?= 1234
 # trace/cycles 用タイムアウト(秒)。ブート後は cli/hlt で CPU が停止するため、
 # ログは停止時点で伸びなくなる(タイムアウトは QEMU プロセス回収用)。
@@ -122,8 +123,6 @@ debug:
 	  $(GDB) -q $(S).elf \
 	    -ex 'set pagination off' \
 	    -ex 'target remote :$(GDB_PORT)' \
-	    -ex 'set tdesc filename i8086.xml' \
-	    -ex 'set architecture i8086' \
 	    -ex 'set disassembly-flavor intel' \
 	    -ex 'break *0x7c00' \
 	    -ex 'continue' \

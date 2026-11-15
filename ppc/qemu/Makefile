@@ -19,7 +19,7 @@ QFLAGS  = -machine bamboo -nographic
 TIMEOUT_SECS ?= 1
 
 # デバッグ/トレース用変数
-GDB        ?= gdb
+GDB ?= $(shell command -v gdb-multiarch >/dev/null 2>&1 && echo gdb-multiarch || echo gdb)
 GDB_PORT   ?= 1234
 # trace/cycles 用タイムアウト(秒)。halt ループ(b halt)で無限スピンするため
 # QEMU はタイムアウトまで走り続ける(全サンプルに halt ラベルあり)。

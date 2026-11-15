@@ -19,7 +19,7 @@ QFLAGS  = -machine virt -nographic -bios none
 TIMEOUT_SECS ?= 1
 
 # デバッグ/トレース用変数
-GDB        ?= gdb
+GDB ?= $(shell command -v gdb-multiarch >/dev/null 2>&1 && echo gdb-multiarch || echo gdb)
 GDB_PORT   ?= 1234
 # trace/cycles 用タイムアウト(秒)。プログラムが自己終了(test finisher)するため
 # 通常はタイムアウト前に QEMU が抜ける。延長は export TRACE_SECS=20 等で可能。
