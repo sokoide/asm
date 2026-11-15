@@ -37,7 +37,7 @@ _start:
     bl      show_result
 
     mov     x0, #0x18
-    ldr     x1, =0x20026
+    ldr     x1, =.Lexit_reason
     hlt     #0xF000
 
 // add3: return x0 + 3
@@ -120,3 +120,9 @@ msg2:    .asciz "add3(20)         = 0x"
 msg3:    .asciz "add3(30)         = 0x"
 msg4:    .asciz "double(add3(5))  = 0x"
 newline: .asciz "\n"
+
+// AArch64 semihosting SYS_EXIT: 終了理由と終了コードを指す。
+.section .rodata
+.balign 8
+.Lexit_reason:
+    .quad 0x20026, 0

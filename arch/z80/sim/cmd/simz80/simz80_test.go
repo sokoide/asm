@@ -877,7 +877,7 @@ func TestAccumulatorLogicFlags(t *testing.T) {
 // DAA: BCD 調整。N=0 (加算後) は 旧A>0x99 または旧 C で +0x60、
 // 旧 H または下位ニブル>9 で +0x06、C はその条件値。
 // N=1 (減算後) は 旧 C で -0x60、旧 H で -0x06、C は旧値を保持。
-// H=0、N 不変、S/Z/P は結果から (fuse の実機検証済み実装と同一)。
+// H は調整前後の bit 4 の変化、N 不変、S/Z/P は結果から求める。
 // 期待値はすべて手計算。
 func TestDAAFlags(t *testing.T) {
 	cases := []struct {
@@ -886,13 +886,13 @@ func TestDAAFlags(t *testing.T) {
 		wantA, wantF byte
 	}{
 		{"加算後 調整不要", 0x15, 0x00, 0x15, 0x00},
-		{"加算後 下位ニブル>9 → +06", 0x1E, 0x00, 0x24, 0x04},
+		{"加算後 下位ニブル>9 → +06", 0x1E, 0x00, 0x24, 0x14},
 		{"加算後 H → +06", 0x20, 0x10, 0x26, 0x00},
-		{"加算後 A>99h → +66, C=1", 0x9A, 0x00, 0x00, 0x45},
+		{"加算後 A>99h → +66, C=1", 0x9A, 0x00, 0x00, 0x55},
 		{"加算後 C=1 → +60, C=1", 0x50, 0x01, 0xB0, 0x81},
 		{"減算後 H → -06", 0x46, 0x12, 0x40, 0x02},
 		{"減算後 C=1 → -60, C 保持", 0x12, 0x03, 0xB2, 0x87},
-		{"減算後 borrow → -66, C 保持", 0x00, 0x13, 0x9A, 0x87},
+		{"減算後 borrow → -66, C 保持", 0x00, 0x13, 0x9A, 0x97},
 	}
 	for _, c := range cases {
 		z := stepAccumulatorOp(t, 0x27, c.a, c.f)
@@ -904,13 +904,13 @@ func TestDAAFlags(t *testing.T) {
 
 // 実 BCD 演算の代表例: 09h+01h → 10h (加算後 DAA)、40h-07h → 33h (減算後 DAA)。
 func TestDAABCDSequences(t *testing.T) {
-	// LD A,09h / ADD A,01h / DAA: 0x0A (下位ニブル>9) → 0x10, F=00
+	// LD A,09h / ADD A,01h / DAA: 0x0A → 0x10、H=1
 	z := runProg(t, []byte{0x3E, 0x09, 0xC6, 0x01, 0x27, 0x76}, 3)
 	if z.a != 0x10 {
 		t.Fatalf("BCD 09+01: A=%02X, want 10", z.a)
 	}
-	if z.f != 0x00 {
-		t.Fatalf("BCD 09+01: F=%02X, want 00", z.f)
+	if z.f != HF {
+		t.Fatalf("BCD 09+01: F=%02X, want %02X", z.f, HF)
 	}
 	// LD A,40h / SUB 07h / DAA: 0x39 with H=1 → 0x33, F=06 (N=1, P=1)
 	z = runProg(t, []byte{0x3E, 0x40, 0xD6, 0x07, 0x27, 0x76}, 3)

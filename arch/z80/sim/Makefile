@@ -70,11 +70,11 @@ format:
 all: $(SIM)
 	@for name in $(SOURCES); do \
 		echo "=== $$name ==="; \
-		$(AS) -l --label=$$name.lbl -o $$name.com $$name.asm 2>$$name.lst && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; cat $$name.lst; rm -f $$name.lst; }; \
+		$(AS) -l --label=$$name.lbl -o $$name.com $$name.asm 2>$$name.lst && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; cat $$name.lst; rm -f $$name.lst $$name.com $$name.lbl; exit 1; }; \
 	done
 	@for name in $(CSOURCES); do \
 		echo "=== $$name (C) ==="; \
-		$(MAKE) --no-print-directory build-c S=$$name && echo "  OK ($$(wc -c < $$name.com) bytes)" || echo "  FAIL"; \
+		$(MAKE) --no-print-directory build-c S=$$name && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; rm -f $$name.com $$name.lbl; exit 1; }; \
 	done
 
 # 共通ビルド: S=s01_hello 等は build-s (z80asm)、S=c01 等 common/c に .c が

@@ -95,7 +95,7 @@ _start:
 
     // Exit via semihosting
     mov     x0, #0x18
-    ldr     x1, =0x20026
+    ldr     x1, =.Lexit_reason
     hlt     #0xF000
 
 // ---- Print helpers (s05 と同じスタイル) ----
@@ -193,3 +193,9 @@ msg_d5:  .asciz "ldp/stp 11+22   = "
 nl:      .asciz "\n"
 .section .bss
 pair:    .space 16
+
+// AArch64 semihosting SYS_EXIT: 終了理由と終了コードを指す。
+.section .rodata
+.balign 8
+.Lexit_reason:
+    .quad 0x20026, 0

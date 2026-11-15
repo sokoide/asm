@@ -1436,7 +1436,7 @@ func (z *Z80) execMain(op byte) {
 				z.f = (z.f & (SF | ZF | PF)) | cy
 			case 4: // DAA: BCD 調整。N=0 は加算後 (A>0x99 または C で +0x60、
 				// H または下位ニブル>9 で +0x06)、N=1 は減算後 (C で -0x60、
-				// H で -0x06)。H=0、N 不変。C は加算後 = (旧 A>0x99 or 旧 C)、
+				// H で -0x06)。H は調整前後の bit 4 の変化、N 不変。C は加算後 = (旧 A>0x99 or 旧 C)、
 				// 減算後は旧 C を保持 (fuse 等の実機検証済み実装と同一)
 				old := z.a
 				var corr byte
@@ -1458,7 +1458,7 @@ func (z *Z80) execMain(op byte) {
 					corr = 0 - corr // 減算後は負の調整値 (mod 256)
 				}
 				z.a = old + corr
-				z.f = z.szpFlags(z.a) | (z.f & NF) | carry
+				z.f = z.szpFlags(z.a) | (z.f & NF) | carry | ((old ^ z.a) & HF)
 			case 5: // CPL: A 反転。H=1、N=1、他は不変
 				z.a = ^z.a
 				z.f = (z.f & (SF | ZF | PF | CF)) | HF | NF

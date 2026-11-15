@@ -88,21 +88,21 @@ all:
 
 # Run: make run S=s01_hello
 run: build
-	timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $(S).elf || true
+	@timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $(S).elf; status=$$?; \
+	  if [ $$status -eq 0 ] || { [ $$status -eq 124 ] && { [ "$(S)" = s06_serial_in ] || [ "$(S)" = s12_minishell ]; }; }; then exit 0; fi; exit $$status
 
-# Run all scenarios through QEMU
+# 各シナリオの終了コードを確認する（無限ループで停止する機種は timeout を許容）。
 runall: all
 	@for name in $(SOURCES); do \
-		echo ""; \
-		echo "=== $$name ==="; \
+		echo ""; echo "=== $$name ==="; \
 		if [ "$$name" = "s06_serial_in" ]; then \
-			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
+			printf 'q\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf; \
 		elif [ "$$name" = "s12_minishell" ]; then \
-			printf 'help\nquit\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf 2>/dev/null || true; \
+			printf 'help\nquit\n' | timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf; \
 		else \
-			$(QEMU) $(QFLAGS) -kernel $$name.elf || true; \
-		fi; \
-		echo ""; \
+			timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $$name.elf; \
+		fi; status=$$?; \
+		if [ $$status -ne 0 ]; then echo "ERROR: $$name (終了コード $$status)"; exit $$status; fi; \
 	done
 
 # Disassemble
@@ -117,17 +117,25 @@ dump:
 # C シナリオ (S=c01) は clang -g 付きでビルドするため list/step で C ソース行も見える
 debug: build
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
+	@command -v nc >/dev/null 2>&1 || { echo "nc が見つかりません"; exit 1; }
+	@if nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; then \
+	  echo "ERROR: ポート $(GDB_PORT) が使用中"; exit 1; fi
 	@$(QEMU) $(QFLAGS) -kernel $(S).elf -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
-	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
-	  sleep 0.3; \
+	  trap 'kill $$QPID 2>/dev/null || true; wait $$QPID 2>/dev/null || true' EXIT INT TERM; \
+	  ready=0; i=0; while [ $$i -lt 50 ]; do \
+	    if ! kill -0 $$QPID 2>/dev/null; then echo "ERROR: QEMU の起動に失敗"; exit 1; fi; \
+	    if nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; then ready=1; break; fi; \
+	    sleep 0.1; i=$$((i+1)); done; \
+	  if [ $$ready -ne 1 ] || ! kill -0 $$QPID 2>/dev/null; then \
+	    echo "ERROR: QEMU の gdbstub に接続できません"; exit 1; fi; \
 	  $(GDB) -q $(S).elf \
 	    -x debug.gdb \
 	    -ex 'set pagination off' \
-	    -ex 'target remote :$(GDB_PORT)' \
+	    -ex 'target remote 127.0.0.1:$(GDB_PORT)' \
 	    -ex 'set disassemble-next-line on' \
 	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc ---\n"'; \
-	  kill $$QPID 2>/dev/null || true
+	  status=$$?; exit $$status
 
 # 実行トレース: make trace S=s01_hello
 # one-insn-per-tb (旧 -singlestep、QEMU 8.1 で置換) で1TB=1命令とし、

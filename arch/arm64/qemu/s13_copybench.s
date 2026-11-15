@@ -54,7 +54,7 @@ _start:
 
     // Exit via semihosting (SYS_EXIT, ADP_Stopped_ApplicationExit)
     mov     x0, #0x18
-    ldr     x1, =0x20026
+    ldr     x1, =.Lexit_reason
     hlt     #0xF000
 
 // ---- Print helpers ----
@@ -119,3 +119,9 @@ src:      .byte 0,1,2,3,4,5,6,7,8,9
           .byte 90,91,92,93,94,95,96,97,98,99
 .section .bss
 dst:      .space 100
+
+// AArch64 semihosting SYS_EXIT: 終了理由と終了コードを指す。
+.section .rodata
+.balign 8
+.Lexit_reason:
+    .quad 0x20026, 0

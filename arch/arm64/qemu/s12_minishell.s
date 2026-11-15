@@ -33,7 +33,7 @@ main_loop:
 
 main_exit:
     mov     x0, #0x18
-    ldr     x1, =0x20026
+    ldr     x1, =.Lexit_reason
     hlt     #0xF000
 
 // ---- read_line: store a null-terminated line into input_buf ----
@@ -284,3 +284,9 @@ newline:     .asciz "\n"
 
 .section .bss
 input_buf:   .space 32
+
+// AArch64 semihosting SYS_EXIT: 終了理由と終了コードを指す。
+.section .rodata
+.balign 8
+.Lexit_reason:
+    .quad 0x20026, 0

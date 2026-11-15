@@ -428,7 +428,7 @@ make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見�
 make clean            # 生成物とともに build/arm64/ を削除
 ```
 
-**ポイント**: main 復帰後は crt0 が semihosting SYS_EXIT（x0=0x18 + `{ ADP_Stopped_ApplicationExit, subcode }` ブロック）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する。QEMU は ApplicationExit の subcode をホストの終了コードに伝播するため、crt0 は main の戻り値 w0 を subcode に渡す（検証: subcode 42 で終了コード 42 を確認。`make run` は `|| true` で回収するため終了コードを見るときは QEMU を直接実行する）。AArch64 の呼び出し規約は引数 w0/w1 レジスタ渡し・戻り値 w0 で、手書きシナリオ S07（X0-X7 / X0）と同じ規約。同じ `common/c/c02.c` から生成した `build/m68k/c02.s`（引数スタック渡し）と `build/arm64/c02.s` が共存するので見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
+**ポイント**: main 復帰後は crt0 が semihosting SYS_EXIT（x0=0x18 + `{ ADP_Stopped_ApplicationExit, subcode }` ブロック）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する。QEMU は ApplicationExit の subcode をホストの終了コードに伝播するため、crt0 は main の戻り値 w0 を subcode に渡す（検証: subcode 42 で QEMU の終了コード 42 を確認。`make run` は非ゼロを失敗として報告するため、正確な終了コードは QEMU を直接実行して確認する）。AArch64 の呼び出し規約は引数 w0/w1 レジスタ渡し・戻り値 w0 で、手書きシナリオ S07（X0-X7 / X0）と同じ規約。同じ `common/c/c02.c` から生成した `build/m68k/c02.s`（引数スタック渡し）と `build/arm64/c02.s` が共存するので見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
 
 **学習カード（予測 → 観察 → 改造 → 考察）**:
 
@@ -596,9 +596,9 @@ ARM64 では文字入出力に PL011 UART（MMIO `0x09000000`）を直接操作�
 | `0x04`        | SYS_WRITE0  | ヌル終端文字列を出力 | 文字列へのポインタ                     | なし                         | 未使用     |
 | `0x05`        | SYS_WRITE   | バッファを書き込む   | パラメータブロック（handle, ptr, len） | `0` = 成功                   | 未使用     |
 | `0x06`        | SYS_READ    | バッファへ読み込む   | パラメータブロック                     | 読込バイト数（`0` = 全件読込）| 未使用     |
-| `0x18`        | SYS_EXIT    | プログラムを終了する | `0x20026`（`ADP_Stopped_ApplicationExit`） | 戻らない                | **全シナリオ** |
+| `0x18`        | SYS_EXIT    | プログラムを終了する | 終了理由と終了コードの 2 語ブロックへのポインタ | 戻らない | **全シナリオ** |
 
-**SYS_EXIT の理由コード（`x1` に指定する `ADP_Stopped_*`）**:
+**SYS_EXIT の理由コード（`x1` が指すブロックの第 1 要素）**:
 
 | 理由コード | 定数                       | 意味                                 |
 | :---       | :---                       | :---                                 |
@@ -608,8 +608,13 @@ ARM64 では文字入出力に PL011 UART（MMIO `0x09000000`）を直接操作�
 
 ```asm
 mov     x0, #0x18            // SYS_EXIT（angel_SWIreason_ReportException）
-ldr     x1, =0x20026         // ADP_Stopped_ApplicationExit（正常終了）
+ldr     x1, =exit_reason     // 終了理由と終了コードへのポインタ
 hlt     #0xF000              // semihosting トラップ
+
+.section .rodata
+.balign 8
+exit_reason:
+    .quad 0x20026, 0         // ADP_Stopped_ApplicationExit、終了コード 0
 ```
 
 **注意**: SYS_EXIT 以外の操作（SYS_WRITE0 で文字列出力等）も可能だが、本教材は一貫して PL011 UART の MMIO を使用する。semihosting はホスト依存（QEMU の `-semihosting` が必須）であり、実機では動作しない。

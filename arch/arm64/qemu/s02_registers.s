@@ -75,7 +75,7 @@ _start:
 
     // Exit via semihosting
     mov     x0, #0x18
-    ldr     x1, =0x20026
+    ldr     x1, =.Lexit_reason
     hlt     #0xF000
 
 // ---- Subroutines ----
@@ -148,3 +148,9 @@ msg5_dec:
     .asciz "DEC(51)          = 0x"
 newline:
     .asciz "\n"
+
+// AArch64 semihosting SYS_EXIT: 終了理由と終了コードを指す。
+.section .rodata
+.balign 8
+.Lexit_reason:
+    .quad 0x20026, 0

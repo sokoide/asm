@@ -113,7 +113,7 @@ _start:
     bl      print_str
 
     mov     x0, #0x18
-    ldr     x1, =0x20026
+    ldr     x1, =.Lexit_reason
     hlt     #0xF000
 
 // ---- Subroutines ----
@@ -154,3 +154,9 @@ msg_big:   .asciz "big (>100)\n"
 msg_yes:   .asciz "Yes!\n"
 msg_no:    .asciz "No!\n"
 msg_dn:    .asciz "Done!\n"
+
+// AArch64 semihosting SYS_EXIT: 終了理由と終了コードを指す。
+.section .rodata
+.balign 8
+.Lexit_reason:
+    .quad 0x20026, 0

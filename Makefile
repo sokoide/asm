@@ -21,20 +21,20 @@ endif
 .PHONY: all build runall clean debug trace cycles icount lint format help
 .DEFAULT_GOAL := all
 
-# 全アーキテクチャをビルド（ツール未インストールの環境では該当ディレクトリをスキップ）
+# 全アーキテクチャをビルド（失敗を集約し、最後に非ゼロを返す）
 all build:
-	@for d in $(ALL_DIRS); do \
+	@status=0; for d in $(ALL_DIRS); do \
 	  echo "── ビルド: $$d ──"; \
-	  $(MAKE) --no-print-directory -C $$d all || echo "  (スキップ: $$d)"; \
-	done
+	  $(MAKE) --no-print-directory -C $$d all || { echo "  (失敗: $$d)"; status=1; }; \
+	done; exit $$status
 
 # 全シナリオを順に実行（コアアーキテクチャのみ。入力は各 Makefile がパイプ処理）
 runall:
-	@for d in $(addprefix arch/,$(CORE_DIRS)); do \
+	@status=0; for d in $(addprefix arch/,$(CORE_DIRS)); do \
 	  echo ""; \
 	  echo "═══ 実行: $$d ═══"; \
-	  $(MAKE) --no-print-directory -C $$d runall || echo "  (スキップ: $$d)"; \
-	done
+	  $(MAKE) --no-print-directory -C $$d runall || { echo "  (失敗: $$d)"; status=1; }; \
+	done; exit $$status
 
 # 全アーキテクチャのビルド成果物を掃除
 clean:
