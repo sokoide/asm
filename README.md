@@ -406,8 +406,17 @@ make debug A=arm64/qemu S=s01_hello GDB_PORT=1234 GDB=aarch64-none-elf-gdb
 | `print/x $x0` | `p/x $x0` | レジスタの値を 16 進表示 |
 | `x/10i $pc` | — | PC から 10 命令を逆アセンブル |
 | `x/16xb $sp` | — | スタックを 16 バイト表示 |
-| `layout asm` | — | アセンブリ表示レイアウトに切替 |
+| `tui enable` | — | TUI を有効化 |
+| `tui disable` | — | TUI を無効化 |
+| `layout asm` | — | 逆アセンブルとコマンドを表示 |
+| `layout src` | — | ソースとコマンドを表示 |
+| `layout split` | — | ソース・逆アセンブル・コマンドを表示 |
+| `layout regs` | — | レジスタとソースまたは逆アセンブルを表示 |
+| `layout next` / `layout prev` | — | 次 / 前のレイアウトに切替 |
+| `refresh` | `Ctrl+L` | TUI の画面を再描画 |
 | `quit` | `q` | GDB 終了 |
+
+`layout` コマンドでも TUI が有効になる。ソース表示には対応するデバッグ情報とソースファイルが必要。`Ctrl+X`、続けて `A` で TUI の有効・無効を切り替えられる。
 
 > **Note — `_start` の停止位置**
 >
