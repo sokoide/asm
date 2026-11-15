@@ -47,7 +47,7 @@ make dump S=s01_hello
 
 ### make debug
 
-QEMU を `-S`（起動時停止 + gdbstub）でバックグラウンド起動し、gdb をフォアグラウンドで接続する。リモートプロトコルに認証はないため待ち受けは loopback に限定する。`make debug` は gdb 接続の前に `nc -z` で gdbstub ポート（`GDB_PORT`、既定 1234）が開くまで待ってから gdb を起動する。接続先が本シナリオの QEMU であることを保証するため、**起動前にポートが使用中なら失敗**し（既存サーバーへの誤接続防止）、待ち行列の間は QEMU プロセスの生存を確認し、gdbstub が開けないまま終了した QEMU も失敗にする。
+QEMU を `-S`（起動時停止 + gdbstub）でバックグラウンド起動し、gdb をフォアグラウンドで接続する。リモートプロトコルに認証はないため待ち受けは loopback に限定する。`make debug` は gdb 接続の前に `nc -z` で gdbstub ポート（`GDB_PORT`、既定 1234）が開くまで待ってから gdb を起動する。起動前にポートが使用中なら失敗し、待機中は QEMU プロセスの生存を確認する。事前確認から QEMU の待ち受け開始までに別プロセスが同じポートを取得する可能性があるため、接続先の同一性を厳密に保証するものではない。
 
 マクロは `debug.gdb` に定義し `-x debug.gdb` で明示ロードする（`.gdbinit` 自動ロードは使わない）。`regs64` マクロで RAX〜RDI、セグメントレジスタ、RIP、EFLAGS（CF/PF/AF/ZF/SF/OF を展開）を表示し、`hook-stop` で毎ストップ時に自動表示する。EFLAGS は QEMU の gdbstub が `$rflags` を提供しないため `$eflags`（下位 32 ビット）を使用する — RFLAGS の上位 32 ビットは予約（0）で、CF/PF/AF/ZF/SF/OF は下位 32 ビットにある。`_start` 停止時の出力例（s01_hello、実測）:
 
