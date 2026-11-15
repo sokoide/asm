@@ -36,6 +36,11 @@
 - 1.44MB のイメージをゼロ埋めし bin を書き込む。AS、LD、サイズ検査、イメージ生成の失敗は即座に非ゼロ終了する。
 - スタック規約は教材内で明示する。引数はレジスタ渡しから始め、保存対象レジスタを関数ごとに定義する。外部 ABI への準拠は別項目として説明する。
 
+## gdb マクロ方式（全 x86 で統一）
+
+- マクロは `debug.gdb` に定義し、gdb 起動時に `-x debug.gdb` で明示ロードする。`.gdbinit` の自動ロードは使わない（auto-load safe-path 設定への依存を避ける）。
+- x86_16/qemu は現状 `.gdbinit` 自動ロード方式のため、本計画の Phase 1 で `debug.gdb` 方式へ移行する（Makefile debug レシピと README を追従改修）。x86_64 計画もこの方式に従う。
+
 ## 共通シナリオ
 
 | 番号 | テーマ | 要点 |
@@ -70,11 +75,13 @@
 | icount | シナリオ `.text` のみを集計。BIOS、移行処理、終了ループを除外し、完走と打切りを区別 |
 | clean | 生成物だけを削除 |
 
+QEMU 起動フラグは共通の QFLAGS（`-machine pc -accel tcg -cpu 486 -no-reboot -no-shutdown`）に集約し、全ターゲットで同一にする。trace と icount では `-accel` を `-accel tcg,one-insn-per-tb=on` に差し替える（再現性のため CPU モデルとアクセラレータを明示する）。
+
 タイムアウトは HLT 後も QEMU が動作するため許容するが、期待出力欠落は失敗とする。QEMU 起動失敗とビルド失敗の注入でも非ゼロ終了することを確認する。ルート all/runall は失敗をスキップする既存動作のため、受入判定には個別ディレクトリの test を使う。
 
 ## フェーズと受入条件
 
-1. **ブート基盤**: s01、build/run/test/debug を実装。署名・ロード範囲・CR0.PE・CS 属性・32ビット命令のステップ・UART 出力を確認する。bin/ELF の配置一致を確認する。
+1. **ブート基盤**: s01、build/run/test/debug を実装。署名・ロード範囲・CR0.PE・CS 属性・32ビット命令のステップ・UART 出力を確認する。bin/ELF の配置一致を確認する。x86_16 の gdb マクロ移行（`debug.gdb` 方式）もこの Phase で実施する。
 2. **共通教材**: s02〜s12 を実装し、入力・期待出力のテストを追加する。全12件が成功する。
 3. **比較と統合**: s13、dump/trace/icount/cycles、README、CPU.md の補足を実装する。全13件と失敗注入を確認する。ルート README/AGENTS.md/Makefile の CORE_DIRS と compare/copybench.md に追加する。
 4. **x86_64 への移行**: 実測済みのロード、GDT、配置、UART、テストの仕様を x86_64 計画に反映する。コード共有は実装の重複と差分を確認して判断し、先に汎用化しない。

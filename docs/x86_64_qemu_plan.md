@@ -110,14 +110,16 @@ s06/s12 の `runall`/`trace` 入力は x86_16 と同じ `printf 'q\n'` / `printf
 | `make` / `make all` | boot.o + 全シナリオをビルドし img 化 |
 | `make run S=` | `timeout --foreground $(TIMEOUT_SECS) qemu-system-x86_64 -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none` |
 | `make runall` | 全シナリオ + s06/s12 への入力パイプ (x86_16 と同一レシピ) |
-| `make debug S=` | QEMU を `-S -gdb tcp:127.0.0.1:1234` でバックグラウンド起動し、`gdb -q $(S).elf` で接続 (`hbreak *_start` 相当のカーネル先頭から)。`.gdbinit` は `regs64` マクロ + RFLAGS デコード (CF/PF/AF/ZF/SF/OF。m68k/x86_16 の flags 拡張と同形式) |
+| `make debug S=` | QEMU を `-S -gdb tcp:127.0.0.1:1234` でバックグラウンド起動し、`gdb -q $(S).elf` で接続 (`hbreak *_start` 相当のカーネル先頭から)。`debug.gdb` を `-x` で明示ロードし、`regs64` マクロ + RFLAGS デコード (CF/PF/AF/ZF/SF/OF。m68k/x86_16 の flags 拡張と同形式) を定義。マクロ方式は全 x86 で `debug.gdb` に統一 (x86_32 計画の「gdb マクロ方式」参照) |
 | `make trace S=` | `-accel tcg,one-insn-per-tb=on -d in_asm,cpu -dfilter 0x8000+0x7e00` で `.trace` に記録しページャ表示 |
 | `make cycles S=` | `unsupported` メッセージ (TCG はサイクル非対応。x86_16 と同一) |
 | `make icount S=` | trace と同じ起動で `-d cpu` のみ、`RIP=` 行を実測で確認して集計。対象は `.text` のアドレス範囲のみとし、BIOS・移行処理・停止ループを除外する。ログ上限や時間切れで途中終了した計測は不完全と表示し、完走の数値と区別する |
 | `make dump S=` | `ndisasm -b 64 -o 0x8000 -e 1024 $(S).bin` (dump32 相当を 64-bit に。ブートセクタと移行スタブをスキップ) |
 | `make clean` | `*.bin *.img *.o *.lst *.trace *.elf` 削除 |
 
-x86_16 にある `make test` (test_scenarios.py) は x86_64 版を Phase 3 で作る (期待シリアル出力の自動チェック)。
+QEMU 起動フラグは共通の QFLAGS (`-machine pc -accel tcg -cpu qemu64 -no-reboot -no-shutdown`) に集約し、全ターゲットで同一にする (CPU モデル・アクセラレータの明示による再現性確保。必須条件の `-cpu qemu64` 統一と同じ趣旨)。trace と icount では `-accel` を `-accel tcg,one-insn-per-tb=on` に差し替える。
+
+x86_16 にある `make test` (test_scenarios.py) は x86_64 版を Phase 1 で s01 用に導入し、Phase 2 で s02〜s12、Phase 3 で s13 に拡張する (期待シリアル出力の自動チェック)。
 
 ## ドキュメント更新
 
@@ -131,7 +133,7 @@ x86_16 にある `make test` (test_scenarios.py) は x86_64 版を Phase 3 で�
 
 | Phase | 内容 | 完了条件 |
 | :--- | :--- | :--- |
-| **1: ブート基盤** | `boot.asm`、`linker.ld`/`linker-debug.ld`、Makefile 骨格 (all/run/clean)、`.gdbinit`、`s01_hello.asm`、README 骨格 | `make run S=s01_hello` で "Hello" がシリアル出力され hlt。`make debug` で 0x8000 以降の 64-bit コードをステップ可能 |
+| **1: ブート基盤** | `boot.asm`、`linker.ld`/`linker-debug.ld`、Makefile 骨格 (all/run/test/debug/clean)、`debug.gdb`、`test_scenarios.py`、`s01_hello.asm`、README 骨格 | `make run S=s01_hello` で "Hello" がシリアル出力され hlt。`make test` で s01 の期待出力を照合。`make debug` で 0x8000 以降の 64-bit コードをステップ可能 |
 | **2: 共通シナリオ** | s02-s12 (11 本) | `make runall` 全シナリオ OK、s06/s12 のパイプ入力が動く |
 | **3: 統合と計測** | s13_copybench、debug/trace/cycles/icount/dump 検証、test_scenarios.py、ルート 4 ファイル更新 (README/AGENTS/Makefile/CPU.md) | `make trace A=x86_64/qemu S=...` 等のルートパススルーが動く。copybench checksum `0x1356` 一致。ルート `make runall` に x86_64 が含まれる |
 | **4: アーキ固有** | s101_riprel、s102_paging、s103_syscall (+s104_sse は実測後に採否) | 各シナリオの期待出力と README 学習カード (予測→観察→改造→考察) が揃う |
@@ -140,7 +142,7 @@ x86_16 にある `make test` (test_scenarios.py) は x86_64 版を Phase 3 で�
 
 - **Phase 1**: img を `ndisasm -b 16/-b 64` でダンプしブートチェーンの各段 (0x7C00/0x7E00) を目視確認。gdb で CR0/CR4/EFER の遷移をレジスタ観察
 - **Phase 2**: 全共通シナリオの期待出力テストを通す。runall の終了コードだけで合格にしない
-- **Phase 3**: `make icount` の数値が `grep -c` で安定して取れること (RIP= の実測)。`make debug` で `.gdbinit` の regs64/flags が正しく表示されること
+- **Phase 3**: `make icount` の数値が `grep -c` で安定して取れること (RIP= の実測)。`make debug` で `debug.gdb` の regs64/flags が正しく表示されること
 - **Phase 4**: copybench は checksum 一致が必須。s102 はページテーブルの実値と QEMU の `info tlb` 系の出力突き合わせ (可能な範囲)
 
 ## リスクと未決事項
