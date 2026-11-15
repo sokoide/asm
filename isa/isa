@@ -14,6 +14,8 @@ CAT_ORDER="データ転送 ロード ストア スタック 算術 BCD 論理 �
 usage() {
   cat <<EOF
 isa — オフライン命令セット・リファレンス（CLI 辞書）
+ISA = Instruction Set Architecture（命令セットアーキテクチャ）:
+CPU が実行できる命令の仕様一覧。この CLI は収録アーキの ISA 辞書。
 
 使い方:
   isa MNEMONIC      命令を検索（コンパクト表示。大文字小文字は同一視）
