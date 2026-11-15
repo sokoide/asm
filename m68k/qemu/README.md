@@ -1,14 +1,15 @@
 # M68000 アセンブラ ワークショップ
 
-M68000 アーキテクチャの bare-metal プログラミングを Goldfish TTY による I/O で学ぶ。共通シナリオ S01-S12 に加え、共通比較課題（s13 帯）と m68k 固有の拡張シナリオ（s101+ 帯）で段階的に実践。
+M68000 アーキテクチャの bare-metal プログラミングを Goldfish TTY による I/O で学ぶ。共通シナリオ S01-S12 に加え、共通比較課題（s13 帯）と m68k 固有の拡張シナリオ（s101+ 帯）で段階的に実験。さらに `_common/c` の C ソースを gcc でアセンブリに変換して観察する C シナリオ（c01+）もある。
 
 ## 前提条件
 
-| ツール           | 用途         | インストール例              |
-| :---             | :---         | :---                        |
-| m68k-elf-as      | アセンブラ   | `brew install m68k-elf-gcc` |
-| m68k-elf-ld      | リンカ       |                             |
-| qemu-system-m68k | エミュレータ | `brew install qemu`         |
+| ツール           | 用途                                      | インストール例              |
+| :---             | :---                                      | :---                        |
+| m68k-elf-as      | アセンブラ                                | `brew install m68k-elf-gcc` |
+| m68k-elf-ld      | リンカ                                    |                             |
+| m68k-elf-gcc     | C シナリオのアセンブリ生成 (`-S`) のみ必要 |                             |
+| qemu-system-m68k | エミュレータ                              | `brew install qemu`         |
 
 ## ビルドと実行
 
@@ -35,6 +36,10 @@ make clean
 # QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
+# C シナリオ: _common/c/c01.c を gcc -S でアセンブリ生成してからステップ実行
+# (-g 付きのため break main / list / step で C ソース行が見える)
+make debug S=c01
+
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
@@ -55,6 +60,7 @@ make icount S=s01_hello
 ```text
 .
 ├── linker.ld           # 共通リンカスクリプト（コードは 0x00000400、ベクタ領域 0x0-0x3FF を空ける）
+├── crt0.s              # C シナリオ共通のスタートアップ（スタック設定・.bss クリア・main 呼び出し）
 ├── Makefile
 ├── README.md
 ├── s01_hello.s        # シナリオ 1: Hello World
@@ -467,6 +473,40 @@ Back after RTE
 
 ---
 
+### C01/C02: C → アセンブリ (gcc -S)
+
+**難易度**: ★☆☆☆☆
+
+リポジトリ root の `_common/c/` にある C ソースを `gcc -g -O0 -m68000 -S` でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `_common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+
+| 学習項目                     | 説明                                                              |
+| :---                         | :---                                                              |
+| `gcc -g -O0 -m68000 -S`      | 最適化なし・デバッグ情報付きで 68000 用アセンブリを生成           |
+| `link.w %fp,#0` / `unlk %fp` | -O0 の関数プロローグ/エピローグ（フレームポインタ = A6）          |
+| スタック渡し ABI             | gcc の m68k 呼び出し規約: 引数はスタック (`%fp@(8)`, `%fp@(12)`)、戻り値は D0 |
+| crt0.s                       | スタック設定 (SP=0x4000) → .bss クリア → `jsr main` → halt の最小ランタイム |
+| DWARF デバッグ情報           | `break main` / `list` / `step` で C ソース行単位のステップ実行    |
+
+**使い方**:
+
+```bash
+make run S=c01        # QEMU で実行（UART 出力なし、timeout で終了）
+make dump S=c01       # crt0 + gcc 生成コードの逆アセンブル
+make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
+make clean            # 生成物とともに _common/c/c*.s を削除
+```
+
+**ポイント**: 手書きの S07 は引数を D0/D1 のレジスタ渡しにしているが、gcc の m68k 呼び出し規約は引数スタック渡し（戻り値のみ D0）。同じ「サブルーチン」でも ABI が違うことを `make dump S=c02` の `jsr add` 前後（`move.l #1,-(%sp)` での引数積みと `addq.l #8,%sp` の後始末）で確認できる。crt0 は UART 出力を持たないため、C シナリオは `make debug` でレジスタ・変数を観察する使い方を想定している（このため runall には含めない）。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `_common/c/c01.s` を開き、`main` のプロローグ（`link.w`）、`moveq #0,%d0`、エピローグ（`unlk`/`rts`）がそれぞれ何をするか先に予測する。
+- **STEP 2 観察**: `make debug S=c01` で `break main` → `step` → main 復帰後 D0=0・A7 が 0x4000 に戻ることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`、`break halt` で D0=0（c-42）を `printf` で見る。
+- **STEP 3 改造**: `_common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、crt0 の .bss クリアループ（`.Lbss`）が実行される様子とデータアドレッシングの変化を観察する。
+- **STEP 4 考察**: `make build S=c01 CFLAGS='-g -O2 -m68000'` で最適化を変えてビルドし、`make dump S=c01` / `make icount S=c01` で命令数・コードサイズを -O0 と比べる。`-g` 付きだと `-O2` でもフレームポインタ（`link.w`/`unlk`）が残り、`-g` なしだと消えて `moveq`+`rts` だけになることも確認する。
+
+---
+
 ## 関連ドキュメント
 
 - [`../CPU.md`](../CPU.md) — M68000 命令セット完全リファレンス
@@ -534,9 +574,11 @@ sudo apt install gcc-m68k-linux-gnu qemu-system-m68k
 AS = m68k-elf-as
 LD = m68k-elf-ld
 OD = m68k-elf-objdump
+CC = m68k-elf-gcc        # C シナリオ (_common/c/c*.c) のアセンブリ生成用
 
 # フラグ
 ASFLAGS = -m68000        # 68000 命令セットを使用
+CFLAGS = -g -O0 -m68000  # C シナリオ: デバッグ情報付き・最適化なし
 LDFLAGS = -T linker.ld  # リンカスクリプトを使用
 
 # QEMU 起動

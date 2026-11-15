@@ -3,6 +3,9 @@
 *.bin
 *.trace
 
+# _common/c/c*.c を gcc -S で生成したアセンブリ (各アーキの Makefile が生成・make clean で削除)
+_common/c/c*.s
+
 .claude/
 .omc/
 .serena/
