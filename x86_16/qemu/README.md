@@ -1,6 +1,6 @@
 # 8086 アセンブラ ワークショップ（QEMU フロッピーブート版）
 
-QEMU フロッピーディスクイメージからリアルモードで起動し、16550 UART (COM1, I/O 0x3F8) を I/O に使う x86 16-bit ベアメタルアセンブリ言語教材。共通シナリオ S01-S12 に加え、共通比較課題（s13 帯）と x86 固有の拡張シナリオ（s101+ 帯）で段階的に学ぶ。
+QEMU フロッピーディスクイメージからリアルモードで起動し、16550 UART (COM1, I/O 0x3F8) を I/O に使う x86 16-bit ベアメタルアセンブリ言語教材。共通シナリオ S01-S12 に加え、共通比較課題（s13 帯）と x86 固有の拡張シナリオ（s101+ 帯）で段階的に学ぶ。`_common/c` の C ソースを clang `-m16` でアセンブリに変換して観察する C シナリオ（c01+）もある。
 
 ## 前提条件
 
@@ -38,6 +38,10 @@ make clean
 # QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
+# C シナリオ: _common/c/c01.c を clang -m16 -S でアセンブリ生成してからステップ実行
+# (-g 付きのため 0x7C00 到達後は break main / list / step で C ソース行が見える)
+make debug S=c01
+
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
@@ -68,6 +72,7 @@ curl -LO https://raw.githubusercontent.com/mrexodia/x86-real-mode-bootloader/mas
 
 ```text
 .
+├── crt0.s              # C シナリオ共通のスタートアップ（セグメント/スタック設定 + main 呼び出し）
 ├── linker.ld           # リンカスクリプト（0x7C00 配置, binary 出力）
 ├── Makefile
 ├── README.md
@@ -523,6 +528,42 @@ Offset  Size  Field
 | アドレス指定 | リンカスクリプト（linker.ld）  | `ORG 0x7C00`                         |
 | ビルド出力   | ELF → `.bin` → `.img`          | 直接 `.bin` → `.img`                 |
 | 逆アセンブル | `make dump S=...`              | `make dump32 S=...`（セクタ 2 以降） |
+
+---
+
+### C01/C02: C → アセンブリ (clang -m16 -S)
+
+**難易度**: ★☆☆☆☆
+
+リポジトリ root の `_common/c/` にある C ソースを `clang -m16 -g -O0 -S`（`.code16` 出力）でアセンブリに変換し、crt0.asm と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `_common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。ブートセクタは 512 バイトのため C コードも 510 バイト上限（超過時はビルドエラー）。
+
+| 学習項目                     | 説明                                                            |
+| :---                         | :---                                                            |
+| `clang --target=i386-pc-none-elf -m16 -g -O0 -S` | `.code16`（16-bit リアルモード）のアセンブリを生成 |
+| `66`/`67` プレフィックス     | 32-bit オペランド/アドレスを 16-bit モードで使うためのプレフィックス（`pushl` = `66 55` 等） |
+| `calll`/`retd` ABI           | clang -m16 の関数呼び出しは 4 バイト戻りアドレス。crt0 は `o32 call main`（66 プレフィックス付き call）で呼ぶ |
+| crt0.asm                     | DS/ES/SS=0、SP=0x7C00 のセグメント・スタック設定 + `o32 call main` + hlt |
+| DWARF デバッグ情報           | `break *0x7c00` 到達後は `break main` / `list` / `step` で C ソース行単位のステップ実行 |
+
+**使い方**:
+
+```bash
+make run S=c01        # QEMU で実行（UART 出力なし、HLT 到達で timeout 回収）
+make dump S=c01       # crt0 + clang 生成コードの逆アセンブル (16-bit)
+make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
+make clean            # 生成物とともに _common/c/c*.s を削除
+```
+
+**ポイント**: clang `-m16` の出力は 386 以降の命令（66/67 プレフィックス付き 32-bit オペランド）を含むため、QEMU の既定 CPU（qemu32）では動くが実 8086 では動かない。手書きシナリオ（`cpu 8086`）と命令セット前提が変わる点に注意。引数は x86_32 と同じスタック渡し（`8(%ebp)` 相当）だが 16-bit モードなので `67 66` の二重プレフィックスが付く。同じ `_common/c/c01.c` から生成した x86_32/x86_64 版と `_common/c/c01.s` を見比べると、モードごとの命令エンコーディングの違いが読み取れる。crt0 は UART 出力を持たず main 復帰後に `cli/hlt` で停止するため、C シナリオは runall に含めない。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `_common/c/c01.s` を開き、`main` のプロローグ（`pushl %ebp` = `66 55`、`movl %esp, %ebp`）と `movl $0, -4(%ebp)` が 16-bit モードでどうエンコードされるか（何バイト消費するか）先に予測する。
+- **STEP 2 観察**: `make debug S=c01` で `break *0x7c00` → `break main` → `step` と進め、`x/5i $pc` で 66/67 プレフィックス付き命令を確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20` を見る。`make dump S=c02` で `66 E8 rel32`（4 バイト戻りアドレスの call）と crt0 の `o32 call` が一致することも確認する。
+- **STEP 3 改造**: `_common/c/c01.c` に文字配列の初期化を追加して再ビルドし、`.rodata`/`.data` がイメージに加わって 510 バイト上限に近づく様子を `make build-c S=c01` の出力サイズで観察する。
+- **STEP 4 考察**: `mov sp, 0x7C00` のスタックで 32-bit push（4 バイト単位）がどう SP を動かすかを gdb の regs16 で追う。実 8086 で動かすには何が不足するか（66/67 プレフィックス、`o32 call`）をソースと突き合わせて考える。
+
+---
 
 ## 関連ドキュメント
 

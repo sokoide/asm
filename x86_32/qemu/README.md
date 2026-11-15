@@ -1,6 +1,6 @@
 # 80386 アセンブラ ワークショップ（QEMU フロッピーブート版）
 
-QEMU フロッピーディスクイメージから SeaBIOS で起動し、16-bit ブートコードから 32-bit 保護モードへ移行して、16550 UART (COM1, I/O 0x3F8) を I/O に使う x86 32-bit ベアメタルアセンブリ言語教材。共通シナリオ S01-S13 で段階的に学ぶ。
+QEMU フロッピーディスクイメージから SeaBIOS で起動し、16-bit ブートコードから 32-bit 保護モードへ移行して、16550 UART (COM1, I/O 0x3F8) を I/O に使う x86 32-bit ベアメタルアセンブリ言語教材。共通シナリオ S01-S13 で段階的に学ぶ。`_common/c` の C ソースを clang でアセンブリに変換して観察する C シナリオ（c01+）もある。
 
 ## 前提条件
 
@@ -33,6 +33,10 @@ make clean            # 生成物を削除
 ```bash
 # QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続 (ステップ実行)
 make debug S=s01_hello
+
+# C シナリオ: _common/c/c01.c を clang -S でアセンブリ生成してからステップ実行
+# (-g 付きのため _start 到達後は break main / list / step で C ソース行が見える)
+make debug S=c01
 
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
@@ -93,6 +97,7 @@ UART 出力はステップ実行の進行に応じて同じターミナルに表
 ```text
 .
 ├── boot.asm           # ブートセクタ (`.boot`) + 保護モード移行スタブ (`.stub`)
+├── crt0.asm           # C シナリオ共通のスタートアップ（boot.asm 移行済みの環境で main を呼ぶ）
 ├── linker.ld          # リンカスクリプト（フラットバイナリ出力）
 ├── linker-debug.ld    # デバッグ用リンカスクリプト（ELF32 出力、同一配置）
 ├── Makefile
@@ -388,6 +393,40 @@ AND / OR / XOR / SHL / SHR / ROR を 32 ビット幅で使い、ビット単位�
 **実行出力**: `COPY OK CHECKSUM=1356`（1 行のみ）
 
 **ポイント**: QEMU TCG はサイクル精度ではないため実サイクルは測れない。REP MOVSB の手計算サイクル内訳（8086: 9+17n = 17.09 クロック/バイト）は [`../../_docs/copybench.md`](../../_docs/copybench.md) と x86_16 版に記載しており、386 のブロック転送タイミングは比較表の対象外である。
+
+---
+
+### C01/C02: C → アセンブリ (clang -S)
+
+**難易度**: ★☆☆☆☆
+
+リポジトリ root の `_common/c/` にある C ソースを `clang -g -O0 -S`（i386 向け、-cpu 486 で動く 386 ベースライン）でアセンブリに変換し、crt0.asm と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `_common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+
+| 学習項目                     | 説明                                                            |
+| :---                         | :---                                                            |
+| `clang --target=i386-pc-none-elf -g -O0 -S` | 最適化なし・DWARF 付きで 386 用アセンブリを生成（486 で実行可能） |
+| `pushl %ebp` / `movl %esp, %ebp` / `subl $24, %esp` | -O0 の関数プロローグ（フレームポインタ EBP + ローカル領域） |
+| スタック渡し ABI (cdecl)     | 引数はスタック（callee では `8(%ebp)`, `12(%ebp)`）、戻り値は EAX。呼び出し側が `movl $1, (%esp)` で積み、`addl $N, %esp` で後始末 |
+| crt0.asm                     | boot.asm のスタブがモード移行・ESP=0x90000・.bss クリアまで済ませるため、`call main` + hlt だけ |
+| DWARF デバッグ情報           | `hbreak *_start` 到達後は `break main` / `list` / `step` で C ソース行単位のステップ実行 |
+
+**使い方**:
+
+```bash
+make run S=c01        # QEMU で実行（UART 出力なし、HLT 到達で timeout 回収）
+make dump S=c01       # crt0 + clang 生成コードの逆アセンブル (0x8000〜)
+make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
+make clean            # 生成物とともに _common/c/c*.s を削除
+```
+
+**ポイント**: x86_32 の cdecl は引数スタック渡し（戻り値のみ EAX）で、m68k 版の gcc ABI と同じ方式。同じ `_common/c/c02.c` から生成した x86_64 版・RISC-V 版（引数レジスタ渡し）と `_common/c/c02.s` を見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たず main 復帰後に `cli/hlt` で停止するため、C シナリオは runall に含めない（`trace`/`icount` は他シナリオと同じく `scenario_halt` シンボルで完走判定する）。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `_common/c/c01.s` を開き、`main` のプロローグ（`pushl %ebp` / `movl %esp, %ebp` / `subl $N, %esp`）、`movl $0, -4(%ebp)`、エピローグ（`addl $N, %esp` / `popl %ebp` / `retl`）がそれぞれ何をするか先に予測する。
+- **STEP 2 観察**: `make debug S=c01` で `hbreak *_start` 到達後に `break main` → `step` → main 復帰後 EAX=0・ESP が 0x90000 側に戻ることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`、`break scenario_halt` で EAX=0（c-42）を見る。`make dump S=c02` で cdecl の引数積み（`movl $1, (%esp)` など `pushl` ではなく mov で置く点）と callee 側の `8(%ebp)`/`12(%ebp)` 参照も確認する。
+- **STEP 3 改造**: `_common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、boot.asm スタブの .bss クリア（`rep stosb`）が実行される様子を `make debug` で観察する。
+- **STEP 4 考察**: `make build-c S=c01 CFLAGS='--target=i386-pc-none-elf -g -O2 -fno-asynchronous-unwind-tables'` で最適化を変えてビルドし、`make dump S=c01` / `make icount S=c01` で命令数を -O0 と比べる（フレームポインタの保持・消失も x86_64 版と同じ条件で確認する）。
 
 ---
 

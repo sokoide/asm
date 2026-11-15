@@ -33,7 +33,17 @@ ICOUNT_SECS  ?= 5
 GDB          ?= gdb
 GDB_PORT     ?= 1234
 
-.PHONY: linkcheck  all run runall test debug trace icount cycles dump clean format
+# --- C シナリオ: リポジトリ root の _common/c/c*.c を clang -S で _common/c/c*.s に
+# 生成してから crt0.asm (+ boot.o) と一緒にアセンブル・リンクする (make debug S=c01 等)。
+# UART 出力しない (main の戻り値は RAX で確認) ため runall には含めない。
+COMMON_C   = ../../_common/c
+CSCENARIOS := $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+CC         = clang
+# -mno-red-zone: IDT 未構築で割り込みは無いが、カーネルコードの作法として。
+# -fno-asynchronous-unwind-tables: .eh_frame を出させない (bare-metal では不要)
+CFLAGS     = --target=x86_64-pc-none-elf -mno-red-zone -g -O0 -fno-asynchronous-unwind-tables
+
+.PHONY: linkcheck  all run runall test debug trace icount cycles dump clean format build-c
 
 # アセンブリソースを nvim の保存時整形と同一ロジックで整形
 # （asm.lua の autocmd を headless nvim で再実行 = :w と同じ整形。
@@ -64,20 +74,47 @@ all: boot.o
 		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null; \
 		rm -f $$name.o; \
 		echo "  OK ($$sz bytes)"; \
+	done; \
+	for name in $(CSCENARIOS); do \
+		$(MAKE) --no-print-directory build-c S=$$name; \
 	done
 
-# Run: make run S=s01_hello
-run: boot.o
+# C シナリオのビルド: make build-c S=c01
+# clang -S の出力 _common/c/$(S).s は学習対象なので $(COMMON_C)/ に残す (make clean で削除)。
+# .bin はブートセクタ + crt0 + C コード、.elf は gdb 用 (linker-debug.ld + DWARF)。
+build-c: boot.o
 	@set -e; \
-	$(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm; \
-	$(LK) $(LKFLAGS) -o $(S).bin boot.o $(S).o; \
+	echo "=== $(S) [C] ==="; \
+	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(COMMON_C)/$(S).s; \
+	$(AS) $(ASFLAGS) -g -F dwarf -l crt0.lst -o crt0.o crt0.asm; \
+	$(CC) --target=x86_64-pc-none-elf -c -o $(S).o $(COMMON_C)/$(S).s; \
+	$(LK) $(LKFLAGS) -o $(S).bin boot.o crt0.o $(S).o; \
+	$(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o crt0.o $(S).o; \
+	rm -f crt0.o $(S).o; \
 	sz=$$(wc -c < $(S).bin | tr -d ' '); \
 	if [ "$$sz" -gt $(BIN_MAX) ]; then \
 		echo "ERROR: $(S).bin が $$sz バイト (上限 $(BIN_MAX) バイト)"; exit 1; \
 	fi; \
 	dd if=/dev/zero of=$(S).img bs=512 count=$(IMG_SECS) 2>/dev/null; \
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null; \
-	rm -f $(S).o
+	echo "  OK ($$sz bytes)"
+
+# Run: make run S=s01_hello
+run: boot.o
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	else \
+	  set -e; \
+	  $(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm; \
+	  $(LK) $(LKFLAGS) -o $(S).bin boot.o $(S).o; \
+	  sz=$$(wc -c < $(S).bin | tr -d ' '); \
+	  if [ "$$sz" -gt $(BIN_MAX) ]; then \
+		echo "ERROR: $(S).bin が $$sz バイト (上限 $(BIN_MAX) バイト)"; exit 1; \
+	  fi; \
+	  dd if=/dev/zero of=$(S).img bs=512 count=$(IMG_SECS) 2>/dev/null; \
+	  dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null; \
+	  rm -f $(S).o; \
+	fi
 	@$(TIMEOUT) $(QEMU) $(QFLAGS) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none; status=$$?; \
 	if [ $$status -ne 0 ] && [ $$status -ne 124 ]; then exit $$status; fi
 
@@ -111,17 +148,21 @@ runall: all
 # ソフトウェアブレークは使えない。hbreak (ハードウェアブレーク) で
 # 0x8000 の _start で止める。
 debug: boot.o linkcheck
-	@set -e; \
-	$(AS) $(ASFLAGS) -g -F dwarf -l $(S).lst -o $(S).o $(S).asm; \
-	$(LK) $(LKFLAGS) -o $(S).bin boot.o $(S).o; \
-	$(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o; \
-	sz=$$(wc -c < $(S).bin | tr -d ' '); \
-	if [ "$$sz" -gt $(BIN_MAX) ]; then \
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	else \
+	  set -e; \
+	  $(AS) $(ASFLAGS) -g -F dwarf -l $(S).lst -o $(S).o $(S).asm; \
+	  $(LK) $(LKFLAGS) -o $(S).bin boot.o $(S).o; \
+	  $(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o; \
+	  sz=$$(wc -c < $(S).bin | tr -d ' '); \
+	  if [ "$$sz" -gt $(BIN_MAX) ]; then \
 		echo "ERROR: $(S).bin が $$sz バイト (上限 $(BIN_MAX) バイト)"; exit 1; \
-	fi; \
-	dd if=/dev/zero of=$(S).img bs=512 count=$(IMG_SECS) 2>/dev/null; \
-	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null; \
-	rm -f $(S).o
+	  fi; \
+	  dd if=/dev/zero of=$(S).img bs=512 count=$(IMG_SECS) 2>/dev/null; \
+	  dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null; \
+	  rm -f $(S).o; \
+	fi
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
 	@if nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; then \
 		echo "ERROR: ポート $(GDB_PORT) が使用中 (既存サーバーへの誤接続を防ぐため起動しません)"; exit 1; \
@@ -154,17 +195,25 @@ debug: boot.o linkcheck
 TRACE_SECS ?= 10
 TRACE_MAX_BYTES ?= 33554432
 trace: all linkcheck
-	@$(AS) $(ASFLAGS) -o $(S).o $(S).asm
-	@$(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o
-	@rm -f $(S).o
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	else \
+	  $(AS) $(ASFLAGS) -o $(S).o $(S).asm && \
+	  $(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o && \
+	  rm -f $(S).o; \
+	fi
 	@python3 trace_scenario.py --qemu $(QEMU) --scenario $(S) --timeout $(TRACE_SECS) --max-bytes $(TRACE_MAX_BYTES) --qflags "$(INSN_QFLAGS)" --dfilter "$(DFILTER)"
 	@if [ -t 1 ]; then less $(S).trace; else cat $(S).trace; fi
 
 # 実行命令数: 終了位置の RIP を検出し、それ以前の命令だけを集計する。
 icount: all linkcheck
-	@$(AS) $(ASFLAGS) -o $(S).o $(S).asm
-	@$(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o
-	@rm -f $(S).o
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	else \
+	  $(AS) $(ASFLAGS) -o $(S).o $(S).asm && \
+	  $(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o && \
+	  rm -f $(S).o; \
+	fi
 	@python3 count_instructions.py --qemu $(QEMU) --scenario $(S) --timeout $(ICOUNT_SECS) --qflags "$(INSN_QFLAGS)" --dfilter "$(DFILTER)"
 
 # 実サイクル数: make cycles S=s01_hello → unsupported
@@ -194,6 +243,7 @@ linkcheck:
 
 clean:
 	rm -f *.bin *.img *.o *.lst *.elf *.trace *.icount.trace .linkcheck.tmp1 .linkcheck.tmp2
+	rm -f $(COMMON_C)/c*.s
 
 # boot.o は全シナリオで共通のブートセクタ + 移行スタブ
 boot.o: boot.asm

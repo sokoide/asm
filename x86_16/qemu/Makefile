@@ -35,7 +35,19 @@ GDB_PORT   ?= 1234
 # ログは停止時点で伸びなくなる(タイムアウトは QEMU プロセス回収用)。
 TRACE_SECS ?= 10
 
-.PHONY: all run runall test dump dump32 debug trace cycles icount clean format
+# --- C シナリオ: リポジトリ root の _common/c/c*.c を clang -m16 で _common/c/c*.s に
+# 生成してから crt0.asm と一緒にアセンブル・リンクする (make debug S=c01 等)。
+# UART 出力しない (main の戻り値は AX で確認) ため runall には含めない。
+COMMON_C   = ../../_common/c
+CSCENARIOS := $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+CC         = clang
+# -m16: .code16 (16-bit real mode) のコードを生成。386 以降の命令を含むため
+# QEMU 既定 CPU (qemu32) では動くが実 8086 では動かない (crt0.asm の注意参照)。
+# -fno-asynchronous-unwind-tables: .eh_frame を出させない (orphan セクションが
+# linker.ld の .text の前に置かれてイメージが壊れるため)
+CFLAGS     = --target=i386-pc-none-elf -m16 -g -O0 -fno-asynchronous-unwind-tables
+
+.PHONY: all run runall test dump dump32 debug trace cycles icount clean format build-c
 
 # アセンブリソースを nvim の保存時整形と同一ロジックで整形
 # （asm.lua の autocmd を headless nvim で再実行 = :w と同じ整形。
@@ -67,16 +79,44 @@ all:
 		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null || exit 1; \
 		echo "  OK ($$(wc -c < $$name.bin) bytes)"; \
 	done
+	@for name in $(CSCENARIOS); do \
+		$(MAKE) --no-print-directory build-c S=$$name || exit 1; \
+	done
+
+# C シナリオのビルド: make build-c S=c01
+# clang -m16 (-g -O0) で _common/c/$(S).s を生成し crt0.asm とリンクする。
+# .s は学習対象なので $(COMMON_C)/ に残す (make clean で削除)。
+# ブート署名 (0xAA55 @ 510) はリンク後に Makefile 側で追記する (ELF リンクでは
+# イメージ末尾位置が確定しないため)。510 バイト = 512 バイト - 署名 2 バイト。
+build-c:
+	@set -e; \
+	echo "=== $(S) [C] ==="; \
+	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(COMMON_C)/$(S).s; \
+	$(AS) $(ASFLAGS) -g -F dwarf -l crt0.lst -o crt0.o crt0.asm; \
+	$(CC) --target=i386-pc-none-elf -m16 -c -o $(S).o $(COMMON_C)/$(S).s; \
+	$(LK) $(LKFLAGS) -o $(S).bin crt0.o $(S).o; \
+	$(LK) -m elf_i386 -T linker-debug.ld -o $(S).elf crt0.o $(S).o; \
+	rm -f crt0.o $(S).o; \
+	sz=$$(wc -c < $(S).bin | tr -d ' '); \
+	if [ "$$sz" -gt 510 ]; then \
+		echo "ERROR: $(S).bin が $$sz バイト (ブートセクタ上限 510 バイト)"; exit 1; \
+	fi; \
+	dd if=/dev/zero of=$(S).bin bs=1 seek=$$sz count=$$((510 - sz)) conv=notrunc 2>/dev/null; \
+	printf '\125\252' >> $(S).bin; \
+	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null; \
+	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null; \
+	echo "  OK ($$sz bytes)"
 
 # Run: make run S=s01_hello  OR  make run S=s104_protected
 run:
-	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
-	if [ "$$MODE" = "single" ]; then \
-		$(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
-		$(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
-		rm -f $(S).o; \
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	  $(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
+	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
+	  rm -f $(S).o; \
 	else \
-		$(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
+	  $(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
 	fi || exit 1
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
@@ -115,16 +155,17 @@ dump32:
 # ブートセクタ先頭 (0x7C00) で break する。命令一覧には make dump も使える。
 # gdb: si=1命令実行 / c=continue / b *ADDR / info registers / x/5i $pc / Ctrl-D で終了
 debug:
-	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
-	if [ "$$MODE" = "single" ]; then \
-		$(AS) $(ASFLAGS) -g -F dwarf -l $(S).lst \
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	  $(AS) $(ASFLAGS) -g -F dwarf -l $(S).lst \
         -o $(S).o $(S).asm && \
-		$(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
-		$(LK) -m elf_i386 -T linker-debug.ld \
+	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
+	  $(LK) -m elf_i386 -T linker-debug.ld \
         -o $(S).elf $(S).o && \
-		rm -f $(S).o; \
+	  rm -f $(S).o; \
 	else \
-		$(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
+	  $(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
 	fi || exit 1
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
@@ -153,13 +194,14 @@ debug:
 # ログを head -c 32MB で打ち切る(QEMU は SIGPIPE を無視するため
 # 打ち切り後も TRACE_SECS 秒まで QEMU は動き続ける)。
 trace:
-	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
-	if [ "$$MODE" = "single" ]; then \
-		$(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
-		$(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
-		rm -f $(S).o; \
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	  $(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
+	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
+	  rm -f $(S).o; \
 	else \
-		$(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
+	  $(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
 	fi || exit 1
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
@@ -187,13 +229,14 @@ cycles:
 # 集計対象のログを head -c 32MB で打ち切る(打ち切り後も TRACE_SECS 秒まで
 # QEMU は動き続ける)。
 icount:
-	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
-	if [ "$$MODE" = "single" ]; then \
-		$(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
-		$(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
-		rm -f $(S).o; \
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	  $(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
+	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
+	  rm -f $(S).o; \
 	else \
-		$(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
+	  $(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
 	fi || exit 1
 	dd if=/dev/zero of=$(S).img bs=512 count=2880 2>/dev/null
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null
@@ -210,3 +253,4 @@ icount:
 
 clean:
 	rm -f *.bin *.img *.o *.lst *.trace
+	rm -f $(COMMON_C)/c*.s
