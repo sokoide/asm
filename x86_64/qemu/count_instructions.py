@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""実行終了位置までの QEMU 命令数を記録する。
+
+QEMU x86_64 の -d cpu ログは 1 ブロックごとに 5 行目へ
+RIP=0000000000008000 RFL=... の形式 (16 桁) で RIP を出力する (実測)。
+"""
+import argparse
+import re
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--qemu', default='qemu-system-x86_64')
+parser.add_argument('--scenario', required=True)
+parser.add_argument('--timeout', type=float, default=5)
+args = parser.parse_args()
+try:
+    symbols = subprocess.check_output(['nm', '-n', f'{args.scenario}.elf'], text=True)
+    matches = re.findall(r'^([0-9a-fA-F]+)\s+\w\s+scenario_halt$', symbols, re.M)
+    if len(matches) != 1:
+        raise ValueError('scenario_halt が一意に見つかりません')
+    halt = int(matches[0], 16)
+    with tempfile.TemporaryDirectory(prefix='asm-x86_64-icount-') as tmp:
+        log = Path(tmp) / 'trace'
+        image = Path(tmp) / 'disk.img'
+        import shutil
+        shutil.copyfile(f'{args.scenario}.img', image)
+        cmd = [args.qemu, '-machine', 'pc', '-accel', 'tcg,one-insn-per-tb=on',
+               '-cpu', 'qemu64', '-no-reboot', '-no-shutdown', '-dfilter', '0x8000+0x7e00',
+               '-d', 'cpu', '-D', str(log), '-drive', f'file={image},format=raw,if=floppy',
+               '-serial', 'stdio', '-display', 'none', '-monitor', 'none']
+        data = {'s06_serial_in': b'q\n', 's12_minishell': b'help\nquit\n'}.get(args.scenario, b'')
+        with tempfile.TemporaryFile() as inp, tempfile.TemporaryFile() as out:
+            inp.write(data)
+            inp.seek(0)
+            process = subprocess.Popen(cmd, stdin=inp, stdout=out, stderr=out)
+            deadline = time.monotonic() + args.timeout
+            found = False
+            count = 0
+            try:
+                while time.monotonic() < deadline:
+                    if log.exists():
+                        with log.open(errors='replace') as f:
+                            count = 0
+                            for line in f:
+                                m = re.match(r'^RIP=([0-9a-fA-F]+)', line)
+                                if m:
+                                    if int(m.group(1), 16) == halt:
+                                        found = True
+                                        break
+                                    count += 1
+                    if found or process.poll() is not None:
+                        break
+                    time.sleep(0.1)
+            finally:
+                if process.poll() is None:
+                    process.terminate()
+                try:
+                    process.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+            if found:
+                print(f'実行命令数: {count} (終了位置まで、cli/hlt を除外)')
+            else:
+                out.seek(0)
+                detail = out.read().decode('utf-8', 'replace').strip()
+                print(f'未完了: 終了位置未到達（{count} 命令を記録、終了コード {process.returncode}）', file=sys.stderr)
+                if detail:
+                    print(detail, file=sys.stderr)
+                sys.exit(1)
+except (OSError, subprocess.CalledProcessError, ValueError) as exc:
+    print(f'計測失敗: {exc}', file=sys.stderr)
+    sys.exit(1)
