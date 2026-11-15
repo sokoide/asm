@@ -15,104 +15,104 @@
 .global _start
 
 _start:
-    li      sp, 0x80200000
+	li      sp, 0x80200000
 
     // ---- Copy 100 bytes src -> dst ----
-    la      s0, src
-    la      s1, dst
-    li      t2, 100
+	la      s0, src
+	la      s1, dst
+	li      t2, 100
 .cp_loop:
-    lbu     t0, 0(s0)
-    sb      t0, 0(s1)
-    addi    s0, s0, 1
-    addi    s1, s1, 1
-    addi    t2, t2, -1
-    bnez    t2, .cp_loop
+	lbu     t0, 0(s0)
+	sb      t0, 0(s1)
+	addi    s0, s0, 1
+	addi    s1, s1, 1
+	addi    t2, t2, -1
+	bnez    t2, .cp_loop
 
     // ---- Sum destination bytes (16-bit) ----
-    la      s0, dst
-    li      t2, 100
-    li      s2, 0
+	la      s0, dst
+	li      t2, 100
+	li      s2, 0
 .sum_loop:
-    lbu     t0, 0(s0)
-    add     s2, s2, t0
-    addi    s0, s0, 1
-    addi    t2, t2, -1
-    bnez    t2, .sum_loop
+	lbu     t0, 0(s0)
+	add     s2, s2, t0
+	addi    s0, s0, 1
+	addi    t2, t2, -1
+	bnez    t2, .sum_loop
 
     // ---- Report: COPY OK             | FAIL CHECKSUM=xxxx ----
-    la      a0, msg_ok
-    li      t0, 4950
-    beq     s2, t0, .report
-    la      a0, msg_fail
+	la      a0, msg_ok
+	li      t0, 4950
+	beq     s2, t0, .report
+	la      a0, msg_fail
 .report:
-    jal     ra, print_str
-    mv      a0, s2
-    jal     ra, print_hex4
-    la      a0, newline
-    jal     ra, print_str
+	jal     ra, print_str
+	mv      a0, s2
+	jal     ra, print_hex4
+	la      a0, newline
+	jal     ra, print_str
 
     // Exit via SiFive test finisher
     // (終了は非同期で処理されるため、直後のコードに落ちないよう無限ループで受ける)
-    li      t0, 0x100000
-    li      t1, 0x5555
-    sw      t1, 0(t0)
+	li      t0, 0x100000
+	li      t1, 0x5555
+	sw      t1, 0(t0)
 .done_wait:
-    j       .done_wait
+	j       .done_wait
 
 // ---- Print helpers ----
 
 print_str:
-    addi    sp, sp, -16
-    sd      ra, 8(sp)
-    sd      s0, 0(sp)
-    mv      s0, a0
+	addi    sp, sp, -16
+	sd      ra, 8(sp)
+	sd      s0, 0(sp)
+	mv      s0, a0
 .ps_loop:
-    lbu     t1, 0(s0)
-    beqz    t1, .ps_ret
-    mv      a0, t1
-    jal     ra, uart_putc
-    addi    s0, s0, 1
-    j       .ps_loop
+	lbu     t1, 0(s0)
+	beqz    t1, .ps_ret
+	mv      a0, t1
+	jal     ra, uart_putc
+	addi    s0, s0, 1
+	j       .ps_loop
 .ps_ret:
-    ld      s0, 0(sp)
-    ld      ra, 8(sp)
-    addi    sp, sp, 16
-    ret
+	ld      s0, 0(sp)
+	ld      ra, 8(sp)
+	addi    sp, sp, 16
+	ret
 
 // print_hex4: print low 16 bits of a0 as 4 uppercase hex digits
 print_hex4:
-    addi    sp, sp, -32
-    sd      ra, 24(sp)
-    sd      s3, 16(sp)
-    sd      s4, 8(sp)
-    mv      s3, a0
-    li      s4, 12
+	addi    sp, sp, -32
+	sd      ra, 24(sp)
+	sd      s3, 16(sp)
+	sd      s4, 8(sp)
+	mv      s3, a0
+	li      s4, 12
 .ph_loop:
-    srl     t1, s3, s4
-    andi    a0, t1, 15
-    li      t3, 10
-    bltu    a0, t3, .ph_digit
-    addi    a0, a0, 7
+	srl     t1, s3, s4
+	andi    a0, t1, 15
+	li      t3, 10
+	bltu    a0, t3, .ph_digit
+	addi    a0, a0, 7
 .ph_digit:
-    addi    a0, a0, 48
-    jal     ra, uart_putc
-    addi    s4, s4, -4
-    bgez    s4, .ph_loop
-    ld      s4, 8(sp)
-    ld      s3, 16(sp)
-    ld      ra, 24(sp)
-    addi    sp, sp, 32
-    ret
+	addi    a0, a0, 48
+	jal     ra, uart_putc
+	addi    s4, s4, -4
+	bgez    s4, .ph_loop
+	ld      s4, 8(sp)
+	ld      s3, 16(sp)
+	ld      ra, 24(sp)
+	addi    sp, sp, 32
+	ret
 
 uart_putc:
-    li      t0, 0x10000000
+	li      t0, 0x10000000
 .wait:
-    lbu     t1, 5(t0)
-    andi    t1, t1, 0x20
-    beqz    t1, .wait
-    sb      a0, 0(t0)
-    ret
+	lbu     t1, 5(t0)
+	andi    t1, t1, 0x20
+	beqz    t1, .wait
+	sb      a0, 0(t0)
+	ret
 
 // ---- Data ----
 src:    .byte 0,1,2,3,4,5,6,7,8,9

@@ -13,16 +13,16 @@
 
 _start:
     // Set up stack pointer
-    li      sp, 0x80200000
+	li      sp, 0x80200000
 
     // Print message
-    la      a0, message
-    jal     ra, print_str
+	la      a0, message
+	jal     ra, print_str
 
     // Exit via SiFive test finisher
-    li      t0, 0x100000
-    li      t1, 0x5555
-    sw      t1, 0(t0)
+	li      t0, 0x100000
+	li      t1, 0x5555
+	sw      t1, 0(t0)
 
 // ---- Subroutines ----
 
@@ -30,31 +30,31 @@ _start:
 // Uses s0 (callee-saved) as string pointer
 print_str:
 	addi    sp, sp, -16
-    sd      ra, 8(sp)
-    sd      s0, 0(sp)
-    mv      s0, a0             // s0 = string pointer
+	sd      ra, 8(sp)
+	sd      s0, 0(sp)
+	mv      s0, a0             // s0 = string pointer
 .loop:
-    lbu     t1, 0(s0)          // load byte (unsigned)
-    beqz    t1, .ret           // if null, done
-    mv      a0, t1             // character to a0
-    jal     ra, uart_putc      // print character
+	lbu     t1, 0(s0)          // load byte (unsigned)
+	beqz    t1, .ret           // if null, done
+	mv      a0, t1             // character to a0
+	jal     ra, uart_putc      // print character
 	addi    s0, s0, 1          // next byte
-    j       .loop
+	j       .loop
 .ret:
-    ld      s0, 0(sp)
-    ld      ra, 8(sp)
+	ld      s0, 0(sp)
+	ld      ra, 8(sp)
 	addi    sp, sp, 16
-    ret
+	ret
 
 // uart_putc: write character in a0 to NS16550A THR
 uart_putc:
-    li      t0, 0x10000000     // UART base address
+	li      t0, 0x10000000     // UART base address
 .wait:
-    lbu     t1, 5(t0)          // read LSR
+	lbu     t1, 5(t0)          // read LSR
 	andi    t1, t1, 0x20       // bit 5 = THRE
-    beqz    t1, .wait          // wait if TX FIFO full
-    sb      a0, 0(t0)          // write byte to THR
-    ret
+	beqz    t1, .wait          // wait if TX FIFO full
+	sb      a0, 0(t0)          // write byte to THR
+	ret
 
 // ---- Data ----
 message:
