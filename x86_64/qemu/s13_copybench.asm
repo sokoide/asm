@@ -18,7 +18,7 @@
 ; NOTE: サイクル数だけでは CPU 間の速度比較はできない (QEMU TCG はサイクル
 ;       精度でない)。REP MOVSB の手計算サイクル内訳 (8086: 9+17n =
 ;       17.09 クロック/バイト) は x86_16/qemu/s13_copybench.asm と
-;       compare/copybench.md に記載。x86_64 のブロック転送タイミングは
+;       _docs/copybench.md に記載。x86_64 のブロック転送タイミングは
 ;       copybench.md の比較表の対象外 (386 と同様)。
 
 cpu x64

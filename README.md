@@ -107,7 +107,7 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 
 | #    | テーマ                       | アーキテクチャ |
 | :--- | :---                         | :---           |
-| s13  | 100 バイトコピー (copybench) | 全アーキ (比較は `compare/copybench.md`) |
+| s13  | 100 バイトコピー (copybench) | 全アーキ (比較は `_docs/copybench.md`) |
 | s13  | ファイル I/O（DOS 固有）     | x86_16/dos     |
 
 ### アーキテクチャ固有シナリオ
@@ -562,21 +562,21 @@ asm/
 ├── x86_32/darwin/       # macOS i386 (32-bit)
 ├── riscv32/qemu/        # RISC-V 32-bit bare-metal (QEMU virt)
 ├── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
-├── compare/             # 共通課題のアーキ比較 (copybench)
-├── docs/                # 拡張シナリオの設計・計画ドキュメント
-└── isa/                 # オフライン命令セット・リファレンス CLI 辞書
+├── _common/             # 共通コード
+├── _docs/               # 共通資料・計画文書
+└── _bin/isa/            # オフライン命令セット・リファレンス CLI 辞書
 ```
 
 ## 命令リファレンス CLI (isa)
 
-オフラインで命令の仕様（動作・アドレッシングモード・消費クロック・フラグ変化・オペコード）を検索できる CLI 辞書。正本データは `isa/data/*.json`、詳細は `isa/README.md` を参照。
+オフラインで命令の仕様（動作・アドレッシングモード・消費クロック・フラグ変化・オペコード）を検索できる CLI 辞書。正本データは `_bin/isa/data/*.json`、詳細は `_bin/isa/README.md` を参照。
 
 ```sh
 isa DJNZ        # 命令を検索（複数アーキに同名がある場合は一覧）
 isa -v DJNZ     # 詳細全文（クロック・オペコード・備考）
 isa z80 DJNZ    # アーキを限定
 isa             # fzf 対話モード（絞り込み + 詳細プレビュー）
-isa build       # isa/data/*.json から isa/build/ を再生成
+isa build       # _bin/isa/data/*.json から _bin/isa/build/ を再生成
 ```
 
-常用する場合は `~/.zshrc` に `alias isa='~/repo/sokoide/asm/isa/isa'` を追加する（fzf は対話モードのみで必須）。
+常用する場合は `~/.zshrc` に `alias isa='~/repo/sokoide/asm/_bin/isa/isa'` を追加する（fzf は対話モードのみで必須）。

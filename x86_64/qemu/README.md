@@ -401,7 +401,7 @@ AND / OR / XOR / SHL / SHR / ROR を 64 ビット幅で使い、ビット単位�
 
 **実行出力**: `COPY OK CHECKSUM=1356`（1 行のみ）
 
-**ポイント**: 32-bit 版 (x86_32) との対比でレジスタ幅（ESI/EDI/ECX → RSI/RDI/RCX）だけが変わることが分かる。QEMU TCG はサイクル精度ではないため実サイクルは測れない。REP MOVSB の手計算サイクル内訳（8086: 9+17n = 17.09 クロック/バイト）は [`../../compare/copybench.md`](../../compare/copybench.md) と x86_16 版に記載しており、x86_64 のブロック転送タイミングは比較表の対象外である（386 と同様）。
+**ポイント**: 32-bit 版 (x86_32) との対比でレジスタ幅（ESI/EDI/ECX → RSI/RDI/RCX）だけが変わることが分かる。QEMU TCG はサイクル精度ではないため実サイクルは測れない。REP MOVSB の手計算サイクル内訳（8086: 9+17n = 17.09 クロック/バイト）は [`../../_docs/copybench.md`](../../_docs/copybench.md) と x86_16 版に記載しており、x86_64 のブロック転送タイミングは比較表の対象外である（386 と同様）。
 
 ---
 
@@ -535,7 +535,7 @@ SSE done!
 
 - [`../CPU.md`](../CPU.md) — x86-64 命令セットリファレンス（末尾にロングモード移行セクションあり。boot.asm の移行手順とページング構造の要点を解説）
 - [`../../docs/x86_64_qemu_plan.md`](../../docs/x86_64_qemu_plan.md) — 本ディレクトリの整備計画（フェーズと受入条件）
-- [`../../compare/copybench.md`](../../compare/copybench.md) — 共通課題 s13（100 バイトコピー）の全アーキ比較
+- [`../../_docs/copybench.md`](../../_docs/copybench.md) — 共通課題 s13（100 バイトコピー）の全アーキ比較
 - [`../../README.md`](../../README.md) — リポジトリ全体のガイド（デバッグガイド・シナリオ規約）
 - [`../darwin/README.md`](../darwin/README.md) — macOS ネイティブ版（Mach-O とホスト ABI）
 - [`../../x86_32/qemu/README.md`](../../x86_32/qemu/README.md) — 32-bit 保護モード版（本教材の直接の対照。16 → 32 の移行を学ぶ）

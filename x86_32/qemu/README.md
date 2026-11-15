@@ -387,7 +387,7 @@ AND / OR / XOR / SHL / SHR / ROR を 32 ビット幅で使い、ビット単位�
 
 **実行出力**: `COPY OK CHECKSUM=1356`（1 行のみ）
 
-**ポイント**: QEMU TCG はサイクル精度ではないため実サイクルは測れない。REP MOVSB の手計算サイクル内訳（8086: 9+17n = 17.09 クロック/バイト）は [`../../compare/copybench.md`](../../compare/copybench.md) と x86_16 版に記載しており、386 のブロック転送タイミングは比較表の対象外である。
+**ポイント**: QEMU TCG はサイクル精度ではないため実サイクルは測れない。REP MOVSB の手計算サイクル内訳（8086: 9+17n = 17.09 クロック/バイト）は [`../../_docs/copybench.md`](../../_docs/copybench.md) と x86_16 版に記載しており、386 のブロック転送タイミングは比較表の対象外である。
 
 ---
 
@@ -395,7 +395,7 @@ AND / OR / XOR / SHL / SHR / ROR を 32 ビット幅で使い、ビット単位�
 
 - [`../CPU.md`](../CPU.md) — 80386 命令セットリファレンス（末尾に保護モード関連の補足あり）
 - [`../../docs/x86_32_qemu_plan.md`](../../docs/x86_32_qemu_plan.md) — 本ディレクトリの整備計画（フェーズと受入条件）
-- [`../../compare/copybench.md`](../../compare/copybench.md) — 共通課題 s13（100 バイトコピー）の全アーキ比較
+- [`../../_docs/copybench.md`](../../_docs/copybench.md) — 共通課題 s13（100 バイトコピー）の全アーキ比較
 - [`../../README.md`](../../README.md) — リポジトリ全体のガイド（デバッグガイド・シナリオ規約）
 - [`../darwin/README.md`](../darwin/README.md) — macOS ネイティブ版（Mach-O とホスト ABI）
 - [`../../x86_16/qemu/README.md`](../../x86_16/qemu/README.md) — 16-bit リアルモード版（本教材の対照）

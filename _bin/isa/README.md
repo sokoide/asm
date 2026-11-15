@@ -45,7 +45,7 @@ fzf は対話モードのみで必要。未導入でも `isa MNEMONIC`・`isa <a
 エイリアス登録の例（~/.zshrc）:
 
 ```sh
-alias isa='~/repo/sokoide/asm/isa/isa'
+alias isa='~/repo/sokoide/asm/_bin/isa/isa'
 ```
 
 ## JSON スキーマ（data/*.json）

@@ -88,7 +88,7 @@ dd if=$(S).bin of=$(S).img conv=notrunc
 | s10_bitwise | ビット演算 | 64-bit シフト、`ror rax, imm` |
 | s11_memory | メモリ | `rep movsb`、`[base+index]`、アドレス計算の 64-bit 化 |
 | s12_minishell | ミニシェル | 対話入力、コマンドディスパッチ |
-| s13_copybench | 共通ベンチ | 100 バイトコピー checksum `0x1356` (`compare/copybench.md` 仕様) |
+| s13_copybench | 共通ベンチ | 100 バイトコピー checksum `0x1356` (`_docs/copybench.md` 仕様) |
 
 s06/s12 の `runall`/`trace` 入力は x86_16 と同じ `printf 'q\n'` / `printf 'quit\n'` パイプ。
 

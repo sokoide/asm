@@ -58,7 +58,7 @@ make clean
 - `s13`–`s99`: 共通課題の拡張。全アーキで同じ番号・同じ名前を使う（例: `s13_copybench`）
 - `s101`+: アーキ固有の拡張シナリオ。番号はアーキごとの独立空間で他アーキと対応しない（例: Z80 `s101_shadow`、6502 `s101_zeropage`/`s102_selfmod`、x86_16 `s101_segments`/`s102_vectors`/`s103_multisector`/`s104_protected`、m68k `s101_movem`/`s102_trap`、PPC `s101_cr_lr`/`s102_exceptions`、RISC-V `s101_csr_ecall`、ARM64 `s101_flags_cond`/`s102_svc`）
 
-`compare/copybench.md` は共通課題 s13（100 バイトメモリコピー）を全アーキで比較したドキュメント。QEMU の実行時間は実機性能の比較に使えないため、実測（sim65/simz80）とデータシート計算（8086/68000）を併記する方針で測定している。
+`_docs/copybench.md` は共通課題 s13（100 バイトメモリコピー）を全アーキで比較したドキュメント。QEMU の実行時間は実機性能の比較に使えないため、実測（sim65/simz80）とデータシート計算（8086/68000）を併記する方針で測定している。
 
 ### ファイルペア
 
@@ -66,7 +66,7 @@ make clean
 
 ### ISA リファレンス CLI
 
-`isa/` はオフラインの命令セット辞書 CLI（`isa DJNZ`）。正本データは `isa/data/<arch>.json` にある。`isa build`（`python3 isa/tools/generate.py`）を実行すると `isa/build/` を再生成しスキーマを検証する。`isa/build/` を直接編集しないこと。
+`_bin/isa/` はオフラインの命令セット辞書 CLI（`isa DJNZ`）。正本データは `_bin/isa/data/<arch>.json` にある。`isa build`（`python3 _bin/isa/tools/generate.py`）を実行すると `_bin/isa/build/` を再生成しスキーマを検証する。`_bin/isa/build/` を直接編集しないこと。
 
 ### ドキュメント規約
 
