@@ -27,6 +27,7 @@ isa -v DJNZ       # 詳細全文（消費クロック・オペコード・備考
 isa z80 DJNZ      # アーキを限定（isa -a z80 DJNZ と同じ）
 isa LSR           # 複数アーキに同名ニーモニックがある場合は一覧 + 絞り込みヒント
 isa z80           # アーキ内の命令一覧
+isa arch          # サポートしているアーキの一覧（命令数つき）
 isa               # fzf 対話モード（絞り込み + 右ペインに詳細プレビュー）
 isa build         # data/*.json から build/ を再生成
 ```

@@ -9,7 +9,7 @@ BUILD_DIR="$SCRIPT_DIR/build"
 SELF="$SCRIPT_DIR/isa"
 
 usage() {
-  cat <<'EOF'
+  cat <<EOF
 isa — オフライン命令セット・リファレンス（CLI 辞書）
 
 使い方:
@@ -18,16 +18,29 @@ isa — オフライン命令セット・リファレンス（CLI 辞書）
   isa -a ARCH MNEMONIC
   isa ARCH MNEMONIC アーキを限定して検索
   isa ARCH          そのアーキの命令一覧
+  isa arch          サポートしているアーキの一覧（命令数つき）
   isa               fzf 対話モード（絞り込み + 詳細プレビュー）
   isa build         data/*.json から build/ を再生成
   isa help          このヘルプ
 
-アーキ: 6502 z80 m68k x86_16 arm64
+アーキ: $(arch_names)
 例:
   isa DJNZ
   isa LSR           （複数アーキに同名ニーモニックがある場合の一覧）
   isa -a 6502 -v LSR
 EOF
+}
+
+# Supported archs derived from data/*.json (sorted; works without build/).
+arch_names() {
+  print -- "$(cd "$SCRIPT_DIR/data" && ls *.json | sed 's/\.json$//' | paste -sd ' ' -)"
+}
+
+arch_list() {
+  # Arch summary: name + instruction count from index.tsv.
+  require_build
+  awk -F'\t' '{c[$1]++} END {for (a in c) printf "%-10s %3d 命令\n", a, c[a]}' \
+    "$BUILD_DIR/index.tsv" | sort | awk '{t += $2; print} END {printf "%-10s %3d 命令\n", "計", t}'
 }
 
 die() {
@@ -94,7 +107,7 @@ search() {
 list_arch() {
   local arch="$1"
   require_build
-  known_arch "$arch" || die "不明なアーキ: $arch（6502 z80 m68k x86_16 arm64）"
+  known_arch "$arch" || die "不明なアーキ: $arch（$(arch_names)）"
   local out
   out=$(awk -F'\t' -v a="$arch" '$1 == a { printf "%-12s %s\n", $2, $4 }' "$BUILD_DIR/index.tsv")
   [[ -n "$out" ]] || die "アーキ '$arch' の命令が登録されていません。'isa build' を試してください。"
@@ -144,7 +157,9 @@ case $# in
       interactive
     fi ;;
   1)
-    if [[ "$arch" == "-" ]] && known_arch "$1"; then
+    if [[ "$arch" == "-" ]] && [[ "$1" == "arch" || "$1" == "archs" ]]; then
+      arch_list
+    elif [[ "$arch" == "-" ]] && known_arch "$1"; then
       list_arch "$1"
     else
       search "$arch" "$1" "$verbose"
@@ -153,7 +168,7 @@ case $# in
     if known_arch "$1"; then
       search "$1" "$2" "$verbose"
     else
-      die "不明なアーキ: $1（6502 z80 m68k x86_16 arm64）"
+      die "不明なアーキ: $1（$(arch_names)）"
     fi ;;
   *)
     usage
