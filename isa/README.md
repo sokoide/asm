@@ -26,9 +26,15 @@ isa DJNZ          # 全アーキから検索（コンパクト表示。大文字
 isa -v DJNZ       # 詳細全文（消費クロック・オペコード・備考）
 isa z80 DJNZ      # アーキを限定（isa -a z80 DJNZ と同じ）
 isa LSR           # 複数アーキに同名ニーモニックがある場合は一覧 + 絞り込みヒント
-isa z80           # アーキ内の命令一覧
+isa z80           # アーキ内の命令一覧（カテゴリごとにグループ表示）
+isa z80 -c 分岐    # カテゴリで絞り込み（部分一致。isa -c 分岐 で全アーキ横断の比較一覧）
+isa cats          # カテゴリの一覧 + 件数（isa z80 cats / isa -a z80 cats）
 isa arch          # サポートしているアーキの一覧（命令数つき）
 isa               # fzf 対話モード（絞り込み + 右ペインに詳細プレビュー）
+                  #   alt-1: ARCH / alt-2: ニーモニック / alt-3: カテゴリ を
+                  #   第1キーに並べ替え（既定: ARCH→ニーモニック、絞り込み維持）
+                  #   pgup/pgdn: ページ / ctrl-b・ctrl-f: 半ページ / alt-k・alt-j: 行
+                  #   で詳細欄をスクロール
 isa build         # data/*.json から build/ を再生成
 ```
 

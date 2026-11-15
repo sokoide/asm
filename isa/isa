@@ -8,6 +8,9 @@ SCRIPT_DIR="${0:A:h}"
 BUILD_DIR="$SCRIPT_DIR/build"
 SELF="$SCRIPT_DIR/isa"
 
+# Category display order (follows CPU.md section order; unknown categories go last).
+CAT_ORDER="データ転送 ロード ストア スタック 算術 BCD 論理 シフト シフト/ビット 回転/シフト 比較 分岐 サブルーチン 文字列 ブロック転送 I/O アドレス計算 レジスタ管理 CR操作 フラグ操作 キャッシュ MAC(440) システム制御"
+
 usage() {
   cat <<EOF
 isa — オフライン命令セット・リファレンス（CLI 辞書）
@@ -17,17 +20,23 @@ isa — オフライン命令セット・リファレンス（CLI 辞書）
   isa -v MNEMONIC   詳細全文を表示（クロック・オペコード・備考）
   isa -a ARCH MNEMONIC
   isa ARCH MNEMONIC アーキを限定して検索
-  isa ARCH          そのアーキの命令一覧
+  isa ARCH          そのアーキの命令一覧（カテゴリごとにグループ表示）
+  isa -c CATEGORY   カテゴリで絞り込み一覧（部分一致。ARCH 併用可、単独で全アーキ横断比較）
+  isa cats          カテゴリの一覧 + 件数（isa ARCH cats / isa -a ARCH cats）
   isa arch          サポートしているアーキの一覧（命令数つき）
   isa               fzf 対話モード（絞り込み + 詳細プレビュー）
+                    alt-1: ARCH / alt-2: ニーモニック / alt-3: カテゴリ を第1キーに並べ替え
+                    pgup/pgdn・ctrl-b/f・alt-k/j: 詳細欄のスクロール
   isa build         data/*.json から build/ を再生成
   isa help          このヘルプ
+  （-f / -s は fzf 連携用の内部モード）
 
 アーキ: $(arch_names)
 例:
   isa DJNZ
   isa LSR           （複数アーキに同名ニーモニックがある場合の一覧）
   isa -a 6502 -v LSR
+  isa z80 -c 分岐
 EOF
 }
 
@@ -88,7 +97,13 @@ search() {
   [[ -n "$raw" ]] && matches=("${(@f)raw}")
   if (( ${#matches[@]} == 0 )); then
     print -u2 -- "見つかりません: $mnem（arch: ${arch/-/すべて}）"
-    print -u2 -- "ヒント: 'isa' で対話検索、'isa <arch>' で一覧を確認できます。"
+    if awk -F'\t' -v q="$mnem" 'index($3, q) { f = 1 } END { exit !f }' "$BUILD_DIR/index.tsv"; then
+      local scope=""
+      [[ "$arch" != "-" ]] && scope="-a $arch "
+      print -u2 -- "ヒント: '$mnem' はカテゴリ名の一部です。'isa ${scope}-c $mnem' で一覧できます。"
+    else
+      print -u2 -- "ヒント: 'isa' で対話検索、'isa <arch>' で一覧を確認できます。"
+    fi
     exit 1
   fi
   if (( ${#matches[@]} == 1 )); then
@@ -104,24 +119,126 @@ search() {
   }'
 }
 
-list_arch() {
+grouped_list() {
+  # $1 = arch ('-' = all), $2 = category substring ('' = all).
+  # Prints instructions grouped by category (CAT_ORDER), mnemonic-sorted within a group.
+  awk -F'\t' -v arch="$1" -v catq="$2" -v order="$CAT_ORDER" '
+    BEGIN {
+      n = split(order, o, " ")
+      for (i = 1; i <= n; i++) rank[o[i]] = i
+      unknown = n + 1
+    }
+    (arch == "-" || $1 == arch) && (catq == "" || index($3, catq)) {
+      r = ($3 in rank) ? rank[$3] : unknown
+      key = sprintf("%03d\t%s", r, $3)
+      if (!(key in cnt)) keys[++nk] = key
+      cnt[key]++
+      body[key] = body[key] sprintf("  %-12s %s\n", $2, $4)
+    }
+    END {
+      if (nk == 0) exit 1
+      for (i = 2; i <= nk; i++) {  # insertion sort by "rank\tcategory" key
+        t = keys[i]; j = i - 1
+        while (j >= 1 && keys[j] > t) { keys[j+1] = keys[j]; j-- }
+        keys[j+1] = t
+      }
+      for (i = 1; i <= nk; i++) {
+        split(keys[i], kp, "\t")
+        printf "【%s】(%d)\n%s", kp[2], cnt[keys[i]], body[keys[i]]
+      }
+    }
+  ' "$BUILD_DIR/index.tsv"
+}
+
+cross_list() {
+  # $1 = category substring. Flat table across archs, sorted arch → mnemonic.
+  awk -F'\t' -v q="$1" '
+    index($3, q) {
+      if (!seen[$3]++) cats = cats (cats == "" ? "" : "、") $3
+      buf = buf sprintf("%-8s %-12s %s\n", $1, $2, $4)
+      n++
+    }
+    END {
+      if (n == 0) exit 1
+      printf "カテゴリ一致: %s（%d 件）\n\n%s", cats, n, buf
+    }
+  ' "$BUILD_DIR/index.tsv"
+}
+
+cats_list() {
+  # $1 = arch ('-' = all). Category names + counts in CAT_ORDER.
+  # Count first: padding CJK names by columns is awk-flavor dependent.
   local arch="$1"
   require_build
+  [[ "$arch" == "-" ]] || known_arch "$arch" || die "不明なアーキ: $arch（$(arch_names)）"
+  awk -F'\t' -v arch="$arch" -v order="$CAT_ORDER" '
+    BEGIN {
+      n = split(order, o, " ")
+      for (i = 1; i <= n; i++) rank[o[i]] = i
+      unknown = n + 1
+    }
+    (arch == "-" || $1 == arch) {
+      r = ($3 in rank) ? rank[$3] : unknown
+      key = sprintf("%03d\t%s", r, $3)
+      if (!(key in cnt)) keys[++nk] = key
+      cnt[key]++
+    }
+    END {
+      if (nk == 0) exit 1
+      for (i = 2; i <= nk; i++) {
+        t = keys[i]; j = i - 1
+        while (j >= 1 && keys[j] > t) { keys[j+1] = keys[j]; j-- }
+        keys[j+1] = t
+      }
+      for (i = 1; i <= nk; i++) {
+        split(keys[i], kp, "\t")
+        printf "%3d  %s\n", cnt[keys[i]], kp[2]
+      }
+    }
+  ' "$BUILD_DIR/index.tsv" || die "アーキ '$arch' の命令が登録されていません。'isa build' を試してください。"
+}
+
+list_arch() {
+  # $1 = arch, $2 = category substring ('' = all)
+  local arch="$1" catq="$2"
+  require_build
   known_arch "$arch" || die "不明なアーキ: $arch（$(arch_names)）"
-  local out
-  out=$(awk -F'\t' -v a="$arch" '$1 == a { printf "%-12s %s\n", $2, $4 }' "$BUILD_DIR/index.tsv")
-  [[ -n "$out" ]] || die "アーキ '$arch' の命令が登録されていません。'isa build' を試してください。"
-  print "$out"
+  if [[ -n "$catq" ]]; then
+    grouped_list "$arch" "$catq" || die "見つかりません: カテゴリ '$catq'（arch: $arch）"
+  else
+    grouped_list "$arch" "" || die "アーキ '$arch' の命令が登録されていません。'isa build' を試してください。"
+  fi
+}
+
+sort_index() {
+  # Internal: print index.tsv sorted by the given primary key (fzf reload 用).
+  local key="$1"
+  require_build
+  case "$key" in
+    arch) LC_ALL=C sort -t$'\t' -k1,1 -k2,2 "$BUILD_DIR/index.tsv" ;;
+    mnem) LC_ALL=C sort -t$'\t' -k2,2 -k1,1 "$BUILD_DIR/index.tsv" ;;
+    cat)  LC_ALL=C sort -t$'\t' -k3,3 -k1,1 -k2,2 "$BUILD_DIR/index.tsv" ;;
+    *) die "不明なソートキー: $key（arch|mnem|cat）" ;;
+  esac
 }
 
 interactive() {
   require_build
   command -v fzf >/dev/null 2>&1 \
     || die "fzf が見つかりません（対話モードに必要）。'brew install fzf' または 'isa MNEMONIC' で直接検索してください。"
-  fzf --prompt="ISA > " --delimiter='\t' --with-nth=1,2,3,4 \
+  # Default order: ARCH → mnemonic (= index.tsv line order). alt-1/2/3 reload the
+  # list re-sorted with the chosen primary key (query preserved; the prompt shows
+  # the current sort). Preview pane scrolls with pgup/pgdn, ctrl-b/f, alt-k/j.
+  fzf --prompt="ISA [ARCH]> " --delimiter='\t' --with-nth=1,2,3,4 \
+      --tiebreak=index \
+      --header=$'並び替え: alt-1 ARCH / alt-2 ニーモニック / alt-3 カテゴリ（既定 ARCH→ニーモニック）\n詳細欄: pgup/pgdn ページ / ctrl-b・ctrl-f 半ページ / alt-k・alt-j 行' \
+      --bind="alt-1:reload($SELF -s arch)+change-prompt(ISA [ARCH]> ),alt-2:reload($SELF -s mnem)+change-prompt(ISA [MNEM]> ),alt-3:reload($SELF -s cat)+change-prompt(ISA [CAT]> )" \
+      --bind="pgup:preview-page-up,pgdn:preview-page-down" \
+      --bind="ctrl-b:preview-half-page-up,ctrl-f:preview-half-page-down" \
+      --bind="alt-k:preview-up,alt-j:preview-down" \
       --preview="$SELF -f {1} {2}" \
       --preview-window='right:55%:wrap' \
-      < "$BUILD_DIR/index.tsv"
+      < <("$SELF" -s arch)
 }
 
 print_full() {
@@ -135,40 +252,66 @@ print_full() {
 
 verbose=0
 arch="-"
+catq=""
+args=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -v|--verbose) verbose=1; shift ;;
     -a|--arch)
       [[ $# -ge 2 ]] || die "-a にはアーキの指定が必要です"
       arch="$2"; shift 2 ;;
+    -c|--category)
+      [[ $# -ge 2 ]] || die "-c にはカテゴリの指定が必要です"
+      catq="$2"; shift 2 ;;
     -f) [[ $# -ge 3 ]] || die "-f には arch と mnemonic が必要です"; print_full "$2" "$3"; exit $? ;;
+    -s)
+      [[ $# -ge 2 ]] || die "-s にはソートキー (arch|mnem|cat) が必要です"
+      sort_index "$2"; exit $? ;;
     -h|--help|help) usage; exit 0 ;;
     build) exec python3 "$SCRIPT_DIR/tools/generate.py" ;;
     -*) die "不明なオプション: $1（'isa help' を参照）" ;;
-    *) break ;;
+    *) args+=("$1"); shift ;;
   esac
 done
 
-case $# in
+case ${#args[@]} in
   0)
-    if [[ "$arch" != "-" ]]; then
-      list_arch "$arch"
+    if [[ -n "$catq" ]]; then
+      if [[ "$arch" == "-" ]]; then
+        cross_list "$catq" || die "見つかりません: カテゴリ '$catq'"
+      else
+        list_arch "$arch" "$catq"
+      fi
+    elif [[ "$arch" != "-" ]]; then
+      list_arch "$arch" ""
     else
       interactive
     fi ;;
   1)
-    if [[ "$arch" == "-" ]] && [[ "$1" == "arch" || "$1" == "archs" ]]; then
+    if [[ "${args[1]}" == "cats" ]]; then
+      cats_list "$arch"
+    elif [[ -n "$catq" ]]; then
+      if [[ "$arch" == "-" ]] && known_arch "${args[1]}"; then
+        list_arch "${args[1]}" "$catq"
+      else
+        die "-c（一覧）と検索は併用できません。'isa -c $catq' または 'isa <arch> -c $catq' を使ってください。"
+      fi
+    elif [[ "$arch" == "-" ]] && [[ "${args[1]}" == "arch" || "${args[1]}" == "archs" ]]; then
       arch_list
-    elif [[ "$arch" == "-" ]] && known_arch "$1"; then
-      list_arch "$1"
+    elif [[ "$arch" == "-" ]] && known_arch "${args[1]}"; then
+      list_arch "${args[1]}" ""
     else
-      search "$arch" "$1" "$verbose"
+      search "$arch" "${args[1]}" "$verbose"
     fi ;;
   2)
-    if known_arch "$1"; then
-      search "$1" "$2" "$verbose"
+    if [[ "${args[2]}" == "cats" ]] && known_arch "${args[1]}"; then
+      cats_list "${args[1]}"
+    elif [[ -n "$catq" ]]; then
+      die "-c（一覧）と検索は併用できません。'isa -c $catq' または 'isa <arch> -c $catq' を使ってください。"
+    elif known_arch "${args[1]}"; then
+      search "${args[1]}" "${args[2]}" "$verbose"
     else
-      die "不明なアーキ: $1（$(arch_names)）"
+      die "不明なアーキ: ${args[1]}（$(arch_names)）"
     fi ;;
   *)
     usage
