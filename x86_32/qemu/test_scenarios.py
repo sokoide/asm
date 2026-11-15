@@ -7,6 +7,7 @@ QEMU を実行する。期待出力の欠落、QEMU 起動失敗、無効命令 
 非ゼロ終了で報告する。
 """
 import argparse
+import shlex
 import shutil
 import subprocess
 import sys
@@ -57,19 +58,23 @@ INPUT = {
     "s12_minishell": b"help\nquit\n",
 }
 
-# Makefile の QFLAGS と同じ。無効命令やトリプルフォルト時は
-# 期待出力前に停止した場合、出力欠落として検出する。
-QEMU_FLAGS = [
+# 無効命令やトリプルフォルト時は期待出力前に停止した場合、
+# 出力欠落として検出する。
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--qemu", default="qemu-system-i386")
+parser.add_argument("--timeout", type=float, default=1)
+parser.add_argument("--qflags", default="",
+                    help="QEMU 起動フラグ (Makefile の QFLAGS。空なら既定値)")
+args = parser.parse_args()
+# Makefile が真実の源: make test は --qflags "$(QFLAGS)" を渡す。
+# 空の場合 (直接実行) は既定値 (Makefile の QFLAGS と同じ) を使う。
+qemu_flags = shlex.split(args.qflags) or [
     "-machine", "pc",
     "-accel", "tcg",
     "-cpu", "486",
     "-no-reboot", "-no-shutdown",
 ]
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--qemu", default="qemu-system-i386")
-parser.add_argument("--timeout", type=float, default=1)
-args = parser.parse_args()
 failed = False
 images = tempfile.TemporaryDirectory(prefix="asm-x86_32-test-")
 for name, expected in EXPECTED.items():
@@ -79,7 +84,7 @@ for name, expected in EXPECTED.items():
         failed = True
         continue
     shutil.copyfile(f"{name}.img", image)
-    command = [args.qemu, *QEMU_FLAGS,
+    command = [args.qemu, *qemu_flags,
                "-drive", f"file={image},format=raw,if=floppy",
                "-serial", "stdio", "-display", "none", "-monitor", "none"]
     try:
@@ -104,5 +109,12 @@ for name, expected in EXPECTED.items():
         failed = True
     else:
         print(f"PASS {name}")
+# EXPECTED に無いビルド済みシナリオがあると無テストのまま緑になるため検出する
+untested = sorted(
+    p.stem for p in Path(".").glob("s*.img") if p.stem not in EXPECTED
+)
+if untested:
+    print(f"FAIL: 期待値未定義のシナリオがあります: {untested} (EXPECTED に追加してください)")
+    failed = True
 images.cleanup()
 sys.exit(1 if failed else 0)
