@@ -7,6 +7,7 @@ QEMU を実行する。期待出力の欠落、QEMU 起動失敗、無効命令 
 非ゼロ終了で報告する。
 """
 import argparse
+import re
 import shlex
 import shutil
 import subprocess
@@ -95,6 +96,10 @@ parser.add_argument("--qemu", default="qemu-system-x86_64")
 parser.add_argument("--timeout", type=float, default=1)
 parser.add_argument("--qflags", default="",
                     help="QEMU 起動フラグ (Makefile の QFLAGS。空なら既定値)")
+parser.add_argument("--dfilter", default="",
+                    help="-dfilter の値 (Makefile の DFILTER。--require-halt と併用)")
+parser.add_argument("--require-halt", action="store_true",
+                    help="scenario_halt への到達 (-d cpu ログ) も検証する")
 args = parser.parse_args()
 # Makefile が真実の源: make test は --qflags "$(QFLAGS)" を渡す。
 # 空の場合 (直接実行) は既定値 (Makefile の QFLAGS と同じ) を使う。
@@ -104,6 +109,7 @@ qemu_flags = shlex.split(args.qflags) or [
     "-cpu", "qemu64",
     "-no-reboot", "-no-shutdown",
 ]
+dfilter_flags = shlex.split(args.dfilter) if args.dfilter else []
 failed = False
 images = tempfile.TemporaryDirectory(prefix="asm-x86_64-test-")
 for name, expected in EXPECTED.items():
@@ -116,6 +122,29 @@ for name, expected in EXPECTED.items():
     command = [args.qemu, *qemu_flags,
                "-drive", f"file={image},format=raw,if=floppy",
                "-serial", "stdio", "-display", "none", "-monitor", "none"]
+    # 終了位置 (scenario_halt) の検証準備: nm でアドレスを取得し
+    # -d cpu ログ (dfilter でカーネル領域のみ) に到達するか確認する
+    log = Path(images.name) / f"{name}.cpulog"
+    halt = None
+    if args.require_halt:
+        elf = Path(f"{name}.elf")
+        if not elf.exists():
+            print(f"FAIL {name}: {name}.elf が無い (--require-halt には nm で読む ELF が必要)")
+            failed = True
+            continue
+        try:
+            symbols = subprocess.check_output(["nm", "-n", str(elf)], text=True)
+            halts = re.findall(r"^([0-9a-fA-F]+)\s+\w\s+scenario_halt$", symbols, re.M)
+        except (OSError, subprocess.CalledProcessError) as exc:
+            print(f"FAIL {name}: scenario_halt の取得に失敗: {exc}")
+            failed = True
+            continue
+        if len(halts) != 1:
+            print(f"FAIL {name}: scenario_halt が一意でない ({len(halts)} 個)")
+            failed = True
+            continue
+        halt = int(halts[0], 16)
+        command += dfilter_flags + ["-d", "cpu", "-D", str(log)]
     try:
         result = subprocess.run(command, input=INPUT.get(name, b""),
                                 stdout=subprocess.PIPE,
@@ -132,6 +161,15 @@ for name, expected in EXPECTED.items():
         print(f"FAIL {name}: {exc}")
         failed = True
         continue
+    # 期待文字列が出ても、その直後に不正命令や無限ループがあれば
+    # scenario_halt に到達しない。到達しなければ失敗にする
+    if args.require_halt:
+        text = log.read_text(errors="replace") if log.exists() else ""
+        reached = [int(m, 16) for m in re.findall(r"^RIP=([0-9a-fA-F]+)", text, re.M)]
+        if halt not in reached:
+            print(f"FAIL {name}: 終了位置 (scenario_halt) に未到達 — 期待出力後の不正命令・無限ループの可能性")
+            failed = True
+            continue
     missing = [item for item in expected if item not in output]
     if missing:
         print(f"FAIL {name}: missing {missing}; output={output!r}")

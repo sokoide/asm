@@ -42,6 +42,7 @@ all: boot.o
 		echo "=== $$name ==="; \
 		$(AS) $(ASFLAGS) -l $$name.lst -o $$name.o $$name.asm; \
 		$(LK) $(LKFLAGS) -o $$name.bin boot.o $$name.o; \
+		$(LK) -m elf_x86_64 -T linker-debug.ld -o $$name.elf boot.o $$name.o; \
 		sz=$$(wc -c < $$name.bin | tr -d ' '); \
 		if [ "$$sz" -gt $(BIN_MAX) ]; then \
 			echo "ERROR: $$name.bin が $$sz バイト (上限 $(BIN_MAX) バイト)"; exit 1; \
@@ -68,7 +69,7 @@ run: boot.o
 	if [ $$status -ne 0 ] && [ $$status -ne 124 ]; then exit $$status; fi
 
 test: all
-	python3 test_scenarios.py --qemu $(QEMU) --timeout $(TIMEOUT_SECS) --qflags "$(QFLAGS)"
+	python3 test_scenarios.py --qemu $(QEMU) --timeout $(TIMEOUT_SECS) --qflags "$(QFLAGS)" --dfilter "$(DFILTER)" --require-halt
 
 # 全シナリオを連続実行: make runall
 # s06/s12 は対話シナリオのため runall / trace と同じ入力を与える。
@@ -109,10 +110,20 @@ debug: boot.o linkcheck
 	dd if=$(S).bin of=$(S).img conv=notrunc 2>/dev/null; \
 	rm -f $(S).o
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
+	@if nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; then \
+		echo "ERROR: ポート $(GDB_PORT) が使用中 (既存サーバーへの誤接続を防ぐため起動しません)"; exit 1; \
+	fi
 	@$(QEMU) $(QFLAGS) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
-	  i=0; while [ $$i -lt 50 ] && ! nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; do sleep 0.1; i=$$((i+1)); done; \
+	  i=0; while [ $$i -lt 50 ] && ! nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; do \
+	    if ! kill -0 $$QPID 2>/dev/null; then \
+	      echo "ERROR: QEMU が gdbstub を開く前に終了した (起動失敗)"; exit 1; \
+	    fi; \
+	    sleep 0.1; i=$$((i+1)); done; \
+	  if ! kill -0 $$QPID 2>/dev/null; then \
+	    echo "ERROR: QEMU が終了している (gdbstub に接続できません)"; exit 1; \
+	  fi; \
 	  $(GDB) -q $(S).elf \
 	    -x debug.gdb \
 	    -ex 'set pagination off' \

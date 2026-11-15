@@ -122,9 +122,11 @@ uart_getc:
 read_line:
     push rax
     push rdi
+    push rdx
     lea  rdi, [rel input]      ; RDI = 格納位置 (バッファ先頭)
+    lea  rdx, [rel input]      ; RDX = バッファ先頭 (オフセット計算用)
 .rl_loop:
-    call uart_getc
+    call uart_getc             ; 入口 3 push (奇数) で CALL 直前 RSP ≡ 0 (S07 参照)
     ; Enter (CR または LF) で確定
     cmp  al, 13
     je   .rl_enter
@@ -136,13 +138,13 @@ read_line:
     ; 表示可能文字のみ格納 (0x20 以上)
     cmp  al, 0x20
     jb   .rl_loop
-    ; バッファ上限チェック
-    push rax
+    ; バッファ上限チェック (al の文字を r11 に退避してから RAX を計算に使う)
+    movzx r11d, al
     mov  rax, rdi
-    sub  rax, input            ; input 先頭からのオフセット (カーネルは 0x8000 固定配置)
+    sub  rax, rdx              ; input 先頭からのオフセット
     cmp  rax, INPUT_MAX
-    pop  rax
     jge  .rl_loop
+    mov  al, r11b
     ; 格納してエコー
     mov  [rdi], al
     inc  rdi
@@ -157,17 +159,18 @@ read_line:
     jz   .rl_loop
     dec  rdi
     ; "BS space BS" を出力して画面上の 1 文字を消す
-    push rax
+    ; (al は次の uart_getc で上書きされるため退避不要。退避すると
+    ;  CALL 直前の RSP が 8 ずれて規約違反になる)
     mov  al, 8
     call uart_putc
     mov  al, ' '
     call uart_putc
     mov  al, 8
     call uart_putc
-    pop  rax
     jmp  .rl_loop
 .rl_enter:
     mov  byte [rdi], 0         ; NULL 終端
+    pop  rdx
     pop  rdi
     pop  rax
     ret
@@ -198,12 +201,16 @@ strcmp:
 
 ; print_str: RSI が指す NULL 終端文字列を出力 (RSI を進める)
 print_str:
-    lodsb
-    or   al, al
+    push rcx                ; 呼び出し規約: 入口は RSP % 16 = 8 のため 1 push して
+                            ; CALL 直前の RSP を 16 の倍数に揃える (S07 参照)
+.loop:
+    lodsb                   ; AL = [RSI], RSI++ (DF = 0 なので正向き)
+    or   al, al             ; NULL 終端?
     jz   .ret
     call uart_putc
-    jmp  print_str
+    jmp .loop
 .ret:
+    pop rcx
     ret
 
 ; print_crlf: CR + LF を出力

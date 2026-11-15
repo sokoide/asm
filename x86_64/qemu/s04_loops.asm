@@ -104,12 +104,16 @@ uart_putc:
 
 ; print_str: NULL 終端文字列を RSI から表示 (RSI は文字列末尾へ進む)
 print_str:
+    push rcx                ; 呼び出し規約: 入口は RSP % 16 = 8 のため 1 push して
+                            ; CALL 直前の RSP を 16 の倍数に揃える (S07 参照)
+.loop:
     lodsb                   ; AL = [RSI], RSI++ (DF = 0 なので正向き)
-    or  al, al              ; NULL 終端?
-    jz  .ret
+    or   al, al             ; NULL 終端?
+    jz   .ret
     call uart_putc
-    jmp print_str
+    jmp .loop
 .ret:
+    pop rcx
     ret
 
 ; print_hex64: RAX を 16 桁の 16 進数字で表示 (上位 32 ビットから)

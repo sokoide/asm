@@ -139,12 +139,16 @@ print_bin64:
 
 ; print_str: RSI が指す NULL 終端文字列を表示 (LODSB が RSI を自動進行)
 print_str:
-    lodsb                   ; AL = [RSI], RSI++
+    push rcx                ; 呼び出し規約: 入口は RSP % 16 = 8 のため 1 push して
+                            ; CALL 直前の RSP を 16 の倍数に揃える (S07 参照)
+.loop:
+    lodsb                   ; AL = [RSI], RSI++ (DF = 0 なので正向き)
     or   al, al             ; NULL 終端?
     jz   .ret
     call uart_putc
-    jmp  print_str
+    jmp .loop
 .ret:
+    pop rcx
     ret
 
 ; print_hex64: RAX を 16 桁の 16 進数で表示 (上位ニブルから, RAX/RCX 破壊)
