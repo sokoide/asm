@@ -16,6 +16,24 @@ TIMEOUT_SECS ?= 1
 TIMEOUT = timeout --foreground $(TIMEOUT_SECS)
 GODIR   = cmd/simz80
 
+# C シナリオ: リポジトリ root の _common/c/c*.c を sdcc -mz80 -S で
+# _common/c/c*.s (sdasz80 構文) に生成してから crt0_z80.s と一緒に
+# アセンブル・リンクする (make run/debug S=c01 等)。
+# コンソール出力しない (main の戻り値は DE で確認) ため runall には含めない。
+COMMON_C = ../../_common/c
+CSOURCES = $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+
+SDCC = sdcc
+SDAS = sdasz80
+# sdcc -S 用。sdcc に gcc -O0 相当の単一オプションはなく、既定でもピーフホール
+# 最適化 (ルールベースの後処理置換) が働くため、最も素朴なコードジェネレータ
+# 出力を得るために --no-peep で無効化する。
+CFLAGS = -mz80 --no-peep
+# リンク用。sdcc 標準 crt0 を外し (--no-std-crt0)、本ディレクトリの crt0_z80.s
+# を使う。--code-loc 0x0100 は CP/M TPA 先頭 (sdcc の z80 既定は標準 crt0 用の
+# ページを空けた 0x0200 なので必須)。
+LINKFLAGS = -mz80 --no-std-crt0 --code-loc 0x0100
+
 CPMDIR   = cpm
 YAZERC   = $(HOME)/cpm/.yazerc
 CPMPATH  = $(abspath $(CPMDIR))
@@ -29,7 +47,7 @@ CPM_NAMES = s01_hello=S01HELLO s02_registers=S02REGS s03_stack=S03STACK \
             s13_copybench=S13COPY s101_blockops=S101BLK s101_shadow=S101SHAD \
             s102_interrupts=S102INTR
 
-.PHONY: all run runall dump debug trace cycles icount test cpm cpm-setup clean format
+.PHONY: all run runall dump debug trace cycles icount test cpm cpm-setup clean format build build-s build-c
 
 # アセンブリソースを nvim の保存時整形と同一ロジックで整形
 # （asm.lua の autocmd を headless nvim で再実行 = :w と同じ整形。
@@ -49,38 +67,66 @@ all: $(SIM)
 		echo "=== $$name ==="; \
 		$(AS) -l --label=$$name.lbl -o $$name.com $$name.asm 2>$$name.lst && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; cat $$name.lst; rm -f $$name.lst; }; \
 	done
+	@for name in $(CSOURCES); do \
+		echo "=== $$name (C) ==="; \
+		$(MAKE) --no-print-directory build-c S=$$name && echo "  OK ($$(wc -c < $$name.com) bytes)" || echo "  FAIL"; \
+	done
+
+# 共通ビルド: S=s01_hello 等は build-s (z80asm)、S=c01 等 _common/c に .c が
+# あるシナリオは build-c (sdcc) を行う (riscv32 等の QEMU アーキと同じパターン)
+build:
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	else \
+	  $(MAKE) --no-print-directory build-s S=$(S); \
+	fi
+
+# アセンブリシナリオ: $(S).asm -> $(S).com (z80asm。既存フローと同じ)
+build-s:
+	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
+
+# C シナリオ: $(COMMON_C)/$(S).c -sdcc -S-> $(COMMON_C)/$(S).s + crt0_z80.s
+# -> $(S).com。生成された $(COMMON_C)/$(S).s は学習対象なのでビルド後に残す
+# (make clean で削除)。sdasz80 に -l (リスト出力) を付けないのは、リンク前の
+# アドレス (0x0000 基準) を持つ $(S).lst が simz80 -debug が読む $(S).lst と
+# 衝突して逆アセンブル表示を誤らせるため。-g は未定義シンボル (_main など)
+# を外部参照 (global) にするために必須。$(S).lbl はリンクの .map からシンボル
+# (_add, _main) を抽出し z80asm --label と同じ形式で作る (debug で b _main が使える)
+build-c:
+	$(SDCC) $(CFLAGS) -S -o $(COMMON_C)/$(S).s $(COMMON_C)/$(S).c
+	$(SDAS) -go crt0_z80.rel crt0_z80.s
+	$(SDAS) -go $(S).rel $(COMMON_C)/$(S).s
+	$(SDCC) $(LINKFLAGS) -o $(S).ihx crt0_z80.rel $(S).rel
+	makebin -p -o 256 $(S).ihx $(S).com
+	@awk 'NF==3 && $$2 ~ /^_/ { printf "%s: equ $$%s\n", $$2, substr($$1,5) }' $(S).map > $(S).lbl
+	@rm -f crt0_z80.rel $(S).rel $(S).ihx $(S).map $(S).lk $(S).noi
 
 $(SIM): $(wildcard $(GODIR)/*.go) $(GODIR)/go.mod
 	cd $(GODIR) && go build -o ../../simz80 .
 
-# Run: make run S=s01_hello
-run: $(SIM)
-	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
+# Run: make run S=s01_hello (C シナリオは make run S=c01)
+run: $(SIM) build
 	$(TIMEOUT) $(SIM) $(S).com
 
 # Step debugger: make debug S=s03_stack
 # Commands: s=step n=next(call) c=continue b ADDR r=regs d [ADDR] x ADDR q=quit
-debug: $(SIM)
-	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
+debug: $(SIM) build
 	$(SIM) -debug $(S).com
 
 # Instruction trace: make trace S=s03_stack (pipe to less / a file as needed)
-trace: $(SIM)
-	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
+trace: $(SIM) build
 	$(TIMEOUT) $(SIM) -trace $(S).com
 
 # T-state summary: make cycles S=s04_loops
 # simz80 が計上する Z80 T-state の実測値を出す。命令数は make icount を使用。
 # (simz80 -cycles は instructions と T-states を両方出すため、ここでは
 #  T-states 側のみを表示して cycles と icount を分離する)
-cycles: $(SIM)
-	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
+cycles: $(SIM) build
 	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '{ if ($$0 ~ /^instructions:/) next; print }'; \
 	echo "(実サイクル: simz80 が計上した Z80 T-state の実測値)"
 
 # 命令数: make icount S=s04_loops (simz80 の実行命令数)
-icount: $(SIM)
-	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
+icount: $(SIM) build
 	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '/^instructions:/ { print "実行命令数: " $$2 " (simz80 実測 / CPU 命令のみ。BDOS 呼び出し・割り込み受付は含まない)"; found=1 } END { if (!found) print "実行命令数: unsupported (simz80 がサマリを出力せず終了。タイムアウト等で計測不能)" }'
 
 # Unit tests for the simulator core (flags, T-states, .lst parser)
@@ -141,6 +187,8 @@ cpm: all
 
 clean:
 	rm -f *.com *.bin *.sym *.lbl *.lst *.lis *.err $(SIM)
+	rm -f *.ihx *.rel *.map *.noi *.lk
+	rm -f $(COMMON_C)/c*.s
 	rm -rf $(CPMDIR)
 
 # One-time setup: copy yaze-ag disk images to ~/cpm/

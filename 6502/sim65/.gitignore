@@ -20,3 +20,5 @@ s102_selfmod
 s103_irq_nmi
 sim65src/sim65i
 s03_stack.icount.trace
+c01
+c02

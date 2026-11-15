@@ -6,9 +6,20 @@ SOURCES = s01_hello s02_registers s03_stack s04_loops \
           s09_branching s10_bitwise s11_memory s12_minishell \
           s13_copybench s101_cr_lr s102_exceptions
 
+# C シナリオ: リポジトリ root の _common/c/c*.c を clang -S で _common/c/c*.s に
+# 生成してから crt0.s と一緒にアセンブル・リンクする (make debug S=c01 等)。
+# UART 出力しない (main の戻り値は r3 で確認) ため runall には含めない。
+COMMON_C = ../../_common/c
+CSOURCES = $(notdir $(basename $(wildcard $(COMMON_C)/c*.c)))
+
 AS      = clang
 LD      = ld.lld
+CC      = clang
 ASFLAGS = --target=powerpc-none-elf -c -nostdlib
+# C シナリオ用: ASFLAGS と同じターゲット設定で -S 生成 (-c/-nostdlib は除外)。
+# -fno-asynchronous-unwind-tables: .eh_frame を出させない (linker.ld にマップされず
+# orphan セクションが 0x0 番地に置かれて .text の配置がずれるため。bare-metal では不要)
+CFLAGS  = --target=powerpc-none-elf -g -O0 -fno-asynchronous-unwind-tables
 LDFLAGS = -T linker.ld -nostdlib
 
 QEMU    = qemu-system-ppc
@@ -25,7 +36,31 @@ GDB_PORT   ?= 1234
 # QEMU はタイムアウトまで走り続ける(全サンプルに halt ラベルあり)。
 TRACE_SECS ?= 10
 
-.PHONY: all run runall dump debug trace cycles icount clean format
+.PHONY: all run runall dump debug trace cycles icount clean format build build-s build-c
+
+# 共通ビルド: S=s01_hello 等はカレントの .s を、S=c01 等 $(COMMON_C) に .c が
+# あるシナリオは clang -S での .s 生成を挟む C ビルドを行う
+build:
+	@if [ -f $(COMMON_C)/$(S).c ]; then \
+	  $(MAKE) --no-print-directory build-c S=$(S); \
+	else \
+	  $(MAKE) --no-print-directory build-s S=$(S); \
+	fi
+
+# アセンブリシナリオ: $(S).s -> $(S).elf
+build-s:
+	$(AS) $(ASFLAGS) -o $(S).o $(S).s
+	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
+	rm -f $(S).o
+
+# C シナリオ: $(COMMON_C)/$(S).c -clang -S-> $(COMMON_C)/$(S).s + crt0.s -> $(S).elf
+# clang -S の出力 (c01.s 等) は学習対象なので $(COMMON_C)/ に残す (make clean で削除)
+build-c:
+	$(CC) $(CFLAGS) -S $(COMMON_C)/$(S).c -o $(COMMON_C)/$(S).s
+	$(AS) $(ASFLAGS) -o crt0.o crt0.s
+	$(AS) $(ASFLAGS) -o $(S).o $(COMMON_C)/$(S).s
+	$(LD) $(LDFLAGS) -o $(S).elf crt0.o $(S).o
+	rm -f crt0.o $(S).o
 
 # アセンブリソースを nvim の保存時整形と同一ロジックで整形
 # （asm.lua の autocmd を headless nvim で再実行 = :w と同じ整形。
@@ -41,19 +76,13 @@ format:
 	done
 
 all:
-	@for name in $(SOURCES); do \
+	@for name in $(SOURCES) $(CSOURCES); do \
 		echo "=== $$name ==="; \
-		$(AS) $(ASFLAGS) -o $$name.o $$name.s && \
-		$(LD) $(LDFLAGS) -o $$name.elf $$name.o && \
-		rm -f $$name.o && \
-		echo "  OK"; \
+		$(MAKE) --no-print-directory build S=$$name && echo "  OK" || exit 1; \
 	done
 
 # Run: make run S=s01_hello
-run:
-	$(AS) $(ASFLAGS) -o $(S).o $(S).s
-	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
-	rm -f $(S).o
+run: build
 	timeout --foreground $(TIMEOUT_SECS) $(QEMU) $(QFLAGS) -kernel $(S).elf || true
 
 # Run all scenarios through QEMU (PPC uses infinite-loop halt, timeout required)
@@ -80,10 +109,8 @@ dump:
 # gdb リモートプロトコルは認証を持たないため loopback (127.0.0.1) に限定する。
 # gdb をフォアグラウンドで接続する。UART出力は gdb プロンプトに混ざって表示される。
 # gdb: si=1命令実行 / c=continue / b *ADDR / info registers / x/5i $pc / Ctrl-D で終了
-debug:
-	$(AS) $(ASFLAGS) -o $(S).o $(S).s
-	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
-	rm -f $(S).o
+# C シナリオ (S=c01) は clang -g 付きでビルドするため list/step で C ソース行も見える
+debug: build
 	@command -v $(GDB) >/dev/null 2>&1 || { echo "gdb が見つかりません: brew install gdb"; exit 1; }
 	@$(QEMU) $(QFLAGS) -kernel $(S).elf -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
@@ -105,10 +132,7 @@ debug:
 # さらに s06/s12 が quits 条件に達しないとポーリングループから抜けない場合に
 # 備え、ログを head -c 32MB でも打ち切る。QEMU は SIGPIPE を無視するため
 # 打ち切り後も TRACE_SECS 秒まで QEMU は動き続ける。
-trace:
-	$(AS) $(ASFLAGS) -o $(S).o $(S).s
-	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
-	rm -f $(S).o
+trace: build
 	@rm -f $(S).trace
 	@if [ "$(S)" = "s06_serial_in" ]; then \
 		printf 'q\n' | timeout --foreground $(TRACE_SECS) $(QEMU) $(QFLAGS) -kernel $(S).elf -accel tcg,one-insn-per-tb=on -d in_asm,cpu 2>&1 >/dev/null | awk 'BEGIN{a="_";b="_"} {print} /^NIP /{p=$$2; if(p==a&&a==b) exit; b=a; a=p}' | head -c 33554432 > $(S).trace; \
@@ -133,10 +157,7 @@ cycles:
 # 全サンプルは halt ループに到達するため完走値 (halt ループ自体は含まない)。
 # 検出後も QEMU は TRACE_SECS 秒まで動き続ける(SIGPIPE 無視のため)。
 # ログはファイル化せずパイプで直接集計する。
-icount:
-	$(AS) $(ASFLAGS) -o $(S).o $(S).s
-	$(LD) $(LDFLAGS) -o $(S).elf $(S).o
-	rm -f $(S).o
+icount: build
 	@if [ "$(S)" = "s06_serial_in" ]; then \
 		n=$$(printf 'q\n' | timeout --foreground $(TRACE_SECS) $(QEMU) $(QFLAGS) -kernel $(S).elf -accel tcg,one-insn-per-tb=on -d cpu 2>&1 >/dev/null | awk 'BEGIN{a="_";b="_"} /^NIP /{p=$$2; if(p==a&&a==b){n-=2; exit} b=a; a=p; n++} END{print n+0}'); \
 	elif [ "$(S)" = "s12_minishell" ]; then \
@@ -148,3 +169,4 @@ icount:
 
 clean:
 	rm -f *.elf *.o *.bin *.trace
+	rm -f $(COMMON_C)/c*.s

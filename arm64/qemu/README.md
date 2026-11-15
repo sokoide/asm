@@ -1,6 +1,6 @@
 # ARM64 (AArch64) ベアメタル アセンブラ ワークショップ
 
-QEMU virt マシン上で動作する ARM64 ベアメタルアセンブリ言語教材。PL011 UART を I/O に使い、12 のシナリオで段階的に学ぶ。
+QEMU virt マシン上で動作する ARM64 ベアメタルアセンブリ言語教材。PL011 UART を I/O に使い、12 のシナリオで段階的に学ぶ。共通課題（s13 帯）と ARM64 固有の拡張シナリオ（s101+ 帯）に加え、`_common/c` の C ソースを clang でアセンブリに変換して観察する C シナリオ（c01+）もある。
 
 ## 前提条件
 
@@ -36,6 +36,10 @@ make clean
 # QEMU を -S -gdb tcp:127.0.0.1:1234 で起動し gdb を接続（ステップ実行）
 make debug S=s01_hello
 
+# C シナリオ: _common/c/c01.c を clang -S でアセンブリ生成してからステップ実行
+# (-g 付きのため break main / list / step で C ソース行が見える)
+make debug S=c01
+
 # 命令ごとの逆アセンブル + CPU 状態を s01_hello.trace に記録して less で閲覧
 make trace S=s01_hello
 
@@ -53,6 +57,7 @@ make icount S=s01_hello
 .
 ├── linker.ld           # リンカスクリプト（0x40000000 配置）
 ├── Makefile
+├── crt0.s              # C シナリオ共通のスタートアップ（スタック設定・.bss クリア・main 呼び出し）
 ├── README.md
 ├── s01_hello.s         # シナリオ 1: Hello World
 ├── s02_registers.s     # シナリオ 2: レジスタと算術
@@ -399,6 +404,40 @@ ARM64 の例外ベクタテーブル。VBAR_EL1 が指す 16 エントリ x 0x80
 
 ---
 
+### C01/C02: C → アセンブリ (clang -S)
+
+**難易度**: ★☆☆☆☆
+
+リポジトリ root の `_common/c/` にある C ソースを `clang -g -O0 -S`（AArch64 向け）でアセンブリに変換し、crt0.s と一緒にアセンブル・リンクして qemu + gdb で観察する。C01 は `main` だけの最小構成、C02 は関数呼び出し `add()` とローカル変数を含む。生成された `_common/c/c01.s` は学習対象なのでビルド後に残り、`make clean` で削除される。
+
+| 学習項目                                    | 説明                                                       |
+| :---                                        | :---                                                       |
+| `clang --target=aarch64-none-elf -g -O0 -S` | 最適化なし・DWARF 付きで AArch64 用アセンブリを生成        |
+| `sub sp, sp, #16` + `str w0, [sp, #12]`     | -O0 の関数プロローグ（引数・ローカル変数をスタックに退避） |
+| レジスタ渡し ABI                            | AArch64 呼び出し規約: 引数は w0/w1、戻り値は w0            |
+| crt0.s                                      | SP=0x48000000 → .bss クリア → `bl main` → semihosting で終了 |
+| DWARF デバッグ情報                          | `break main` / `list` / `step` で C ソース行単位のステップ実行 |
+
+**使い方**:
+
+```bash
+make run S=c01        # QEMU で実行（UART 出力なし、main 復帰後に semihosting で自力終了）
+make dump S=c01       # crt0 + clang 生成コードの逆アセンブル
+make debug S=c01      # qemu + gdb でステップ実行（C ソース行が見える）
+make clean            # 生成物とともに _common/c/c*.s を削除
+```
+
+**ポイント**: main 復帰後は crt0 が semihosting SYS_EXIT（x0=0x18 + `{ ADP_Stopped_ApplicationExit, subcode }` ブロック）で QEMU を終了するため、`make run S=c01` は timeout を待たずに自力終了する。QEMU は ApplicationExit の subcode をホストの終了コードに伝播するため、crt0 は main の戻り値 w0 を subcode に渡す（検証: subcode 42 で終了コード 42 を確認。`make run` は `|| true` で回収するため終了コードを見るときは QEMU を直接実行する）。AArch64 の呼び出し規約は引数 w0/w1 レジスタ渡し・戻り値 w0 で、手書きシナリオ S07（X0-X7 / X0）と同じ規約。同じ `_common/c/c02.c` から生成した m68k 版（引数スタック渡し）と `_common/c/c02.s` を見比べると、ABI の違いが同じ C ソースから読み取れる。crt0 は UART 出力を持たないため C シナリオは runall に含めない。
+
+**学習カード（予測 → 観察 → 改造 → 考察）**:
+
+- **STEP 1 予測**: `_common/c/c01.s` を開き、`main` のプロローグ（`sub sp, sp, #16`）、`mov w0, wzr` + `str wzr, [sp, #12]`、エピローグ（`add sp, sp, #16` + `ret`）がそれぞれ何をするか先に予測する。main はリーフ関数なので x30 (LR) の退避がないこと、c02 の `main` は `bl add` するため `sub sp, sp, #32` + `stp x29, x30, [sp, #16]` で LR とフレームポインタを退避することも予測する。
+- **STEP 2 観察**: `make debug S=c01` で `break main`（gdb はプロローグをスキップして prologue_end に置く）→ `list` で C ソース行表示 → `step` → main 復帰後 x0=0・sp が 0x48000000 に戻ることを確認する。`make debug S=c02` では `break add` の 1 回目 `a=1 b=1`、2 回目 `a=20 b=20`（`printf "a=%d b=%d\n", a, b`）、`make dump S=c02` で確認した `bl main` の次のアドレス（0x40000024）に `b *0x40000024` を置いて x0=0（c-42）を見る。
+- **STEP 3 改造**: `_common/c/c01.c` にグローバル変数や配列を追加して再ビルドし、crt0 の .bss クリアループ（`.Lbss`）が実行される様子とリンクアドレスの変化を観察する。
+- **STEP 4 考察**: `make build S=c01 CFLAGS='--target=aarch64-none-elf -g -O2'` でビルドし直し、`make dump S=c01` / `make icount S=c01` で命令数を -O0 と比べる。AArch64 では -g 付きでも -O2 だとプロローグが消えて `mov w0, wzr` + `ret` だけになる（c02 では `add` が `add w0, w1, w0` + `ret` まで縮み、`main` の 2 回の呼び出しは定数畳み込みで消える。m68k 版 gcc は -g 付きだとフレームポインタが残る、の対比）。
+
+---
+
 ## 関連ドキュメント
 
 - [`../CPU.md`](../CPU.md) — ARM64 (AArch64) 命令セット完全リファレンス
@@ -497,6 +536,10 @@ brew install lld qemu
 # アセンブラとリンカ
 AS      = clang
 LD      = ld.lld
+
+# C シナリオ (_common/c/c*.c) のアセンブリ生成用
+CC      = clang
+CFLAGS  = --target=aarch64-none-elf -g -O0
 
 # ターゲット（ARM64 ベアメタル）
 ASFLAGS = --target=aarch64-none-elf -c -nostdlib
