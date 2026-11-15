@@ -45,6 +45,8 @@ make icount S=s01_hello
 
 `make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
+`make debug` は `debug.gdb` を明示的に読み込み、停止時の表示とレジスタ表示マクロを利用できる。
+
 ## ディレクトリ構造
 
 ```text

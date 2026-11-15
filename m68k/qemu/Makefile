@@ -80,6 +80,7 @@ debug:
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
 	  sleep 0.3; \
 	  $(GDB) -q $(S).elf \
+	    -x debug.gdb \
 	    -ex 'set pagination off' \
 	    -ex 'target remote :$(GDB_PORT)' \
 	    -ex 'set disassemble-next-line on' \

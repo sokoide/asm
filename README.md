@@ -354,6 +354,8 @@ x0000000000000048 x01=0000000004000040 ...
 
 QEMU 系の `make debug` は QEMU を `-S -gdb tcp:127.0.0.1:1234`（起動時停止 + GDB サーバ）で起動し、gdb を自動接続する。Z80 は独自ステッパー、6502 はトレースのリプレイなので、以下の GDB コマンドは使わない。
 
+QEMU 系の各 `make debug` は、同じディレクトリの `debug.gdb` を `-x` で明示的に読み込み、停止時のレジスタ表示マクロを登録する。
+
 ```bash
 # gdb が起動して QEMU (127.0.0.1:1234) に接続される
 make debug A=arm64/qemu S=s01_hello
@@ -428,7 +430,7 @@ set logging enabled off
 
 既存の同名ファイルは上書きされる。記録されるのは GDB の表示であり、QEMU の UART 出力や CPU のバスアクセス履歴ではない。変更箇所だけを表示するには Python 対応 GDB の `gdb.events.stop` と状態の比較を利用できるが、メモリの前後比較では書き込み順序は分からない。
 
-x86_16 の `make debug` は `x86_16/qemu/` の `i8086.xml` と `i386-32bit.xml` を使い、GDB 接続後に次の設定を自動実行する。
+x86_16 の `make debug` は `x86_16/qemu/` の `i8086.xml` と `i386-32bit.xml` を使い、gdb 起動時に `-x debug.gdb` でマクロ定義ファイルを明示的に読み込む（`.gdbinit` の自動ロードは使わない）。`debug.gdb` には次の設定と `regs16`/`regs32` マクロが定義されている。
 
 ```gdb
 set tdesc filename i8086.xml
