@@ -103,8 +103,11 @@ dump32:
 debug:
 	@echo "$(SINGLE)" | grep -qw "$(S)" && MODE=single || MODE=multi; \
 	if [ "$$MODE" = "single" ]; then \
-		$(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
+		$(AS) $(ASFLAGS) -g -F dwarf -l $(S).lst \
+        -o $(S).o $(S).asm && \
 		$(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
+		$(LK) -m elf_i386 -T linker-debug.ld \
+        -o $(S).elf $(S).o && \
 		rm -f $(S).o; \
 	else \
 		$(AS) -f bin -l $(S).lst -o $(S).bin $(S).asm; \
@@ -116,7 +119,7 @@ debug:
 	  QPID=$$!; \
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
 	  sleep 0.3; \
-	  $(GDB) -q \
+	  $(GDB) -q $(S).elf \
 	    -ex 'set pagination off' \
 	    -ex 'target remote :$(GDB_PORT)' \
 	    -ex 'set tdesc filename i8086.xml' \
