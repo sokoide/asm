@@ -7,7 +7,6 @@ define regs16
     printf "SI=%04x DI=%04x BP=%04x SP=%04x\n", (unsigned int)$esi & 0xffff, (unsigned int)$edi & 0xffff, (unsigned int)$ebp & 0xffff, (unsigned int)$esp & 0xffff
     printf "CS=%04x DS=%04x ES=%04x SS=%04x\n", (unsigned int)$cs & 0xffff, (unsigned int)$ds & 0xffff, (unsigned int)$es & 0xffff, (unsigned int)$ss & 0xffff
     printf "IP=%04x FLAGS=%04x\n", (unsigned int)$eip & 0xffff, (unsigned int)$eflags & 0xffff
-    # flags
     printf "CF=%d PF=%d AF=%d ZF=%d SF=%d OF=%d\n", \
     ((unsigned int)$eflags >> 0) & 1, \
     ((unsigned int)$eflags >> 2) & 1, \
@@ -22,7 +21,6 @@ define regs32
     printf "ESI=%08x EDI=%08x EBP=%08x ESP=%08x\n", (unsigned int)$esi, (unsigned int)$edi, (unsigned int)$ebp, (unsigned int)$esp
     printf "CS=%04x DS=%04x ES=%04x SS=%04x FS=%04x GS=%04x\n", (unsigned int)$cs, (unsigned int)$ds, (unsigned int)$es, (unsigned int)$ss, (unsigned int)$fs, (unsigned int)$gs
     printf "EIP=%08x EFLAGS=%08x\n", (unsigned int)$eip, (unsigned int)$eflags
-    # flags
     printf "CF=%d PF=%d AF=%d ZF=%d SF=%d OF=%d\n", \
     ((unsigned int)$eflags >> 0) & 1, \
     ((unsigned int)$eflags >> 2) & 1, \
