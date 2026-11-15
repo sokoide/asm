@@ -930,14 +930,14 @@ static unsigned GetInstructionLength (uint8_t opcode)
 
 
 
-static char * PrintAssemblyInstruction (char * ptr)
+static char * PrintAssemblyInstruction (uint16_t PC, char * ptr)
 /* Print assembly instruction: mnemonic and addres-mode specific operand(s). */
 {
     uint8_t opcode;
 
-    /* Print the instruction starting at the current program counter. */
+    /* Print the instruction starting at the given address. */
 
-    opcode = MemReadByte (Regs.PC);
+    opcode = MemReadByte (PC);
 
     ptr += sprintf (ptr, "%-4s ", II[CPU][opcode].mnemonic);
 
@@ -949,46 +949,46 @@ static char * PrintAssemblyInstruction (char * ptr)
             ptr += sprintf (ptr, "A");
             break;
         case IMMEDIATE:
-            ptr += sprintf (ptr, "#$%02X", MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "#$%02X", MemReadByte (PC + 1));
             break;
         case REL:
-            ptr += sprintf (ptr, "$%04X", Regs.PC + 2 + (int8_t)MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "$%04X", PC + 2 + (int8_t)MemReadByte (PC + 1));
             break;
         case ZP:
-            ptr += sprintf (ptr, "$%02X", MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "$%02X", MemReadByte (PC + 1));
             break;
         case ZP_X:
-            ptr += sprintf (ptr, "$%02X,X", MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "$%02X,X", MemReadByte (PC + 1));
             break;
         case ZP_Y:
-            ptr += sprintf (ptr, "$%02X,Y", MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "$%02X,Y", MemReadByte (PC + 1));
             break;
         case ZP_IND:
-            ptr += sprintf (ptr, "($%02X)", MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "($%02X)", MemReadByte (PC + 1));
             break;
         case ZP_X_IND:
-            ptr += sprintf (ptr, "($%02X,X)", MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "($%02X,X)", MemReadByte (PC + 1));
             break;
         case ZP_IND_Y:
-            ptr += sprintf (ptr, "($%02X),Y", MemReadByte (Regs.PC + 1));
+            ptr += sprintf (ptr, "($%02X),Y", MemReadByte (PC + 1));
             break;
         case ZP_REL:
-            ptr += sprintf (ptr, "$%02X,$%04X", MemReadByte (Regs.PC + 1), Regs.PC + 3 + (int8_t)MemReadByte (Regs.PC + 2));
+            ptr += sprintf (ptr, "$%02X,$%04X", MemReadByte (PC + 1), PC + 3 + (int8_t)MemReadByte (PC + 2));
             break;
         case ABS:
-            ptr += sprintf (ptr, "$%04X", MemReadWord (Regs.PC + 1));
+            ptr += sprintf (ptr, "$%04X", MemReadWord (PC + 1));
             break;
         case ABS_IND:
-            ptr += sprintf (ptr, "($%04X)", MemReadWord (Regs.PC + 1));
+            ptr += sprintf (ptr, "($%04X)", MemReadWord (PC + 1));
             break;
         case ABS_X:
-            ptr += sprintf (ptr, "$%04X,X", MemReadWord (Regs.PC + 1));
+            ptr += sprintf (ptr, "$%04X,X", MemReadWord (PC + 1));
             break;
         case ABS_X_IND:
-            ptr += sprintf (ptr, "($%04X,X)", MemReadWord (Regs.PC + 1));
+            ptr += sprintf (ptr, "($%04X,X)", MemReadWord (PC + 1));
             break;
         case ABS_Y:
-            ptr += sprintf (ptr, "$%04X,Y", MemReadWord (Regs.PC + 1));
+            ptr += sprintf (ptr, "$%04X,Y", MemReadWord (PC + 1));
             break;
     }
 
@@ -1075,7 +1075,7 @@ static void PrintTraceInstructionOrInterrupt (const char * InterruptType)
         char * save_ptr = traceline_ptr;
 
         if (InterruptType == NULL) {
-            traceline_ptr = PrintAssemblyInstruction (traceline_ptr);
+            traceline_ptr = PrintAssemblyInstruction (Regs.PC, traceline_ptr);
         } else {
             /* Print interrupt message. */
             traceline_ptr += sprintf (traceline_ptr, "*** %s ***", InterruptType);
@@ -1154,4 +1154,22 @@ void PrintTraceIRQ (void)
 void PrintTraceInstruction (void)
 {
     PrintTraceInstructionOrInterrupt(NULL);
+}
+
+
+
+unsigned TraceInsnLen (uint16_t PC)
+/* Get the number of bytes of the instruction at the given address */
+{
+    return GetInstructionLength (MemReadByte (PC));
+}
+
+
+
+void TraceDisasmText (uint16_t PC, char* Buf)
+/* Write the disassembly (mnemonic and operand) of the instruction at the
+** given address into Buf.
+*/
+{
+    *PrintAssemblyInstruction (PC, Buf) = '\0';
 }

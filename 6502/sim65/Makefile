@@ -14,7 +14,7 @@ HELPER_LST = $(HELPERS:.s=.lst)
 SIM65I = sim65src/sim65i
 SIM65I_SRCS = sim65src/simmain.c sim65src/6502.c sim65src/memory.c \
               sim65src/paravirt.c sim65src/error.c sim65src/trace.c \
-              sim65src/peripherals.c sim65src/compat/compat.c
+              sim65src/debugger.c sim65src/peripherals.c sim65src/compat/compat.c
 
 # 実行タイムアウト(秒)。環境変数 TIMEOUT_SECS が設定されていればその値を使用。
 # (例: brainux 等の遅いエミュレーション環境では export TIMEOUT_SECS=10 等で延長)
@@ -24,7 +24,7 @@ TIMEOUT_SECS ?= 1
 # (未定義だと $(TIMEOUT) が空展開され、タイムアウトなしで実行される)
 TIMEOUT ?= timeout --foreground $(TIMEOUT_SECS)
 
-.PHONY: all run runall debug trace cycles icount clean sim65i
+.PHONY: all run runall debug replay trace cycles icount clean sim65i
 
 all: sim65i
 	@echo "=== helpers ==="; \
@@ -64,12 +64,19 @@ define pick_sim
 if [ "$(S)" = "s103_irq_nmi" ]; then echo "$(SIM65I)"; else echo "sim65"; fi
 endef
 
-# リプレイ型ステップ表示: make debug S=s03_stack
-# 注意: sim65 には対話ステップ実行がないため、全トレースを記録してから
-# ページャで1命令ずつ送って見る「再生」になる (停止・巻き戻しは自由)。
+# 対話ステップデバッガ: make debug S=s03_stack
+# z80/sim の simz80 -debug と同じ操作感 (s/n/c/b/r/d/x/q)。
+# すべてのシナリオで sim65i を使う (sim65i の非デバッグ実行はシステム sim65 と同一挙動)。
+debug: sim65i
+	$(call build_one,$(S))
+	$(SIM65I) -g $(S)
+
+# リプレイ型ステップ表示: make replay S=s03_stack
+# 全トレースを記録してからページャで1命令ずつ送って見る「再生」
+# (停止・巻き戻しは自由)。実行中へのライブ制御は make debug を使う。
 # sim65 --trace は stdout に出力するため、プログラム本体の出力も
 # トレース行の間に混ざって記録される。
-debug:
+replay:
 	$(call build_one,$(S))
 	@SIM=$$($(call pick_sim)); \
 	$(call feed_input,$$SIM --trace $(S)) >$(S).trace

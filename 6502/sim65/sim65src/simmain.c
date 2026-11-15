@@ -37,6 +37,7 @@
 #include <errno.h>
 
 #include "6502.h"
+#include "debugger.h"
 #include "error.h"
 #include "memory.h"
 #include "paravirt.h"
@@ -58,6 +59,9 @@ static const char* ProgramFile;
 
 /* Exit simulator after MaxCycles (0 = unlimited) */
 static unsigned long long MaxCycles = 0;
+
+/* Run the interactive step debugger */
+static int DebugMode = 0;
 
 /* Program header */
 static const unsigned char HeaderSignature[] = {
@@ -84,6 +88,7 @@ static void Usage (void)
             "Short options:\n"
             "  -h\t\t\tHelp (this text)\n"
             "  -c\t\t\tPrint amount of executed CPU cycles\n"
+            "  -g\t\t\tInteractive step debugger\n"
             "  -t\t\t\tEnable CPU trace\n"
             "  -v\t\t\tIncrease verbosity\n"
             "  -x <num>\t\tExit simulator after <num> cycles\n");
@@ -180,9 +185,16 @@ int main (int argc, char* argv[])
                 TraceMode = TRACE_ENABLE_FULL;
                 continue;
             }
+            if (strcmp (Arg, "--debug") == 0) {
+                DebugMode = 1;
+                continue;
+            }
             switch (Arg[1]) {
                 case 'c':
                     PrintCycles = 1;
+                    break;
+                case 'g':
+                    DebugMode = 1;
                     break;
                 case 'v':
                     ++Verbosity;
@@ -223,6 +235,12 @@ int main (int argc, char* argv[])
     TraceInit (SPAddr);
     ParaVirtInit (0, SPAddr);
     Reset ();
+
+    if (DebugMode) {
+        DebuggerActive = 1;
+        DebuggerRun (MaxCycles, SPAddr);
+        return EXIT_SUCCESS;
+    }
 
     unsigned long long RemainCycles = MaxCycles;
     while (1) {

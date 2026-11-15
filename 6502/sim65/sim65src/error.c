@@ -39,6 +39,7 @@
 #include <inttypes.h>
 
 #include "error.h"
+#include "debugger.h"
 #include "peripherals.h"
 
 
@@ -119,6 +120,11 @@ void SimExit (int Code)
 {
     if (PrintCycles) {
         fprintf (stdout, "%" PRIu64 " cycles\n", Peripherals.Counter.ClockCycles);
+    }
+    if (DebuggerActive) {
+        /* Let the debugger report the exit and stop cleanly. */
+        DbgExitCode = Code;
+        return;
     }
     exit (Code);
 }

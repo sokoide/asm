@@ -25,19 +25,66 @@ make clean
 ## デバッグ
 
 ```bash
+# 対話ステップデバッガ（z80/sim の simz80 -debug と同じ操作感）
+make debug S=s03_stack
+
 # 全命令の実行トレース（前命令との差分行付き）
 make trace S=s03_stack
 
 # トレースを less で 1 命令ずつ送って見る（リプレイ型）
-make debug S=s03_stack
+make replay S=s03_stack
 
 # 実サイクル数を表示
 make cycles S=s03_stack
 ```
 
+- **make debug**: **対話ステッパー**。リポジトリ内ビルドの `sim65i -g` がステップ実行の REPL を持つ。1 命令ごとに「実行した命令の逆アセンブル行 + 変化したレジスタ（old→new）+ フラグ変化 + 消費サイクル」を表示し、ブレークポイント・continue・メモリダンプができる。逆アセンブルには sim65 内蔵の逆アセンブラを使う（`.lst` は不要）。
 - **make trace**: `sim65 --trace`（1 命令ごとに通番 / 累積サイクル / PC / オペコード / 逆アセンブル / 実行前レジスタ / Flags / SP を表示）に awk スクリプト (`trace-diff.awk`) で変化したレジスタの `BEFORE:` / `AFTER:` / `CHANGE:` 3 行セットを付けて表示する。
-- **make debug**: **リプレイ型**。トレースを `$(S).trace` に記録し、less の SPACE/Enter で 1 命令ずつ送って観察する。sim65 に対話ステップ実行はないため、これは実行済みトレースの「再生」であり、実行中のプログラムへのライブ制御ではない点に注意。
+- **make replay**: **リプレイ型**。トレースを `$(S).trace` に記録し、less の SPACE/Enter で 1 命令ずつ送って観察する。巻き戻し・早送りは自由。実行中のプログラムへのライブ制御は `make debug` を使う。
 - **make cycles**: `sim65 -c` による実サイクル数の表示（正確な値）。
+
+### ステップデバッガのコマンド
+
+| コマンド | 動作 |
+| :--- | :--- |
+| `s` | 1 命令ステップ実行 |
+| `n` | next（JSR の呼び出し先に入らずに進む） |
+| `c` | continue（次のブレークポイントまで実行） |
+| `b ADDR` | アドレス ADDR（`0206` / `$0206` / `0x0206` 形式）にブレークポイント設定/解除。素の `b` は一覧 |
+| `r` | 全レジスタ表示（`S` = HW スタックポインタ、`SP` = cc65 ソフトスタック） |
+| `d [ADDR] [N]` | 逆アセンブル表示（デフォルトは PC から 10 行、現在の PC 行に `◀ PC`） |
+| `x ADDR [N]` | ADDR からメモリダンプ（16 バイト × N 行、デフォルト 1 行） |
+| `q` | 終了 |
+
+空行（Enter のみ）で直前のコマンドを繰り返す。stdin が端末でなくても動くため、パイプでステップを送ることもできる:
+
+```bash
+printf 's\ns\nq\n' | ./sim65src/sim65i -g s03_stack
+```
+
+S06 / S12 のようにプログラムが入力を読むシナリオでは、ゲストの `_getchar` が `[INPUT]>` プロンプトでデバッガと同じ stdin から 1 行読む（z80/sim の BDOS 入力と同じ方式）。
+
+セッション例:
+
+```text
+> s
+── #2  CYC+2 (total 4) ──
+0201  A2 FF     ldx  #$FF
+  X   00 → FF
+  flags N 0→1
+0203  9A        txs              ◀ PC
+0204  A9 C0     lda  #$C0
+> c
+Hello, 6502 World!
+── #2214  CYC+3 (total 7651) ──
+021A  4C F9 FF  jmp  $FFF9
+  S   FF → 01
+stopped: exit (code 0)
+```
+
+- ヘッダーの `#番号` は実行命令数、`CYC+n` はその命令の消費サイクル、`(total ...)` は累積サイクル。
+- 割り込みの受付は `*** IRQ ***` / `*** NMI ***` 行として表示される（S103 で確認できる）。
+- プログラムの終了（`jmp $FFF9` = paravirt の exit）は `stopped: exit (code N)` として報告され、REPL は終了する。
 
 ### トレース出力の読み方
 
@@ -294,7 +341,7 @@ AND / ORA / EOR / ASL / LSR / ROL / ROR を使い、ビット単位の操作を�
 
 ## sim65i（割り込み対応シミュレータ）
 
-`sim65src/` は cc65 の sim65 ソースをベンダリングしたもので、`make` 時に `sim65i` として自動ビルドされる。cc65 本家の IRQ/NMI 機構（`IRQRequest`/`NMIRequest`）に、メモリマップドトリガ（`$FFCC` = IRQ、`$FFCE` = NMI）を `memory.c` に追加したもの。既存シナリオはシステム sim65 とサイクル数まで同一の挙動を示す（`-c` / `--trace` 対応）。
+`sim65src/` は cc65 の sim65 ソースをベンダリングしたもので、`make` 時に `sim65i` として自動ビルドされる。cc65 本家の IRQ/NMI 機構（`IRQRequest`/`NMIRequest`）に、メモリマップドトリガ（`$FFCC` = IRQ、`$FFCE` = NMI）を `memory.c` に追加し、対話ステップデバッガ（`-g` / `--debug`、`debugger.c`）を組み込んだもの。既存シナリオはシステム sim65 とサイクル数まで同一の挙動を示す（`-c` / `--trace` 対応。`-g` は sim65i 独自拡張）。
 
 ## 拡張シナリオ
 

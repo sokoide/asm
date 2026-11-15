@@ -63,6 +63,7 @@
 
 /* sim65 */
 #include "6502.h"
+#include "debugger.h"
 #include "error.h"
 #include "memory.h"
 #include "paravirt.h"
@@ -319,7 +320,14 @@ static void PVRead (CPURegs* Regs)
 
     Data = xmalloc (Count);
 
-    RetVal = read (FD, Data, Count);
+    if (DebuggerActive && FD == 0) {
+        /* In debug mode, guest stdin shares the console line reader with
+        ** the debugger REPL (prompt: "[INPUT]> ").
+        */
+        RetVal = DbgConsoleRead (Data, Count);
+    } else {
+        RetVal = read (FD, Data, Count);
+    }
 
     if (RetVal != (unsigned) -1) {
         while (I < RetVal) {

@@ -29,7 +29,7 @@ make                # 全シナリオをビルド
 make run S=s01_hello  # 単一シナリオを実行
 make runall         # 全シナリオをビルド + 実行
 make dump S=s01_hello # 逆アセンブル
-make debug S=s03_stack  # ステップデバッガ (QEMU: gdb / z80: 対話 / 6502: リプレイ)
+make debug S=s03_stack  # ステップデバッガ (QEMU: gdb / z80・6502: 対話)
 make trace S=s03_stack  # 1 命令ごとの実行トレース
 make cycles S=s04_loops # サイクル数（QEMU は unsupported）
 make icount S=s04_loops # 実行命令数（QEMU）
@@ -38,7 +38,7 @@ make clean
 
 6502 は `make dump` を持たず、x86_16 は 32-bit プロテクトモード sections 向けに `make dump32` を追加で持つ。`debug`/`trace`/`cycles` ターゲットはリポジトリ全体で存在する（すべてのコアプラットフォームディレクトリ + root Makefile のパススルー: `make debug A=<arch>/<platform> S=<scenario>`）。
 
-注: 6502 の `make debug` はリプレイ型（トレースを記録して less で閲覧 — ライブステップ実行はなし）。QEMU の `make cycles` は unsupported を表示し、命令数は `make icount` で報告する（TCG はサイクル精度のエミュレーションでない）。x86_16/dos (dosbox-x) と darwin ネイティブディレクトリは統一デバッグインターフェースの対象外。
+注: 6502 の `make debug` はリポジトリ内ビルド sim65i の対話ステッパー (z80 と同じ s/n/c/b/r/d/x/q)。旧リプレイ型 (トレースを記録して less で閲覧) は `make replay` に移動した。QEMU の `make cycles` は unsupported を表示し、命令数は `make icount` で報告する（TCG はサイクル精度のエミュレーションでない）。x86_16/dos (dosbox-x) と darwin ネイティブディレクトリは統一デバッグインターフェースの対象外。
 
 ## 主要パターン
 

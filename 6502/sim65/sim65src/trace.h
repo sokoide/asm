@@ -82,6 +82,14 @@ void PrintTraceIRQ(void);
 void PrintTraceInstruction (void);
 /* Print trace line for the instruction at the currrent program counter. */
 
+unsigned TraceInsnLen (uint16_t PC);
+/* Get the number of bytes of the instruction at the given address. */
+
+void TraceDisasmText (uint16_t PC, char* Buf);
+/* Write the disassembly (mnemonic and operand) of the instruction at the
+** given address into Buf.
+*/
+
 
 
 /* End of trace.h */
