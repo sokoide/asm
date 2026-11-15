@@ -19,8 +19,12 @@ INSN_QFLAGS = -machine pc -accel tcg,one-insn-per-tb=on -cpu qemu64 -no-reboot -
 # trace / icount のログをカーネル領域 (0x8000-) に限定する
 # (-dfilter がないと SeaBIOS 部分も記録され、1 秒で数十万行になる)
 DFILTER     = -dfilter 0x8000+0x7e00
+# INSN_QFLAGS / DFILTER は trace / icount の Python スクリプトへ
+# --qflags / --dfilter で渡す (スクリプト内へのハードコードを避ける)
 # 実行タイムアウト(秒)。HLT 後も QEMU は終了しないため timeout で回収する。
 # (例: 遅い環境では export TIMEOUT_SECS=10 等で延長)
+# トリプルフォルト等で異常停止した場合も timeout までは 124 (正常扱い)
+# になるため、成否の受入は make test で行う。
 TIMEOUT_SECS ?= 1
 TIMEOUT      ?= timeout --foreground $(TIMEOUT_SECS)
 # icount の HLT 到達待ち上限(秒)。シリアル出力が変動しなくなったら
@@ -29,7 +33,7 @@ ICOUNT_SECS  ?= 5
 GDB          ?= gdb
 GDB_PORT     ?= 1234
 
-.PHONY: all run runall test debug trace icount cycles dump clean
+.PHONY: linkcheck  all run runall test debug trace icount cycles dump clean
 
 # 注意: all を先頭ターゲットにする (boot.o ルールは末尾に定義)
 all: boot.o
@@ -64,7 +68,7 @@ run: boot.o
 	if [ $$status -ne 0 ] && [ $$status -ne 124 ]; then exit $$status; fi
 
 test: all
-	python3 test_scenarios.py --qemu $(QEMU) --timeout $(TIMEOUT_SECS)
+	python3 test_scenarios.py --qemu $(QEMU) --timeout $(TIMEOUT_SECS) --qflags "$(QFLAGS)"
 
 # 全シナリオを連続実行: make runall
 # s06/s12 は対話シナリオのため runall / trace と同じ入力を与える。
@@ -92,7 +96,7 @@ runall: all
 # 接続はリセット直後に行われるため、INT 13h のロード後にメモリが書き換わる
 # ソフトウェアブレークは使えない。hbreak (ハードウェアブレーク) で
 # 0x8000 の _start で止める。
-debug: boot.o
+debug: boot.o linkcheck
 	@set -e; \
 	$(AS) $(ASFLAGS) -g -F dwarf -l $(S).lst -o $(S).o $(S).asm; \
 	$(LK) $(LKFLAGS) -o $(S).bin boot.o $(S).o; \
@@ -108,7 +112,7 @@ debug: boot.o
 	@$(QEMU) $(QFLAGS) -drive file=$(S).img,format=raw,if=floppy -serial stdio -display none -monitor none -S -gdb tcp:127.0.0.1:$(GDB_PORT) & \
 	  QPID=$$!; \
 	  trap 'kill $$QPID 2>/dev/null' EXIT INT TERM; \
-	  sleep 0.3; \
+	  i=0; while [ $$i -lt 50 ] && ! nc -z 127.0.0.1 $(GDB_PORT) 2>/dev/null; do sleep 0.1; i=$$((i+1)); done; \
 	  $(GDB) -q $(S).elf \
 	    -x debug.gdb \
 	    -ex 'set pagination off' \
@@ -125,19 +129,19 @@ debug: boot.o
 # 対話シナリオは runall と同じ入力を与える。
 TRACE_SECS ?= 10
 TRACE_MAX_BYTES ?= 33554432
-trace: all
+trace: all linkcheck
 	@$(AS) $(ASFLAGS) -o $(S).o $(S).asm
 	@$(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o
 	@rm -f $(S).o
-	@python3 trace_scenario.py --qemu $(QEMU) --scenario $(S) --timeout $(TRACE_SECS) --max-bytes $(TRACE_MAX_BYTES)
+	@python3 trace_scenario.py --qemu $(QEMU) --scenario $(S) --timeout $(TRACE_SECS) --max-bytes $(TRACE_MAX_BYTES) --qflags "$(INSN_QFLAGS)" --dfilter "$(DFILTER)"
 	@if [ -t 1 ]; then less $(S).trace; else cat $(S).trace; fi
 
 # 実行命令数: 終了位置の RIP を検出し、それ以前の命令だけを集計する。
-icount: all
+icount: all linkcheck
 	@$(AS) $(ASFLAGS) -o $(S).o $(S).asm
 	@$(LK) -m elf_x86_64 -T linker-debug.ld -o $(S).elf boot.o $(S).o
 	@rm -f $(S).o
-	@python3 count_instructions.py --qemu $(QEMU) --scenario $(S) --timeout $(ICOUNT_SECS)
+	@python3 count_instructions.py --qemu $(QEMU) --scenario $(S) --timeout $(ICOUNT_SECS) --qflags "$(INSN_QFLAGS)" --dfilter "$(DFILTER)"
 
 # 実サイクル数: make cycles S=s01_hello → unsupported
 # QEMU TCG はサイクル精度のエミュレーションではないため実サイクル数は計測不可。
@@ -147,15 +151,25 @@ cycles:
 # 逆アセンブル: make dump S=s01_hello
 # シナリオ本体 (0x8000〜) を 64-bit で逆アセンブルする。
 # ブートセクタ + 移行スタブ (先頭 1024 バイト) は 16-bit / 32-bit / 64-bit 混在のため
-# 対象外。観察する場合は ndisasm -b 16 -o 0x7C00 (ブート) / -b 32 -o 0x7E00 -e 512
-# (スタブ) を使う。
+# 対象外。観察する場合は ndisasm -b 16 -o 0x7C00 (ブート) を使う。スタブは
+# 16-bit 開始で lgdt 以降が 32-bit 化されるため、-b 16 -o 0x7E00 と
+# -b 32 -o <32-bit 部の開始アドレス> を併用して観察する。
 dump:
 	@set -e; \
 	$(MAKE) --no-print-directory all; \
 	ndisasm -b 64 -o 0x8000 -e 1024 $(S).bin
 
+linkcheck:
+	@set -e; \
+	tail -n +2 linker.ld > .linkcheck.tmp1; tail -n +2 linker-debug.ld > .linkcheck.tmp2; \
+	trap 'rm -f .linkcheck.tmp1 .linkcheck.tmp2' EXIT; \
+	if ! cmp -s .linkcheck.tmp1 .linkcheck.tmp2; then \
+		echo "ERROR: linker.ld と linker-debug.ld の配置が不一致 (OUTPUT_FORMAT 行以外は同一であること)"; exit 1; \
+	fi; \
+	rm -f .linkcheck.tmp1 .linkcheck.tmp2
+
 clean:
-	rm -f *.bin *.img *.o *.lst *.elf *.trace *.icount.trace
+	rm -f *.bin *.img *.o *.lst *.elf *.trace *.icount.trace .linkcheck.tmp1 .linkcheck.tmp2
 
 # boot.o は全シナリオで共通のブートセクタ + 移行スタブ
 boot.o: boot.asm

@@ -25,7 +25,7 @@ SECTIONS
     .data : { *(.data*) }
 
     __image_end = .;
-    ASSERT(__image_end <= 0xFE00, "image exceeds 62 sectors (33280 bytes)")
+    ASSERT(__image_end <= 0xFE00, "image exceeds 65 sectors (33280 bytes)")
 
     __bss_start = .;
     .bss (NOLOAD) : { *(.bss*) *(COMMON) }

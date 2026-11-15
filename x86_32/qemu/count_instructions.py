@@ -2,6 +2,7 @@
 """実行終了位置までの QEMU 命令数を記録する。"""
 import argparse
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -12,6 +13,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--qemu', default='qemu-system-i386')
 parser.add_argument('--scenario', required=True)
 parser.add_argument('--timeout', type=float, default=5)
+parser.add_argument('--qflags', default='',
+                   help='QEMU 起動フラグ (Makefile の INSN_QFLAGS。空なら既定値)')
+parser.add_argument('--dfilter', default='',
+                   help='-dfilter の値 (Makefile の DFILTER。空なら既定値)')
 args = parser.parse_args()
 try:
     symbols = subprocess.check_output(['nm', '-n', f'{args.scenario}.elf'], text=True)
@@ -24,8 +29,12 @@ try:
         image = Path(tmp) / 'disk.img'
         import shutil
         shutil.copyfile(f'{args.scenario}.img', image)
-        cmd = [args.qemu, '-machine', 'pc', '-accel', 'tcg,one-insn-per-tb=on',
-               '-cpu', '486', '-no-reboot', '-no-shutdown', '-dfilter', '0x8000+0x7e00',
+        # Makefile が真実の源: make icount は --qflags / --dfilter を渡す。
+        # 空の場合 (直接実行) は既定値 (Makefile と同じ) を使う。
+        cmd = [args.qemu,
+               *(shlex.split(args.qflags) or ['-machine', 'pc', '-accel', 'tcg,one-insn-per-tb=on',
+                 '-cpu', '486', '-no-reboot', '-no-shutdown']),
+               *(shlex.split(args.dfilter) or ['-dfilter', '0x8000+0x7e00']),
                '-d', 'cpu', '-D', str(log), '-drive', f'file={image},format=raw,if=floppy',
                '-serial', 'stdio', '-display', 'none', '-monitor', 'none']
         data = {'s06_serial_in': b'q\n', 's12_minishell': b'help\nquit\n'}.get(args.scenario, b'')

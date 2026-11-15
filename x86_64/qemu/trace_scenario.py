@@ -6,6 +6,7 @@
 import argparse
 import re
 import selectors
+import shlex
 import shutil
 import subprocess
 import sys
@@ -17,6 +18,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--qemu', default='qemu-system-x86_64')
 parser.add_argument('--scenario', required=True)
 parser.add_argument('--timeout', type=float, default=10)
+parser.add_argument('--qflags', default='',
+                   help='QEMU 起動フラグ (Makefile の INSN_QFLAGS。空なら既定値)')
+parser.add_argument('--dfilter', default='',
+                   help='-dfilter の値 (Makefile の DFILTER。空なら既定値)')
 parser.add_argument('--max-bytes', type=int, default=33554432)
 args = parser.parse_args()
 if args.timeout <= 0 or args.max_bytes <= 0:
@@ -31,8 +36,12 @@ try:
     with tempfile.TemporaryDirectory(prefix='asm-x86_64-trace-') as tmp:
         disk = Path(tmp) / 'disk.img'
         shutil.copyfile(f'{args.scenario}.img', disk)
-        cmd = [args.qemu, '-machine', 'pc', '-accel', 'tcg,one-insn-per-tb=on',
-               '-cpu', 'qemu64', '-no-reboot', '-no-shutdown', '-dfilter', '0x8000+0x7e00',
+        # Makefile が真実の源: make trace は --qflags / --dfilter を渡す。
+        # 空の場合 (直接実行) は既定値 (Makefile と同じ) を使う。
+        cmd = [args.qemu,
+               *(shlex.split(args.qflags) or ['-machine', 'pc', '-accel', 'tcg,one-insn-per-tb=on',
+                 '-cpu', 'qemu64', '-no-reboot', '-no-shutdown']),
+               *(shlex.split(args.dfilter) or ['-dfilter', '0x8000+0x7e00']),
                '-d', 'in_asm,cpu', '-drive', f'file={disk},format=raw,if=floppy',
                '-serial', 'stdio', '-display', 'none', '-monitor', 'none']
         data = {'s06_serial_in': b'q\n', 's12_minishell': b'help\nquit\n'}.get(args.scenario, b'')
