@@ -1,8 +1,8 @@
 define hook-stop
-    regs68k
+    regs
 end
 
-define regs68k
+define regs
     printf "D0=%08x D1=%08x D2=%08x D3=%08x\n", (unsigned int)$d0, (unsigned int)$d1, (unsigned int)$d2, (unsigned int)$d3
     printf "D4=%08x D5=%08x D6=%08x D7=%08x\n", (unsigned int)$d4, (unsigned int)$d5, (unsigned int)$d6, (unsigned int)$d7
 

@@ -1,4 +1,3 @@
-
 # PowerPC 32-bit register display
 # QEMU bamboo / PPC405
 

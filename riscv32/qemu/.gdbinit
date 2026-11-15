@@ -1,4 +1,3 @@
-
 # RISC-V RV32 register display
 
 set pagination off
