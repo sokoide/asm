@@ -16,6 +16,7 @@
 | M68000 | `m68k/qemu/` | m68k-elf-as + m68k-elf-ld | qemu-system-m68k (`-machine virt`) | `.s` |
 | Z80 | `z80/sim/` | z80asm | Go 製 simz80 (CP/M) | `.asm` |
 | x86 16-bit | `x86_16/qemu/` | nasm (`-f elf32`) | qemu-system-i386 (floppy boot) | `.asm` |
+| x86 32-bit | `x86_32/qemu/` | nasm (`-f elf32`) | qemu-system-i386 (floppy boot) | `.asm` |
 | RISC-V 32 | `riscv32/qemu/` | clang + ld.lld (`--target=riscv32-unknown-elf -march=rv32im`) | qemu-system-riscv32 (`-machine virt -bios none`) | `.s` |
 | RISC-V 64 | `riscv64/qemu/` | clang + ld.lld (`--target=riscv64-unknown-elf -march=rv64im`) | qemu-system-riscv64 (`-machine virt -bios none`) | `.s` |
 

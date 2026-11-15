@@ -15,8 +15,9 @@
 | **x86 (16-bit)** | `x86_16/qemu/`    | QEMU i386 フロッピーブート      | 17         |
 | **x86 (16-bit)** | `x86_16/dos/com/` | DOSBox (COM)                    | 1          |
 | **x86 (16-bit)** | `x86_16/dos/exe/` | DOSBox (MZ EXE)                 | 14         |
+| **x86 (32-bit)** | `x86_32/qemu/`    | QEMU i386 フロッピーブート      | 13         |
 | **x86 (64-bit)** | `x86_64/darwin/`  | macOS ネイティブ                | 1          |
-| **x86 (32-bit)** | `x86_32/darwin/`    | macOS ネイティブ                | 1          |
+| **x86 (32-bit)** | `x86_32/darwin/`  | macOS ネイティブ                | 1          |
 | **ARM64**        | `arm64/darwin/`   | macOS ネイティブ                | 1          |
 | **RISC-V (32-bit)** | `riscv32/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
 | **RISC-V (64-bit)** | `riscv64/qemu/` | QEMU virt マシン (bare-metal)   | 14         |
@@ -33,6 +34,7 @@
 | **PowerPC**      | 16550            | `STB` (MMIOストア)             | `0xEF600300` (THR)      |
 | **M68000**       | Goldfish TTY     | `MOVE.L` (MMIOストア)          | `0xFF008000` (PUT_CHAR) |
 | **x86 (16-bit)** | 16550 (COM1)     | `OUT` (I/Oポート)              | `0x3F8` (THR)           |
+| **x86 (32-bit)** | 16550 (COM1)     | `OUT` (I/Oポート)              | `0x3F8` (THR)           |
 | **6502**         | —                | sim65 API (`_putchar`/`_puts`) | —                       |
 | **Z80**          | —                | CP/M BDOS (`CALL 0x0005`)      | —                       |
 | **RISC-V**       | NS16550A         | `SB` (MMIOストア)              | `0x10000000` (THR)      |
@@ -69,6 +71,7 @@ x86_16 でも BIOS INT 0x10（VGA 出力）を使わず、COM1 シリアル出�
 > | 無限ループ | M68000, PPC | CPU停止後、タイムアウトでQEMU強制終了 |
 > | CP/M復帰 | Z80 | RETでCP/MのTPAに戻りシミュレータが停止 |
 > | HLT+タイムアウト | x86_16 | HLTでCPU停止、timeoutでQEMU強制終了 |
+> | HLT+タイムアウト | x86_32 | HLTでCPU停止、timeoutでQEMU強制終了 |
 >
 > セミホスティングはデバッグに便利だが実機では使えない。この違いは各環境のエミュレータ最適化方針を反映している。
 
@@ -155,7 +158,7 @@ s01〜s12 はすべてのアーキテクチャで共通のテーマです。
 | :--- | :--- | :--- | :--- |
 | **セミホスティング** | ARM64 | `hlt #0xF000` | QEMUに終了を伝える |
 | **テストデバイス** | RISC-V | `sw t1, 0(t0)` (0x100000に0x5555) | SiFiveテストフィニッシャー |
-| **HLT + タイムアウト** | x86_16 | `cli; hlt` | CPU停止、timeoutでQEMU強制終了 |
+| **HLT + タイムアウト** | x86_16, x86_32 | `cli; hlt` | CPU停止、timeoutでQEMU強制終了 |
 | **無限ループ + タイムアウト** | M68K, PPC | `bra halt` / `b halt` | CPU停止、timeoutでQEMU強制終了 |
 | **ランタイム復帰** | 6502 | `rts` | cc65ランタイムに戻る |
 | **CP/M復帰** | Z80 | `ret` | CP/MのTPAに戻る |
@@ -233,11 +236,11 @@ make icount A=riscv64/qemu S=s01_hello  # 実行命令数の集計
 | :---              | :---                                  | :---                                            |
 | Z80               | simz80 対話ステッパー (`-debug`)      | フル対話型。レジスタ差分・フラグ変化・T-states 表示 |
 | 6502              | sim65i 対話ステッパー (`-g`)          | フル対話型。レジスタ差分・フラグ変化・サイクル表示（下記） |
-| QEMU 系 6 dir     | QEMU gdbstub + gdb / `-d in_asm,cpu`  | `make cycles` は unsupported、命令数は `make icount`              |
+| QEMU 系 7 dir     | QEMU gdbstub + gdb / `-d in_asm,cpu`  | `make cycles` は unsupported、命令数は `make icount`              |
 | x86_16/dos        | 対象外                                | dosbox-x は gdbstub を持たないため統一インターフェースに載せられない（将来 dosbox-x 内蔵デバッガで対応予定） |
 | darwin ネイティブ | 対象外                                | run 未整備のため対象外                          |
 
-QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` の各 `qemu/` ディレクトリ。
+QEMU 系は `arm64` / `ppc` / `m68k` / `riscv32` / `riscv64` / `x86_16` / `x86_32` の各 `qemu/` ディレクトリ。
 
 **フラグ変化の観察例 (Z80)**: ステッパーは 1 命令ごとに変化したレジスタとフラグを old→new 形式で表示する。`LD A,7Fh` / `ADD A,01h` を実行すると:
 
@@ -448,6 +451,7 @@ set disassembly-flavor intel
 | RISC-V 64 | `set architecture riscv:rv64` |
 | RISC-V 32 | `set architecture riscv:rv32` |
 | x86_16 | `set architecture i8086` |
+| x86_32 | `set architecture i386` |
 | M68K | `set architecture m68k` |
 | PPC | `set architecture powerpc` |
 
@@ -486,7 +490,7 @@ make dump32 S=s104_protected
 | `qemu-system-aarch64`       | ARM64                | `brew install qemu`                                                          |
 | `qemu-system-ppc`           | PPC                  | `brew install qemu`                                                          |
 | `qemu-system-m68k`          | M68000               | `brew install qemu`                                                          |
-| `qemu-system-i386`          | x86_16               | `brew install qemu`                                                          |
+| `qemu-system-i386`          | x86_16, x86_32       | `brew install qemu`                                                          |
 | `nasm`                      | x86_16, x86_64, x86_32 | `brew install nasm`                                                          |
 | `qemu-system-riscv32`       | RISC-V 32-bit        | `brew install qemu`                                                          |
 | `qemu-system-riscv64`       | RISC-V 64-bit        | `brew install qemu`                                                          |
@@ -511,7 +515,8 @@ asm/
 │       ├── com/         # DOS COM 形式
 │       └── exe/         # DOS MZ EXE 形式
 ├── x86_64/darwin/       # macOS x86_64
-├── x86_32/darwin/         # macOS i386 (32-bit)
+├── x86_32/qemu/         # 32-bit x86 フロッピーブート
+├── x86_32/darwin/       # macOS i386 (32-bit)
 ├── riscv32/qemu/        # RISC-V 32-bit bare-metal (QEMU virt)
 ├── riscv64/qemu/        # RISC-V 64-bit bare-metal (QEMU virt)
 ├── compare/             # 共通課題のアーキ比較 (copybench)

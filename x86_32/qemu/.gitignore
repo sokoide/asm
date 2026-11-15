@@ -1,0 +1,6 @@
+*.bin
+*.o
+*.img
+*.lst
+*.elf
+*.trace

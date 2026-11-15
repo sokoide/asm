@@ -46,7 +46,7 @@ _start:
     mov al, ' '
     call uart_putc
     inc cl
-    cmp cl, 6              ; Stop after printing 5
+    cmp cl, 5              ; Stop after printing 5
     jle .loop2             ; Jump if CL <= 5
 
     call print_crlf

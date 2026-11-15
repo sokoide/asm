@@ -4,7 +4,7 @@
 
 # 全シナリオ（s01〜s12/13/14）を実装するコアアーキテクチャ: all / runall / clean を持つ
 CORE_DIRS := 6502/sim65 arm64/qemu ppc/qemu m68k/qemu z80/sim \
-             x86_16/qemu x86_16/dos/exe riscv32/qemu riscv64/qemu
+             x86_16/qemu x86_32/qemu x86_16/dos/exe riscv32/qemu riscv64/qemu
 
 # Hello World のみの最小アーキテクチャ: all / clean を持つ（runall は非対応）
 HELLO_DIRS := x86_16/dos/com
