@@ -238,7 +238,7 @@ int main (int argc, char* argv[])
 
     if (DebugMode) {
         DebuggerActive = 1;
-        DebuggerRun (MaxCycles, SPAddr);
+        DebuggerRun (MaxCycles, SPAddr, ProgramFile);
         return EXIT_SUCCESS;
     }
 

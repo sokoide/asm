@@ -9,142 +9,142 @@ org 0x0100
 
 _start:
     ; --- Print a string char by char ---
-    ld      hl, msg_title
-    call    print_str
-    call    newline
+	ld      hl, msg_title
+	call    print_str
+	call    newline
 
     ; --- String length ---
-    ld      hl, msg_hello
-    call    strlen            ; result in B
-    ld      hl, msg_len
-    call    print_str
-    ld      a, b
-    call    print_hex8
-    call    newline
+	ld      hl, msg_hello
+	call    strlen            ; result in B
+	ld      hl, msg_len
+	call    print_str
+	ld      a, b
+	call    print_hex8
+	call    newline
 
     ; --- String copy (LDIR) ---
-    ld      hl, msg_src
-    ld      de, dst_buf
-    ld      bc, 5             ; "World" は5バイト
-    ldir                      ; copy BC bytes from HL to DE
-    ld      a, '$'
-    ld      (de), a           ; '$'-terminate (CP/M 文字列終端)
+	ld      hl, msg_src
+	ld      de, dst_buf
+	ld      bc, 5             ; "World" は5バイト
+	ldir ; copy BC bytes from HL to DE
+	ld      a, '$'
+	ld      (de), a           ; '$'-terminate (CP/M 文字列終端)
 
-    ld      hl, msg_copy
-    call    print_str
-    ld      hl, dst_buf
-    call    print_str
-    call    newline
+	ld      hl, msg_copy
+	call    print_str
+	ld      hl, dst_buf
+	call    print_str
+	call    newline
 
     ; --- Uppercase conversion ---
-    ld      hl, msg_lower
-    ld      de, dst_buf2
+	ld      hl, msg_lower
+	ld      de, dst_buf2
 .copy_upper:
-    ld      a, (hl)
-    cp      '$'
-    jr      z, .copy_done
-    cp      'a'
-    jr      c, .copy_store    ; not lowercase
-    cp      'z' + 1
-    jr      nc, .copy_store   ; not lowercase
-    sub     32                ; convert to uppercase
+	ld      a, (hl)
+	cp      '$'
+	jr      z, .copy_done
+	cp      'a'
+	jr      c, .copy_store    ; not lowercase
+	cp      'z' + 1
+	jr      nc, .copy_store   ; not lowercase
+	sub     32                ; convert to uppercase
 .copy_store:
-    ld      (de), a
+	ld      (de), a
     inc     hl
     inc     de
-    jr      .copy_upper
+	jr      .copy_upper
 .copy_done:
-    ld      a, '$'
-    ld      (de), a
-    ld      hl, msg_upper
-    call    print_str
-    ld      hl, dst_buf2
-    call    print_str
-    call    newline
+	ld      a, '$'
+	ld      (de), a
+	ld      hl, msg_upper
+	call    print_str
+	ld      hl, dst_buf2
+	call    print_str
+	call    newline
 
-    ret
+	ret
 
 ; ---- Subroutines ----
 
 ; strlen: count chars until '$', result in B
 strlen:
-    push    hl
-    ld      b, 0
+	push    hl
+	ld      b, 0
 .sl_loop:
-    ld      a, (hl)
-    cp      '$'
-    jr      z, .sl_done
+	ld      a, (hl)
+	cp      '$'
+	jr      z, .sl_done
     inc     hl
     inc     b
-    jr      .sl_loop
+	jr      .sl_loop
 .sl_done:
-    pop     hl
-    ret
+	pop     hl
+	ret
 
 print_str:
-    push    af
-    push    bc
-    push    de
+	push    af
+	push    bc
+	push    de
 .ps_loop:
-    ld      a, (hl)
-    cp      '$'
-    jr      z, .ps_done
-    ld      c, 2
-    push    hl
-    ld      e, a
-    call    0x0005
-    pop     hl
+	ld      a, (hl)
+	cp      '$'
+	jr      z, .ps_done
+	ld      c, 2
+	push    hl
+	ld      e, a
+	call    0x0005
+	pop     hl
     inc     hl
-    jr      .ps_loop
+	jr      .ps_loop
 .ps_done:
-    pop     de
-    pop     bc
-    pop     af
-    ret
+	pop     de
+	pop     bc
+	pop     af
+	ret
 
 print_hex8:
-    push    bc
-    ld      b, a
-    rrca
-    rrca
-    rrca
-    rrca
-    call    hex_nibble
-    ld      c, 2
-    ld      e, a
-    call    0x0005
-    ld      a, b
-    call    hex_nibble
-    ld      c, 2
-    ld      e, a
-    call    0x0005
-    pop     bc
-    ret
+	push    bc
+	ld      b, a
+	rrca
+	rrca
+	rrca
+	rrca
+	call    hex_nibble
+	ld      c, 2
+	ld      e, a
+	call    0x0005
+	ld      a, b
+	call    hex_nibble
+	ld      c, 2
+	ld      e, a
+	call    0x0005
+	pop     bc
+	ret
 
 hex_nibble:
-    and     0x0F
-    cp      10
-    jr      c, .hn_dec
-    add     'A' - 10
-    ret
+	and     0x0F
+	cp      10
+	jr      c, .hn_dec
+	add     'A' - 10
+	ret
 .hn_dec:
-    add     '0'
-    ret
+	add     '0'
+	ret
 
 newline:
-    push    af
-    push    bc
-    push    de
-    ld      c, 2
-    ld      e, 13
-    call    0x0005
-    ld      c, 2
-    ld      e, 10
-    call    0x0005
-    pop     de
-    pop     bc
-    pop     af
-    ret
+	push    af
+	push    bc
+	push    de
+	ld      c, 2
+	ld      e, 13
+	call    0x0005
+	ld      c, 2
+	ld      e, 10
+	call    0x0005
+	pop     de
+	pop     bc
+	pop     af
+	ret
 
 ; ---- Data ----
 msg_title: defm "=== Strings ===$"

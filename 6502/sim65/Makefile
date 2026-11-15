@@ -45,14 +45,15 @@ all: sim65i
 	for s in $(SCENARIOS); do \
 		echo "=== $$s ==="; \
 		cl65 -t sim6502 -c -l $$s.lst -o $$s.o $$s.s && \
-		cl65 -t sim6502 -o $$s $$s.o $(HELPER_OBJS) && echo "  OK" || echo "  FAIL"; \
+		cl65 -t sim6502 -o $$s --mapfile $$s.map $$s.o $(HELPER_OBJS) && echo "  OK" || echo "  FAIL"; \
 	done
 
 # 1シナリオ分をビルドしてバイナリ名を返す共通レシピ
+# (--mapfile: シンボル表。sim65i の b/d/x で `b _main` のように指定できる)
 define build_one
 cl65 -t sim6502 -c -l $(HELPER_LST) -o $(HELPER_OBJS) $(HELPERS)
 cl65 -t sim6502 -c -l $(1).lst -o $(1).o $(1).s
-cl65 -t sim6502 -o $(1) $(1).o $(HELPER_OBJS)
+cl65 -t sim6502 -o $(1) --mapfile $(1).map $(1).o $(HELPER_OBJS)
 endef
 
 # s103_irq_nmi は割り込みトリガが必要なため sim65i を使う
@@ -172,4 +173,4 @@ sim65i:
 	clang -O2 -Wall -Isim65src -Isim65src/compat -o $(SIM65I) $(SIM65I_SRCS)
 
 clean:
-	rm -f $(SCENARIOS) $(HELPER_OBJS) $(SCENARIOS:=.o) $(SCENARIOS:=.lst) $(HELPER_LST) $(SCENARIOS:=.trace) $(SCENARIOS:=.icount.trace)
+	rm -f $(SCENARIOS) $(HELPER_OBJS) $(SCENARIOS:=.o) $(SCENARIOS:=.lst) $(HELPER_LST) $(SCENARIOS:=.trace) $(SCENARIOS:=.icount.trace) $(SCENARIOS:=.map)

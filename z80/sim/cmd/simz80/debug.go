@@ -113,16 +113,47 @@ func (z *Z80) stopReason() string {
 	}
 }
 
-// Debugger is the interactive REPL.
-type Debugger struct {
-	z   *Z80
-	lst *Listing
-	in  *bufio.Reader // shared stdin (also feeds BDOS input prompts)
-	bps map[uint16]bool
+// loadLabels reads a z80asm label file (written by --label=FILE). Each line
+// has the form "name: equ $ADDR". A missing file returns an empty map.
+func loadLabels(path string) map[string]uint16 {
+	syms := map[string]uint16{}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return syms
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		name, rest, ok := strings.Cut(line, ":")
+		if !ok {
+			continue
+		}
+		val := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(rest), "equ"))
+		val = strings.TrimPrefix(val, "$")
+		if v, err := strconv.ParseUint(val, 16, 16); err == nil {
+			syms[strings.TrimSpace(name)] = uint16(v)
+		}
+	}
+	return syms
 }
 
-func newDebugger(z *Z80, lst *Listing) *Debugger {
-	d := &Debugger{z: z, lst: lst, in: bufio.NewReader(os.Stdin), bps: map[uint16]bool{}}
+// Debugger is the interactive REPL.
+type Debugger struct {
+	z        *Z80
+	lst      *Listing
+	syms     map[string]uint16 // label name -> address (from the .lbl file)
+	symNames map[uint16]string // address -> first label name (for display)
+	in       *bufio.Reader     // shared stdin (also feeds BDOS input prompts)
+	bps      map[uint16]bool
+}
+
+func newDebugger(z *Z80, lst *Listing, syms map[string]uint16) *Debugger {
+	symNames := map[uint16]string{}
+	for name, addr := range syms {
+		if _, ok := symNames[addr]; !ok {
+			symNames[addr] = name
+		}
+	}
+	d := &Debugger{z: z, lst: lst, syms: syms, symNames: symNames,
+		in: bufio.NewReader(os.Stdin), bps: map[uint16]bool{}}
 	// BDOS console input falls back to a prompt in debug mode.
 	z.lineReader = func() string {
 		fmt.Print("[INPUT]> ")
@@ -173,7 +204,10 @@ func (d *Debugger) run() {
 		n = len(d.lst.insns)
 	}
 	fmt.Printf("simz80 step debugger — %d listed instructions\n", n)
-	fmt.Println("commands: s=step  n=next(call)  c=continue  b ADDR=breakpoint  r=regs  d [ADDR]=disasm  x ADDR=mem  q=quit")
+	if len(d.syms) > 0 {
+		fmt.Printf("%d symbols loaded (from .lbl)\n", len(d.syms))
+	}
+	fmt.Println("commands: s=step  n=next(call)  c=continue  b ADDR|SYM=breakpoint  r=regs  d [ADDR|SYM]=disasm  x ADDR|SYM=mem  q=quit")
 	fmt.Println()
 	d.window(z.pc, 5)
 
@@ -220,7 +254,7 @@ func (d *Debugger) run() {
 		case "q", "quit":
 			return
 		case "h", "?", "help":
-			fmt.Println("s=step  n=next(call)  c=continue  b ADDR  r=regs  d [ADDR] [N]  x ADDR  q=quit")
+			fmt.Println("s=step  n=next(call)  c=continue  b ADDR|SYM  r=regs  d [ADDR|SYM] [N]  x ADDR|SYM  q=quit")
 		default:
 			fmt.Printf("unknown command %q (h for help)\n", strings.Fields(line)[0])
 		}
@@ -307,6 +341,23 @@ func (d *Debugger) continueAll(prev *regState) {
 	*prev = snapshot(z)
 }
 
+// resolveAddr parses s as a hex address or a symbol name from the .lbl file.
+func (d *Debugger) resolveAddr(s string) (uint16, bool) {
+	if a, err := parseAddr(s); err == nil {
+		return a, true
+	}
+	a, ok := d.syms[s]
+	return a, ok
+}
+
+// locName renders an address with its symbol name when one is known.
+func (d *Debugger) locName(addr uint16) string {
+	if name, ok := d.symNames[addr]; ok {
+		return fmt.Sprintf("%04X (%s)", addr, name)
+	}
+	return fmt.Sprintf("%04X", addr)
+}
+
 func (d *Debugger) setBreakpoint(args []string) {
 	if len(args) == 0 {
 		if len(d.bps) == 0 {
@@ -315,22 +366,22 @@ func (d *Debugger) setBreakpoint(args []string) {
 		}
 		var addrs []string
 		for a := range d.bps {
-			addrs = append(addrs, fmt.Sprintf("%04X", a))
+			addrs = append(addrs, d.locName(a))
 		}
 		fmt.Println("breakpoints: " + strings.Join(addrs, " "))
 		return
 	}
-	addr, err := parseAddr(args[0])
-	if err != nil {
-		fmt.Printf("bad address %q\n", args[0])
+	addr, ok := d.resolveAddr(args[0])
+	if !ok {
+		fmt.Printf("bad address or symbol %q\n", args[0])
 		return
 	}
 	if d.bps[addr] {
 		delete(d.bps, addr)
-		fmt.Printf("breakpoint removed at %s\n", zdis(d.z, addr, d.lst))
+		fmt.Printf("breakpoint removed at %s\n", d.locName(addr))
 	} else {
 		d.bps[addr] = true
-		fmt.Printf("breakpoint set at %s\n", zdis(d.z, addr, d.lst))
+		fmt.Printf("breakpoint set at %s\n", d.locName(addr))
 	}
 }
 
@@ -355,8 +406,11 @@ func (d *Debugger) disasm(args []string) {
 	addr := d.z.pc
 	n := 10
 	if len(args) > 0 {
-		if a, err := parseAddr(args[0]); err == nil {
+		if a, ok := d.resolveAddr(args[0]); ok {
 			addr = a
+		} else {
+			fmt.Printf("bad address or symbol %q\n", args[0])
+			return
 		}
 	}
 	if len(args) > 1 {
@@ -371,12 +425,12 @@ func (d *Debugger) disasm(args []string) {
 
 func (d *Debugger) hexdump(args []string) {
 	if len(args) == 0 {
-		fmt.Println("usage: x ADDR")
+		fmt.Println("usage: x ADDR|SYM")
 		return
 	}
-	addr, err := parseAddr(args[0])
-	if err != nil {
-		fmt.Printf("bad address %q\n", args[0])
+	addr, ok := d.resolveAddr(args[0])
+	if !ok {
+		fmt.Printf("bad address or symbol %q\n", args[0])
 		return
 	}
 	fmt.Printf("%04X:", addr)

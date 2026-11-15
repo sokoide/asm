@@ -24,19 +24,19 @@
 
 _start:
 	; ---- Title ----
-	ld	hl, msg_title
-	call	print_str
-	call	newline
+	ld      hl, msg_title
+	call    print_str
+	call    newline
 
 	; ============================================================
 	; Step 1: 100-byte copy with a hand-written LDI loop
 	; ============================================================
-	ld	hl, src_data		; HL = source pointer
-	ld	de, dst_buf		; DE = destination pointer
-	ld	bc, 100			; BC = byte count
+	ld      hl, src_data		; HL = source pointer
+	ld      de, dst_buf		; DE = destination pointer
+	ld      bc, 100			; BC = byte count
 copy_loop:
-	ldi				; (DE)<-(HL), HL++, DE++, BC-- (16 T)
-	jp	pe, copy_loop		; P/V=1 while BC<>0 after LDI (10 T)
+	ldi ; (DE)<-(HL), HL++, DE++, BC-- (16 T)
+	jp      pe, copy_loop		; P/V=1 while BC<>0 after LDI (10 T)
 
 	; ============================================================
 	; Step 2: verify dst against the pattern + 16-bit checksum
@@ -45,39 +45,39 @@ copy_loop:
 	;   Note: simz80 used to execute DD 23 INC IX as INC HL; that bug
 	;   was fixed and INC/DEC IX/IY now work correctly.)
 	; ============================================================
-	ld	hl, dst_buf		; HL = destination pointer
-	ld	bc, 0			; C = byte index
-	ld	de, 0			; DE = checksum accumulator
+	ld      hl, dst_buf		; HL = destination pointer
+	ld      bc, 0			; C = byte index
+	ld      de, 0			; DE = checksum accumulator
 check_loop:
-	ld	a, (hl)			; A = dst byte (7 T)
-	cp	c			; dst[i] == i ? (4 T)
-	jr	nz, fail
-	or	a			; clear carry, A unchanged (4 T)
-	add	a, e			; add low byte of checksum (4 T)
-	ld	e, a
-	ld	a, d
-	adc	a, 0			; propagate carry to high byte
-	ld	d, a
+	ld      a, (hl)			; A = dst byte (7 T)
+	cp      c			; dst[i] == i ? (4 T)
+	jr      nz, fail
+	or      a			; clear carry, A unchanged (4 T)
+	add     a, e			; add low byte of checksum (4 T)
+	ld      e, a
+	ld      a, d
+	adc     a, 0			; propagate carry to high byte
+	ld      d, a
 	inc	hl
 	inc	c
-	ld	a, c
-	cp	100			; index reached 100 ?
-	jr	nz, check_loop
+	ld      a, c
+	cp      100			; index reached 100 ?
+	jr      nz, check_loop
 
-	ld	hl, msg_ok
-	call	print_str
-	jr	print_checksum
+	ld      hl, msg_ok
+	call    print_str
+	jr      print_checksum
 fail:
-	ld	hl, msg_fail
-	call	print_str
+	ld      hl, msg_fail
+	call    print_str
 print_checksum:
-	push	de			; print_hex8 clobbers E (BDOS char out)
-	ld	a, d			; high byte -> "13"
-	call	print_hex8
-	pop	de
-	ld	a, e			; low byte  -> "56"
-	call	print_hex8
-	call	newline
+	push    de			; print_hex8 clobbers E (BDOS char out)
+	ld      a, d			; high byte -> "13"
+	call    print_hex8
+	pop     de
+	ld      a, e			; low byte  -> "56"
+	call    print_hex8
+	call    newline
 	ret
 
 ; ================================================================
@@ -85,70 +85,70 @@ print_checksum:
 ; ================================================================
 
 print_str:
-	push	af
-	push	bc
-	push	de
+	push    af
+	push    bc
+	push    de
 .ps_loop:
-	ld	a, (hl)
-	cp	'$'
-	jr	z, .ps_done
-	ld	c, 2
-	push	hl
-	ld	e, a
-	call	0x0005
-	pop	hl
+	ld      a, (hl)
+	cp      '$'
+	jr      z, .ps_done
+	ld      c, 2
+	push    hl
+	ld      e, a
+	call    0x0005
+	pop     hl
 	inc	hl
-	jr	.ps_loop
+	jr      .ps_loop
 .ps_done:
-	pop	de
-	pop	bc
-	pop	af
+	pop     de
+	pop     bc
+	pop     af
 	ret
 
 print_hex8:
-	push	bc
-	ld	b, a
+	push    bc
+	ld      b, a
 	; high nibble
 	rrca
 	rrca
 	rrca
 	rrca
-	call	hex_nibble
-	ld	c, 2
-	ld	e, a
-	call	0x0005
+	call    hex_nibble
+	ld      c, 2
+	ld      e, a
+	call    0x0005
 	; low nibble
-	ld	a, b
-	call	hex_nibble
-	ld	c, 2
-	ld	e, a
-	call	0x0005
-	pop	bc
+	ld      a, b
+	call    hex_nibble
+	ld      c, 2
+	ld      e, a
+	call    0x0005
+	pop     bc
 	ret
 
 hex_nibble:
-	and	0x0F
-	cp	10
-	jr	c, .hn_dec
-	add	'A' - 10
+	and     0x0F
+	cp      10
+	jr      c, .hn_dec
+	add     'A' - 10
 	ret
 .hn_dec:
-	add	'0'
+	add     '0'
 	ret
 
 newline:
-	push	af
-	push	bc
-	push	de
-	ld	c, 2
-	ld	e, 13
-	call	0x0005
-	ld	c, 2
-	ld	e, 10
-	call	0x0005
-	pop	de
-	pop	bc
-	pop	af
+	push    af
+	push    bc
+	push    de
+	ld      c, 2
+	ld      e, 13
+	call    0x0005
+	ld      c, 2
+	ld      e, 10
+	call    0x0005
+	pop     de
+	pop     bc
+	pop     af
 	ret
 
 ; ================================================================

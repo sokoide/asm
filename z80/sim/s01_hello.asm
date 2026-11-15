@@ -8,10 +8,10 @@
 org 0x0100
 
 _start:
-    ld      c, 9              ; BDOS fn 9: print string
-    ld      de, msg
-    call    0x0005
-    ret                       ; return to CP/M
+	ld      c, 9              ; BDOS fn 9: print string
+	ld      de, msg
+	call    0x0005
+	ret ; return to CP/M
 
 ; ---- Data ----
 msg:

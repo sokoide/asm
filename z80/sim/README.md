@@ -99,10 +99,10 @@ make cycles S=s04_loops
 | `s`        | 1 命令ステップ実行                       |
 | `n`        | next（CALL 先に入らずに進む）            |
 | `c`        | continue（次のブレークポイントまで実行） |
-| `b ADDR`   | アドレス ADDR にブレークポイント設定     |
+| `b ADDR\|SYM` | アドレス ADDR またはシンボル名（`b print_str`）にブレークポイント設定。シンボルはビルド時に出力される `.lbl`（z80asm `--label=`）から読み込む |
 | `r`        | 全レジスタ表示                           |
-| `d [ADDR]` | 逆アセンブル表示                         |
-| `x ADDR`   | ADDR からメモリダンプ                    |
+| `d [ADDR\|SYM]` | 逆アセンブル表示                    |
+| `x ADDR\|SYM`   | ADDR からメモリダンプ               |
 | `q`        | 終了                                     |
 
 **フラグ変化の表示例**: `LD A,7Fh` → `ADD A,01h` を実行すると (`make trace` の実出力):

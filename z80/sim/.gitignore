@@ -4,6 +4,7 @@
 *.lis
 *.lst
 *.err
+*.lbl
 __pycache__/
 /simz80
 cpm/

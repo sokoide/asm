@@ -68,6 +68,17 @@ static int    InEOF;
 /* Breakpoints (index = address); DoNext uses a temporary one */
 static unsigned char Bps[0x10000];
 
+/* Symbol table loaded from the linker map (<program>.map); b/d/x accept
+** symbol names in addition to addresses.
+*/
+typedef struct Sym Sym;
+struct Sym {
+    const char* Name;
+    unsigned    Addr;
+    Sym*        Next;
+};
+static Sym* Syms;
+
 /* Run configuration */
 static unsigned char     DbgSPAddr;
 static unsigned long long MaxCyclesLimit;
@@ -165,6 +176,121 @@ static int ParseAddr (const char* S, unsigned* Addr)
     }
     *Addr = (unsigned) strtoul (S, 0, 16);
     return *Addr <= 0xFFFF;
+}
+
+
+
+static void SymAdd (const char* Name, unsigned Addr)
+/* Add a symbol to the table; the first definition of a name wins */
+{
+    Sym* S;
+    for (S = Syms; S != 0; S = S->Next) {
+        if (strcmp (S->Name, Name) == 0) {
+            return;
+        }
+    }
+    S = malloc (sizeof (Sym));
+    if (S == 0) {
+        return;
+    }
+    S->Name = strdup (Name);
+    S->Addr = Addr;
+    S->Next = Syms;
+    Syms = S;
+}
+
+
+
+static void DbgLoadSymbols (const char* ProgramFile)
+/* Load symbols from the linker map (<program>.map), if present. Only the
+** "Exports list by name/value" sections are parsed; their lines hold
+** name-address-type pairs ("_main 000229 RLA ...", several per line).
+*/
+{
+    char        Path[1024];
+    FILE*       F;
+    char        Line[1024];
+    const char* Dot   = strrchr (ProgramFile, '.');
+    const char* Slash = strrchr (ProgramFile, '/');
+    int         InExports = 0;
+
+    if (Dot != 0 && (Slash == 0 || Dot > Slash)) {
+        snprintf (Path, sizeof (Path), "%.*s.map", (int) (Dot - ProgramFile), ProgramFile);
+    } else {
+        snprintf (Path, sizeof (Path), "%s.map", ProgramFile);
+    }
+    F = fopen (Path, "r");
+    if (F == 0) {
+        return;                     /* no map: symbols stay unavailable */
+    }
+    while (fgets (Line, sizeof (Line), F) != 0) {
+        char*       Save = 0;
+        const char* Tok;
+        if (strncmp (Line, "Exports list by", 15) == 0) {
+            InExports = 1;
+            continue;
+        }
+        if (strncmp (Line, "Imports list", 12) == 0) {
+            InExports = 0;
+            continue;
+        }
+        if (!InExports) {
+            continue;
+        }
+        Tok = strtok_r (Line, " \t\r\n", &Save);
+        while (Tok != 0) {
+            const char* Next = strtok_r (0, " \t\r\n", &Save);
+            int         Hex = (Next != 0 && strlen (Next) == 6);
+            const char* P;
+            if (Hex) {
+                for (P = Next; *P != '\0'; ++P) {
+                    if (!isxdigit ((unsigned char) *P)) {
+                        Hex = 0;
+                        break;
+                    }
+                }
+            }
+            if (Hex) {
+                SymAdd (Tok, (unsigned) strtoul (Next, 0, 16));
+                Tok = strtok_r (0, " \t\r\n", &Save);   /* skip the address */
+            } else {
+                Tok = Next;
+            }
+        }
+    }
+    fclose (F);
+}
+
+
+
+static int ResolveArg (const char* S, unsigned* Addr)
+/* Parse an argument as a hex address or a symbol name. Return 0 on failure. */
+{
+    Sym* S2;
+    if (ParseAddr (S, Addr)) {
+        return 1;
+    }
+    for (S2 = Syms; S2 != 0; S2 = S2->Next) {
+        if (strcmp (S2->Name, S) == 0) {
+            *Addr = S2->Addr;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+
+static const char* SymName (unsigned Addr)
+/* Return the first symbol defined at ADDR, or 0 */
+{
+    Sym* S;
+    for (S = Syms; S != 0; S = S->Next) {
+        if (S->Addr == Addr) {
+            return S->Name;
+        }
+    }
+    return 0;
 }
 
 
@@ -355,38 +481,49 @@ static int DoNext (void)
 
 
 static void SetBreakpoint (const char* Arg)
-/* Toggle a breakpoint at ADDR, or list all breakpoints */
+/* Toggle a breakpoint at ADDR or SYM, or list all breakpoints */
 {
     unsigned Addr, I, Any = 0;
+    const char* Name;
 
     if (Arg == 0 || *Arg == '\0') {
         fputs ("breakpoints:", stdout);
         for (I = 0; I < 0x10000; ++I) {
             if (Bps[I]) {
-                printf (" $%04X", I);
+                Name = SymName (I);
+                if (Name != 0) {
+                    printf (" $%04X (%s)", I, Name);
+                } else {
+                    printf (" $%04X", I);
+                }
                 Any = 1;
             }
         }
         puts (Any ? "" : " (none)");
         return;
     }
-    if (!ParseAddr (Arg, &Addr)) {
-        printf ("bad address: %s\n", Arg);
+    if (!ResolveArg (Arg, &Addr)) {
+        printf ("bad address or symbol: %s\n", Arg);
         return;
     }
     Bps[Addr] = !Bps[Addr];
-    printf ("breakpoint $%04X %s\n", Addr, Bps[Addr] ? "set" : "cleared");
+    Name = SymName (Addr);
+    if (Name != 0) {
+        printf ("breakpoint $%04X (%s) %s\n", Addr, Name, Bps[Addr] ? "set" : "cleared");
+    } else {
+        printf ("breakpoint $%04X %s\n", Addr, Bps[Addr] ? "set" : "cleared");
+    }
 }
 
 
 
 static void DisasmCmd (const char* Arg1, const char* Arg2)
-/* "d [ADDR] [N]": disassemble N instructions (default 10) at ADDR (default PC) */
+/* "d [ADDR|SYM] [N]": disassemble N instructions (default 10) at ADDR (default PC) */
 {
     unsigned Addr = Regs.PC, Count = 10;
 
-    if (Arg1 && *Arg1 && !ParseAddr (Arg1, &Addr)) {
-        printf ("bad address: %s\n", Arg1);
+    if (Arg1 && *Arg1 && !ResolveArg (Arg1, &Addr)) {
+        printf ("bad address or symbol: %s\n", Arg1);
         return;
     }
     if (Arg2 && *Arg2) {
@@ -402,11 +539,11 @@ static void DisasmCmd (const char* Arg1, const char* Arg2)
 
 
 static void HexDump (const char* Arg1, const char* Arg2)
-/* "x ADDR [N]": dump N lines of 16 bytes (default 1) starting at ADDR */
+/* "x ADDR|SYM [N]": dump N lines of 16 bytes (default 1) starting at ADDR */
 {
     unsigned Addr, Rows = 1, I, R;
 
-    if (!ParseAddr (Arg1, &Addr)) {
+    if (!ResolveArg (Arg1, &Addr)) {
         puts ("usage: x ADDR [N]");
         return;
     }
@@ -429,7 +566,7 @@ static void HexDump (const char* Arg1, const char* Arg2)
 
 
 
-void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr)
+void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr, const char* ProgramFile)
 /* Interactive step debugger main loop */
 {
     char Cmd[80];
@@ -437,9 +574,12 @@ void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr)
     DbgSPAddr = SPAddr;
     MaxCyclesLimit = MaxCycles;
     strcpy (LastCmd, "s");
+    if (ProgramFile != 0) {
+        DbgLoadSymbols (ProgramFile);
+    }
 
     printf ("sim65i debugger — commands: s=step  n=next(JSR)  c=continue  "
-            "b ADDR=breakpoint  r=regs  d [ADDR]=disasm  x ADDR=mem  q=quit\n");
+            "b ADDR|SYM=breakpoint  r=regs  d [ADDR|SYM]=disasm  x ADDR|SYM=mem  q=quit\n");
 
     while (1) {
         char* Word;
@@ -495,8 +635,8 @@ void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr)
         } else if (strcmp (Word, "q") == 0 || strcmp (Word, "quit") == 0) {
             return;
         } else if (strcmp (Word, "h") == 0 || strcmp (Word, "?") == 0 || strcmp (Word, "help") == 0) {
-            puts ("s=step  n=next(JSR)  c=continue  b ADDR=breakpoint  r=regs  "
-                  "d [ADDR] [N]=disasm  x ADDR [N]=mem  q=quit  "
+            puts ("s=step  n=next(JSR)  c=continue  b ADDR|SYM=breakpoint  r=regs  "
+                  "d [ADDR|SYM] [N]=disasm  x ADDR|SYM [N]=mem  q=quit  "
                   "(empty line repeats last command)");
         } else {
             printf ("unknown command '%s' (h for help)\n", Word);

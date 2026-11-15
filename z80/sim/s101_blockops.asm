@@ -41,53 +41,53 @@
 
 _start:
 	; ---- Title ----
-	ld	hl, msg_title
-	call	print_str
-	call	newline
+	ld      hl, msg_title
+	call    print_str
+	call    newline
 
 	; ============================================================
 	; Method 1: LDIR (hardware block transfer)
 	; ============================================================
-	ld	hl, msg_ldir
-	call	print_str
+	ld      hl, msg_ldir
+	call    print_str
 
-	ld	hl, src_data		; HL = source
-	ld	de, dst_buf		; DE = destination
-	ld	bc, 100			; BC = byte count
-	ldir				; 21 x 99 + 16 = 2095 T-states
+	ld      hl, src_data		; HL = source
+	ld      de, dst_buf		; DE = destination
+	ld      bc, 100			; BC = byte count
+	ldir ; 21 x 99 + 16 = 2095 T-states
 
-	call	verify_sum
-	call	print_result
+	call    verify_sum
+	call    print_result
 
 	; ============================================================
 	; Clear dst, then Method 2: LDI + JP PE hand-written loop
 	; ============================================================
-	ld	hl, msg_ldi
-	call	print_str
+	ld      hl, msg_ldi
+	call    print_str
 
-	ld	b, 100			; fill 100 bytes with 0
-	ld	hl, dst_buf
-	xor	a
+	ld      b, 100			; fill 100 bytes with 0
+	ld      hl, dst_buf
+	xor     a
 fill_loop:
-	ld	(hl), a
+	ld      (hl), a
 	inc	hl
-	djnz	fill_loop
+	djnz    fill_loop
 
-	ld	hl, src_data
-	ld	de, dst_buf
-	ld	bc, 100
+	ld      hl, src_data
+	ld      de, dst_buf
+	ld      bc, 100
 ldi_loop:
-	ldi				; 16 T
-	jp	pe, ldi_loop		; 10 T -> 26 T/byte, 2600 total
+	ldi ; 16 T
+	jp      pe, ldi_loop		; 10 T -> 26 T/byte, 2600 total
 
-	call	verify_sum
-	call	print_result
+	call    verify_sum
+	call    print_result
 
 	; ============================================================
 	; IM 1 setting (observe IM/IFF with make debug)
 	; ============================================================
-	im	1			; interrupt mode 1: diff line "IM 00 -> 01"
-	ei			; IFF1/IFF2 -> true (visible via `r` command)
+	im      1			; interrupt mode 1: diff line "IM 00 -> 01"
+	ei ; IFF1/IFF2 -> true (visible via `r` command)
 
 	ret
 
@@ -96,28 +96,28 @@ ldi_loop:
 ;   Returns: DE = 16-bit checksum, Z = 1 if all bytes matched
 ; ================================================================
 verify_sum:
-	ld	hl, dst_buf
-	ld	bc, 0			; C = byte index
-	ld	de, 0
+	ld      hl, dst_buf
+	ld      bc, 0			; C = byte index
+	ld      de, 0
 .vs_loop:
-	ld	a, (hl)
-	cp	c			; dst[i] == i ?
-	jr	nz, .vs_mismatch
-	or	a			; clear carry, A unchanged
-	add	a, e
-	ld	e, a
-	ld	a, d
-	adc	a, 0
-	ld	d, a
+	ld      a, (hl)
+	cp      c			; dst[i] == i ?
+	jr      nz, .vs_mismatch
+	or      a			; clear carry, A unchanged
+	add     a, e
+	ld      e, a
+	ld      a, d
+	adc     a, 0
+	ld      d, a
 	inc	hl
 	inc	c
-	ld	a, c
-	cp	100
-	jr	nz, .vs_loop
-	xor	a			; Z=1: all bytes matched
+	ld      a, c
+	cp      100
+	jr      nz, .vs_loop
+	xor     a			; Z=1: all bytes matched
 	ret
 .vs_mismatch:
-	or	1			; Z=0 (A  | 1 is never 0)
+	or      1			; Z=0 (A  | 1 is never 0)
 	ret
 
 ; ================================================================
@@ -125,20 +125,20 @@ verify_sum:
 ;   Input: DE = checksum, Z flag from verify_sum
 ; ================================================================
 print_result:
-	jr	z, .pr_ok
-	ld	hl, msg_fail
-	jr	.pr_print
+	jr      z, .pr_ok
+	ld      hl, msg_fail
+	jr      .pr_print
 .pr_ok:
-	ld	hl, msg_ok
+	ld      hl, msg_ok
 .pr_print:
-	call	print_str
-	push	de			; print_hex8 clobbers E (BDOS char out)
-	ld	a, d
-	call	print_hex8
-	pop	de
-	ld	a, e
-	call	print_hex8
-	call	newline
+	call    print_str
+	push    de			; print_hex8 clobbers E (BDOS char out)
+	ld      a, d
+	call    print_hex8
+	pop     de
+	ld      a, e
+	call    print_hex8
+	call    newline
 	ret
 
 ; ================================================================
@@ -146,70 +146,70 @@ print_result:
 ; ================================================================
 
 print_str:
-	push	af
-	push	bc
-	push	de
+	push    af
+	push    bc
+	push    de
 .ps_loop:
-	ld	a, (hl)
-	cp	'$'
-	jr	z, .ps_done
-	ld	c, 2
-	push	hl
-	ld	e, a
-	call	0x0005
-	pop	hl
+	ld      a, (hl)
+	cp      '$'
+	jr      z, .ps_done
+	ld      c, 2
+	push    hl
+	ld      e, a
+	call    0x0005
+	pop     hl
 	inc	hl
-	jr	.ps_loop
+	jr      .ps_loop
 .ps_done:
-	pop	de
-	pop	bc
-	pop	af
+	pop     de
+	pop     bc
+	pop     af
 	ret
 
 print_hex8:
-	push	bc
-	ld	b, a
+	push    bc
+	ld      b, a
 	; high nibble
 	rrca
 	rrca
 	rrca
 	rrca
-	call	hex_nibble
-	ld	c, 2
-	ld	e, a
-	call	0x0005
+	call    hex_nibble
+	ld      c, 2
+	ld      e, a
+	call    0x0005
 	; low nibble
-	ld	a, b
-	call	hex_nibble
-	ld	c, 2
-	ld	e, a
-	call	0x0005
-	pop	bc
+	ld      a, b
+	call    hex_nibble
+	ld      c, 2
+	ld      e, a
+	call    0x0005
+	pop     bc
 	ret
 
 hex_nibble:
-	and	0x0F
-	cp	10
-	jr	c, .hn_dec
-	add	'A' - 10
+	and     0x0F
+	cp      10
+	jr      c, .hn_dec
+	add     'A' - 10
 	ret
 .hn_dec:
-	add	'0'
+	add     '0'
 	ret
 
 newline:
-	push	af
-	push	bc
-	push	de
-	ld	c, 2
-	ld	e, 13
-	call	0x0005
-	ld	c, 2
-	ld	e, 10
-	call	0x0005
-	pop	de
-	pop	bc
-	pop	af
+	push    af
+	push    bc
+	push    de
+	ld      c, 2
+	ld      e, 13
+	call    0x0005
+	ld      c, 2
+	ld      e, 10
+	call    0x0005
+	pop     de
+	pop     bc
+	pop     af
 	ret
 
 ; ================================================================

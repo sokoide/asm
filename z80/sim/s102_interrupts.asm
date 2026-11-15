@@ -49,82 +49,82 @@ INT_PORT:	equ	0x10		; OUT here = INT request (simz80 model)
 
 _start:
 	; ---- Title ----
-	ld	hl, msg_title
-	call	print_str
-	call	newline
+	ld      hl, msg_title
+	call    print_str
+	call    newline
 
 	; ============================================================
 	; Demo 1: IM 2 - vectored interrupt via the I register
 	; ============================================================
-	ld	hl, msg_im2
-	call	print_str
-	call	newline
+	ld      hl, msg_im2
+	call    print_str
+	call    newline
 
 	; Build the vector table: I = 0x80, vector byte 0x80
 	;   -> table address 0x8080 holds the handler address
-	ld	a, 0x80
-	ld	i, a			; I = 0x80
-	ld	hl, isr_im2
-	ld	(0x8080), hl		; table[0x80] = handler address
+	ld      a, 0x80
+	ld      i, a			; I = 0x80
+	ld      hl, isr_im2
+	ld      (0x8080), hl		; table[0x80] = handler address
 
-	im	2			; IM 00 -> 02 (visible in debug diffs)
-	ei			; IFF1/IFF2 -> 1
-	ld	a, 0x80
-	out	(INT_PORT), a		; INT! vector 0x80 -> 0x8080 -> handler
+	im      2			; IM 00 -> 02 (visible in debug diffs)
+	ei ; IFF1/IFF2 -> 1
+	ld      a, 0x80
+	out     (INT_PORT), a		; INT! vector 0x80 -> 0x8080 -> handler
 	; acceptance happens here: PC pushed, IFF cleared, jump to isr_im2
 
 	; back from the handler - execution continues here
-	ld	hl, msg_back
-	call	print_str
-	call	newline
+	ld      hl, msg_back
+	call    print_str
+	call    newline
 
 	; ============================================================
 	; Demo 2: IM 1 - fixed RST 38h handler at 0x0038
 	; ============================================================
-	ld	hl, msg_im1
-	call	print_str
-	call	newline
+	ld      hl, msg_im1
+	call    print_str
+	call    newline
 
 	; Patch page zero: JP isr_im1 at 0x0038 (C3 = JP opcode).
 	; CP/M uses 0x0000 (warm boot) and 0x0005 (BDOS); 0x0038 is free
 	; RAM in this simulator, so no save/restore is needed.
-	ld	a, 0xC3
-	ld	(0x0038), a
-	ld	hl, isr_im1
-	ld	(0x0039), hl		; JP target (little-endian word)
+	ld      a, 0xC3
+	ld      (0x0038), a
+	ld      hl, isr_im1
+	ld      (0x0039), hl		; JP target (little-endian word)
 
-	im	1			; IM 02 -> 01
-	ei			; RETI cleared IFF1, re-enable
-	ld	a, 0x38
-	out	(INT_PORT), a		; INT! -> RST 38h -> 0x0038
+	im      1			; IM 02 -> 01
+	ei ; RETI cleared IFF1, re-enable
+	ld      a, 0x38
+	out     (INT_PORT), a		; INT! -> RST 38h -> 0x0038
 
-	ld	hl, msg_back
-	call	print_str
-	call	newline
+	ld      hl, msg_back
+	call    print_str
+	call    newline
 
 	; ============================================================
 	; Demo 3: IM 0 - device supplies RST 10h on the data bus
 	; ============================================================
-	ld	hl, msg_im0
-	call	print_str
-	call	newline
+	ld      hl, msg_im0
+	call    print_str
+	call    newline
 
 	; Patch page zero: JP isr_im0 at 0x0010 (the RST 10h target)
-	ld	a, 0xC3
-	ld	(0x0010), a
-	ld	hl, isr_im0
-	ld	(0x0011), hl
+	ld      a, 0xC3
+	ld      (0x0010), a
+	ld      hl, isr_im0
+	ld      (0x0011), hl
 
-	im	0			; IM 01 -> 00
+	im      0			; IM 01 -> 00
 	ei
-	ld	a, 0x10
-	out	(INT_PORT), a		; INT! -> device sends RST 10h -> 0x0010
+	ld      a, 0x10
+	out     (INT_PORT), a		; INT! -> device sends RST 10h -> 0x0010
 
-	ld	hl, msg_back
-	call	print_str
-	call	newline
+	ld      hl, msg_back
+	call    print_str
+	call    newline
 
-	ret			; back to CP/M (PC=0x0000 trap -> exit)
+	ret ; back to CP/M (PC=0x0000 trap -> exit)
 
 ; ================================================================
 ; Interrupt service routines
@@ -134,45 +134,45 @@ _start:
 ; ================================================================
 
 isr_im2:
-	push	af
-	push	bc
-	push	de
-	push	hl
-	ld	hl, msg_isr2
-	call	print_str
-	call	newline
-	pop	hl
-	pop	de
-	pop	bc
-	pop	af
-	reti			; IFF1 <- IFF2, PC <- stack (daisy-chain EOI)
+	push    af
+	push    bc
+	push    de
+	push    hl
+	ld      hl, msg_isr2
+	call    print_str
+	call    newline
+	pop     hl
+	pop     de
+	pop     bc
+	pop     af
+	reti ; IFF1 <- IFF2, PC <- stack (daisy-chain EOI)
 
 isr_im1:
-	push	af
-	push	bc
-	push	de
-	push	hl
-	ld	hl, msg_isr1
-	call	print_str
-	call	newline
-	pop	hl
-	pop	de
-	pop	bc
-	pop	af
+	push    af
+	push    bc
+	push    de
+	push    hl
+	ld      hl, msg_isr1
+	call    print_str
+	call    newline
+	pop     hl
+	pop     de
+	pop     bc
+	pop     af
 	reti
 
 isr_im0:
-	push	af
-	push	bc
-	push	de
-	push	hl
-	ld	hl, msg_isr0
-	call	print_str
-	call	newline
-	pop	hl
-	pop	de
-	pop	bc
-	pop	af
+	push    af
+	push    bc
+	push    de
+	push    hl
+	ld      hl, msg_isr0
+	call    print_str
+	call    newline
+	pop     hl
+	pop     de
+	pop     bc
+	pop     af
 	reti
 
 ; ================================================================
@@ -180,39 +180,39 @@ isr_im0:
 ; ================================================================
 
 print_str:
-	push	af
-	push	bc
-	push	de
+	push    af
+	push    bc
+	push    de
 .ps_loop:
-	ld	a, (hl)
-	cp	'$'
-	jr	z, .ps_done
-	ld	c, 2
-	push	hl
-	ld	e, a
-	call	0x0005
-	pop	hl
+	ld      a, (hl)
+	cp      '$'
+	jr      z, .ps_done
+	ld      c, 2
+	push    hl
+	ld      e, a
+	call    0x0005
+	pop     hl
 	inc	hl
-	jr	.ps_loop
+	jr      .ps_loop
 .ps_done:
-	pop	de
-	pop	bc
-	pop	af
+	pop     de
+	pop     bc
+	pop     af
 	ret
 
 newline:
-	push	af
-	push	bc
-	push	de
-	ld	c, 2
-	ld	e, 13
-	call	0x0005
-	ld	c, 2
-	ld	e, 10
-	call	0x0005
-	pop	de
-	pop	bc
-	pop	af
+	push    af
+	push    bc
+	push    de
+	ld      c, 2
+	ld      e, 13
+	call    0x0005
+	ld      c, 2
+	ld      e, 10
+	call    0x0005
+	pop     de
+	pop     bc
+	pop     af
 	ret
 
 ; ================================================================

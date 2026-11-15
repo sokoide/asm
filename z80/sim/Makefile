@@ -47,7 +47,7 @@ format:
 all: $(SIM)
 	@for name in $(SOURCES); do \
 		echo "=== $$name ==="; \
-		$(AS) -l -o $$name.com $$name.asm 2>$$name.lst && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; cat $$name.lst; rm -f $$name.lst; }; \
+		$(AS) -l --label=$$name.lbl -o $$name.com $$name.asm 2>$$name.lst && echo "  OK ($$(wc -c < $$name.com) bytes)" || { echo "  FAIL"; cat $$name.lst; rm -f $$name.lst; }; \
 	done
 
 $(SIM): $(wildcard $(GODIR)/*.go) $(GODIR)/go.mod
@@ -55,18 +55,18 @@ $(SIM): $(wildcard $(GODIR)/*.go) $(GODIR)/go.mod
 
 # Run: make run S=s01_hello
 run: $(SIM)
-	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
 	$(TIMEOUT) $(SIM) $(S).com
 
 # Step debugger: make debug S=s03_stack
 # Commands: s=step n=next(call) c=continue b ADDR r=regs d [ADDR] x ADDR q=quit
 debug: $(SIM)
-	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
 	$(SIM) -debug $(S).com
 
 # Instruction trace: make trace S=s03_stack (pipe to less / a file as needed)
 trace: $(SIM)
-	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
 	$(TIMEOUT) $(SIM) -trace $(S).com
 
 # T-state summary: make cycles S=s04_loops
@@ -74,13 +74,13 @@ trace: $(SIM)
 # (simz80 -cycles は instructions と T-states を両方出すため、ここでは
 #  T-states 側のみを表示して cycles と icount を分離する)
 cycles: $(SIM)
-	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
 	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '{ if ($$0 ~ /^instructions:/) next; print }'; \
 	echo "(実サイクル: simz80 が計上した Z80 T-state の実測値)"
 
 # 命令数: make icount S=s04_loops (simz80 の実行命令数)
 icount: $(SIM)
-	$(AS) -l -o $(S).com $(S).asm 2>$(S).lst
+	$(AS) -l --label=$(S).lbl -o $(S).com $(S).asm 2>$(S).lst
 	@$(TIMEOUT) $(SIM) -cycles $(S).com | awk '/^instructions:/ { print "実行命令数: " $$2 " (simz80 実測 / CPU 命令のみ。BDOS 呼び出し・割り込み受付は含まない)"; found=1 } END { if (!found) print "実行命令数: unsupported (simz80 がサマリを出力せず終了。タイムアウト等で計測不能)" }'
 
 # Unit tests for the simulator core (flags, T-states, .lst parser)
@@ -140,7 +140,7 @@ cpm: all
 	fi
 
 clean:
-	rm -f *.com *.bin *.sym *.lst *.lis *.err $(SIM)
+	rm -f *.com *.bin *.sym *.lbl *.lst *.lis *.err $(SIM)
 	rm -rf $(CPMDIR)
 
 # One-time setup: copy yaze-ag disk images to ~/cpm/

@@ -57,8 +57,11 @@ extern int DbgExitCode;
 
 
 
-void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr);
-/* Run the interactive step debugger until quit, EOF or program exit. */
+void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr, const char* ProgramFile);
+/* Run the interactive step debugger until quit, EOF or program exit.
+** ProgramFile locates the linker map (<program>.map) for symbol names
+** (b/d/x accept "b _main" etc.); may be 0 to skip symbol loading.
+*/
 
 int DbgConsoleRead (unsigned char* Buf, unsigned Count);
 /* Serve a guest stdin read (PVRead on fd 0) from the console line reader

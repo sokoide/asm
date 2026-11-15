@@ -1585,7 +1585,8 @@ func main() {
 		if lst == nil {
 			fmt.Fprintln(os.Stderr, "note: no .lst file found; assemble with z80asm -l for source display")
 		}
-		newDebugger(cpu, lst).run()
+		syms := loadLabels(strings.TrimSuffix(filename, ".com") + ".lbl")
+		newDebugger(cpu, lst, syms).run()
 	case *traceMode:
 		lst, _ := loadListing(strings.TrimSuffix(filename, ".com") + ".lst")
 		runTrace(cpu, lst)
