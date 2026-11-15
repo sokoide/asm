@@ -50,53 +50,53 @@ dst_buf:    .res 100
 .segment "CODE"
 _main:
 ; ---- naive byte copy (absolute,X) ----
-    ldx #0
+	ldx     #0
 @copy:
-    lda src_data,x     ; 4
-    sta dst_buf,x      ; 5
-    inx                ; 2
-    cpx #100           ; 2
-    bne @copy          ; 3 taken / 2 last
+	lda     src_data,x     ; 4
+	sta     dst_buf,x      ; 5
+	inx ; 2
+	cpx     #100           ; 2
+	bne     @copy          ; 3 taken / 2 last
 
 ; ---- verify dst against src + 16-bit checksum ----
-    lda #0
-    sta sum_lo
-    sta sum_hi
-    ldx #0
+	lda     #0
+	sta     sum_lo
+	sta     sum_hi
+	ldx     #0
 @check:
-    lda dst_buf,x      ; 4
-    cmp src_data,x     ; 4
-    bne @fail          ; 2 not taken
-    clc                ; 2
-    adc sum_lo         ; 3
-    sta sum_lo         ; 3
-    lda sum_hi         ; 3
-    adc #0             ; 2  propagate carry into high byte
-    sta sum_hi         ; 3
-    inx                ; 2
-    cpx #100           ; 2
-    bne @check         ; 3 taken / 2 last
+	lda     dst_buf,x      ; 4
+	cmp     src_data,x     ; 4
+	bne     @fail          ; 2 not taken
+	clc ; 2
+	adc     sum_lo         ; 3
+	sta     sum_lo         ; 3
+	lda     sum_hi         ; 3
+	adc     #0             ; 2  propagate carry into high byte
+	sta     sum_hi         ; 3
+	inx ; 2
+	cpx     #100           ; 2
+	bne     @check         ; 3 taken / 2 last
 
-    lda #<msg_ok
-    ldx #>msg_ok
-    jsr print_str
-    jsr print_checksum
-    jsr print_nl
-    lda #0
-    rts
+	lda     #<msg_ok
+	ldx     #>msg_ok
+	jsr     print_str
+	jsr     print_checksum
+	jsr     print_nl
+	lda     #0
+	rts
 
 @fail:
-    lda #<msg_fail
-    ldx #>msg_fail
-    jsr print_str
-    jsr print_checksum
-    jsr print_nl
-    lda #0
-    rts
+	lda     #<msg_fail
+	ldx     #>msg_fail
+	jsr     print_str
+	jsr     print_checksum
+	jsr     print_nl
+	lda     #0
+	rts
 
 ; print_checksum: print the 16-bit checksum as 4 hex digits
 print_checksum:
-    lda sum_hi
-    jsr print_hex8
-    lda sum_lo
-    jmp print_hex8
+	lda     sum_hi
+	jsr     print_hex8
+	lda     sum_lo
+	jmp     print_hex8

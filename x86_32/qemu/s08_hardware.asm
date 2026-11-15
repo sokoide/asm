@@ -30,116 +30,116 @@ _start:
     ;   port 0x43 に 0x00 を書き込む (カウンタ 0 選択 + ラッチ指示)
     ;   その後 port 0x40 から ローバイト → ハイバイト の順に読む
 
-    mov  esi, msg_cnt
-    call print_str
+	mov     esi, msg_cnt
+	call    print_str
 
     ; カウンタ 0 をラッチ
-    mov  al, 0x00            ; 制御: カウンタ 0 選択, ラッチ
-    mov  dx, 0x43
-    out  dx, al
+	mov     al, 0x00            ; 制御: カウンタ 0 選択, ラッチ
+	mov     dx, 0x43
+	out     dx, al
 
     ; ローバイト → ハイバイトの順に読む
-    mov  dx, 0x40
-    in   al, dx              ; ローバイト
-    mov  bl, al
-    in   al, dx              ; ハイバイト
-    mov  bh, al              ; BX = 16-bit カウンタ値
+	mov     dx, 0x40
+	in      al, dx              ; ローバイト
+	mov     bl, al
+	in      al, dx              ; ハイバイト
+	mov     bh, al              ; BX = 16-bit カウンタ値
 
-    movzx eax, bx            ; 16-bit 値を 32-bit にゼロ拡張 (上位 16 ビットは 0)
-    call print_hex32
-    call print_crlf
+	movzx   eax, bx            ; 16-bit 値を 32-bit にゼロ拡張 (上位 16 ビットは 0)
+	call    print_hex32
+	call    print_crlf
 
     ; もう一度読んで、カウンタが動作中 (カウントダウン中) であることを示す
-    mov  esi, msg_cnt2
-    call print_str
+	mov     esi, msg_cnt2
+	call    print_str
 
-    mov  al, 0x00
-    mov  dx, 0x43
-    out  dx, al
+	mov     al, 0x00
+	mov     dx, 0x43
+	out     dx, al
 
-    mov  dx, 0x40
-    in   al, dx
-    mov  bl, al
-    in   al, dx
-    mov  bh, al
+	mov     dx, 0x40
+	in      al, dx
+	mov     bl, al
+	in      al, dx
+	mov     bh, al
 
-    movzx eax, bx
-    call print_hex32
-    call print_crlf
+	movzx   eax, bx
+	call    print_hex32
+	call    print_crlf
 
-    mov  esi, msg_done
-    call print_str
+	mov     esi, msg_done
+	call    print_str
 
 .halt:
-    cli                      ; 割り込み禁止
-    hlt                      ; CPU 停止
+	cli ; 割り込み禁止
+	hlt ; CPU 停止
     jmp  .halt               ; NMI で再開しても再度停止
 
 ; ---- サブルーチン ----
 
 ; uart_putc: AL の 1 文字を COM1 (16550 UART, I/O 0x3F8) へ出力
 uart_putc:
-    push edx
-    push eax
-    mov  dx, 0x3FD           ; LSR (ラインステータスレジスタ)
+	push    edx
+	push    eax
+	mov     dx, 0x3FD           ; LSR (ラインステータスレジスタ)
 .wait:
-    in   al, dx
-    test al, 0x20            ; bit 5 = THRE (送信保持レジスタ空)
-    jz   .wait
-    mov  dx, 0x3F8           ; THR (送信保持レジスタ)
-    pop  eax
-    out  dx, al
-    pop  edx
-    ret
+	in      al, dx
+	test    al, 0x20            ; bit 5 = THRE (送信保持レジスタ空)
+	jz      .wait
+	mov     dx, 0x3F8           ; THR (送信保持レジスタ)
+	pop     eax
+	out     dx, al
+	pop     edx
+	ret
 
 ; print_str: DS:ESI の NULL 終端文字列を出力 (EAX/ESI は破壊する)
 print_str:
-    lodsb
-    or  al, al
-    jz  .ret
-    call uart_putc
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc
     jmp print_str
 .ret:
-    ret
+	ret
 
 ; print_hex32: EAX を 8 桁の 16 進数字として出力 (EAX を保存)
 print_hex32:
-    push eax
-    push ecx
-    mov  ecx, 8              ; 出力するニブル数 = 8
+	push    eax
+	push    ecx
+	mov     ecx, 8              ; 出力するニブル数 = 8
 .nibble:
-    rol  eax, 4              ; 最上位ニブルを下位 4 ビットへ回転
-    push eax
-    and  al, 0x0F
-    call print_nibble
-    pop  eax
-    dec  ecx
-    jnz  .nibble
-    pop  ecx
-    pop  eax
-    ret
+	rol     eax, 4              ; 最上位ニブルを下位 4 ビットへ回転
+	push    eax
+	and     al, 0x0F
+	call    print_nibble
+	pop     eax
+	dec     ecx
+	jnz     .nibble
+	pop     ecx
+	pop     eax
+	ret
 
 ; print_nibble: AL の下位 4 ビットを 1 桁の 16 進数字として出力
 print_nibble:
-    push eax
-    and al, 0x0F
-    add al, '0'
-    cmp al, '9'
-    jle .out
-    add al, 7                ; 'A'-'F' のため '9' との隙間 (7) を詰める
+	push    eax
+	and     al, 0x0F
+	add     al, '0'
+	cmp     al, '9'
+	jle     .out
+	add     al, 7                ; 'A'-'F' のため '9' との隙間 (7) を詰める
 .out:
-    call uart_putc
-    pop eax
-    ret
+	call    uart_putc
+	pop     eax
+	ret
 
 print_crlf:
-    push eax
-    mov al, 13
-    call uart_putc
-    mov al, 10
-    call uart_putc
-    pop eax
-    ret
+	push    eax
+	mov     al, 13
+	call    uart_putc
+	mov     al, 10
+	call    uart_putc
+	pop     eax
+	ret
 
 ; ---- データ ----
 section .rodata

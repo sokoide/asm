@@ -23,75 +23,75 @@ msg_ror: .asciiz "ROR: $01 (C=1) = $"
 
 .segment "CODE"
 _main:
-    lda #<msg_hdr
-    ldx #>msg_hdr
-    jsr print_str
-    jsr print_nl
+	lda     #<msg_hdr
+	ldx     #>msg_hdr
+	jsr     print_str
+	jsr     print_nl
 
 ; AND
-    lda #<msg_and
-    ldx #>msg_and
-    jsr print_str
-    lda #$FF
-    and #$0F
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_and
+	ldx     #>msg_and
+	jsr     print_str
+	lda     #$FF
+	and     #$0F
+	jsr     print_hex8
+	jsr     print_nl
 
 ; ORA
-    lda #<msg_ora
-    ldx #>msg_ora
-    jsr print_str
-    lda #$F0
-    ora #$0F
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_ora
+	ldx     #>msg_ora
+	jsr     print_str
+	lda     #$F0
+	ora     #$0F
+	jsr     print_hex8
+	jsr     print_nl
 
 ; EOR
-    lda #<msg_eor
-    ldx #>msg_eor
-    jsr print_str
-    lda #$FF
-    eor #$FF
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_eor
+	ldx     #>msg_eor
+	jsr     print_str
+	lda     #$FF
+	eor     #$FF
+	jsr     print_hex8
+	jsr     print_nl
 
 ; ASL
-    lda #<msg_asl
-    ldx #>msg_asl
-    jsr print_str
-    lda #$41
-    asl a
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_asl
+	ldx     #>msg_asl
+	jsr     print_str
+	lda     #$41
+	asl     a
+	jsr     print_hex8
+	jsr     print_nl
 
 ; LSR
-    lda #<msg_lsr
-    ldx #>msg_lsr
-    jsr print_str
-    lda #$82
-    lsr a
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_lsr
+	ldx     #>msg_lsr
+	jsr     print_str
+	lda     #$82
+	lsr     a
+	jsr     print_hex8
+	jsr     print_nl
 
 ; ROL
-    lda #<msg_rol
-    ldx #>msg_rol
-    jsr print_str
-    sec
-    lda #$C0
-    rol a
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_rol
+	ldx     #>msg_rol
+	jsr     print_str
+	sec
+	lda     #$C0
+	rol     a
+	jsr     print_hex8
+	jsr     print_nl
 
 ; ROR
-    lda #<msg_ror
-    ldx #>msg_ror
-    jsr print_str
-    sec
-    lda #$01
-    ror a
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_ror
+	ldx     #>msg_ror
+	jsr     print_str
+	sec
+	lda     #$01
+	ror     a
+	jsr     print_hex8
+	jsr     print_nl
 
-    lda #0
-    rts
+	lda     #0
+	rts

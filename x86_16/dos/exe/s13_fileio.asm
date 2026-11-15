@@ -14,144 +14,144 @@ segment .text
 global start
 
 start:
-    mov ax, seg msg1
-    mov ds, ax
-    mov es, ax
+	mov     ax, seg msg1
+	mov     ds, ax
+	mov     es, ax
 
     ; --- 1. Create a file ---
-    mov si, msg_create
-    call print_str
+	mov     si, msg_create
+	call    print_str
 
-    mov ah, 3Ch             ; DOS: create file
-    mov cx, 0               ; normal attributes
-    mov dx, filename
-    int 21h
-    jc  .create_error       ; carry flag set on error
+	mov     ah, 3Ch             ; DOS: create file
+	mov     cx, 0               ; normal attributes
+	mov     dx, filename
+	int     21h
+	jc      .create_error       ; carry flag set on error
 
-    mov [handle], ax        ; save file handle
-    mov si, msg_ok
-    call print_str
+	mov     [handle], ax        ; save file handle
+	mov     si, msg_ok
+	call    print_str
     jmp .write_file
 
 .create_error:
-    mov si, msg_fail
-    call print_str
+	mov     si, msg_fail
+	call    print_str
     jmp .done
 
     ; --- 2. Write to file ---
 .write_file:
-    mov si, msg_write
-    call print_str
+	mov     si, msg_write
+	call    print_str
 
-    mov ah, 40h             ; DOS: write to file
-    mov bx, [handle]        ; file handle
-    mov cx, msg_out_len     ; number of bytes to write
-    mov dx, msg_out         ; data to write
-    int 21h
-    jc  .write_error
+	mov     ah, 40h             ; DOS: write to file
+	mov     bx, [handle]        ; file handle
+	mov     cx, msg_out_len     ; number of bytes to write
+	mov     dx, msg_out         ; data to write
+	int     21h
+	jc      .write_error
 
-    mov si, msg_ok
-    call print_str
+	mov     si, msg_ok
+	call    print_str
     jmp .close_file
 
 .write_error:
-    mov si, msg_fail
-    call print_str
+	mov     si, msg_fail
+	call    print_str
     jmp .done
 
     ; --- 3. Close file ---
 .close_file:
-    mov ah, 3Eh             ; DOS: close file
-    mov bx, [handle]
-    int 21h
+	mov     ah, 3Eh             ; DOS: close file
+	mov     bx, [handle]
+	int     21h
 
     ; --- 4. Open file for reading ---
-    mov si, msg_open
-    call print_str
+	mov     si, msg_open
+	call    print_str
 
-    mov ah, 3Dh             ; DOS: open file
-    mov al, 0               ; read-only mode
-    mov dx, filename
-    int 21h
-    jc  .open_error
+	mov     ah, 3Dh             ; DOS: open file
+	mov     al, 0               ; read-only mode
+	mov     dx, filename
+	int     21h
+	jc      .open_error
 
-    mov [handle], ax
-    mov si, msg_ok
-    call print_str
+	mov     [handle], ax
+	mov     si, msg_ok
+	call    print_str
     jmp .read_file
 
 .open_error:
-    mov si, msg_fail
-    call print_str
+	mov     si, msg_fail
+	call    print_str
     jmp .done
 
     ; --- 5. Read from file ---
 .read_file:
-    mov si, msg_read
-    call print_str
+	mov     si, msg_read
+	call    print_str
 
-    mov ah, 3Fh             ; DOS: read from file
-    mov bx, [handle]
-    mov cx, 255             ; max bytes to read
-    mov dx, readbuf
-    int 21h
-    jc  .read_error
+	mov     ah, 3Fh             ; DOS: read from file
+	mov     bx, [handle]
+	mov     cx, 255             ; max bytes to read
+	mov     dx, readbuf
+	int     21h
+	jc      .read_error
 
     ; AX = bytes actually read
-    mov cx, ax
-    mov si, readbuf
-    push cx
+	mov     cx, ax
+	mov     si, readbuf
+	push    cx
 .print_read:
-    lodsb
-    mov dl, al
-    mov ah, 02h
-    int 21h
-    loop .print_read
-    pop cx
+	lodsb
+	mov     dl, al
+	mov     ah, 02h
+	int     21h
+	loop    .print_read
+	pop     cx
 
-    call print_crlf
+	call    print_crlf
 
     ; Null-terminate and show as string
-    mov bx, cx
-    mov byte [readbuf+bx], 0
+	mov     bx, cx
+	mov     byte [readbuf+bx], 0
 
     ; Close the file
-    mov ah, 3Eh
-    mov bx, [handle]
-    int 21h
+	mov     ah, 3Eh
+	mov     bx, [handle]
+	int     21h
     jmp .done
 
 .read_error:
-    mov si, msg_fail
-    call print_str
+	mov     si, msg_fail
+	call    print_str
 
 .done:
-    mov si, msg_done
-    call print_str
-    mov ax, 4C00h
-    int 21h
+	mov     si, msg_done
+	call    print_str
+	mov     ax, 4C00h
+	int     21h
 
 ; ---- Subroutines ----
 
 print_str:
-    lodsb
-    or  al, al
-    jz  .done
-    mov dl, al
-    mov ah, 02h
-    int 21h
+	lodsb
+	or      al, al
+	jz      .done
+	mov     dl, al
+	mov     ah, 02h
+	int     21h
     jmp print_str
 .done:
-    ret
+	ret
 
 print_crlf:
-    mov dl, 13
-    mov ah, 02h
-    int 21h
-    mov dl, 10
-    mov ah, 02h
-    int 21h
-    ret
+	mov     dl, 13
+	mov     ah, 02h
+	int     21h
+	mov     dl, 10
+	mov     ah, 02h
+	int     21h
+	ret
 
 segment .data
 

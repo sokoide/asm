@@ -13,17 +13,17 @@ global start
 
 start:
     ; Set DS to the data segment — required before accessing any data
-    mov ax, seg message
-    mov ds, ax
+	mov     ax, seg message
+	mov     ds, ax
 
     ; Display $-terminated string via DOS
-    mov ah, 09h             ; DOS function: print string
-    mov dx, message         ; DS:DX -> $-terminated string
-    int 21h                 ; call DOS
+	mov     ah, 09h             ; DOS function: print string
+	mov     dx, message         ; DS:DX -> $-terminated string
+	int     21h                 ; call DOS
 
     ; Exit to DOS
-    mov ax, 4C00h           ; AH=4Ch (terminate), AL=00h (return code 0)
-    int 21h
+	mov     ax, 4C00h           ; AH=4Ch (terminate), AL=00h (return code 0)
+	int     21h
 
 segment .data
 

@@ -29,79 +29,79 @@ global _start
 
 section .text
 _start:
-    xor ax, ax
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov sp, 0x7C00
+	xor     ax, ax
+	mov     ds, ax
+	mov     es, ax
+	mov     ss, ax
+	mov     sp, 0x7C00
 
     ; --- Install handler for INT 60h ---
     ; Handler lives in this boot sector: CS=0, offset = handler label
-    mov ax, handler
-    mov [0x0180], ax        ; IVT[0x60].offset
-    mov ax, cs              ; CS = 0 on this boot path
-    mov [0x0182], ax        ; IVT[0x60].segment
+	mov     ax, handler
+	mov     [0x0180], ax        ; IVT[0x60].offset
+	mov     ax, cs              ; CS = 0 on this boot path
+	mov     [0x0182], ax        ; IVT[0x60].segment
 
-    mov si, msg_before
-    call print_str
+	mov     si, msg_before
+	call    print_str
 
-    int 0x60                ; FLAGS/CS/IP pushed, IP := IVT[0x60].offset
+	int     0x60                ; FLAGS/CS/IP pushed, IP := IVT[0x60].offset
 
-    mov si, msg_after
-    call print_str
+	mov     si, msg_after
+	call    print_str
 
 .halt:
-    cli
-    hlt
+	cli
+	hlt
     jmp .halt
 
 ; ---- Interrupt handler (called via INT 60h) ----
 ; INT n pushed FLAGS, CS, IP automatically; IRET pops them in reverse.
 ; The handler must preserve every register the interrupted code needs.
 handler:
-    push ax
-    push dx
-    push si
-    mov si, msg_handler
-    call print_str
-    pop si
-    pop dx
-    pop ax
-    iret                    ; pop IP, CS, FLAGS -> back after INT 60h
+	push    ax
+	push    dx
+	push    si
+	mov     si, msg_handler
+	call    print_str
+	pop     si
+	pop     dx
+	pop     ax
+	iret ; pop IP, CS, FLAGS -> back after INT 60h
 
 ; ---- Subroutines ----
 
 uart_putc:
-    push    dx
-    push    ax
-    mov     dx, 0x3FD
+	push    dx
+	push    ax
+	mov     dx, 0x3FD
 .wait:
-    in      al, dx
-    test    al, 0x20
-    jz      .wait
-    mov     dx, 0x3F8
-    pop     ax
-    out     dx, al
-    pop     dx
-    ret
+	in      al, dx
+	test    al, 0x20
+	jz      .wait
+	mov     dx, 0x3F8
+	pop     ax
+	out     dx, al
+	pop     dx
+	ret
 
 print_str:
-    lodsb
-    or  al, al
-    jz  .ret
-    call uart_putc
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc
     jmp print_str
 .ret:
-    ret
+	ret
 
 print_crlf:
-    push ax
-    mov al, 13
-    call uart_putc
-    mov al, 10
-    call uart_putc
-    pop ax
-    ret
+	push    ax
+	mov     al, 13
+	call    uart_putc
+	mov     al, 10
+	call    uart_putc
+	pop     ax
+	ret
 
 ; ---- Data ----
 msg_before  db "Before INT 60h", 13, 10, 0

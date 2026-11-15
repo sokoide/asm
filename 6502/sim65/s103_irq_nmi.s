@@ -41,109 +41,109 @@ msg_d3c:    .asciiz "  -> nmi_count = "
 .segment "CODE"
 _main:
 ; ---- Vector setup: write handler addresses into $FFFA/$FFFE ----
-    lda #<irq_handler
-    sta $FFFE               ; IRQ vector low
-    lda #>irq_handler
-    sta $FFFF               ; IRQ vector high
-    lda #<nmi_handler
-    sta $FFFA               ; NMI vector low
-    lda #>nmi_handler
-    sta $FFFB               ; NMI vector high
-    lda #0
-    sta irq_count
-    sta nmi_count
+	lda     #<irq_handler
+	sta     $FFFE               ; IRQ vector low
+	lda     #>irq_handler
+	sta     $FFFF               ; IRQ vector high
+	lda     #<nmi_handler
+	sta     $FFFA               ; NMI vector low
+	lda     #>nmi_handler
+	sta     $FFFB               ; NMI vector high
+	lda     #0
+	sta     irq_count
+	sta     nmi_count
 
-    lda #<msg_hdr
-    ldx #>msg_hdr
-    jsr print_str
-    jsr print_nl
+	lda     #<msg_hdr
+	ldx     #>msg_hdr
+	jsr     print_str
+	jsr     print_nl
 
 ; ---- Demo 1: IRQ taken while I=0 ----
 ; IRQ entry (7) -> handler -> RTI (6). The STA $FFF0 completes first,
 ; the interrupt is taken at the next instruction boundary.
-    lda #<msg_d1
-    ldx #>msg_d1
-    jsr print_str
-    cli                     ; I=0: IRQ enabled
-    sta $FFCC               ; trigger IRQ pulse (A value ignored)
-    nop                     ; <- execution resumes here after RTI
-    lda #<msg_d1c
-    ldx #>msg_d1c
-    jsr print_str
-    lda irq_count
-    jsr print_dec
-    jsr print_nl
+	lda     #<msg_d1
+	ldx     #>msg_d1
+	jsr     print_str
+	cli ; I=0: IRQ enabled
+	sta     $FFCC               ; trigger IRQ pulse (A value ignored)
+	nop ; <- execution resumes here after RTI
+	lda     #<msg_d1c
+	ldx     #>msg_d1c
+	jsr     print_str
+	lda     irq_count
+	jsr     print_dec
+	jsr     print_nl
 
 ; ---- Demo 2: IRQ masked by I=1, delivered after CLI ----
 ; SEI masks the IRQ (latched in sim65i), CLI hands it over immediately.
-    lda #<msg_d2
-    ldx #>msg_d2
-    jsr print_str
-    sei                     ; I=1: IRQ masked
-    sta $FFCC               ; trigger IRQ pulse - NOT taken now
-    nop                     ; still no interrupt (I=1)
-    lda #<msg_d2c
-    ldx #>msg_d2c
-    jsr print_str
-    cli                     ; I=0 -> latched IRQ delivered here
-    lda irq_count
-    jsr print_dec
-    jsr print_nl
+	lda     #<msg_d2
+	ldx     #>msg_d2
+	jsr     print_str
+	sei ; I=1: IRQ masked
+	sta     $FFCC               ; trigger IRQ pulse - NOT taken now
+	nop ; still no interrupt (I=1)
+	lda     #<msg_d2c
+	ldx     #>msg_d2c
+	jsr     print_str
+	cli ; I=0 -> latched IRQ delivered here
+	lda     irq_count
+	jsr     print_dec
+	jsr     print_nl
 
 ; ---- Demo 3: NMI ignores the I flag ----
 ; NMI is edge-triggered and non-maskable: taken even with I=1.
-    lda #<msg_d3
-    ldx #>msg_d3
-    jsr print_str
-    sei                     ; I=1: would mask IRQ, but not NMI
-    sta $FFCE               ; trigger NMI pulse
-    nop                     ; <- execution resumes here after RTI
-    lda #<msg_d3c
-    ldx #>msg_d3c
-    jsr print_str
-    lda nmi_count
-    jsr print_dec
-    jsr print_nl
+	lda     #<msg_d3
+	ldx     #>msg_d3
+	jsr     print_str
+	sei ; I=1: would mask IRQ, but not NMI
+	sta     $FFCE               ; trigger NMI pulse
+	nop ; <- execution resumes here after RTI
+	lda     #<msg_d3c
+	ldx     #>msg_d3c
+	jsr     print_str
+	lda     nmi_count
+	jsr     print_dec
+	jsr     print_nl
 
-    lda #0                  ; exit code 0 (crt0 calls exit -> PVExit)
-    rts
+	lda     #0                  ; exit code 0 (crt0 calls exit -> PVExit)
+	rts
 
 ; ---- IRQ handler: increment counter, print, return ----
 ; Entry: P pushed with B=0, I=1 set by hardware. A/X/Y are saved here
 ; because _putchar's paravirt hook must not corrupt the interrupted code.
 irq_handler:
-    pha
-    txa
-    pha
-    tya
-    pha
-    inc irq_count
-    lda #'<'
-    jsr _putchar
-    lda #'>'
-    jsr _putchar
-    pla
-    tay
-    pla
-    tax
-    pla
-    rti
+	pha
+	txa
+	pha
+	tya
+	pha
+	inc     irq_count
+	lda     #'<'
+	jsr     _putchar
+	lda     #'>'
+	jsr     _putchar
+	pla
+	tay
+	pla
+	tax
+	pla
+	rti
 
 ; ---- NMI handler: same pattern ----
 nmi_handler:
-    pha
-    txa
-    pha
-    tya
-    pha
-    inc nmi_count
-    lda #'{'
-    jsr _putchar
-    lda #'}'
-    jsr _putchar
-    pla
-    tay
-    pla
-    tax
-    pla
-    rti
+	pha
+	txa
+	pha
+	tya
+	pha
+	inc     nmi_count
+	lda     #'{'
+	jsr     _putchar
+	lda     #'}'
+	jsr     _putchar
+	pla
+	tay
+	pla
+	tax
+	pla
+	rti

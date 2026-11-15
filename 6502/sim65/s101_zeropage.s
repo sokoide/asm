@@ -46,68 +46,68 @@ abs_val:    .res 1
 
 .segment "CODE"
 _main:
-    lda #<msg_hdr
-    ldx #>msg_hdr
-    jsr print_str
-    jsr print_nl
+	lda     #<msg_hdr
+	ldx     #>msg_hdr
+	jsr     print_str
+	jsr     print_nl
 
 ; ---- Demo 1: zp-addressed loop (15 cycles/iter) ----
-    lda #0
-    sta zp_val
-    ldy #10            ; 2
+	lda     #0
+	sta     zp_val
+	ldy     #10            ; 2
 @zp_loop:
-    lda zp_val         ; 3
-    clc                ; 2
-    adc #1             ; 2
-    sta zp_val         ; 3
-    dey                ; 2
-    bne @zp_loop       ; 3 taken / 2 last
+	lda     zp_val         ; 3
+	clc ; 2
+	adc     #1             ; 2
+	sta     zp_val         ; 3
+	dey ; 2
+	bne     @zp_loop       ; 3 taken / 2 last
 ; total: 2 + 15 x 9 + 14 = 151 cycles
 
-    lda #<msg_zp
-    ldx #>msg_zp
-    jsr print_str
-    lda zp_val
-    jsr print_dec
-    jsr print_nl
+	lda     #<msg_zp
+	ldx     #>msg_zp
+	jsr     print_str
+	lda     zp_val
+	jsr     print_dec
+	jsr     print_nl
 
 ; ---- Demo 2: absolute-addressed loop (17 cycles/iter) ----
-    lda #0
-    sta abs_val
-    ldy #10            ; 2
+	lda     #0
+	sta     abs_val
+	ldy     #10            ; 2
 @abs_loop:
-    lda abs_val        ; 4
-    clc                ; 2
-    adc #1             ; 2
-    sta abs_val        ; 4
-    dey                ; 2
-    bne @abs_loop      ; 3 taken / 2 last
+	lda     abs_val        ; 4
+	clc ; 2
+	adc     #1             ; 2
+	sta     abs_val        ; 4
+	dey ; 2
+	bne     @abs_loop      ; 3 taken / 2 last
 ; total: 2 + 17 x 9 + 16 = 171 cycles
 
-    lda #<msg_abs
-    ldx #>msg_abs
-    jsr print_str
-    lda abs_val
-    jsr print_dec
-    jsr print_nl
+	lda     #<msg_abs
+	ldx     #>msg_abs
+	jsr     print_str
+	lda     abs_val
+	jsr     print_dec
+	jsr     print_nl
 
 ; ---- Demo 3: (zp),Y pointer walk over a table ----
-    lda #<table
-    sta zp_ptr
-    lda #>table
-    sta zp_ptr+1
-    ldy #0
+	lda     #<table
+	sta     zp_ptr
+	lda     #>table
+	sta     zp_ptr+1
+	ldy     #0
 @walk:
-    lda (zp_ptr),y     ; 5 cycles (+1 on page cross)
-    sty y_tmp          ; _putchar clobbers X/Y - save Y
-    jsr print_hex8
-    lda #' '
-    jsr _putchar
-    ldy y_tmp
-    iny
-    cpy #4
-    bne @walk
-    jsr print_nl
+	lda     (zp_ptr),y     ; 5 cycles (+1 on page cross)
+	sty     y_tmp          ; _putchar clobbers X/Y - save Y
+	jsr     print_hex8
+	lda     #' '
+	jsr     _putchar
+	ldy     y_tmp
+	iny
+	cpy     #4
+	bne     @walk
+	jsr     print_nl
 
-    lda #0
-    rts
+	lda     #0
+	rts

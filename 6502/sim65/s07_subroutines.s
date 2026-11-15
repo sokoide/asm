@@ -22,50 +22,50 @@ add_tmp: .res 1
 .segment "CODE"
 _main:
 ; ---- Demo 1: Basic subroutine ----
-    lda #<msg_sum
-    ldx #>msg_sum
-    jsr print_str
+	lda     #<msg_sum
+	ldx     #>msg_sum
+	jsr     print_str
 
-    lda #3
-    ldx #4
-    jsr add_values
-    jsr print_dec
-    jsr print_nl
+	lda     #3
+	ldx     #4
+	jsr     add_values
+	jsr     print_dec
+	jsr     print_nl
 
 ; ---- Demo 2: Return value ----
-    lda #<msg_dbl
-    ldx #>msg_dbl
-    jsr print_str
+	lda     #<msg_dbl
+	ldx     #>msg_dbl
+	jsr     print_str
 
-    lda #5
-    jsr double
-    jsr print_dec
-    jsr print_nl
+	lda     #5
+	jsr     double
+	jsr     print_dec
+	jsr     print_nl
 
 ; ---- Demo 3: Nested call ----
-    lda #<msg_nest
-    ldx #>msg_nest
-    jsr print_str
+	lda     #<msg_nest
+	ldx     #>msg_nest
+	jsr     print_str
 
-    lda #3
-    ldx #2
-    jsr add_values
-    jsr double
-    jsr print_dec
-    jsr print_nl
+	lda     #3
+	ldx     #2
+	jsr     add_values
+	jsr     double
+	jsr     print_dec
+	jsr     print_nl
 
-    lda #0
-    rts
+	lda     #0
+	rts
 
 ; ---- add A+X -> A ----
 add_values:
-    sta add_tmp
-    txa
-    clc
-    adc add_tmp
-    rts
+	sta     add_tmp
+	txa
+	clc
+	adc     add_tmp
+	rts
 
 ; ---- double A ----
 double:
-    asl a
-    rts
+	asl     a
+	rts

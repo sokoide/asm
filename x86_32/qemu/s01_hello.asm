@@ -17,35 +17,35 @@ global _start, scenario_halt
 
 section .text
 _start:
-    mov  esi, message          ; ESI = 文字列へのポインタ
+	mov     esi, message          ; ESI = 文字列へのポインタ
 .print_loop:
-    lodsb                      ; AL = [DS:ESI], ESI++ (DF = 0 なので正向き)
-    or   al, al                ; NULL 終端?
-    jz   .halt
-    call uart_putc             ; COM1 へ 1 文字出力
+	lodsb ; AL = [DS:ESI], ESI++ (DF = 0 なので正向き)
+	or      al, al                ; NULL 終端?
+	jz      .halt
+	call    uart_putc             ; COM1 へ 1 文字出力
     jmp  .print_loop
 
 .halt:
-    cli                        ; 割り込み禁止
-    hlt                        ; CPU 停止
+	cli ; 割り込み禁止
+	hlt ; CPU 停止
     jmp  .halt                 ; NMI で再開しても再度停止
 
 ; ---- サブルーチン ----
 
 ; uart_putc: AL の 1 文字を COM1 (16550 UART, I/O 0x3F8) へ出力
 uart_putc:
-    push edx
-    push eax
-    mov  dx, 0x3FD             ; LSR (ラインステータスレジスタ)
+	push    edx
+	push    eax
+	mov     dx, 0x3FD             ; LSR (ラインステータスレジスタ)
 .wait:
-    in   al, dx
-    test al, 0x20              ; bit 5 = THRE (送信保持レジスタ空)
-    jz   .wait
-    mov  dx, 0x3F8             ; THR (送信保持レジスタ)
-    pop  eax
-    out  dx, al
-    pop  edx
-    ret
+	in      al, dx
+	test    al, 0x20              ; bit 5 = THRE (送信保持レジスタ空)
+	jz      .wait
+	mov     dx, 0x3F8             ; THR (送信保持レジスタ)
+	pop     eax
+	out     dx, al
+	pop     edx
+	ret
 
 ; ---- データ ----
 section .rodata

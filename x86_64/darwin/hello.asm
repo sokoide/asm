@@ -8,16 +8,16 @@ section .text
 
 _main:
     ; write(1, msg, len)
-    mov     rax, 0x2000004      ; SYS_write = 4  | 0x20000000 (BSD class)
-    mov     rdi, 1              ; fd = stdout
-    lea     rsi, [rel msg]      ; buf (RIP-relative)
-    mov     rdx, len            ; count
-    syscall
+	mov     rax, 0x2000004      ; SYS_write = 4  | 0x20000000 (BSD class)
+	mov     rdi, 1              ; fd = stdout
+	lea     rsi, [rel msg]      ; buf (RIP-relative)
+	mov     rdx, len            ; count
+	syscall
 
     ; exit(0)
-    mov     rax, 0x2000001      ; SYS_exit
-    xor     rdi, rdi            ; exit code 0
-    syscall
+	mov     rax, 0x2000001      ; SYS_exit
+	xor     rdi, rdi            ; exit code 0
+	syscall
 
 section .data
 msg:    db "Hello World!", 10

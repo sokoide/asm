@@ -15,10 +15,10 @@ message: .asciiz "Hello, 6502 World!"
 
 .segment "CODE"
 _main:
-    lda #<message
-    ldx #>message
-    jsr print_str
-    lda #$0A
-    jsr print_nl
-    lda #0
-    rts
+	lda     #<message
+	ldx     #>message
+	jsr     print_str
+	lda     #$0A
+	jsr     print_nl
+	lda     #0
+	rts

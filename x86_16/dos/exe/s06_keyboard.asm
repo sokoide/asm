@@ -13,98 +13,98 @@ segment .text
 global start
 
 start:
-    mov ax, seg msg_single
-    mov ds, ax
-    mov es, ax
+	mov     ax, seg msg_single
+	mov     ds, ax
+	mov     es, ax
 
     ; --- 1. Single character with echo (AH=01h) ---
-    mov si, msg_single
-    call print_str
+	mov     si, msg_single
+	call    print_str
 
-    mov ah, 01h             ; DOS: read char with echo
-    int 21h                 ; AL = character (echoed to screen)
-    mov bx, ax              ; save the character
+	mov     ah, 01h             ; DOS: read char with echo
+	int     21h                 ; AL = character (echoed to screen)
+	mov     bx, ax              ; save the character
 
-    call print_crlf
-    mov si, msg_you_typed
-    call print_str
-    mov al, bl
-    call print_char
-    call print_crlf
+	call    print_crlf
+	mov     si, msg_you_typed
+	call    print_str
+	mov     al, bl
+	call    print_char
+	call    print_crlf
 
     ; --- 2. Single character without echo (AH=07h) ---
-    mov si, msg_noecho
-    call print_str
+	mov     si, msg_noecho
+	call    print_str
 
-    mov ah, 07h             ; DOS: read char without echo
-    int 21h
-    mov bx, ax
+	mov     ah, 07h             ; DOS: read char without echo
+	int     21h
+	mov     bx, ax
 
-    mov si, msg_you_typed
-    call print_str
-    mov al, bl
-    call print_char
-    call print_crlf
+	mov     si, msg_you_typed
+	call    print_str
+	mov     al, bl
+	call    print_char
+	call    print_crlf
 
     ; --- 3. Buffered line input (AH=0Ah) ---
-    mov si, msg_buffered
-    call print_str
+	mov     si, msg_buffered
+	call    print_str
 
-    mov dx, input_buf
-    mov ah, 0Ah             ; DOS: buffered input
-    int 21h
+	mov     dx, input_buf
+	mov     ah, 0Ah             ; DOS: buffered input
+	int     21h
 
-    call print_crlf
-    mov si, msg_buf_contents
-    call print_str
+	call    print_crlf
+	mov     si, msg_buf_contents
+	call    print_str
 
     ; Display the buffered input
     ; input_buf+0 = max chars, input_buf+1 = actual count
     ; input_buf+2 ... = characters (no null terminator)
-    mov cl, [input_buf+1]   ; get actual character count
-    xor ch, ch
-    mov si, input_buf+2     ; point to first character
+	mov     cl, [input_buf+1]   ; get actual character count
+	xor     ch, ch
+	mov     si, input_buf+2     ; point to first character
 .print_buf:
-    lodsb
-    mov dl, al
-    mov ah, 02h
-    int 21h
-    loop .print_buf
+	lodsb
+	mov     dl, al
+	mov     ah, 02h
+	int     21h
+	loop    .print_buf
 
-    call print_crlf
-    mov si, msg_done
-    call print_str
+	call    print_crlf
+	mov     si, msg_done
+	call    print_str
 
-    mov ax, 4C00h
-    int 21h
+	mov     ax, 4C00h
+	int     21h
 
 ; ---- Subroutines ----
 
 print_str:
-    lodsb
-    or  al, al
-    jz  .done
-    mov dl, al
-    mov ah, 02h
-    int 21h
+	lodsb
+	or      al, al
+	jz      .done
+	mov     dl, al
+	mov     ah, 02h
+	int     21h
     jmp print_str
 .done:
-    ret
+	ret
 
 print_char:
-    mov dl, al
-    mov ah, 02h
-    int 21h
-    ret
+	mov     dl, al
+	mov     ah, 02h
+	int     21h
+	ret
 
 print_crlf:
-    mov dl, 13
-    mov ah, 02h
-    int 21h
-    mov dl, 10
-    mov ah, 02h
-    int 21h
-    ret
+	mov     dl, 13
+	mov     ah, 02h
+	int     21h
+	mov     dl, 10
+	mov     ah, 02h
+	int     21h
+	ret
 
 segment .data
 

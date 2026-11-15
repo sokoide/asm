@@ -23,74 +23,74 @@ org 0x7C00
 ; ============================================================
 
 start:
-    xor ax, ax
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov sp, 0x7C00
+	xor     ax, ax
+	mov     ds, ax
+	mov     es, ax
+	mov     ss, ax
+	mov     sp, 0x7C00
 
     ; --- Load sector 2 (contains 32-bit code) ---
-    mov ah, 0x02
-    mov al, 1
-    mov ch, 0
-    mov cl, 2               ; Sector 2
-    mov dh, 0
-    mov dl, 0x00
-    mov bx, 0x7E00          ; Load at 0x7E00
-    int 0x13
-    jc  .error
+	mov     ah, 0x02
+	mov     al, 1
+	mov     ch, 0
+	mov     cl, 2               ; Sector 2
+	mov     dh, 0
+	mov     dl, 0x00
+	mov     bx, 0x7E00          ; Load at 0x7E00
+	int     0x13
+	jc      .error
 
     ; --- Print status (last use of 16-bit uart_putc) ---
-    mov si, msg_switching
-    call print_str_16
+	mov     si, msg_switching
+	call    print_str_16
 
     ; ===== Enter Protected Mode =====
 
     ; Step 1: Disable interrupts (NMI and hardware)
-    cli
+	cli
 
     ; Step 2: Load GDT register
     lgdt [gdt_descriptor]
 
     ; Step 3: Set PE (Protection Enable) bit in CR0
-    mov eax, cr0
-    or  eax, 1              ; Bit 0 = PE
-    mov cr0, eax
+	mov     eax, cr0
+	or      eax, 1              ; Bit 0 = PE
+	mov     cr0, eax
 
     ; Step 4: Far jump to flush 16-bit prefetch queue
     ;   0x08 = code segment selector (GDT index 1, ring 0)
     jmp 0x08:pm_entry
 
 .error:
-    mov si, msg_err
-    call print_str_16
-    cli
-    hlt
+	mov     si, msg_err
+	call    print_str_16
+	cli
+	hlt
 
 ; ---- 16-bit UART subroutines ----
 
 uart_putc_16:
-    push    dx
-    push    ax
-    mov     dx, 0x3FD
+	push    dx
+	push    ax
+	mov     dx, 0x3FD
 .wait:
-    in      al, dx
-    test    al, 0x20
-    jz      .wait
-    mov     dx, 0x3F8
-    pop     ax
-    out     dx, al
-    pop     dx
-    ret
+	in      al, dx
+	test    al, 0x20
+	jz      .wait
+	mov     dx, 0x3F8
+	pop     ax
+	out     dx, al
+	pop     dx
+	ret
 
 print_str_16:
-    lodsb
-    or  al, al
-    jz  .ret
-    call uart_putc_16
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc_16
     jmp print_str_16
 .ret:
-    ret
+	ret
 
 msg_switching db "Switching to PM...", 13, 10, 0
 msg_err       db "Disk read error!", 0
@@ -146,56 +146,56 @@ pm_entry:
     ; But I/O ports (IN/OUT) still work at CPL=0
 
     ; Step 5: Set up data segment registers with data selector
-    mov ax, 0x10             ; Data segment selector (GDT index 2)
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov esp, 0x90000         ; Stack in safe memory
+	mov     ax, 0x10             ; Data segment selector (GDT index 2)
+	mov     ds, ax
+	mov     es, ax
+	mov     fs, ax
+	mov     gs, ax
+	mov     ss, ax
+	mov     esp, 0x90000         ; Stack in safe memory
 
     ; Step 6: Print messages via COM1 serial (I/O port)
     ; In protected mode, OUT/IN instructions still work
 
-    mov esi, pm_msg1
-    call print_str_32
-    mov esi, pm_msg2
-    call print_str_32
-    mov esi, pm_msg3
-    call print_str_32
-    mov esi, pm_msg4
-    call print_str_32
+	mov     esi, pm_msg1
+	call    print_str_32
+	mov     esi, pm_msg2
+	call    print_str_32
+	mov     esi, pm_msg3
+	call    print_str_32
+	mov     esi, pm_msg4
+	call    print_str_32
 
 .done:
-    hlt
+	hlt
     jmp .done
 
 ; ---- 32-bit subroutines ----
 
 ; uart_putc_32: output character in AL to COM1
 uart_putc_32:
-    push    edx
-    push    eax
-    mov     dx, 0x3FD
+	push    edx
+	push    eax
+	mov     dx, 0x3FD
 .wait:
-    in      al, dx
-    test    al, 0x20
-    jz      .wait
-    mov     dx, 0x3F8
-    pop     eax
-    out     dx, al
-    pop     edx
-    ret
+	in      al, dx
+	test    al, 0x20
+	jz      .wait
+	mov     dx, 0x3F8
+	pop     eax
+	out     dx, al
+	pop     edx
+	ret
 
 ; print_str_32: print null-terminated string at ESI
 print_str_32:
-    lodsb
-    or  al, al
-    jz  .ret
-    call uart_putc_32
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc_32
     jmp print_str_32
 .ret:
-    ret
+	ret
 
 ; ---- Sector 2 Data ----
 pm_msg1 db "CR0.PE = 1: protected mode enabled", 13, 10, 0

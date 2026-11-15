@@ -17,218 +17,218 @@ global _start, scenario_halt
 section .text
 _start:
     ; バナーとヘルプを表示
-    mov  esi, msg_banner
-    call print_str
-    mov  esi, msg_h1
-    call print_str
-    mov  esi, msg_h2
-    call print_str
-    mov  esi, msg_h3
-    call print_str
+	mov     esi, msg_banner
+	call    print_str
+	mov     esi, msg_h1
+	call    print_str
+	mov     esi, msg_h2
+	call    print_str
+	mov     esi, msg_h3
+	call    print_str
 
     ; メインループ: プロンプト表示 → 1 行読み込み → コマンド判定
 .main:
-    mov  esi, msg_prompt
-    call print_str
-    call read_line
-    call print_crlf
+	mov     esi, msg_prompt
+	call    print_str
+	call    read_line
+	call    print_crlf
 
     ; 入力と "hello" を比較
-    mov  esi, input
-    mov  edi, cmd_hello
-    call strcmp
-    je   .hello
+	mov     esi, input
+	mov     edi, cmd_hello
+	call    strcmp
+	je      .hello
 
     ; 入力と "help" を比較
-    mov  esi, input
-    mov  edi, cmd_help
-    call strcmp
-    je   .help
+	mov     esi, input
+	mov     edi, cmd_help
+	call    strcmp
+	je      .help
 
     ; 入力と "quit" を比較
-    mov  esi, input
-    mov  edi, cmd_quit
-    call strcmp
-    je   .quit
+	mov     esi, input
+	mov     edi, cmd_quit
+	call    strcmp
+	je      .quit
 
     ; 空行? (先頭が NULL なら何もせずループへ)
-    mov  al, [input]
-    or   al, al
-    jz   .main
+	mov     al, [input]
+	or      al, al
+	jz      .main
 
     ; 不明なコマンド
-    mov  esi, msg_unk
-    call print_str
+	mov     esi, msg_unk
+	call    print_str
     jmp  .main
 
 .hello:
-    mov  esi, msg_hi
-    call print_str
+	mov     esi, msg_hi
+	call    print_str
     jmp  .main
 
 .help:
-    mov  esi, msg_h1
-    call print_str
-    mov  esi, msg_h2
-    call print_str
-    mov  esi, msg_h3
-    call print_str
+	mov     esi, msg_h1
+	call    print_str
+	mov     esi, msg_h2
+	call    print_str
+	mov     esi, msg_h3
+	call    print_str
     jmp  .main
 
 .quit:
-    mov  esi, msg_bye
-    call print_str
+	mov     esi, msg_bye
+	call    print_str
 
 .halt:
-    cli                        ; 割り込み禁止
-    hlt                        ; CPU 停止
+	cli ; 割り込み禁止
+	hlt ; CPU 停止
     jmp  .halt                 ; NMI で再開しても再度停止
 
 ; ---- サブルーチン ----
 
 ; uart_putc: AL の 1 文字を COM1 (16550 UART, I/O 0x3F8) へ出力
 uart_putc:
-    push edx
-    push eax
-    mov  dx, 0x3FD             ; LSR (ラインステータスレジスタ)
+	push    edx
+	push    eax
+	mov     dx, 0x3FD             ; LSR (ラインステータスレジスタ)
 .wait:
-    in   al, dx
-    test al, 0x20              ; bit 5 = THRE (送信保持レジスタ空)
-    jz   .wait
-    mov  dx, 0x3F8             ; THR (送信保持レジスタ)
-    pop  eax
-    out  dx, al
-    pop  edx
-    ret
+	in      al, dx
+	test    al, 0x20              ; bit 5 = THRE (送信保持レジスタ空)
+	jz      .wait
+	mov     dx, 0x3F8             ; THR (送信保持レジスタ)
+	pop     eax
+	out     dx, al
+	pop     edx
+	ret
 
 ; uart_getc: COM1 から 1 文字を受信して AL に返す
 uart_getc:
-    push edx
-    mov  dx, 0x3FD             ; LSR (ラインステータスレジスタ)
+	push    edx
+	mov     dx, 0x3FD             ; LSR (ラインステータスレジスタ)
 .wait:
-    in   al, dx
-    test al, 0x01              ; bit 0 = DR (受信データあり)
-    jz   .wait
-    mov  dx, 0x3F8             ; RBR (受信バッファレジスタ)
-    in   al, dx
-    pop  edx
-    ret
+	in      al, dx
+	test    al, 0x01              ; bit 0 = DR (受信データあり)
+	jz      .wait
+	mov     dx, 0x3F8             ; RBR (受信バッファレジスタ)
+	in      al, dx
+	pop     edx
+	ret
 
 ; read_line: Enter まで 1 行読み込み、NULL 終端で input バッファへ格納
 ;   - 表示可能文字 (>= 0x20) は格納してエコー
 ;   - Backspace (0x08) は末尾 1 文字を削除 ("BS space BS" を出力)
 ;   - CR/LF で確定。バッファ上限は INPUT_MAX 文字 (超過分は無視)
 read_line:
-    push eax
-    push ebx
-    push ecx
-    push edx
-    push esi
-    push edi
-    push ebp
-    mov  edi, input
+	push    eax
+	push    ebx
+	push    ecx
+	push    edx
+	push    esi
+	push    edi
+	push    ebp
+	mov     edi, input
 .rl_loop:
-    call uart_getc
+	call    uart_getc
     ; Enter (CR または LF) で確定
-    cmp  al, 13
-    je   .rl_enter
-    cmp  al, 10
-    je   .rl_enter
+	cmp     al, 13
+	je      .rl_enter
+	cmp     al, 10
+	je      .rl_enter
     ; Backspace (0x08)
-    cmp  al, 8
-    je   .rl_bs
+	cmp     al, 8
+	je      .rl_bs
     ; 表示可能文字のみ格納 (0x20 以上)
-    cmp  al, 0x20
-    jb   .rl_loop
+	cmp     al, 0x20
+	jb      .rl_loop
     ; バッファ上限チェック
-    push eax
-    mov  eax, edi
-    sub  eax, input
-    cmp  eax, INPUT_MAX
-    pop  eax
-    jge  .rl_loop
+	push    eax
+	mov     eax, edi
+	sub     eax, input
+	cmp     eax, INPUT_MAX
+	pop     eax
+	jge     .rl_loop
     ; 格納してエコー
-    mov  [edi], al
-    inc  edi
-    call uart_putc
+	mov     [edi], al
+	inc     edi
+	call    uart_putc
     jmp  .rl_loop
 .rl_bs:
     ; バッファが空なら無視
-    mov  eax, edi
-    sub  eax, input
-    or   eax, eax
-    jz   .rl_loop
-    dec  edi
+	mov     eax, edi
+	sub     eax, input
+	or      eax, eax
+	jz      .rl_loop
+	dec     edi
     ; "BS space BS" を出力して画面上の 1 文字を消す
-    push eax
-    mov  al, 8
-    call uart_putc
-    mov  al, ' '
-    call uart_putc
-    mov  al, 8
-    call uart_putc
-    pop  eax
+	push    eax
+	mov     al, 8
+	call    uart_putc
+	mov     al, ' '
+	call    uart_putc
+	mov     al, 8
+	call    uart_putc
+	pop     eax
     jmp  .rl_loop
 .rl_enter:
-    mov  byte [edi], 0         ; NULL 終端
-    pop  ebp
-    pop  edi
-    pop  esi
-    pop  edx
-    pop  ecx
-    pop  ebx
-    pop  eax
-    ret
+	mov     byte [edi], 0         ; NULL 終端
+	pop     ebp
+	pop     edi
+	pop     esi
+	pop     edx
+	pop     ecx
+	pop     ebx
+	pop     eax
+	ret
 
 ; strcmp: ESI と EDI が指す文字列を比較。一致したら ZF=1 で戻る
 strcmp:
-    push eax
-    push ebx
-    push ecx
-    push edx
-    push esi
-    push edi
-    push ebp
+	push    eax
+	push    ebx
+	push    ecx
+	push    edx
+	push    esi
+	push    edi
+	push    ebp
 .sc_loop:
-    mov  al, [esi]
-    mov  bl, [edi]
-    cmp  al, bl
-    jne  .sc_done
-    or   al, al                ; 両方 NULL に達したら一致
-    jz   .sc_done
-    inc  esi
-    inc  edi
+	mov     al, [esi]
+	mov     bl, [edi]
+	cmp     al, bl
+	jne     .sc_done
+	or      al, al                ; 両方 NULL に達したら一致
+	jz      .sc_done
+	inc     esi
+	inc     edi
     jmp  .sc_loop
 .sc_done:
-    cmp  al, bl                ; 最後の比較結果で ZF を設定
-    pop  ebp
-    pop  edi
-    pop  esi
-    pop  edx
-    pop  ecx
-    pop  ebx
-    pop  eax
-    ret
+	cmp     al, bl                ; 最後の比較結果で ZF を設定
+	pop     ebp
+	pop     edi
+	pop     esi
+	pop     edx
+	pop     ecx
+	pop     ebx
+	pop     eax
+	ret
 
 ; print_str: ESI が指す NULL 終端文字列を出力 (ESI を進める)
 print_str:
-    lodsb
-    or   al, al
-    jz   .ret
-    call uart_putc
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc
     jmp  print_str
 .ret:
-    ret
+	ret
 
 ; print_crlf: CR + LF を出力
 print_crlf:
-    push eax
-    mov  al, 13
-    call uart_putc
-    mov  al, 10
-    call uart_putc
-    pop  eax
-    ret
+	push    eax
+	mov     al, 13
+	call    uart_putc
+	mov     al, 10
+	call    uart_putc
+	pop     eax
+	ret
 
 ; ---- データ ----
 section .rodata

@@ -51,117 +51,117 @@ global _start
 
 section .text
 _start:
-    xor ax, ax
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov sp, 0x7C00
-    cld                     ; Direction flag = forward (SI/DI increment)
+	xor     ax, ax
+	mov     ds, ax
+	mov     es, ax
+	mov     ss, ax
+	mov     sp, 0x7C00
+	cld ; Direction flag = forward (SI/DI increment)
 
     ; --- Build source data: byte i = i (0..99) ---
-    mov di, src
-    xor al, al              ; AL = 0
-    mov cx, 100
+	mov     di, src
+	xor     al, al              ; AL = 0
+	mov     cx, 100
 .fill:
-    stosb                   ; [ES:DI] = AL, DI++
-    inc al
-    loop .fill              ; CX--, repeat while CX != 0
+	stosb ; [ES:DI] = AL, DI++
+	inc     al
+	loop    .fill              ; CX--, repeat while CX != 0
 
     ; --- Copy body: REP MOVSB (9+17n = 1709 cycles for n=100, see breakdown above) ---
-    mov si, src             ; DS:SI = source
-    mov di, dst             ; ES:DI = destination
-    mov cx, 100             ; byte count
+	mov     si, src             ; DS:SI = source
+	mov     di, dst             ; ES:DI = destination
+	mov     cx, 100             ; byte count
     rep movsb               ; copy CX bytes, SI++/DI++ each
 
     ; --- Checksum: sum 100 destination bytes ---
-    xor bx, bx              ; BX = 0 (16-bit accumulator: sum = 4950 > 255)
-    mov si, dst
-    mov cx, 100
+	xor     bx, bx              ; BX = 0 (16-bit accumulator: sum = 4950 > 255)
+	mov     si, dst
+	mov     cx, 100
 .sum:
-    lodsb                   ; AL = [DS:SI], SI++
-    add bl, al
-    adc bh, 0               ; carry into high byte
-    loop .sum
+	lodsb ; AL = [DS:SI], SI++
+	add     bl, al
+	adc     bh, 0               ; carry into high byte
+	loop    .sum
 
     ; --- Verify and print result ---
-    cmp bx, 0x1356          ; 0+1+...+99 = 4950 = 0x1356
-    jne .fail
+	cmp     bx, 0x1356          ; 0+1+...+99 = 4950 = 0x1356
+	jne     .fail
 
-    mov si, msg_ok
-    call print_str
-    mov ax, bx
-    call print_hex16
-    call print_crlf
+	mov     si, msg_ok
+	call    print_str
+	mov     ax, bx
+	call    print_hex16
+	call    print_crlf
     jmp .halt
 
 .fail:
-    mov si, msg_fail
-    call print_str
-    mov ax, bx
-    call print_hex16
-    call print_crlf
+	mov     si, msg_fail
+	call    print_str
+	mov     ax, bx
+	call    print_hex16
+	call    print_crlf
 
 .halt:
-    cli
-    hlt
+	cli
+	hlt
     jmp .halt
 
 ; ---- Subroutines ----
 
 uart_putc:
-    push    dx
-    push    ax
-    mov     dx, 0x3FD       ; LSR (Line Status Register)
+	push    dx
+	push    ax
+	mov     dx, 0x3FD       ; LSR (Line Status Register)
 .wait:
-    in      al, dx
-    test    al, 0x20        ; bit 5 = THRE
-    jz      .wait
-    mov     dx, 0x3F8       ; THR
-    pop     ax
-    out     dx, al
-    pop     dx
-    ret
+	in      al, dx
+	test    al, 0x20        ; bit 5 = THRE
+	jz      .wait
+	mov     dx, 0x3F8       ; THR
+	pop     ax
+	out     dx, al
+	pop     dx
+	ret
 
 print_str:
-    lodsb
-    or  al, al
-    jz  .ret
-    call uart_putc
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc
     jmp print_str
 .ret:
-    ret
+	ret
 
 print_hex16:                ; AX in 4 hex digits
-    push ax
-    mov al, ah
-    call print_hex8         ; high byte
-    pop ax
+	push    ax
+	mov     al, ah
+	call    print_hex8         ; high byte
+	pop     ax
     jmp print_hex8          ; tail call for low byte
 
 print_hex8:
-    push ax
-    mov cl, 4
-    shr al, cl
-    call print_nibble
-    pop ax
+	push    ax
+	mov     cl, 4
+	shr     al, cl
+	call    print_nibble
+	pop     ax
 print_nibble:
-    and al, 0x0F
-    add al, '0'
-    cmp al, '9'
-    jle .out
-    add al, 7
+	and     al, 0x0F
+	add     al, '0'
+	cmp     al, '9'
+	jle     .out
+	add     al, 7
 .out:
-    call uart_putc
-    ret
+	call    uart_putc
+	ret
 
 print_crlf:
-    push ax
-    mov al, 13
-    call uart_putc
-    mov al, 10
-    call uart_putc
-    pop ax
-    ret
+	push    ax
+	mov     al, 13
+	call    uart_putc
+	mov     al, 10
+	call    uart_putc
+	pop     ax
+	ret
 
 ; ---- Data ----
 msg_ok   db "COPY OK CHECKSUM=", 0

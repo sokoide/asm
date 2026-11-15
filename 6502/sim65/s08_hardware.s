@@ -19,58 +19,58 @@ msg_delay:  .asciiz "Nested 255x255: done (~326656 cyc ~ 0.33s@1MHz)"
 
 .segment "CODE"
 _main:
-    lda #<msg_hdr
-    ldx #>msg_hdr
-    jsr print_str
-    jsr print_nl
+	lda     #<msg_hdr
+	ldx     #>msg_hdr
+	jsr     print_str
+	jsr     print_nl
 
 ; ---- Demo 1: Fast loop with cycle calculation ----
 ; Per iteration (BNE taken):  3xNOP(2) + DEX(2) + BNE(3) = 11 cycles
 ; Last iteration (fall thru): 3xNOP(2) + DEX(2) + BNE(2) = 10 cycles
 ; Total: 7 * 11 + 1 * 10 = 87 cycles
-    lda #<msg_fast
-    ldx #>msg_fast
-    jsr print_str
+	lda     #<msg_fast
+	ldx     #>msg_fast
+	jsr     print_str
 
-    ldx #8
+	ldx     #8
 @fast_loop:
-    nop
-    nop
-    nop
-    dex
-    bne @fast_loop
+	nop
+	nop
+	nop
+	dex
+	bne     @fast_loop
 
-    lda #87             ; 7*11 + 10 = 87
-    jsr print_dec
-    lda #<msg_cyc
-    ldx #>msg_cyc
-    jsr print_str
-    jsr print_nl
+	lda     #87             ; 7*11 + 10 = 87
+	jsr     print_dec
+	lda     #<msg_cyc
+	ldx     #>msg_cyc
+	jsr     print_str
+	jsr     print_nl
 
 ; ---- Demo 2: NOP-heavy loop ----
 ; Per iteration (BNE taken):  5xNOP(2) + DEX(2) + BNE(3) = 15 cycles
 ; Last iteration (fall thru): 5xNOP(2) + DEX(2) + BNE(2) = 14 cycles
 ; Total: 4 * 15 + 1 * 14 = 74 cycles
-    lda #<msg_nop
-    ldx #>msg_nop
-    jsr print_str
+	lda     #<msg_nop
+	ldx     #>msg_nop
+	jsr     print_str
 
-    ldx #5
+	ldx     #5
 @nop_loop:
-    nop
-    nop
-    nop
-    nop
-    nop
-    dex
-    bne @nop_loop
+	nop
+	nop
+	nop
+	nop
+	nop
+	dex
+	bne     @nop_loop
 
-    lda #74             ; 4*15 + 14 = 74
-    jsr print_dec
-    lda #<msg_cyc
-    ldx #>msg_cyc
-    jsr print_str
-    jsr print_nl
+	lda     #74             ; 4*15 + 14 = 74
+	jsr     print_dec
+	lda     #<msg_cyc
+	ldx     #>msg_cyc
+	jsr     print_str
+	jsr     print_nl
 
 ; ---- Demo 3: Nested delay (long wait) ----
 ; Used in real hardware for timing delays
@@ -80,19 +80,19 @@ _main:
 ;   = LDX(2) + (LDY(2)+1274+DEX(2)+BNE(3))*254 + (LDY(2)+1274+DEX(2)+BNE(2))*1
 ;   = 2 + 1281*254 + 1280*1 = 326656 cycles
 ; At 1 MHz: ~0.33 seconds
-    lda #<msg_delay
-    ldx #>msg_delay
-    jsr print_str
-    jsr print_nl
+	lda     #<msg_delay
+	ldx     #>msg_delay
+	jsr     print_str
+	jsr     print_nl
 
-    ldx #$FF
+	ldx     #$FF
 @delay_outer:
-    ldy #$FF
+	ldy     #$FF
 @delay_inner:
-    dey
-    bne @delay_inner
-    dex
-    bne @delay_outer
+	dey
+	bne     @delay_inner
+	dex
+	bne     @delay_outer
 
-    lda #0
-    rts
+	lda     #0
+	rts

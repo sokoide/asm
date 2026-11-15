@@ -25,62 +25,62 @@ msg_save:  .asciiz "Save/restore: push $42 -> overwrite -> pull=$"
 .segment "CODE"
 _main:
 ; ---- Demo 1: Stack pointer movement ----
-    tsx
-    stx sp_before
+	tsx
+	stx     sp_before
 
-    lda #$AA
-    pha
-    lda #$CC
-    pha
+	lda     #$AA
+	pha
+	lda     #$CC
+	pha
 
-    tsx
-    stx sp_after
+	tsx
+	stx     sp_after
 
-    lda #<msg_sp1
-    ldx #>msg_sp1
-    jsr print_str
-    lda sp_before
-    jsr print_hex8
+	lda     #<msg_sp1
+	ldx     #>msg_sp1
+	jsr     print_str
+	lda     sp_before
+	jsr     print_hex8
 
-    lda #<msg_sp2
-    ldx #>msg_sp2
-    jsr print_str
-    lda sp_after
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_sp2
+	ldx     #>msg_sp2
+	jsr     print_str
+	lda     sp_after
+	jsr     print_hex8
+	jsr     print_nl
 
 ; ---- Demo 2: LIFO order ----
-    pla
-    sta val1
-    pla
-    sta val2
+	pla
+	sta     val1
+	pla
+	sta     val2
 
-    lda #<msg_lifo1
-    ldx #>msg_lifo1
-    jsr print_str
-    lda val1
-    jsr print_hex8
+	lda     #<msg_lifo1
+	ldx     #>msg_lifo1
+	jsr     print_str
+	lda     val1
+	jsr     print_hex8
 
-    lda #<msg_lifo2
-    ldx #>msg_lifo2
-    jsr print_str
-    lda val2
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_lifo2
+	ldx     #>msg_lifo2
+	jsr     print_str
+	lda     val2
+	jsr     print_hex8
+	jsr     print_nl
 
 ; ---- Demo 3: Save/restore ----
-    lda #$42
-    pha
-    lda #$FF
-    pla
-    sta val1
+	lda     #$42
+	pha
+	lda     #$FF
+	pla
+	sta     val1
 
-    lda #<msg_save
-    ldx #>msg_save
-    jsr print_str
-    lda val1
-    jsr print_hex8
-    jsr print_nl
+	lda     #<msg_save
+	ldx     #>msg_save
+	jsr     print_str
+	lda     val1
+	jsr     print_hex8
+	jsr     print_nl
 
-    lda #0
-    rts
+	lda     #0
+	rts

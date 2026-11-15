@@ -12,104 +12,104 @@ segment .text
 global start
 
 start:
-    mov ax, seg msg_menu
-    mov ds, ax
-    mov es, ax
+	mov     ax, seg msg_menu
+	mov     ds, ax
+	mov     es, ax
 
     ; --- Main menu loop ---
 .menu:
-    call print_crlf
-    mov si, msg_menu
-    call print_str
-    mov si, msg_prompt
-    call print_str
+	call    print_crlf
+	mov     si, msg_menu
+	call    print_str
+	mov     si, msg_prompt
+	call    print_str
 
-    mov ah, 07h             ; read key without echo
-    int 21h                 ; AL = key
+	mov     ah, 07h             ; read key without echo
+	int     21h                 ; AL = key
 
     ; Dispatch on key
-    cmp al, '1'
-    je  .option_hello
-    cmp al, '2'
-    je  .option_signed
-    cmp al, '3'
-    je  .option_unsigned
-    cmp al, 'q'
-    je  .quit
-    cmp al, 'Q'
-    je  .quit
+	cmp     al, '1'
+	je      .option_hello
+	cmp     al, '2'
+	je      .option_signed
+	cmp     al, '3'
+	je      .option_unsigned
+	cmp     al, 'q'
+	je      .quit
+	cmp     al, 'Q'
+	je      .quit
 
     ; Unknown key
-    mov si, msg_unknown
-    call print_str
+	mov     si, msg_unknown
+	call    print_str
     jmp .menu
 
 .option_hello:
-    mov si, msg_hello
-    call print_str
+	mov     si, msg_hello
+	call    print_str
     jmp .menu
 
 .option_signed:
     ; Demonstrate signed comparison
-    mov si, msg_signed
-    call print_str
+	mov     si, msg_signed
+	call    print_str
 
-    mov al, 0FBh            ; AL = 0xFB = -5 (signed) or 251 (unsigned)
-    mov bl, 10
-    cmp al, bl
-    jl  .signed_less
-    mov si, msg_ge
-    call print_str
+	mov     al, 0FBh            ; AL = 0xFB = -5 (signed) or 251 (unsigned)
+	mov     bl, 10
+	cmp     al, bl
+	jl      .signed_less
+	mov     si, msg_ge
+	call    print_str
     jmp .menu
 .signed_less:
-    mov si, msg_lt
-    call print_str
+	mov     si, msg_lt
+	call    print_str
     jmp .menu
 
 .option_unsigned:
     ; Demonstrate unsigned comparison
-    mov si, msg_unsigned
-    call print_str
+	mov     si, msg_unsigned
+	call    print_str
 
-    mov al, 0FBh            ; same 0xFB, but compared unsigned
-    mov bl, 10
-    cmp al, bl
-    jb  .unsigned_below
-    mov si, msg_ae
-    call print_str
+	mov     al, 0FBh            ; same 0xFB, but compared unsigned
+	mov     bl, 10
+	cmp     al, bl
+	jb      .unsigned_below
+	mov     si, msg_ae
+	call    print_str
     jmp .menu
 .unsigned_below:
-    mov si, msg_below
-    call print_str
+	mov     si, msg_below
+	call    print_str
     jmp .menu
 
 .quit:
-    mov si, msg_bye
-    call print_str
-    mov ax, 4C00h
-    int 21h
+	mov     si, msg_bye
+	call    print_str
+	mov     ax, 4C00h
+	int     21h
 
 ; ---- Subroutines ----
 
 print_str:
-    lodsb
-    or  al, al
-    jz  .done
-    mov dl, al
-    mov ah, 02h
-    int 21h
+	lodsb
+	or      al, al
+	jz      .done
+	mov     dl, al
+	mov     ah, 02h
+	int     21h
     jmp print_str
 .done:
-    ret
+	ret
 
 print_crlf:
-    mov dl, 13
-    mov ah, 02h
-    int 21h
-    mov dl, 10
-    mov ah, 02h
-    int 21h
-    ret
+	mov     dl, 13
+	mov     ah, 02h
+	int     21h
+	mov     dl, 10
+	mov     ah, 02h
+	int     21h
+	ret
 
 segment .data
 

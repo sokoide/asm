@@ -13,143 +13,143 @@ global _start
 
 section .text
 _start:
-    xor ax, ax
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov sp, 0x7C00
+	xor     ax, ax
+	mov     ds, ax
+	mov     es, ax
+	mov     ss, ax
+	mov     sp, 0x7C00
 
     ; --- Call 1: Print a string ---
-    mov si, msg1            ; Parameter: SI = string pointer
-    call print_str
-    call print_crlf
+	mov     si, msg1            ; Parameter: SI = string pointer
+	call    print_str
+	call    print_crlf
 
     ; --- Call 2: Print hex values (reuse print_hex16 from s02) ---
-    mov si, msg2
-    call print_str
-    mov ax, 0xBEEF          ; Parameter: AX = value to display
-    call print_hex16
-    call print_crlf
+	mov     si, msg2
+	call    print_str
+	mov     ax, 0xBEEF          ; Parameter: AX = value to display
+	call    print_hex16
+	call    print_crlf
 
-    mov si, msg3
-    call print_str
-    mov ax, 0xCAFE
-    call print_hex16
-    call print_crlf
+	mov     si, msg3
+	call    print_str
+	mov     ax, 0xCAFE
+	call    print_hex16
+	call    print_crlf
 
     ; --- Call 3: Nested call (print_dots calls uart_putc) ---
-    mov si, msg4
-    call print_str
-    mov cx, 5               ; Parameter: CX = count
-    call print_dots
-    call print_crlf
+	mov     si, msg4
+	call    print_str
+	mov     cx, 5               ; Parameter: CX = count
+	call    print_dots
+	call    print_crlf
 
     ; --- Call 4: Compute and display (add_bytes) ---
-    mov al, 42              ; Parameter: AL = first operand
-    mov bl, 13              ; Parameter: BL = second operand
-    call add_bytes           ; Returns: AL = AL + BL
-    push ax
-    mov si, msg5
-    call print_str
-    pop ax
-    call print_hex8
-    call print_crlf
+	mov     al, 42              ; Parameter: AL = first operand
+	mov     bl, 13              ; Parameter: BL = second operand
+	call    add_bytes           ; Returns: AL = AL + BL
+	push    ax
+	mov     si, msg5
+	call    print_str
+	pop     ax
+	call    print_hex8
+	call    print_crlf
 
-    mov si, msg_done
-    call print_str
+	mov     si, msg_done
+	call    print_str
 
 .halt:
-    cli
-    hlt
+	cli
+	hlt
     jmp .halt
 
 ; ---- Subroutines ----
 
 ; uart_putc: output character in AL to COM1 (16550 UART at 0x3F8)
 uart_putc:
-    push    dx
-    push    ax
-    mov     dx, 0x3FD
+	push    dx
+	push    ax
+	mov     dx, 0x3FD
 .wait:
-    in      al, dx
-    test    al, 0x20
-    jz      .wait
-    mov     dx, 0x3F8
-    pop     ax
-    out     dx, al
-    pop     dx
-    ret
+	in      al, dx
+	test    al, 0x20
+	jz      .wait
+	mov     dx, 0x3F8
+	pop     ax
+	out     dx, al
+	pop     dx
+	ret
 
 ; add_bytes: return AL + BL in AL
 ;   Input:  AL, BL
 ;   Output: AL = AL + BL
 add_bytes:
-    add al, bl
-    ret
+	add     al, bl
+	ret
 
 ; print_dots: print CX dots using nested call
 print_dots:
-    mov al, '.'
-    call uart_putc          ; Nested call
-    loop print_dots
-    ret
+	mov     al, '.'
+	call    uart_putc          ; Nested call
+	loop    print_dots
+	ret
 
 ; print_str: print null-terminated string at DS:SI
 ;   Preserves general-purpose registers using 8086 PUSH/POP
 print_str:
-    push ax
-    push bx
-    push cx
-    push dx
-    push si
-    push di
-    push bp
+	push    ax
+	push    bx
+	push    cx
+	push    dx
+	push    si
+	push    di
+	push    bp
 .loop:
-    lodsb
-    or  al, al
-    jz  .done
-    call uart_putc
+	lodsb
+	or      al, al
+	jz      .done
+	call    uart_putc
     jmp .loop
 .done:
-    pop bp
-    pop di
-    pop si
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
+	pop     bp
+	pop     di
+	pop     si
+	pop     dx
+	pop     cx
+	pop     bx
+	pop     ax
+	ret
 
 ; print_hex16: print AX as 4 hex digits
 print_hex16:
-    push ax
-    mov al, ah
-    call print_hex8
-    pop ax
+	push    ax
+	mov     al, ah
+	call    print_hex8
+	pop     ax
 print_hex8:
-    push ax
-    mov cl, 4
-    shr al, cl
-    call print_nibble
-    pop ax
+	push    ax
+	mov     cl, 4
+	shr     al, cl
+	call    print_nibble
+	pop     ax
 print_nibble:
-    and al, 0x0F
-    add al, '0'
-    cmp al, '9'
-    jle .out
-    add al, 7
+	and     al, 0x0F
+	add     al, '0'
+	cmp     al, '9'
+	jle     .out
+	add     al, 7
 .out:
-    call uart_putc
-    ret
+	call    uart_putc
+	ret
 
 print_crlf:
-    push ax
-    mov al, 13
-    call uart_putc
-    mov al, 10
-    call uart_putc
-    pop ax
-    ret
+	push    ax
+	mov     al, 13
+	call    uart_putc
+	mov     al, 10
+	call    uart_putc
+	pop     ax
+	ret
 
 ; ---- Data ----
 msg1    db "Hello from subroutine!", 0

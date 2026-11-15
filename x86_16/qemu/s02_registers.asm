@@ -13,113 +13,113 @@ global _start
 
 section .text
 _start:
-    xor ax, ax
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov sp, 0x7C00
+	xor     ax, ax
+	mov     ds, ax
+	mov     es, ax
+	mov     ss, ax
+	mov     sp, 0x7C00
 
     ; --- MOV: move data between registers ---
-    mov ax, 0x1234          ; AX = 0x1234
-    mov bx, ax              ; BX = AX (copy)
-    mov cx, 0x00FF          ; CX = 0x00FF
+	mov     ax, 0x1234          ; AX = 0x1234
+	mov     bx, ax              ; BX = AX (copy)
+	mov     cx, 0x00FF          ; CX = 0x00FF
 
     ; --- High/low byte access ---
-    mov dx, 0xABCD          ; DH = 0xAB, DL = 0xCD
+	mov     dx, 0xABCD          ; DH = 0xAB, DL = 0xCD
 
     ; --- ADD, SUB ---
-    mov ax, 10              ; AX = 10
-    mov bx, 20              ; BX = 20
-    add ax, bx              ; AX = 30 (0x001E)
-    mov cx, ax              ; CX = 30
-    sub cx, 5               ; CX = 25 (0x0019)
-    inc cx                  ; CX = 26 (0x001A)
-    dec cx                  ; CX = 25 again
+	mov     ax, 10              ; AX = 10
+	mov     bx, 20              ; BX = 20
+	add     ax, bx              ; AX = 30 (0x001E)
+	mov     cx, ax              ; CX = 30
+	sub     cx, 5               ; CX = 25 (0x0019)
+	inc     cx                  ; CX = 26 (0x001A)
+	dec     cx                  ; CX = 25 again
 
     ; --- Display results ---
-    mov si, msg1
-    call print_str
-    mov ax, 0x1234
-    call print_hex16
-    call print_crlf
+	mov     si, msg1
+	call    print_str
+	mov     ax, 0x1234
+	call    print_hex16
+	call    print_crlf
 
-    mov si, msg2
-    call print_str
-    mov ax, 30
-    call print_hex16
-    call print_crlf
+	mov     si, msg2
+	call    print_str
+	mov     ax, 30
+	call    print_hex16
+	call    print_crlf
 
-    mov si, msg3
-    call print_str
-    mov ax, 25
-    call print_hex16
-    call print_crlf
+	mov     si, msg3
+	call    print_str
+	mov     ax, 25
+	call    print_hex16
+	call    print_crlf
 
-    mov si, msg_done
-    call print_str
+	mov     si, msg_done
+	call    print_str
 
 .halt:
-    cli
-    hlt
+	cli
+	hlt
     jmp .halt
 
 ; ---- Subroutines ----
 
 ; uart_putc: output character in AL to COM1 (16550 UART at 0x3F8)
 uart_putc:
-    push    dx
-    push    ax
-    mov     dx, 0x3FD
+	push    dx
+	push    ax
+	mov     dx, 0x3FD
 .wait:
-    in      al, dx
-    test    al, 0x20
-    jz      .wait
-    mov     dx, 0x3F8
-    pop     ax
-    out     dx, al
-    pop     dx
-    ret
+	in      al, dx
+	test    al, 0x20
+	jz      .wait
+	mov     dx, 0x3F8
+	pop     ax
+	out     dx, al
+	pop     dx
+	ret
 
 ; print_str: null-terminated string at DS:SI
 print_str:
-    lodsb
-    or  al, al
-    jz  .ret
-    call uart_putc
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc
     jmp print_str
 .ret:
-    ret
+	ret
 
 ; print_hex16: print AX as 4 hex digits
 print_hex16:
-    push ax
-    mov al, ah              ; High byte first
-    call print_hex8
-    pop ax                  ; Then low byte
+	push    ax
+	mov     al, ah              ; High byte first
+	call    print_hex8
+	pop     ax                  ; Then low byte
 print_hex8:
-    push ax
-    mov cl, 4
-    shr al, cl             ; High nibble
-    call print_nibble
-    pop ax                 ; Low nibble
+	push    ax
+	mov     cl, 4
+	shr     al, cl             ; High nibble
+	call    print_nibble
+	pop     ax                 ; Low nibble
 print_nibble:
-    and al, 0x0F
-    add al, '0'
-    cmp al, '9'
-    jle .out
-    add al, 7               ; 'A' - '9' - 1
+	and     al, 0x0F
+	add     al, '0'
+	cmp     al, '9'
+	jle     .out
+	add     al, 7               ; 'A' - '9' - 1
 .out:
-    call uart_putc
-    ret
+	call    uart_putc
+	ret
 
 print_crlf:
-    push ax
-    mov al, 13
-    call uart_putc
-    mov al, 10
-    call uart_putc
-    pop ax
-    ret
+	push    ax
+	mov     al, 13
+	call    uart_putc
+	mov     al, 10
+	call    uart_putc
+	pop     ax
+	ret
 
 ; ---- Data ----
 msg1    db "mov ax, 0x1234 -> AX=", 0

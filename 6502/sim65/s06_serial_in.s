@@ -15,22 +15,22 @@ msg_intro: .asciiz "Type chars (Enter=quit):"
 
 .segment "CODE"
 _main:
-    lda #<msg_intro
-    ldx #>msg_intro
-    jsr print_str
-    jsr print_nl
+	lda     #<msg_intro
+	ldx     #>msg_intro
+	jsr     print_str
+	jsr     print_nl
 
 @input_loop:
-    jsr _getchar
-    cmp #$0D
-    beq @done
-    cmp #$0A
-    beq @done
-    jsr _putchar
-    jmp @input_loop
+	jsr     _getchar
+	cmp     #$0D
+	beq     @done
+	cmp     #$0A
+	beq     @done
+	jsr     _putchar
+	jmp     @input_loop
 
 @done:
-    lda #$0A
-    jsr _putchar
-    lda #0
-    rts
+	lda     #$0A
+	jsr     _putchar
+	lda     #0
+	rts

@@ -26,74 +26,74 @@ str_ptr: .res 2
 ; print_str: print null-terminated string at (A/X = ptr)
 ; Preserves: Y (via y_save)
 print_str:
-    sta str_ptr
-    stx str_ptr+1
-    ldy #0
+	sta     str_ptr
+	stx     str_ptr+1
+	ldy     #0
 @ps_loop:
-    lda (str_ptr),y
-    beq @ps_done
-    sty y_save
-    jsr _putchar
-    ldy y_save
-    iny
-    jmp @ps_loop
+	lda     (str_ptr),y
+	beq     @ps_done
+	sty     y_save
+	jsr     _putchar
+	ldy     y_save
+	iny
+	jmp     @ps_loop
 @ps_done:
-    rts
+	rts
 
 ; print_nl: print newline ($0A)
 print_nl:
-    pha
-    lda #$0A
-    jsr _putchar
-    pla
-    rts
+	pha
+	lda     #$0A
+	jsr     _putchar
+	pla
+	rts
 
 ; print_hex8: print A as 2-digit hex
 print_hex8:
-    pha
-    lsr a
-    lsr a
-    lsr a
-    lsr a
-    jsr print_nibble
-    pla
-    and #$0F
-    jsr print_nibble
-    rts
+	pha
+	lsr     a
+	lsr     a
+	lsr     a
+	lsr     a
+	jsr     print_nibble
+	pla
+	and     #$0F
+	jsr     print_nibble
+	rts
 
 ; print_nibble: print low nibble of A as hex digit
 print_nibble:
-    cmp #10
-    bcc @digit
-    clc
-    adc #'A' - '0' - 10
+	cmp     #10
+	bcc     @digit
+	clc
+	adc     #'A' - '0' - 10
 @digit:
-    clc
-    adc #'0'
-    jmp _putchar
+	clc
+	adc     #'0'
+	jmp     _putchar
 
 ; print_dec: print A as decimal (0-99)
 print_dec:
-    pha
-    ldx #0
+	pha
+	ldx     #0
 @tens:
-    cmp #10
-    bcc @ones
-    sbc #10
-    inx
-    jmp @tens
+	cmp     #10
+	bcc     @ones
+	sbc     #10
+	inx
+	jmp     @tens
 @ones:
-    pha
-    cpx #0
-    beq @skip_tens
-    txa
-    clc
-    adc #'0'
-    jsr _putchar
+	pha
+	cpx     #0
+	beq     @skip_tens
+	txa
+	clc
+	adc     #'0'
+	jsr     _putchar
 @skip_tens:
-    pla
-    clc
-    adc #'0'
-    jsr _putchar
-    pla
-    rts
+	pla
+	clc
+	adc     #'0'
+	jsr     _putchar
+	pla
+	rts

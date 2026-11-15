@@ -17,17 +17,17 @@ global _start, scenario_halt
 
 section .text
 _start:
-    lea  rsi, [rel message]    ; RSI = 文字列へのポインタ (RIP 相対)
+	lea     rsi, [rel message]    ; RSI = 文字列へのポインタ (RIP 相対)
 .print_loop:
-    lodsb                      ; AL = [DS:RSI], RSI++ (DF = 0 なので正向き)
-    or   al, al                ; NULL 終端?
-    jz   .halt
-    call uart_putc             ; COM1 へ 1 文字出力
+	lodsb ; AL = [DS:RSI], RSI++ (DF = 0 なので正向き)
+	or      al, al                ; NULL 終端?
+	jz      .halt
+	call    uart_putc             ; COM1 へ 1 文字出力
     jmp  .print_loop
 
 .halt:
-    cli                        ; 割り込み禁止
-    hlt                        ; CPU 停止
+	cli ; 割り込み禁止
+	hlt ; CPU 停止
     jmp  .halt                 ; NMI で再開しても再度停止
 
 ; ---- サブルーチン ----
@@ -35,18 +35,18 @@ _start:
 ; uart_putc: AL の 1 文字を COM1 (16550 UART, I/O 0x3F8) へ出力
 ; ポート番号と IN/OUT 命令は 16/32-bit 版と同一 (ロングモードでも不変)
 uart_putc:
-    push rdx
-    push rax
-    mov  dx, 0x3FD             ; LSR (ラインステータスレジスタ)
+	push    rdx
+	push    rax
+	mov     dx, 0x3FD             ; LSR (ラインステータスレジスタ)
 .wait:
-    in   al, dx
-    test al, 0x20              ; bit 5 = THRE (送信保持レジスタ空)
-    jz   .wait
-    mov  dx, 0x3F8             ; THR (送信保持レジスタ)
-    pop  rax
-    out  dx, al
-    pop  rdx
-    ret
+	in      al, dx
+	test    al, 0x20              ; bit 5 = THRE (送信保持レジスタ空)
+	jz      .wait
+	mov     dx, 0x3F8             ; THR (送信保持レジスタ)
+	pop     rax
+	out     dx, al
+	pop     rdx
+	ret
 
 ; ---- データ ----
 section .rodata

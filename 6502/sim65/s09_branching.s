@@ -24,75 +24,75 @@ msg_big:  .asciiz "big (>=$80)"
 .segment "CODE"
 _main:
 ; ---- Demo 1: BEQ ----
-    lda #$42
-    cmp #$42
-    bne @skip_beq
-    lda #<msg_beq
-    ldx #>msg_beq
-    jsr print_str
-    jsr print_nl
+	lda     #$42
+	cmp     #$42
+	bne     @skip_beq
+	lda     #<msg_beq
+	ldx     #>msg_beq
+	jsr     print_str
+	jsr     print_nl
 @skip_beq:
 
 ; ---- Demo 2: BNE ----
-    lda #$42
-    cmp #$50
-    beq @skip_bne
-    lda #<msg_bne
-    ldx #>msg_bne
-    jsr print_str
-    jsr print_nl
+	lda     #$42
+	cmp     #$50
+	beq     @skip_bne
+	lda     #<msg_bne
+	ldx     #>msg_bne
+	jsr     print_str
+	jsr     print_nl
 @skip_bne:
 
 ; ---- Demo 3: BCC (borrow) ----
-    lda #$10
-    cmp #$20
-    bcs @skip_bcc
-    lda #<msg_bcc
-    ldx #>msg_bcc
-    jsr print_str
-    jsr print_nl
+	lda     #$10
+	cmp     #$20
+	bcs     @skip_bcc
+	lda     #<msg_bcc
+	ldx     #>msg_bcc
+	jsr     print_str
+	jsr     print_nl
 @skip_bcc:
 
 ; ---- Demo 4: BCS (no borrow) ----
-    lda #$20
-    cmp #$10
-    bcc @skip_bcs
-    lda #<msg_bcs
-    ldx #>msg_bcs
-    jsr print_str
-    jsr print_nl
+	lda     #$20
+	cmp     #$10
+	bcc     @skip_bcs
+	lda     #<msg_bcs
+	ldx     #>msg_bcs
+	jsr     print_str
+	jsr     print_nl
 @skip_bcs:
 
 ; ---- Demo 5: If-else chain ----
-    lda #<msg_ife
-    ldx #>msg_ife
-    jsr print_str
+	lda     #<msg_ife
+	ldx     #>msg_ife
+	jsr     print_str
 
-    lda #$50
-    cmp #$30
-    bcc @small
-    cmp #$80
-    bcs @big
+	lda     #$50
+	cmp     #$30
+	bcc     @small
+	cmp     #$80
+	bcs     @big
 
-    lda #<msg_mid
-    ldx #>msg_mid
-    jsr print_str
-    jsr print_nl
-    jmp @done_ife
+	lda     #<msg_mid
+	ldx     #>msg_mid
+	jsr     print_str
+	jsr     print_nl
+	jmp     @done_ife
 
 @small:
-    lda #<msg_small
-    ldx #>msg_small
-    jsr print_str
-    jsr print_nl
-    jmp @done_ife
+	lda     #<msg_small
+	ldx     #>msg_small
+	jsr     print_str
+	jsr     print_nl
+	jmp     @done_ife
 
 @big:
-    lda #<msg_big
-    ldx #>msg_big
-    jsr print_str
-    jsr print_nl
+	lda     #<msg_big
+	ldx     #>msg_big
+	jsr     print_str
+	jsr     print_nl
 
 @done_ife:
-    lda #0
-    rts
+	lda     #0
+	rts

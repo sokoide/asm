@@ -35,49 +35,49 @@ _start:
     ;   port 0x43 に 0x00 を書き込む (カウンタ 0 選択 + ラッチ指示)
     ;   その後 port 0x40 から ローバイト → ハイバイト の順に読む
 
-    lea  rsi, [rel msg_cnt]
-    call print_str
+	lea     rsi, [rel msg_cnt]
+	call    print_str
 
     ; カウンタ 0 をラッチ
-    mov  al, 0x00            ; 制御: カウンタ 0 選択, ラッチ
-    mov  dx, 0x43
-    out  dx, al
+	mov     al, 0x00            ; 制御: カウンタ 0 選択, ラッチ
+	mov     dx, 0x43
+	out     dx, al
 
     ; ローバイト → ハイバイトの順に読む
-    mov  dx, 0x40
-    in   al, dx              ; ローバイト
-    mov  bl, al
-    in   al, dx              ; ハイバイト
-    mov  bh, al              ; BX = 16-bit カウンタ値
+	mov     dx, 0x40
+	in      al, dx              ; ローバイト
+	mov     bl, al
+	in      al, dx              ; ハイバイト
+	mov     bh, al              ; BX = 16-bit カウンタ値
 
-    movzx eax, bx            ; 16-bit 値を 32-bit にゼロ拡張 (上位 32 ビットも 0)
-    call print_hex64         ; 16 桁表示で上位 32 ビットが 0 であることも確認できる
-    call print_crlf
+	movzx   eax, bx            ; 16-bit 値を 32-bit にゼロ拡張 (上位 32 ビットも 0)
+	call    print_hex64         ; 16 桁表示で上位 32 ビットが 0 であることも確認できる
+	call    print_crlf
 
     ; もう一度読んで、カウンタが動作中 (カウントダウン中) であることを示す
-    lea  rsi, [rel msg_cnt2]
-    call print_str
+	lea     rsi, [rel msg_cnt2]
+	call    print_str
 
-    mov  al, 0x00
-    mov  dx, 0x43
-    out  dx, al
+	mov     al, 0x00
+	mov     dx, 0x43
+	out     dx, al
 
-    mov  dx, 0x40
-    in   al, dx
-    mov  bl, al
-    in   al, dx
-    mov  bh, al
+	mov     dx, 0x40
+	in      al, dx
+	mov     bl, al
+	in      al, dx
+	mov     bh, al
 
-    movzx eax, bx
-    call print_hex64
-    call print_crlf
+	movzx   eax, bx
+	call    print_hex64
+	call    print_crlf
 
-    lea  rsi, [rel msg_done]
-    call print_str
+	lea     rsi, [rel msg_done]
+	call    print_str
 
 .halt:
-    cli                      ; 割り込み禁止
-    hlt                      ; CPU 停止
+	cli ; 割り込み禁止
+	hlt ; CPU 停止
     jmp  .halt               ; NMI で再開しても再度停止
 
 ; ---- サブルーチン ----
@@ -85,72 +85,72 @@ _start:
 ; uart_putc: AL の 1 文字を COM1 (16550 UART, I/O 0x3F8) へ出力
 ; ポート番号と IN/OUT 命令は 16/32-bit 版と同一 (ロングモードでも不変)
 uart_putc:
-    push rdx
-    push rax
-    mov  dx, 0x3FD           ; LSR (ラインステータスレジスタ)
+	push    rdx
+	push    rax
+	mov     dx, 0x3FD           ; LSR (ラインステータスレジスタ)
 .wait:
-    in   al, dx
-    test al, 0x20            ; bit 5 = THRE (送信保持レジスタ空)
-    jz   .wait
-    mov  dx, 0x3F8           ; THR (送信保持レジスタ)
-    pop  rax
-    out  dx, al
-    pop  rdx
-    ret
+	in      al, dx
+	test    al, 0x20            ; bit 5 = THRE (送信保持レジスタ空)
+	jz      .wait
+	mov     dx, 0x3F8           ; THR (送信保持レジスタ)
+	pop     rax
+	out     dx, al
+	pop     rdx
+	ret
 
 ; print_str: RSI の NULL 終端文字列を出力 (RAX/RSI は破壊する)
 ;   入口 RSP%16==8 → sub rsp,8 で CALL 直前 RSP%16==0 を保つ (s07 参照)
 print_str:
-    sub  rsp, 8
+	sub     rsp, 8
 .loop:
-    lodsb
-    or   al, al
-    jz   .ret
-    call uart_putc
+	lodsb
+	or      al, al
+	jz      .ret
+	call    uart_putc
     jmp  .loop
 .ret:
-    add  rsp, 8
-    ret
+	add     rsp, 8
+	ret
 
 ; print_hex64: RAX を 16 桁の 16 進数字として出力 (RAX を保存)
 ;   呼び出し時点の active PUSH 3 個 (奇数) → RSP%16==0 で呼べる (s07 参照)
 print_hex64:
-    push rax
-    push rcx
-    mov  rcx, 16             ; 出力するニブル数 = 16
+	push    rax
+	push    rcx
+	mov     rcx, 16             ; 出力するニブル数 = 16
 .nibble:
-    rol  rax, 4              ; 最上位ニブルを下位 4 ビットへ回転
-    push rax                 ; マスク前の値を退避 (次のニブルのため)
-    and  al, 0x0F
-    call print_nibble
-    pop  rax
-    dec  rcx
-    jnz  .nibble
-    pop  rcx
-    pop  rax
-    ret
+	rol     rax, 4              ; 最上位ニブルを下位 4 ビットへ回転
+	push    rax                 ; マスク前の値を退避 (次のニブルのため)
+	and     al, 0x0F
+	call    print_nibble
+	pop     rax
+	dec     rcx
+	jnz     .nibble
+	pop     rcx
+	pop     rax
+	ret
 
 ; print_nibble: AL の下位 4 ビットを 1 桁の 16 進数字として出力
 print_nibble:
-    push rax
-    and  al, 0x0F
-    add  al, '0'
-    cmp  al, '9'
-    jle  .out
-    add  al, 7               ; 'A'-'F' のため '9' との隙間 (7) を詰める
+	push    rax
+	and     al, 0x0F
+	add     al, '0'
+	cmp     al, '9'
+	jle     .out
+	add     al, 7               ; 'A'-'F' のため '9' との隙間 (7) を詰める
 .out:
-    call uart_putc
-    pop  rax
-    ret
+	call    uart_putc
+	pop     rax
+	ret
 
 print_crlf:
-    push rax
-    mov  al, 13
-    call uart_putc
-    mov  al, 10
-    call uart_putc
-    pop  rax
-    ret
+	push    rax
+	mov     al, 13
+	call    uart_putc
+	mov     al, 10
+	call    uart_putc
+	pop     rax
+	ret
 
 ; ---- データ ----
 section .rodata
