@@ -9,7 +9,7 @@ BUILD_DIR="$SCRIPT_DIR/build"
 SELF="$SCRIPT_DIR/isa"
 
 # Category display order (follows CPU.md section order; unknown categories go last).
-CAT_ORDER="データ転送 ロード ストア スタック 算術 BCD 論理 シフト シフト/ビット 回転/シフト 比較 分岐 サブルーチン 文字列 ブロック転送 I/O アドレス計算 レジスタ管理 CR操作 フラグ操作 キャッシュ MAC(440) システム制御"
+CAT_ORDER="データ転送 ロード ストア スタック 算術 BCD 論理 シフト シフト/ビット 回転/シフト 比較 分岐 サブルーチン 文字列 ブロック転送 I/O アドレス計算 レジスタ管理 CR操作 フラグ操作 キャッシュ MAC(440) プロテクトモード管理 システム制御"
 
 usage() {
   cat <<EOF

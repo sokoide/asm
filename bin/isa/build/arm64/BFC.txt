@@ -1,0 +1,19 @@
+BFC dst, #posn, #len — ARM64（シフト/ビット）
+
+ビットフィールドクリア（dst のビット位置 posn から len ビットを 0 にする。len=1 で個別ビットのクリア）。
+
+アドレッシング: レジスタ、即値（posn/len）
+フラグ: N-  Z-  C-  V-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  実装依存: 1
+
+オペコード:
+  BFC Xd,#posn,#len: BFM の別名（BFI Xd,WZR/XZR,#posn,#len と等価）
+
+備考:
+  ARMv8.2-A 以降が必要（Raspberry Pi 3/4 では使えない。Pi 5 は対応）。
+
+（根拠: book）

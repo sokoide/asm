@@ -1,0 +1,16 @@
+UBFIZ dst, src, #posn, #len — ARM64（シフト/ビット）
+
+ビットフィールド挿入（src の下位 len ビットを dst のビット位置 posn へコピー、他のビットは 0）。UBFX の逆。
+
+アドレッシング: レジスタ、即値（posn/len）
+フラグ: N-  Z-  C-  V-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  実装依存: 1
+
+オペコード:
+  UBFIZ Xd,Xn,#lsb,#width: UBFM Xd,Xn,#(Rsize-lsb)%Rsize,#width-1 と等価
+
+（根拠: book）

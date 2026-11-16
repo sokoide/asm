@@ -544,6 +544,22 @@
       "notes": ""
     },
     {
+      "mnemonic": "crnot",
+      "operands": "crbT,crbA",
+      "target": "CRNOR",
+      "equivalent": "crnor crbT, crbA, crbA",
+      "summary": "コンディションレジスタビットの反転（Condition Register Not）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "crset",
+      "operands": "crbT",
+      "target": "CREQV",
+      "equivalent": "creqv crbT, crbT, crbT",
+      "summary": "コンディションレジスタビットのセット（Condition Register Set）",
+      "notes": ""
+    },
+    {
       "mnemonic": "rotlwi",
       "operands": "rA,rS,nBits",
       "target": "RLWINM",
@@ -1103,6 +1119,50 @@
       "src": "book"
     },
     {
+      "mnemonic": "LHZU",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "2 バイト（ハーフワード）をゼロ拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。",
+      "addressing": [
+        "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHZUX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ハーフワードをゼロ拡張してロード + アドレス更新（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
       "mnemonic": "LHA",
       "operands": "rT, d(rA)",
       "category": "ロード",
@@ -1140,6 +1200,51 @@
       "summary": "ハーフワードを符号拡張してロード（レジスタインデックス形式）。",
       "addressing": [
         "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHAU",
+      "operands": "rT, d(rA)",
+      "category": "ロード",
+      "summary": "2 バイトを符号拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。",
+      "addressing": [
+        "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "インデックス + 更新は lhaux。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LHAUX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ハーフワードを符号拡張してロード + アドレス更新（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form + アドレス更新"
       ],
       "flags": [
         "-",
@@ -1215,6 +1320,28 @@
       "summary": "ワードロード後、実効アドレスを rA に書き戻す（配列走査の定番）。",
       "addressing": [
         "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "LWZUX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ワードロード + アドレス更新（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form + アドレス更新"
       ],
       "flags": [
         "-",
@@ -1358,6 +1485,52 @@
       "src": "book"
     },
     {
+      "mnemonic": "LSWX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "転送バイト数を XER[25:31] から取得して連続レジスタへロードする（Load String Word Indexed、0〜127 バイト）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（ワードアライン時、レジスタ 1 本につき IE で 1 サイクル）",
+          "cycles": "1n"
+        }
+      ],
+      "notes": "転送数 0 なら rT は未定義。rT から順に詰め、r31 の次は r0 に折り返す。ロード範囲に rA/rB が含まれる形式は無効。即値版は LSWI。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LWARX",
+      "operands": "rT, rA, rB",
+      "category": "ロード",
+      "summary": "ワードをロードし、実効アドレスに予約（reservation）を置く（Load Word and Reserve Indexed）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（整数ロード命令と同一のタイミング）",
+          "cycles": "整数ロードと同一"
+        }
+      ],
+      "notes": "stwcx. と対でプロセッサ間同期（ロック/セマフォ）を実現する。古い予約は次の lwarx で置き換えられる。",
+      "src": "book"
+    },
+    {
       "mnemonic": "STSWI",
       "operands": "rS, rA, NB",
       "category": "ストア",
@@ -1377,6 +1550,73 @@
           "cycles": "1n"
         }
       ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STBU",
+      "operands": "rS, d(rA)",
+      "category": "ストア",
+      "summary": "下位 1 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=rS は禁止。",
+      "addressing": [
+        "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STBUX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "バイトストア + アドレス更新（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STSWX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "転送バイト数を XER[25:31] から取得して連続レジスタからストアする（Store String Word Indexed、0〜127 バイト）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（ワードアライン時、レジスタ 1 本につき IE で 1 サイクル）",
+          "cycles": "1n"
+        }
+      ],
+      "notes": "即値版は STSWI。",
       "src": "book"
     },
     {
@@ -1484,6 +1724,50 @@
       "src": "book"
     },
     {
+      "mnemonic": "STHU",
+      "operands": "rS, d(rA)",
+      "category": "ストア",
+      "summary": "下位 2 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=rS は禁止。",
+      "addressing": [
+        "D-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STHUX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "ハーフワードストア + アドレス更新（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
       "mnemonic": "STW",
       "operands": "rS, d(rA)",
       "category": "ストア",
@@ -1556,6 +1840,55 @@
           "cycles": 1
         }
       ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STWUX",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "ワードストア + アドレス更新（レジスタインデックス形式）。",
+      "addressing": [
+        "X-Form + アドレス更新"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "STWCX.",
+      "operands": "rS, rA, rB",
+      "category": "ストア",
+      "summary": "予約が有効なときだけワードをストアし、成否を CR0[EQ] で報告する（Store Word Conditional Indexed）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "0",
+        "0",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "601（ストア実行時）",
+          "cycles": 4
+        },
+        {
+          "cond": "601（ストア不成立時）",
+          "cycles": 3
+        }
+      ],
+      "notes": "lwarx と対で使う。ストア成立時に CR0[EQ]=1、不成立時に EQ=0。SO は XER[SO] のコピー。成立時に予約は解放される。",
       "src": "book"
     },
     {
@@ -1862,6 +2195,60 @@
           "cycles": 1
         }
       ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "SUBFZE",
+      "operands": "rT, rA",
+      "category": "算術",
+      "summary": "rT = 0 - rA + XER[CA] - 1（Subtract From Zero Extended）。XER[CA] を更新。多倍長減算用。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601",
+          "cycles": 3
+        },
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "SUBFE の定数版（0 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SUBFME",
+      "operands": "rT, rA",
+      "category": "算術",
+      "summary": "rT = -1 - rA + XER[CA] - 1（Subtract From Minus One Extended）。XER[CA] を更新。多倍長減算用。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601",
+          "cycles": 3
+        },
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "SUBFE の定数版（-1 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。",
       "src": "book"
     },
     {
@@ -2813,6 +3200,29 @@
       "src": "book"
     },
     {
+      "mnemonic": "CRANDC",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の論理積で crB の補数を取る（crA AND NOT crB）。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "同系: crand、creqv、crnand、crnor、cror、crorc、crxor。",
+      "src": "book"
+    },
+    {
       "mnemonic": "CROR",
       "operands": "crbT, crbA, crbB",
       "category": "CR操作",
@@ -2857,6 +3267,97 @@
       "src": "book"
     },
     {
+      "mnemonic": "CREQV",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の同値（XNOR）。両ビットが等しいとき 1。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CRNAND",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の NAND。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "CRNOR",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の NOR。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CRORC",
+      "operands": "crbT, crbA, crbB",
+      "category": "CR操作",
+      "summary": "CR ビット同士の論理和で crB の補数を取る（crA OR NOT crB）。",
+      "addressing": [
+        "CR ビット"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "crandc の OR 版。",
+      "src": "book"
+    },
+    {
       "mnemonic": "MCRF",
       "operands": "crfT, crfS",
       "category": "CR操作",
@@ -2876,6 +3377,29 @@
           "cycles": 1
         }
       ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MCRXR",
+      "operands": "crfT",
+      "category": "レジスタ管理",
+      "summary": "XER[0:3] を CR フィールド crfT へコピーし、XER[0:3] をクリアする（Move to CR from XER）。",
+      "addressing": [
+        "CR フィールド"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "XER{0}（SO/OV/予約/CA）が CR フィールドにコピーされ、XER 側のビット 0-3 は 0 にクリアされる。",
       "src": "book"
     },
     {
@@ -2968,6 +3492,63 @@
       "src": "book"
     },
     {
+      "mnemonic": "MFMSR",
+      "operands": "rT",
+      "category": "レジスタ管理",
+      "summary": "マシン状態レジスタ（MSR）から GPR へコピーする（Move from MSR）。スーパーバイザレベル命令。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（SPR タイミング表）",
+          "cycles": 5
+        },
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MTMSR",
+      "operands": "rS",
+      "category": "レジスタ管理",
+      "summary": "GPR からマシン状態レジスタ（MSR）へコピーする（Move to MSR）。スーパーバイザレベル命令。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（FPSCR[FEX]=0）",
+          "cycles": 20
+        },
+        {
+          "cond": "601（FPSCR[FEX]=1）",
+          "cycles": 23
+        },
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "601 では先行するすべての命令の完了まで ID でストールする。",
+      "src": "book"
+    },
+    {
       "mnemonic": "SC",
       "operands": "",
       "category": "システム制御",
@@ -2988,6 +3569,29 @@
         }
       ],
       "notes": "",
+      "src": "book"
+    },
+    {
+      "mnemonic": "RFI",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "割り込みから復帰する（Return from Interrupt）。MSR を SRR1 から復元し、SRR0 のアドレスへ分岐する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601",
+          "cycles": 16
+        }
+      ],
+      "notes": "32 ビット実装では SRR1 のビット 0, 5:9, 16:31 が MSR に復元される。Book E（440）のシステムリンクカテゴリは sc とともに割り込みからのリターン・クリティカル割り込みからのリターンを含む。",
       "src": "book"
     },
     {
@@ -3089,6 +3693,52 @@
       "src": "book"
     },
     {
+      "mnemonic": "EIEIO",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "先行するロード/ストアを後続のロード/ストアより先に完了させる（Enforce In-Order Execution of I/O）。メモリマップド I/O 用。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（sync と同一機能のため sync のタイミング）",
+          "cycles": "≥8"
+        }
+      ],
+      "notes": "Book E（440）の記憶域同期命令は msync/mbar で、eieio は載らない。601 では機能的に sync と同一。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SYNC",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "先行するすべての命令の完了を保証する（Synchronize）。実行同期命令。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（プロセッサバスアクセスを伴う）",
+          "cycles": "≥8"
+        }
+      ],
+      "notes": "Book E（440）では msync が対応（本データの MSYNC 参照）。POWER 旧ニーモニックは dcs。",
+      "src": "book"
+    },
+    {
       "mnemonic": "DCBZ",
       "operands": "rA, rB",
       "category": "キャッシュ",
@@ -3109,6 +3759,117 @@
         }
       ],
       "notes": "クラシック PowerPC では特権命令だが Book E（440）ではユーザモードからも使用可。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCBF",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "データキャッシュブロックを記憶域へ書き戻し、無効化する（Data Cache Block Flush）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（M 状態ブロック。バスアクセス不要）",
+          "cycles": 3
+        },
+        {
+          "cond": "601（E/S/I 状態ブロック。バスアクセス必要）",
+          "cycles": "≥8"
+        },
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "dcbst は書き戻しのみ、dcbi は無効化のみ。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCBI",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "データキャッシュブロックを書き戻さずに無効化する（Data Cache Block Invalidate）。特権命令。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（バスアクセス必要）",
+          "cycles": "≥8"
+        },
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "dcbf と違い書き戻しを行わないため、変更済みブロックのデータは失われる。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCBST",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "データキャッシュブロックを記憶域へ書き戻す（Data Cache Block Store）。無効化はしない。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "601（M 状態ブロック。バスアクセス不要）",
+          "cycles": 3
+        },
+        {
+          "cond": "601（E/S/I 状態ブロック。バスアクセス必要）",
+          "cycles": "≥8"
+        },
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCBTST",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "ストア用のデータキャッシュブロックタッチ（Data Cache Block Touch for Store）。将来のストアに備えてブロックを先読みする。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "dcbt のストア向け版。",
       "src": "book"
     },
     {
@@ -3154,6 +3915,29 @@
         }
       ],
       "notes": "icbi（無効化）は自己書換コードの icbt→icbi→isync 手順で使う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ICBI",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "命令キャッシュブロックを無効化する（Instruction Cache Block Invalidate）。",
+      "addressing": [
+        "X-Form"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "notes": "自己書換コードでは icbi → isync の順で使う。601 のような統合キャッシュ実装ではノーオペレーションとして扱われる。",
       "src": "book"
     }
   ]

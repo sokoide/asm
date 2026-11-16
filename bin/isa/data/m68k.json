@@ -22,6 +22,39 @@
       "cycles": [{"cond": "MOVEA.W (A0),A1", "cycles": 8}, {"cond": "MOVEA.L #n,A0", "cycles": 12}]
     },
     {
+      "mnemonic": "MOVETOCCR",
+      "operands": "src, CCR",
+      "category": "データ転送",
+      "summary": "CCR（SR の下位 8 ビット）へのワード転送。ソースのビット 4〜0 が X/N/Z/V/C に反映される。フラグをまとめて復帰・設定できる。",
+      "addressing": ["データモード"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "MOVE.W D0,CCR", "cycles": 12}, {"cond": "MOVE.W #n,CCR", "cycles": 16}, {"cond": "MOVE.W (A0),CCR", "cycles": 16}, {"cond": "MOVE.W d16(A0),CCR", "cycles": 20}],
+      "encodings": [{"syntax": "MOVE.W src,CCR", "opcode": "0100010011 MMM RRR", "bytes": 2}],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MOVETOSR",
+      "operands": "src, SR",
+      "category": "データ転送",
+      "summary": "SR 全体（システムバイト + CCR）へのワード転送。T/S/割り込みマスク (I2-I0) もまとめて設定できる（スーパーバイザモード専用）。",
+      "addressing": ["データモード"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "MOVE.W D0,SR", "cycles": 12}, {"cond": "MOVE.W #n,SR", "cycles": 16}, {"cond": "MOVE.W (A0),SR", "cycles": 16}, {"cond": "MOVE.W d16(A0),SR", "cycles": 20}],
+      "encodings": [{"syntax": "MOVE.W src,SR", "opcode": "0100011011 MMM RRR", "bytes": 2}],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MOVEFROMSR",
+      "operands": "SR, dst",
+      "category": "データ転送",
+      "summary": "SR の内容のワード退避。68000 では特権命令ではない（68010 以降は特権命令に変更）。",
+      "addressing": ["データ可変"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "MOVE.W SR,D0", "cycles": 6}, {"cond": "MOVE.W SR,(A0)", "cycles": 12}, {"cond": "MOVE.W SR,d16(A0)", "cycles": 16}, {"cond": "MOVE.W SR,d8(A0,D1)", "cycles": 18}],
+      "encodings": [{"syntax": "MOVE.W SR,dst", "opcode": "0100000011 MMM RRR", "bytes": 2}],
+      "src": "book"
+    },
+    {
       "mnemonic": "MOVEQ",
       "operands": "#d, Dn",
       "category": "データ転送",
@@ -87,6 +120,28 @@
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 12}]
+    },
+    {
+      "mnemonic": "MOVEFROMUSP",
+      "operands": "USP, An",
+      "category": "スタック",
+      "summary": "ユーザスタックポインタ (USP = A7) の内容をアドレスレジスタへ転送。サイズは .L のみ（スーパーバイザモード専用）。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}],
+      "encodings": [{"syntax": "MOVE.L USP,An", "opcode": "010011100110 1 RRR", "bytes": 2}],
+      "src": "book"
+    },
+    {
+      "mnemonic": "MOVETOUSP",
+      "operands": "An, USP",
+      "category": "スタック",
+      "summary": "アドレスレジスタの内容をユーザスタックポインタ (USP = A7) へ設定。サイズは .L のみ（スーパーバイザモード専用）。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}],
+      "encodings": [{"syntax": "MOVE.L An,USP", "opcode": "010011100110 0 RRR", "bytes": 2}],
+      "src": "book"
     },
     {
       "mnemonic": "EXG",
@@ -343,6 +398,39 @@
       "cycles": [{"cond": "EORI.W #n,D0", "cycles": 8}, {"cond": "EORI.L #n,D0", "cycles": 16}]
     },
     {
+      "mnemonic": "ANDITOSR",
+      "operands": "#d, SR",
+      "category": "論理",
+      "summary": "SR と即値の論理積。T/S/割り込みマスクを含む SR の個別ビットをクリアするのに便利（スーパーバイザモード専用）。",
+      "addressing": ["暗黙"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "常時", "cycles": 20}],
+      "encodings": [{"syntax": "ANDI.W #d,SR", "opcode": "00000010 01 111100 dddddddddddddddd", "bytes": 4}],
+      "src": "book"
+    },
+    {
+      "mnemonic": "ORITOSR",
+      "operands": "#d, SR",
+      "category": "論理",
+      "summary": "SR と即値の論理和。T/S/割り込みマスクを含む SR の個別ビットをセットするのに便利（スーパーバイザモード専用）。",
+      "addressing": ["暗黙"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "常時", "cycles": 20}],
+      "encodings": [{"syntax": "ORI.W #d,SR", "opcode": "00000000 01 111100 dddddddddddddddd", "bytes": 4}],
+      "src": "book"
+    },
+    {
+      "mnemonic": "EORITOSR",
+      "operands": "#d, SR",
+      "category": "論理",
+      "summary": "SR と即値の排他的論理和。T/S/割り込みマスクを含む SR の個別ビットを反転するのに便利（スーパーバイザモード専用）。",
+      "addressing": ["暗黙"],
+      "flags": ["‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "常時", "cycles": 20}],
+      "encodings": [{"syntax": "EORI.W #d,SR", "opcode": "00001010 01 111100 dddddddddddddddd", "bytes": 4}],
+      "src": "book"
+    },
+    {
       "mnemonic": "NOT",
       "operands": "dst",
       "category": "論理",
@@ -368,6 +456,18 @@
       "addressing": ["データ可変"],
       "flags": ["‡", "‡", "0", "0", "-"],
       "cycles": [{"cond": "TST.W D0", "cycles": 4}, {"cond": "TST.L (A0)", "cycles": 8}]
+    },
+    {
+      "mnemonic": "TAS",
+      "operands": "dst",
+      "category": "シフト/ビット",
+      "summary": "バイトのテスト・アンド・セット。N/Z にテスト結果を反映し、最上位ビット (bit7) を 1 にセット。マルチプロセッサ同期用の不可分 (read-modify-write) 命令。",
+      "addressing": ["データ可変"],
+      "flags": ["‡", "‡", "0", "0", "-"],
+      "cycles": [{"cond": "TAS D0", "cycles": 4}, {"cond": "TAS (A0)", "cycles": 14}, {"cond": "TAS -(A0)", "cycles": 16}, {"cond": "TAS d16(A0)", "cycles": 18}],
+      "encodings": [{"syntax": "TAS dst", "opcode": "0100101011 MMM RRR", "bytes": 2}],
+      "notes": "オペランドはバイトのみ。リード・モディファイ・ライトサイクルで実行される。",
+      "src": "book"
     },
     {
       "mnemonic": "CMP",
@@ -613,6 +713,18 @@
       "cycles": [{"cond": "V=0", "cycles": 4}, {"cond": "V=1（トラップ）", "cycles": 34}]
     },
     {
+      "mnemonic": "CHK",
+      "operands": "src, Dn",
+      "category": "システム制御",
+      "summary": "データレジスタ（下位ワード）の範囲チェック。0 ≤ Dn ≤ src の範囲外なら例外（ベクタ $18）を発生。",
+      "addressing": ["データモード"],
+      "flags": ["‡", "U", "U", "U", "-"],
+      "cycles": [{"cond": "範囲内（Dn ソース）", "cycles": 10}, {"cond": "範囲外（Dn ソース・トラップ）", "cycles": 40}, {"cond": "範囲内（(An) ソース）", "cycles": 14}, {"cond": "範囲外（(An) ソース・トラップ）", "cycles": 44}],
+      "encodings": [{"syntax": "CHK.W src,Dn", "opcode": "0100 RRR 110 MMM RRR", "bytes": 2}],
+      "notes": "Dn<0 で N=1、Dn>src で N=0 にしてトラップ。範囲内なら実行を継続。N 以外の条件フラグは不定。上限値は 2 の補数（符号付き）で比較。",
+      "src": "book"
+    },
+    {
       "mnemonic": "RTE",
       "operands": "",
       "category": "システム制御",
@@ -629,6 +741,18 @@
       "addressing": ["暗黙"],
       "flags": ["‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}]
+    },
+    {
+      "mnemonic": "RESET",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "リセット端子をアサートして外部デバイスを初期化。内部レジスタと SR は不変で次の命令から実行を継続（スーパーバイザモード専用）。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 132}],
+      "encodings": [{"syntax": "RESET", "opcode": "0100111001110000", "bytes": 2}],
+      "notes": "リセットラインを 124 クロックパルスの間駆動する。",
+      "src": "book"
     },
     {
       "mnemonic": "NOP",

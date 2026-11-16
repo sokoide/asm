@@ -1,0 +1,17 @@
+SUBFME rT, rA — PowerPC（算術）
+
+rT = -1 - rA + XER[CA] - 1（Subtract From Minus One Extended）。XER[CA] を更新。多倍長減算用。
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  601: 3
+  440 コア: 1
+
+備考:
+  SUBFE の定数版（-1 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。
+
+（根拠: book）

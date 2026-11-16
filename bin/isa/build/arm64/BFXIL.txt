@@ -1,0 +1,16 @@
+BFXIL dst, src, #posn, #len — ARM64（シフト/ビット）
+
+ビットフィールド抽出して下位へ挿入（src のビット位置 posn から len ビットを取り出し dst の LO ビット位置へコピー）。
+
+アドレッシング: レジスタ、即値（posn/len）
+フラグ: N-  Z-  C-  V-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  実装依存: 1
+
+オペコード:
+  BFXIL Xd,Xn,#posn,#len: BFM Xd,Xn,#posn,#len+posn-1 と等価
+
+（根拠: book）

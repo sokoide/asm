@@ -76,8 +76,8 @@ def validate(path, doc):
             if key not in inst:
                 raise ValidationError(f"{where}: 必須フィールド {key} がありません")
         mnem = inst["mnemonic"]
-        if not isinstance(mnem, str) or not mnem or not re.fullmatch(r"[A-Z]+(\.cond|cc)?\.?", mnem):
-            raise ValidationError(f"{where}: mnemonic は大文字のみ（条件接尾 cc/.cond、記録接尾 . は可）({mnem!r})")
+        if not isinstance(mnem, str) or not mnem or not re.fullmatch(r"[A-Z][A-Z0-9]*(\.[A-Z0-9]+)?(cc|\.cond)?\.?", mnem):
+            raise ValidationError(f"{where}: mnemonic は英数字（先頭大文字。条件接尾 cc/.cond、記録接尾 .、副接尾 .X は可）({mnem!r})")
         if mnem in seen:
             raise ValidationError(f"{where}: mnemonic 重複 ({mnem})")
         seen.add(mnem)

@@ -1269,6 +1269,75 @@
       "encodings": [{"syntax": "CMOVcc r64, r/m64", "opcode": "REX.W 0F 40+cc /r", "bytes": 3}],
       "notes": "分岐予測ミスを避ける分岐レス実装に有効。cc の種類は Jcc と同じ。",
       "src": "book"
+    },
+    {
+      "mnemonic": "ENTER",
+      "operands": "imm16, imm8",
+      "category": "サブルーチン",
+      "summary": "スタックフレームを作成する。RBP を退避してフレームポインタを設定し、imm16 バイトのローカル領域を確保する（LEAVE と対）。",
+      "addressing": [
+        "スタック",
+        "即値"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実装依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ENTER imm16,0",
+          "opcode": "C8 iw 00",
+          "bytes": 4
+        }
+      ],
+      "notes": "64bit モードでも有効。n>=1 は字句ネスト用ディスプレイ構築にループとメモリアクセスが要るため低速で、実用は n=0 のみ（push rbp / mov rbp,rsp / sub rsp,imm16 相当）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "PAUSE",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "スピンループ用ヒント。パイプラインをフラッシュして消費電力を下げ、SMT 相手スレッドの性能を改善する（機能的には NOP）。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実装依存（数10〜200超クロック）",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "PAUSE",
+          "opcode": "F3 90",
+          "bytes": 2
+        }
+      ],
+      "notes": "ロック獲得待ちのスピンループで使う。旧 CPU では REP NOP として素通りする。",
+      "src": "book"
     }
   ]
 }

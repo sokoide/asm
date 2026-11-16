@@ -1331,6 +1331,671 @@
       "encodings": [{"syntax": "SETcc r/m8", "opcode": "0F 90+cc /0", "bytes": 3}],
       "notes": "cc の種類と別名は Jcc の備考と同じ。比較結果を bool 値として扱いたいときに使う。",
       "src": "book"
+    },
+    {
+      "mnemonic": "ENTER",
+      "operands": "imm16, imm8",
+      "category": "サブルーチン",
+      "summary": "スタックフレームを作成する。RBP を退避してフレームポインタを設定し、imm16 バイトのローカル変数領域を確保する（LEAVE と対）。",
+      "addressing": [
+        "スタック",
+        "即値"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "imm16,0",
+          "cycles": 10
+        },
+        {
+          "cond": "imm16,n (n>=1)",
+          "cycles": 15
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ENTER imm16,0（一般形 C8 iw ib）",
+          "opcode": "C8 iw 00",
+          "bytes": 4
+        }
+      ],
+      "notes": "80186 で導入。第 2 オペランドは字句ネストレベルで、n>=1 では上位レベル用ディスプレイの構築にループとメモリアクセスが要るため遅い。実用はほぼ n=0（push ebp / mov ebp,esp / sub esp,imm16 相当）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BOUND",
+      "operands": "reg, mem",
+      "category": "システム制御",
+      "summary": "配列インデックスの境界検査。mem に並んだ 2 ワード（下限・上限）と reg を比較し、範囲外なら INT 5 を発生させる。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時（範囲内）",
+          "cycles": 10
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "BOUND r16/32, m16&16 / m32&32",
+          "opcode": "62 /r",
+          "bytes": 2
+        }
+      ],
+      "notes": "80186 で導入。違反時の INT 5 ハンドラへの遷移時間は含まれない。範囲内ならフラグも含め何も変化しない。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ARPL",
+      "operands": "reg/mem16, reg16",
+      "category": "プロテクトモード管理",
+      "summary": "要求特権レベル (RPL) を調整する。dest セレクタの RPL（下位 2 ビット）を src の RPL より数値の大きい（特権の低い）方へ合わせ、変化したら ZF=1。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 20
+        },
+        {
+          "cond": "mem,reg",
+          "cycles": 21
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ARPL r/m16, r16",
+          "opcode": "63 /r",
+          "bytes": 2
+        }
+      ],
+      "notes": "OS がセレクタに呼び出し側の特権を焼き込むための保護命令。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LAR",
+      "operands": "reg, reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "セグメントディスクリプタのアクセス権バイトをロードする。src セレクタのディスクリプタが特権チェックで可視なら型・特権情報を dest に入れ ZF=1。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 15
+        },
+        {
+          "cond": "reg,mem",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LAR r16/32, r/m16",
+          "opcode": "0F 02 /r",
+          "bytes": 3
+        }
+      ],
+      "notes": "可視でない（特権違反・未存在）場合は ZF=0 で dest は不変。ゲートディスクリプタでは型フィールドの一部のみ返す。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LSL",
+      "operands": "reg, reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "セグメント限界をロードする。src セレクタのディスクリプタが可視ならその限界値を dest に入れ ZF=1。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg,reg",
+          "cycles": 25
+        },
+        {
+          "cond": "reg,mem",
+          "cycles": 26
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LSL r16/32, r/m16",
+          "opcode": "0F 03 /r",
+          "bytes": 3
+        }
+      ],
+      "notes": "粒度ビット (G)=1 のディスクリプタでは 4096 倍された限界が返る。可視でなければ ZF=0。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "VERR",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "セグメントが読み出し可能か検証する。src セレクタのディスクリプタが可視で読み出し可能なら ZF=1。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 10
+        },
+        {
+          "cond": "mem",
+          "cycles": 11
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "VERR r/m16",
+          "opcode": "0F 00 /4",
+          "bytes": 3
+        }
+      ],
+      "notes": "結果は ZF のみ。JZ/JNZ と組み合わせてアクセス可否を判定する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "VERW",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "セグメントが書き込み可能か検証する。src セレクタのディスクリプタが可視で書き込み可能なら ZF=1。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 15
+        },
+        {
+          "cond": "mem",
+          "cycles": 16
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "VERW r/m16",
+          "opcode": "0F 00 /5",
+          "bytes": 3
+        }
+      ],
+      "notes": "結果は ZF のみ。対の読み出し検証は VERR。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LGDT",
+      "operands": "mem48",
+      "category": "プロテクトモード管理",
+      "summary": "6 バイトのメモリイメージ（下位 2 バイト=GDT 限界、上位 4 バイト=リニアベースアドレス）を GDTR にロードする。",
+      "addressing": [
+        "メモリ (限界2バイト+ベース4バイト)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 11
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LGDT m16&64",
+          "opcode": "0F 01 /2",
+          "bytes": 3
+        }
+      ],
+      "notes": "プロテクトモード移行の初期化手順の一部（特権命令）。対の退避命令は SGDT。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LIDT",
+      "operands": "mem48",
+      "category": "プロテクトモード管理",
+      "summary": "6 バイトのメモリイメージ（下位 2 バイト=IDT 限界、上位 4 バイト=リニアベースアドレス）を IDTR にロードする。",
+      "addressing": [
+        "メモリ (限界2バイト+ベース4バイト)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 11
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LIDT m16&64",
+          "opcode": "0F 01 /3",
+          "bytes": 3
+        }
+      ],
+      "notes": "割り込み／例外ベクタテーブルの所在を設定する（特権命令）。対の退避命令は SIDT。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LLDT",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "LDT を指すセレクタを LDTR にロードする。キャッシュされる限界とベースは GDT 内の LDT ディスクリプタから読まれる。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 20
+        },
+        {
+          "cond": "mem",
+          "cycles": 24
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LLDT r/m16",
+          "opcode": "0F 00 /2",
+          "bytes": 3
+        }
+      ],
+      "notes": "タスクごとの LDT 切替に使用（特権命令）。セレクタ 0 をロードすると LDT は無効化される。対の退避命令は SLDT。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LTR",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "タスクレジスタ (TR) に TSS セレクタをロードする。指定した TSS はビジー (B=1) にマークされる。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 23
+        },
+        {
+          "cond": "mem",
+          "cycles": 27
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LTR r/m16",
+          "opcode": "0F 00 /3",
+          "bytes": 3
+        }
+      ],
+      "notes": "マルチタスク OS の初期化で 1 回使用するのが通常（特権命令）。対の退避命令は STR。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LMSW",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "CR0 の下位 16 ビット（MSW）をロードする。PE ビットを 1 にしてプロテクトモードへ移行できる（0 には戻せない）。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 10
+        },
+        {
+          "cond": "mem",
+          "cycles": 13
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LMSW r/m16",
+          "opcode": "0F 01 /6",
+          "bytes": 3
+        }
+      ],
+      "notes": "80286 で導入、80386 にも存在。80386 では CR0 全体を扱える MOV CR0 の使用が推奨。対の退避命令は SMSW。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SGDT",
+      "operands": "mem48",
+      "category": "プロテクトモード管理",
+      "summary": "GDTR の内容（GDT 限界とリニアベースアドレス）を 6 バイトのメモリに退避する。",
+      "addressing": [
+        "メモリ (限界2バイト+ベース4バイト)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 9
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SGDT m",
+          "opcode": "0F 01 /0",
+          "bytes": 3
+        }
+      ],
+      "notes": "特権を要しない（ユーザモードでも実行可）。対のロード命令は LGDT。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SIDT",
+      "operands": "mem48",
+      "category": "プロテクトモード管理",
+      "summary": "IDTR の内容（IDT 限界とリニアベースアドレス）を 6 バイトのメモリに退避する。",
+      "addressing": [
+        "メモリ (限界2バイト+ベース4バイト)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 9
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SIDT m",
+          "opcode": "0F 01 /1",
+          "bytes": 3
+        }
+      ],
+      "notes": "特権を要しない（ユーザモードでも実行可）。対のロード命令は LIDT。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SLDT",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "LDTR の内容（LDT セレクタ）を reg/mem に退避する。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg/mem",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SLDT r/m16",
+          "opcode": "0F 00 /0",
+          "bytes": 3
+        }
+      ],
+      "notes": "セレクタ 0 が読めた場合は LDT 無効状態。対のロード命令は LLDT。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "STR",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "タスクレジスタ (TR) の内容（現在の TSS セレクタ）を reg/mem に退避する。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg/mem",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STR r/m16",
+          "opcode": "0F 00 /1",
+          "bytes": 3
+        }
+      ],
+      "notes": "対のロード命令は LTR。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SMSW",
+      "operands": "reg/mem16",
+      "category": "プロテクトモード管理",
+      "summary": "CR0 の下位 16 ビット（MSW）を reg/mem に退避する。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 10
+        },
+        {
+          "cond": "mem",
+          "cycles": 3
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SMSW r/m16",
+          "opcode": "0F 01 /4",
+          "bytes": 3
+        }
+      ],
+      "notes": "80286 で導入、80386 にも存在。現代では MOV CR0 の読み出しが推奨。対のロード命令は LMSW。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CLTS",
+      "operands": "",
+      "category": "プロテクトモード管理",
+      "summary": "CR0 の TS（タスクスイッチド）ビットをクリアする。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": 5
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CLTS",
+          "opcode": "0F 06",
+          "bytes": 2
+        }
+      ],
+      "notes": "タスク切替時にハードが TS=1 にするため、FPU 命令を使用する前に OS がクリアする（特権命令）。",
+      "src": "book"
     }
   ]
 }

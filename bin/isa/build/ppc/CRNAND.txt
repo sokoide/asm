@@ -1,0 +1,13 @@
+CRNAND crbT, crbA, crbB — PowerPC（CR操作）
+
+CR ビット同士の NAND。
+
+アドレッシング: CR ビット
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

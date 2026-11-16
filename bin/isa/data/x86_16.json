@@ -3287,6 +3287,95 @@
       ],
       "notes": "XCHG や ADD [mem],reg など RMW 命令に付けるのが本来の用法。",
       "src": "book"
+    },
+    {
+      "mnemonic": "ESC",
+      "operands": "exop, reg/mem",
+      "category": "システム制御",
+      "summary": "コプロセッサへのエスケープ。上位 5 ビットが 11011 のオペコードを FPU 命令として解釈させ、メモリオペランドは実効アドレス計算だけを行ってバスに載せる。",
+      "addressing": [
+        "即値（exop 0〜63）",
+        "レジスタ",
+        "メモリ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "reg",
+          "cycles": 2
+        },
+        {
+          "cond": "mem",
+          "cycles": "8+EA"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ESC exop,reg/mem",
+          "opcode": "11011XXX mod YYY r/m",
+          "bytes": 2
+        }
+      ],
+      "notes": "8087 用のエスケープ枠。8087 なしの環境では実質 NOP（アドレス計算のみ）。exop はコプロセッサ命令内にエンコードされる 0〜63 の数値。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SEG",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "セグメントオーバーライドプレフィックス。CS:/DS:/ES:/SS: を後続の 1 命令に前置し、既定のセグメント参照を明示的に差し替える。",
+      "addressing": [
+        "プレフィックス"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "プレフィックス",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CS:",
+          "opcode": "2E",
+          "bytes": 1
+        },
+        {
+          "syntax": "DS:",
+          "opcode": "3E",
+          "bytes": 1
+        },
+        {
+          "syntax": "ES:",
+          "opcode": "26",
+          "bytes": 1
+        },
+        {
+          "syntax": "SS:",
+          "opcode": "36",
+          "bytes": 1
+        }
+      ],
+      "notes": "例: MOV AX, ES:[BX]。DS 既定のメモリ参照を SS（BP 実効アドレス時の既定）以外へ変える用途が中心。string 命令の ES:DI 側のように既定でセグメントが決まっているオペランドには効果がない。",
+      "src": "book"
     }
   ]
 }

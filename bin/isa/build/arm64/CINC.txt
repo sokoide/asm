@@ -1,0 +1,16 @@
+CINC dst, src, cond — ARM64（分岐）
+
+条件付きインクリメント。cond 成立なら src+1、不成立なら src（Gas 組込みマクロ）。CSINC とは条件が逆。
+
+アドレッシング: レジスタ
+フラグ: N-  Z-  C-  V-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  実装依存: 1
+
+オペコード:
+  CINC Xd,Xn,cond: CSINC Xd,Xn,Xn,inv(cond) と等価
+
+（根拠: book）
