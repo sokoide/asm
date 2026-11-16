@@ -12,7 +12,7 @@ ISA = Instruction Set Architecture（命令セットアーキテクチャ）。C
 | z80 | `data/z80.json` | 8080 上位 + DD/CB プレフィックス含む 67 エントリ |
 | m68k | `data/m68k.json` | MC68000 コア 71 エントリ |
 | ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E）93 命令 + 拡張ニーモニック 118 = 211 エントリ |
-| x86_16 | `data/x86_16.json` | 8086/8088 実モード 76 エントリ |
+| x86_16 | `data/x86_16.json` | 8086/8088 実モード 81 エントリ |
 | i386 | `data/i386.json` | 80386 32ビットプロテクトモード |
 | x86_64 | `data/x86_64.json` | x86-64 コア整数命令 |
 | riscv32 | `data/riscv32.json` | RV32I + M 拡張 |

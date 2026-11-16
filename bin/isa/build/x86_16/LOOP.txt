@@ -15,6 +15,6 @@ CX を -1 し、CX≠0 なら相対分岐（カウンタループ）。
   LOOP rel8: E2 rel8  (2 バイト)
 
 備考:
-  LOOPE（E1、CX≠0 かつ ZF=1）/LOOPNE（E0、CX≠0 かつ ZF=0）もあり。
+  CX 減算はフラグに影響しない。
 
 （根拠: book）

@@ -1,0 +1,24 @@
+OUT imm8 / DX, AL/AX/EAX — x86-64（I/O）
+
+AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ出力する。ポート番号は imm8（固定）または DX（可変）。64bit モードでも 32bit 幅が最大。
+
+アドレッシング: I/O（ポート番号は imm8 または DX）
+フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  常時: 3〜26
+
+オペコード:
+  OUT imm8, AL: E6 ib  (2 バイト)
+  OUT imm8, AX: E7 ib  (2 バイト)
+  OUT imm8, EAX: E7 ib  (2 バイト)
+  OUT DX, AL: EE  (1 バイト)
+  OUT DX, AX: EF  (1 バイト)
+  OUT DX, EAX: EF  (1 バイト)
+
+備考:
+  特権命令。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。連続転送は OUTS 文字列命令。
+
+（根拠: book）

@@ -63,6 +63,78 @@
       "src": "book"
     },
     {
+      "mnemonic": "XLAT",
+      "operands": "",
+      "category": "データ転送",
+      "summary": "テーブル変換。AL = DS:[BX+AL]（32bit アドレッシングでは EBX+AL）。256 バイトの変換テーブルを引く。",
+      "addressing": ["レジスタ間接"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 3}],
+      "encodings": [{"syntax": "XLAT", "opcode": "D7", "bytes": 1}],
+      "notes": "BX（32bit アドレッシングでは EBX）にテーブル先頭、AL にインデックスを置いて実行する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LDS",
+      "operands": "reg, mem",
+      "category": "データ転送",
+      "summary": "メモリから far ポインタを一括ロードする。reg にオフセット、DS に続くワードのセグメントを格納する。",
+      "addressing": ["メモリ (mem32/mem48)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 7}],
+      "encodings": [{"syntax": "LDS r16, m32 / LDS r32, m48", "opcode": "C5 /r", "bytes": 2}],
+      "notes": "mem32 は 16bit オフセット+16bit セグメント、mem48 は 32bit オフセット+16bit セグメント。レジスタ指定（MOD=11）は不可。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LES",
+      "operands": "reg, mem",
+      "category": "データ転送",
+      "summary": "メモリから far ポインタを一括ロードする。reg にオフセット、ES に続くワードのセグメントを格納する。",
+      "addressing": ["メモリ (mem32/mem48)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 7}],
+      "encodings": [{"syntax": "LES r16, m32 / LES r32, m48", "opcode": "C4 /r", "bytes": 2}],
+      "notes": "LDS の ES 版。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LFS",
+      "operands": "reg, mem",
+      "category": "データ転送",
+      "summary": "メモリから far ポインタを一括ロードする。reg にオフセット、FS に続くワードのセグメントを格納する（80386 で導入）。",
+      "addressing": ["メモリ (mem32/mem48)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 7}],
+      "encodings": [{"syntax": "LFS r16, m32 / LFS r32, m48", "opcode": "0F B4 /r", "bytes": 3}],
+      "notes": "80386 で追加（FS 版）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LGS",
+      "operands": "reg, mem",
+      "category": "データ転送",
+      "summary": "メモリから far ポインタを一括ロードする。reg にオフセット、GS に続くワードのセグメントを格納する（80386 で導入）。",
+      "addressing": ["メモリ (mem32/mem48)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 7}],
+      "encodings": [{"syntax": "LGS r16, m32 / LGS r32, m48", "opcode": "0F B5 /r", "bytes": 3}],
+      "notes": "80386 で追加（GS 版）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LSS",
+      "operands": "reg, mem",
+      "category": "データ転送",
+      "summary": "メモリから far ポインタを一括ロードする。reg にオフセット、SS に続くワードのセグメントを格納する（80386 で導入）。",
+      "addressing": ["メモリ (mem32/mem48)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 7}],
+      "encodings": [{"syntax": "LSS r16, m32 / LSS r32, m48", "opcode": "0F B2 /r", "bytes": 3}],
+      "notes": "80386 で追加（SS 版）。SS:SP/ESP を 1 命令で更新できるためスタック領域の切替に最も有用。",
+      "src": "book"
+    },
+    {
       "mnemonic": "CBW",
       "operands": "",
       "category": "データ転送",
@@ -84,6 +156,30 @@
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "CWDE", "opcode": "98（32bit モード）", "bytes": 1}],
       "notes": "IDIV（32bit）の前処理には CDQ（99）で EDX:EAX を作る。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CWD",
+      "operands": "",
+      "category": "データ転送",
+      "summary": "AX の符号拡張（16→32bit）で DX:AX を作る。16bit IDIV の前処理。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 2}],
+      "encodings": [{"syntax": "CWD", "opcode": "66 99（32bit モード）", "bytes": 2}],
+      "notes": "DX に AX の符号ビット（MSB）を満たす。32bit プロテクトモードでは既定オペランド 32bit のため CWD に 66 プレフィックス。16bit モードでは CWD=99 / CDQ=66 99。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CDQ",
+      "operands": "",
+      "category": "データ転送",
+      "summary": "EAX の符号拡張（32→64bit）で EDX:EAX を作る。32bit IDIV の前処理。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 2}],
+      "encodings": [{"syntax": "CDQ", "opcode": "99（32bit モード既定）", "bytes": 1}],
+      "notes": "EDX に EAX の符号ビット（MSB）を満たす。16bit モードでは CDQ=66 99。",
       "src": "book"
     },
     {
@@ -471,6 +567,78 @@
       "src": "book"
     },
     {
+      "mnemonic": "BSF",
+      "operands": "dst, src",
+      "category": "シフト/ビット",
+      "summary": "前方ビット走査。src を最下位側から走査し、最初に 1 になっているビットの位置を dst に入れる（80386 で導入）。",
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["U", "-", "-", "U", "‡", "U", "U", "U"],
+      "cycles": [{"cond": "reg,reg", "cycles": "10+3n"}, {"cond": "reg,mem", "cycles": "10+3n"}],
+      "encodings": [{"syntax": "BSF r16/32, r/m16/32", "opcode": "0F BC /r", "bytes": 3}],
+      "notes": "80386 で導入。影響フラグは Z のみ（src=0 で走査失敗）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BSR",
+      "operands": "dst, src",
+      "category": "シフト/ビット",
+      "summary": "後方ビット走査。src を最上位側から走査し、最初に 1 になっているビットの位置を dst に入れる（80386 で導入）。",
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["U", "-", "-", "U", "‡", "U", "U", "U"],
+      "cycles": [{"cond": "reg,reg", "cycles": "10+3n"}, {"cond": "reg,mem", "cycles": "10+3n"}],
+      "encodings": [{"syntax": "BSR r16/32, r/m16/32", "opcode": "0F BD /r", "bytes": 3}],
+      "notes": "80386 で導入。影響フラグは Z のみ（src=0 で走査失敗）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BT",
+      "operands": "src, bit",
+      "category": "シフト/ビット",
+      "summary": "ビットテスト。src の bit 番目のビット値を C にコピーしてテストする（src は不変）。",
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
+      "cycles": [{"cond": "reg, 即値", "cycles": 3}, {"cond": "mem, 即値", "cycles": 6}, {"cond": "reg, reg", "cycles": 3}, {"cond": "mem, reg", "cycles": 12}],
+      "encodings": [{"syntax": "BT r/m16/32, imm8", "opcode": "0F BA /4 ib", "bytes": 4}, {"syntax": "BT r/m16/32, r16/32", "opcode": "0F A3 /r", "bytes": 3}],
+      "notes": "80386 で導入。影響フラグは C のみ。BTS/BTR/BTC はテスト後にビットを更新する版。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BTS",
+      "operands": "src, bit",
+      "category": "シフト/ビット",
+      "summary": "ビットテストとセット。指定ビットを C にコピーしたうえで 1 にセットする。",
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
+      "cycles": [{"cond": "reg, 即値", "cycles": 6}, {"cond": "mem, 即値", "cycles": 8}, {"cond": "reg, reg", "cycles": 6}, {"cond": "mem, reg", "cycles": 13}],
+      "encodings": [{"syntax": "BTS r/m16/32, imm8", "opcode": "0F BA /5 ib", "bytes": 4}, {"syntax": "BTS r/m16/32, r16/32", "opcode": "0F AB /r", "bytes": 3}],
+      "notes": "80386 で導入。影響フラグは C のみ。ビットセット（集合）表現の挿入に使える。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BTR",
+      "operands": "src, bit",
+      "category": "シフト/ビット",
+      "summary": "ビットテストとリセット。指定ビットを C にコピーしたうえで 0 にリセットする。",
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
+      "cycles": [{"cond": "reg, 即値", "cycles": 6}, {"cond": "mem, 即値", "cycles": 8}, {"cond": "reg, reg", "cycles": 6}, {"cond": "mem, reg", "cycles": 13}],
+      "encodings": [{"syntax": "BTR r/m16/32, imm8", "opcode": "0F BA /6 ib", "bytes": 4}, {"syntax": "BTR r/m16/32, r16/32", "opcode": "0F B3 /r", "bytes": 3}],
+      "notes": "80386 で導入。影響フラグは C のみ。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "BTC",
+      "operands": "src, bit",
+      "category": "シフト/ビット",
+      "summary": "ビットテストと補数。指定ビットを C にコピーしたうえで反転（補数化）する。",
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
+      "cycles": [{"cond": "reg, 即値", "cycles": 6}, {"cond": "mem, 即値", "cycles": "7〜8"}, {"cond": "reg, reg", "cycles": 6}, {"cond": "mem, reg", "cycles": 13}],
+      "encodings": [{"syntax": "BTC r/m16/32, imm8", "opcode": "0F BA /7 ib", "bytes": 4}, {"syntax": "BTC r/m16/32, r16/32", "opcode": "0F BB /r", "bytes": 3}],
+      "notes": "80386 で導入。影響フラグは C のみ。",
+      "src": "book"
+    },
+    {
       "mnemonic": "DAA",
       "operands": "",
       "category": "BCD",
@@ -638,6 +806,18 @@
       "src": "book"
     },
     {
+      "mnemonic": "LEAVE",
+      "operands": "",
+      "category": "サブルーチン",
+      "summary": "スタックフレームを破棄する。SP/ESP を EBP に戻したうえで EBP をポップする（ENTER と対）。",
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 4}],
+      "encodings": [{"syntax": "LEAVE", "opcode": "C9", "bytes": 1}],
+      "notes": "80186 で導入。フレームポインタ方式のプロシージャ出口（mov esp,ebp / pop ebp に相当）を 1 命令にしたもの。",
+      "src": "book"
+    },
+    {
       "mnemonic": "INT",
       "operands": "n",
       "category": "サブルーチン",
@@ -648,6 +828,18 @@
       "encodings": [{"syntax": "INT imm8", "opcode": "CD ib", "bytes": 2}, {"syntax": "INT3", "opcode": "CC", "bytes": 1}],
       "notes": "ゲート通過で EFLAGS/CS/EIP（特権変化時は SS/ESP も）がスタックに積まれ、TF と IF がクリアされる。\nINTO は OF=1 のときだけベクタ 4 への割り込み（未成立なら 4 クロックで無視）。\nDOS や旧 Linux（int 0x80）のシステムコール入口。",
       "src": "note"
+    },
+    {
+      "mnemonic": "INTO",
+      "operands": "",
+      "category": "サブルーチン",
+      "summary": "オーバーフロー割り込み。OF=1 のときだけベクタ 4 へのソフトウェア割り込みを発生させる。OF=0 なら何もしない。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "‡", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "OF=1（割り込み発生時）", "cycles": 35}],
+      "encodings": [{"syntax": "INTO", "opcode": "CE", "bytes": 1}],
+      "notes": "割り込み発生時は INT と同じくフラグを退避し IF/TF をクリア。符号付き加減算のオーバーフロー検出に使い、JO と同等の判定ができる。",
+      "src": "book"
     },
     {
       "mnemonic": "IRET",
@@ -842,6 +1034,78 @@
       "src": "book"
     },
     {
+      "mnemonic": "INSB",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DX で指定した I/O ポートから 1 バイトを読み込み ES:EDI に格納し、DF に応じて EDI を ±1 する。",
+      "addressing": ["レジスタ間接(EDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "1 要素", "cycles": 15}, {"cond": "REP 1 要素ごと", "cycles": "12+5n"}],
+      "encodings": [{"syntax": "INSB", "opcode": "6C", "bytes": 1}],
+      "notes": "ポート番号は DX 固定。rep insb で I/O からメモリへのブロック入力（80186 以降）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "INSW",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DX で指定した I/O ポートからワードを読み込み ES:EDI に格納し、DF に応じて EDI を ±2 する。",
+      "addressing": ["レジスタ間接(EDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "1 要素", "cycles": 15}, {"cond": "REP 1 要素ごと", "cycles": "12+5n"}],
+      "encodings": [{"syntax": "INSW", "opcode": "66 6D（32bit モード）", "bytes": 2}],
+      "notes": "ポート番号は DX 固定（80186 以降）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "INSD",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DX で指定した I/O ポートからダブルワードを読み込み ES:EDI に格納し、DF に応じて EDI を ±4 する。",
+      "addressing": ["レジスタ間接(EDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "1 要素", "cycles": 15}, {"cond": "REP 1 要素ごと", "cycles": "12+5n"}],
+      "encodings": [{"syntax": "INSD", "opcode": "6D（32bit モード既定）", "bytes": 1}],
+      "notes": "ポート番号は DX 固定（80186 以降）。32bit 転送は 80386 以降。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "OUTSB",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DS:ESI の指す 1 バイトを DX で指定した I/O ポートへ書き込み、DF に応じて ESI を ±1 する。",
+      "addressing": ["レジスタ間接(ESI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "1 要素", "cycles": 14}, {"cond": "REP 1 要素ごと", "cycles": "12+5n"}],
+      "encodings": [{"syntax": "OUTSB", "opcode": "6E", "bytes": 1}],
+      "notes": "ポート番号は DX 固定。rep outsb でメモリから I/O へのブロック出力（80186 以降）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "OUTSW",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DS:ESI の指すワードを DX で指定した I/O ポートへ書き込み、DF に応じて ESI を ±2 する。",
+      "addressing": ["レジスタ間接(ESI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "1 要素", "cycles": 14}, {"cond": "REP 1 要素ごと", "cycles": "12+5n"}],
+      "encodings": [{"syntax": "OUTSW", "opcode": "66 6F（32bit モード）", "bytes": 2}],
+      "notes": "ポート番号は DX 固定（80186 以降）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "OUTSD",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DS:ESI の指すダブルワードを DX で指定した I/O ポートへ書き込み、DF に応じて ESI を ±4 する。",
+      "addressing": ["レジスタ間接(ESI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "1 要素", "cycles": 14}, {"cond": "REP 1 要素ごと", "cycles": "12+5n"}],
+      "encodings": [{"syntax": "OUTSD", "opcode": "6F（32bit モード既定）", "bytes": 1}],
+      "notes": "ポート番号は DX 固定（80186 以降）。32bit 転送は 80386 以降。",
+      "src": "book"
+    },
+    {
       "mnemonic": "REP",
       "operands": "",
       "category": "文字列",
@@ -875,6 +1139,30 @@
       "cycles": [{"cond": "1 反復ごと (cmps/scas)", "cycles": "CMPS 5+9n / SCAS 5+8n"}],
       "encodings": [{"syntax": "REPNE", "opcode": "F2", "bytes": 1}],
       "notes": "repne scasb の終了後、ZF=1 なら検索成功、ECX=0 なら不一致で枯渇。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LAHF",
+      "operands": "",
+      "category": "フラグ操作",
+      "summary": "EFLAGS の下位バイト（SF ZF - AF - PF 1 CF）を AH に読み込む。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 2}],
+      "encodings": [{"syntax": "LAHF", "opcode": "9F", "bytes": 1}],
+      "notes": "8080 互換のブリッジ命令。OF/DF/IF/TF は含まれない。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SAHF",
+      "operands": "",
+      "category": "フラグ操作",
+      "summary": "AH の内容を EFLAGS の下位バイト（SF/ZF/AF/PF/CF）へ書き込む。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "‡", "‡", "‡", "‡", "‡"],
+      "cycles": [{"cond": "常時", "cycles": 3}],
+      "encodings": [{"syntax": "SAHF", "opcode": "9E", "bytes": 1}],
+      "notes": "数値コプロセッサの FSTSW AX 結果をフラグへ反映して条件分岐する用法がある。",
       "src": "book"
     },
     {
@@ -971,6 +1259,30 @@
       "cycles": [{"cond": "常時（停止状態への移行）", "cycles": 5}],
       "encodings": [{"syntax": "HLT", "opcode": "F4", "bytes": 1}],
       "notes": "CPL>IOPL で実行すると #GP。アイドルループや電源管理の入口。\\n",
+      "src": "book"
+    },
+    {
+      "mnemonic": "WAIT",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "コプロセッサ同期。BUSY ピン（80286/80386）を監視し、ビジー状態の間は待機してから次の命令へ進む。FWAIT と同じ。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "常時", "cycles": 6}],
+      "encodings": [{"syntax": "WAIT / FWAIT", "opcode": "9B", "bytes": 1}],
+      "notes": "BUSY=1 なら何もせず次の命令へ、BUSY=0 なら 1 に戻るまで待つ。80486 以降は BUSY/TEST ピンを持たない。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LOCK",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "バスロックプレフィックス。後続の 1 命令の実行中 LOCK 信号をアサートし、他のバスマスタのバス使用を阻止する。",
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
+      "cycles": [{"cond": "プレフィックス", "cycles": 0}],
+      "encodings": [{"syntax": "LOCK", "opcode": "F0", "bytes": 1}],
+      "notes": "XCHG や ADD [mem],reg など read-modify-write 命令に付けるのが本来の用法。ロックされた命令列の間はアサートされ続ける。",
       "src": "book"
     },
     {

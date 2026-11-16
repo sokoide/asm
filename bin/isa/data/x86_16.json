@@ -177,6 +177,40 @@
       "src": "book"
     },
     {
+      "mnemonic": "LES",
+      "operands": "reg, mem",
+      "category": "データ転送",
+      "summary": "メモリからオフセット（reg）とセグメント（ES）を一括ロードする（far ポインタ用）。",
+      "addressing": [
+        "メモリ (mem32)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "常時",
+          "cycles": "16+EA"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LES r16,m32",
+          "opcode": "C4 /r",
+          "bytes": 2
+        }
+      ],
+      "notes": "LDS（C5 /r）は DS 版。",
+      "src": "book"
+    },
+    {
       "mnemonic": "XLAT",
       "operands": "",
       "category": "データ転送",
@@ -1978,7 +2012,83 @@
           "bytes": 2
         }
       ],
-      "notes": "LOOPE（E1、CX≠0 かつ ZF=1）/LOOPNE（E0、CX≠0 かつ ZF=0）もあり。",
+      "notes": "CX 減算はフラグに影響しない。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LOOPE",
+      "operands": "short",
+      "category": "分岐",
+      "summary": "CX を -1 し、ZF=1 かつ CX≠0 なら相対分岐。LOOPZ と同じ。",
+      "addressing": [
+        "相対分岐"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "分岐",
+          "cycles": 18
+        },
+        {
+          "cond": "脱出",
+          "cycles": 6
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOOPE rel8",
+          "opcode": "E1 rel8",
+          "bytes": 2
+        }
+      ],
+      "notes": "cmps/scas と組み合わせ、一致が続く間ループする。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LOOPNE",
+      "operands": "short",
+      "category": "分岐",
+      "summary": "CX を -1 し、ZF=0 かつ CX≠0 なら相対分岐。LOOPNZ と同じ。",
+      "addressing": [
+        "相対分岐"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "分岐",
+          "cycles": 19
+        },
+        {
+          "cond": "脱出",
+          "cycles": 5
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOOPNE rel8",
+          "opcode": "E0 rel8",
+          "bytes": 2
+        }
+      ],
+      "notes": "cmps/scas と組み合わせ、不一致を見つけたら抜ける。",
       "src": "book"
     },
     {
@@ -2515,7 +2625,7 @@
       "mnemonic": "REP",
       "operands": "",
       "category": "文字列",
-      "summary": "文字列命令の繰り返しプレフィックス（CX が 0 まで）。REPE/REPNE は ZF 条件も追加。",
+      "summary": "後続の文字列命令を CX≠0 の間繰り返すプレフィックス（反復ごとに CX を -1）。movs/stos 用。",
       "addressing": [
         "暗黙"
       ],
@@ -2537,17 +2647,80 @@
       ],
       "encodings": [
         {
-          "syntax": "REP/REPE",
+          "syntax": "REP",
           "opcode": "F3",
           "bytes": 1
-        },
+        }
+      ],
+      "notes": "REP/REPE/REPZ は同一オペコード F3 で 1 回の指定のみ有効。繰り返し中の実クロックは下位の文字列命令の REP 時レートに従う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "REPE",
+      "operands": "",
+      "category": "文字列",
+      "summary": "CX≠0 かつ ZF=1 の間、後続の文字列命令を繰り返すプレフィックス。REPZ と同じ。cmps/scas 用。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "プレフィックス",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "REPE",
+          "opcode": "F3",
+          "bytes": 1
+        }
+      ],
+      "notes": "終了条件は CX=0 または ZF=0（不一致検出）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "REPNE",
+      "operands": "",
+      "category": "文字列",
+      "summary": "CX≠0 かつ ZF=0 の間、後続の文字列命令を繰り返すプレフィックス。REPNZ と同じ。scas での検索用。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "プレフィックス",
+          "cycles": 2
+        }
+      ],
+      "encodings": [
         {
           "syntax": "REPNE",
           "opcode": "F2",
           "bytes": 1
         }
       ],
-      "notes": "REPE=F3、REPNE=F2。F3 は他の文脈でも PAUSE 等に流用される。",
+      "notes": "終了条件は CX=0 または ZF=1（一致検出）。",
       "src": "book"
     },
     {
