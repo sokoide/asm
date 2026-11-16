@@ -1,6 +1,6 @@
 STOSB — x86-64（文字列）
 
-AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1 する。STOSW/STOSD/STOSQ が兄弟。
+AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1 する。
 
 アドレッシング: レジスタ間接(RDI)
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
@@ -13,7 +13,6 @@ AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1
 
 オペコード:
   STOSB: AA  (1 バイト)
-  STOSQ: REX.W AB  (2 バイト)
 
 備考:
   rep stosb でメモリ領域を一括フィル（memset 的用途）。

@@ -1,6 +1,6 @@
-STOS dst — 8086（文字列）
+STOSW — 8086（文字列）
 
-文字列ストア（STOSB/STOSW）。AL/AX を ES:DI に書き、DI を ±1/±2。
+AX の値を ES:DI の指す 2 バイト（1 ワード）へ格納し、DF に応じて DI を ±2 する。
 
 アドレッシング: レジスタ間接(DI)
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
@@ -12,10 +12,9 @@ STOS dst — 8086（文字列）
   REP 時 1回ごと: 9+10n
 
 オペコード:
-  STOSB: AA  (1 バイト)
   STOSW: AB  (1 バイト)
 
 備考:
-  REP STOSB でメモリの初期化（memset 相当）。
+  REP STOSW でワード単位のメモリ初期化。
 
 （根拠: book）

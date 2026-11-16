@@ -1,6 +1,6 @@
 LODSB — x86-64（文字列）
 
-RSI の指す 1 バイトを AL に読み込み、DF に応じて RSI を ±1 する。LODSW/LODSD/LODSQ が兄弟。
+RSI の指す 1 バイトを AL に読み込み、DF に応じて RSI を ±1 する。
 
 アドレッシング: レジスタ間接(RSI)
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
@@ -12,7 +12,6 @@ RSI の指す 1 バイトを AL に読み込み、DF に応じて RSI を ±1 �
 
 オペコード:
   LODSB: AC  (1 バイト)
-  LODSQ: REX.W AD  (2 バイト)
 
 備考:
   rep を付けても最後の 1 要素しか残らないため通常は単独使用。lods/stos の組合せで変換ループを構築。

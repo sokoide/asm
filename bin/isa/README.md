@@ -12,7 +12,7 @@ ISA = Instruction Set Architecture（命令セットアーキテクチャ）。C
 | z80 | `data/z80.json` | 8080 上位 + DD/CB プレフィックス含む 67 エントリ |
 | m68k | `data/m68k.json` | MC68000 コア 71 エントリ |
 | ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E）93 命令 + 拡張ニーモニック 118 = 211 エントリ |
-| x86_16 | `data/x86_16.json` | 8086/8088 実モード 71 エントリ |
+| x86_16 | `data/x86_16.json` | 8086/8088 実モード 76 エントリ |
 | i386 | `data/i386.json` | 80386 32ビットプロテクトモード |
 | x86_64 | `data/x86_64.json` | x86-64 コア整数命令 |
 | riscv32 | `data/riscv32.json` | RV32I + M 拡張 |
@@ -84,7 +84,7 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
 }
 ```
 
-- `mnemonic` は 1 ファイル内でユニーク。条件接尾 `cc`（m68k）や `.cond`（arm64）のみ小文字を許可。バリエーションは 1 エントリに統合し `operands`/`encodings`/`notes` で説明する
+- `mnemonic` は 1 ファイル内でユニーク。条件接尾 `cc`（m68k）や `.cond`（arm64）のみ小文字を許可。バリエーションは 1 エントリに統合し `operands`/`encodings`/`notes` で説明する。ただし文字列命令のサイズ別ニーモニック（`LODSB`/`LODSW`/`LODSD` 等）はサイズごとに別エントリとする（全 x86 アーチで共通方針）
 - `aliases` は任意の拡張ニーモニック一覧（PowerPC の `blr`/`li` 等）。`mnemonic` は小文字で基本命令と重複不可、`target` は `instructions` の `mnemonic` を指す。一覧には通常エントリと同じく載り（riscv の疑似命令と同じ方針）、ページは元命令の内容 + 詳細欄に「拡張形式」（`equivalent` と等価）を出力する
 - `flagNames` / `flags` は同長の配列。RISC-V のようにフラグレジスタがないアーキは両方 `[]`（`flags` 欄を省略して出力する）
 - `cycles` は非空。`cycles` の値は数値または `"70〜77"` のような範囲文字列。実装依存のアーキ（RISC-V/ARM64）は cond にその旨を書く

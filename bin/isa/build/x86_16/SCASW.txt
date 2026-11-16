@@ -1,6 +1,6 @@
-SCAS dst — 8086（文字列）
+SCASW — 8086（文字列）
 
-文字列スキャン（SCASB/SCASW）。AL/AX と ES:DI を比較し、DI を ±1/±2。
+AX と ES:DI の指す 2 バイト（1 ワード）を比較（フラグのみ更新）し、DF に応じて DI を ±2 する。
 
 アドレッシング: レジスタ間接(DI)
 フラグ: O‡  D-  I-  S‡  Z‡  A‡  P‡  C‡
@@ -12,10 +12,9 @@ SCAS dst — 8086（文字列）
   REP 時 1回ごと: 9+15n
 
 オペコード:
-  SCASB: AE  (1 バイト)
   SCASW: AF  (1 バイト)
 
 備考:
-  REPNE SCASB で特定文字の検索（memchr 相当）。
+  REPE/REPNE と組み合わせてワード単位の走査。
 
 （根拠: book）

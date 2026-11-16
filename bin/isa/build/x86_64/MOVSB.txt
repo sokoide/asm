@@ -1,6 +1,6 @@
 MOVSB — x86-64（文字列）
 
-RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI を ±1 する。MOVSW/MOVSD/MOVSQ が兄弟。
+RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI を ±1 する。
 
 アドレッシング: レジスタ間接(RSI/RDI)
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
@@ -13,7 +13,6 @@ RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI �
 
 オペコード:
   MOVSB: A4  (1 バイト)
-  MOVSQ: REX.W A5  (2 バイト)
 
 備考:
   転送方向は DF（cld=増加、std=減少）。Microsoft ABI はプロシージャ入口で DF=0 を要求する。

@@ -2132,10 +2132,10 @@
       "src": "book"
     },
     {
-      "mnemonic": "MOVS",
-      "operands": "dst, src",
+      "mnemonic": "MOVSB",
+      "operands": "",
       "category": "文字列",
-      "summary": "文字列転送（MOVS/MOVSB/MOVSW）。DS:SI → ES:DI、DF に応じて SI/DI を ±1/±2。",
+      "summary": "DS:SI の指す 1 バイトを ES:DI へ転送し、DF に応じて SI/DI を ±1 する。",
       "addressing": [
         "レジスタ間接(SI/DI)"
       ],
@@ -2164,21 +2164,54 @@
           "syntax": "MOVSB",
           "opcode": "A4",
           "bytes": 1
+        }
+      ],
+      "notes": "ソースは DS:SI（セグメント上書き可）、転送先は常に ES:DI。REP MOVSB 100 バイト = 9+17×100 = 1709 クロック。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MOVSW",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DS:SI の指す 2 バイト（1 ワード）を ES:DI へ転送し、DF に応じて SI/DI を ±2 する。",
+      "addressing": [
+        "レジスタ間接(SI/DI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 18
         },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "9+17n"
+        }
+      ],
+      "encodings": [
         {
           "syntax": "MOVSW",
           "opcode": "A5",
           "bytes": 1
         }
       ],
-      "notes": "REP と組み合わせてブロックコピー。REP MOVSB 100 バイト = 9+17×100 = 1709 クロック (17.09 クロック/バイト)。8088 ではワード転送 (MOVSW) は 8 ビットバスのため 1 回ごと +8 クロック。単体実行は 18 クロック。",
+      "notes": "ソースは DS:SI（セグメント上書き可）、転送先は常に ES:DI。REP MOVSW でワード単位のブロックコピー。",
       "src": "book"
     },
     {
-      "mnemonic": "LODS",
-      "operands": "src",
+      "mnemonic": "LODSB",
+      "operands": "",
       "category": "文字列",
-      "summary": "文字列ロード（LODSB/LODSW）。DS:SI から AL/AX に読み、SI を ±1/±2。",
+      "summary": "DS:SI の指す 1 バイトを AL へロードし、DF に応じて SI を ±1 する。",
       "addressing": [
         "レジスタ間接(SI)"
       ],
@@ -2207,21 +2240,54 @@
           "syntax": "LODSB",
           "opcode": "AC",
           "bytes": 1
+        }
+      ],
+      "notes": "REP を付けても最後の 1 要素しか残らないため単独使用が基本。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "LODSW",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DS:SI の指す 2 バイト（1 ワード）を AX へロードし、DF に応じて SI を ±2 する。",
+      "addressing": [
+        "レジスタ間接(SI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 12
         },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "9+13n"
+        }
+      ],
+      "encodings": [
         {
           "syntax": "LODSW",
           "opcode": "AD",
           "bytes": 1
         }
       ],
-      "notes": "REP LODS は無意味（結果が上書きされる）。",
+      "notes": "REP を付けても最後の 1 要素しか残らないため単独使用が基本。",
       "src": "book"
     },
     {
-      "mnemonic": "STOS",
-      "operands": "dst",
+      "mnemonic": "STOSB",
+      "operands": "",
       "category": "文字列",
-      "summary": "文字列ストア（STOSB/STOSW）。AL/AX を ES:DI に書き、DI を ±1/±2。",
+      "summary": "AL の値を ES:DI の指す 1 バイトへ格納し、DF に応じて DI を ±1 する。",
       "addressing": [
         "レジスタ間接(DI)"
       ],
@@ -2250,21 +2316,54 @@
           "syntax": "STOSB",
           "opcode": "AA",
           "bytes": 1
-        },
-        {
-          "syntax": "STOSW",
-          "opcode": "AB",
-          "bytes": 1
         }
       ],
       "notes": "REP STOSB でメモリの初期化（memset 相当）。",
       "src": "book"
     },
     {
-      "mnemonic": "CMPS",
-      "operands": "dst, src",
+      "mnemonic": "STOSW",
+      "operands": "",
       "category": "文字列",
-      "summary": "文字列比較（CMPSB/CMPSW）。DS:SI と ES:DI を比較（SUB と同じフラグ更新）。",
+      "summary": "AX の値を ES:DI の指す 2 バイト（1 ワード）へ格納し、DF に応じて DI を ±2 する。",
+      "addressing": [
+        "レジスタ間接(DI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 11
+        },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "9+10n"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STOSW",
+          "opcode": "AB",
+          "bytes": 1
+        }
+      ],
+      "notes": "REP STOSW でワード単位のメモリ初期化。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CMPSB",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±1 する。",
       "addressing": [
         "レジスタ間接(SI/DI)"
       ],
@@ -2293,21 +2392,54 @@
           "syntax": "CMPSB",
           "opcode": "A6",
           "bytes": 1
+        }
+      ],
+      "notes": "REPE/REPNE と組み合わせてブロック比較。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CMPSW",
+      "operands": "",
+      "category": "文字列",
+      "summary": "DS:SI と ES:DI の指す 2 バイト（1 ワード）を比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±2 する。",
+      "addressing": [
+        "レジスタ間接(SI/DI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 22
         },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "9+22n"
+        }
+      ],
+      "encodings": [
         {
           "syntax": "CMPSW",
           "opcode": "A7",
           "bytes": 1
         }
       ],
-      "notes": "REPE/REPNE と組み合わせて文字列一致探索。",
+      "notes": "REPE/REPNE と組み合わせてワード単位のブロック比較。",
       "src": "book"
     },
     {
-      "mnemonic": "SCAS",
-      "operands": "dst",
+      "mnemonic": "SCASB",
+      "operands": "",
       "category": "文字列",
-      "summary": "文字列スキャン（SCASB/SCASW）。AL/AX と ES:DI を比較し、DI を ±1/±2。",
+      "summary": "AL と ES:DI の指す 1 バイトを比較（フラグのみ更新）し、DF に応じて DI を ±1 する。",
       "addressing": [
         "レジスタ間接(DI)"
       ],
@@ -2336,14 +2468,47 @@
           "syntax": "SCASB",
           "opcode": "AE",
           "bytes": 1
+        }
+      ],
+      "notes": "REPNE SCASB で特定バイトの検索（memchr 相当）。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SCASW",
+      "operands": "",
+      "category": "文字列",
+      "summary": "AX と ES:DI の指す 2 バイト（1 ワード）を比較（フラグのみ更新）し、DF に応じて DI を ±2 する。",
+      "addressing": [
+        "レジスタ間接(DI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "1回",
+          "cycles": 15
         },
+        {
+          "cond": "REP 時 1回ごと",
+          "cycles": "9+15n"
+        }
+      ],
+      "encodings": [
         {
           "syntax": "SCASW",
           "opcode": "AF",
           "bytes": 1
         }
       ],
-      "notes": "REPNE SCASB で特定文字の検索（memchr 相当）。",
+      "notes": "REPE/REPNE と組み合わせてワード単位の走査。",
       "src": "book"
     },
     {

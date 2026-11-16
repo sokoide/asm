@@ -1,6 +1,6 @@
-CMPS dst, src — 8086（文字列）
+CMPSB — 8086（文字列）
 
-文字列比較（CMPSB/CMPSW）。DS:SI と ES:DI を比較（SUB と同じフラグ更新）。
+DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±1 する。
 
 アドレッシング: レジスタ間接(SI/DI)
 フラグ: O‡  D-  I-  S‡  Z‡  A‡  P‡  C‡
@@ -13,9 +13,8 @@ CMPS dst, src — 8086（文字列）
 
 オペコード:
   CMPSB: A6  (1 バイト)
-  CMPSW: A7  (1 バイト)
 
 備考:
-  REPE/REPNE と組み合わせて文字列一致探索。
+  REPE/REPNE と組み合わせてブロック比較。
 
 （根拠: book）
