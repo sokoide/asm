@@ -11,17 +11,17 @@ ISA = Instruction Set Architecture（命令セットアーキテクチャ）。C
 | 6502 | `data/6502.json` | 公式命令セット全 56 ニーモニック |
 | z80 | `data/z80.json` | 8080 上位 + DD/CB プレフィックス含む 67 エントリ |
 | m68k | `data/m68k.json` | MC68000 コア 71 エントリ |
-| ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E）96 命令 + 拡張ニーモニック 118 = 214 エントリ |
-| x86_16 | `data/x86_16.json` | 8086/8088 実モード 61 エントリ |
+| ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E）93 命令 + 拡張ニーモニック 118 = 211 エントリ |
+| x86_16 | `data/x86_16.json` | 8086/8088 実モード 71 エントリ |
 | i386 | `data/i386.json` | 80386 32ビットプロテクトモード |
 | x86_64 | `data/x86_64.json` | x86-64 コア整数命令 |
 | riscv32 | `data/riscv32.json` | RV32I + M 拡張 |
 | riscv64 | `data/riscv64.json` | RV64I + M 拡張 |
 | arm64 | `data/arm64.json` | A64 コア整数命令の実用サブセット |
 
-ppc の根拠は `22_Library` の Optimizing PowerPC Code(1995)（クラシック部分）と PowerPC 440 プログラミングモデル(2001)（Book E・キャッシュ管理・440 コアのサイクル数）。QEMU `bamboo`（PPC440）を想定し、クラシック命令と 440 固有命令（MAC 系は知識ベース）を両方収録。クラシック専用の lmw/stmw は Book E 非サポートを notes に記載。
+ppc は QEMU `bamboo`（PPC440）を想定し、クラシック PowerPC 命令と PPC440（Book E）命令を両方収録。MAC 系（MACC/MACHHW/MACLHW）は参照資料にニーモニック単位の記載がないため収録対象外。クラシック専用の lmw/stmw は Book E 非サポートを notes に記載。
 
-ppc は拡張ニーモニック（`blr` → `bclr 0x14, 0` のような固定オペランド形式）を `aliases` として収録する。根拠は Optimizing PowerPC Code(1995) 付録B の "equivalent to" 形式で、32 ビット実装の分のみ（64 ビット専用の cmpd/clrldi 系と、POWER 由来の古いニーモニック a/ae/cal 系は対象外）。一覧にも通常のエントリとして載り（riscv の疑似命令と同じ方針）、ページは元命令の内容 + 詳細欄に「拡張形式」として等価形式を表示する。元命令が未収録のため除外している拡張形式: `crset`/`crnot`（CREQV/CRNOR が未収録）。
+ppc は拡張ニーモニック（`blr` → `bclr 0x14, 0` のような固定オペランド形式）を `aliases` として収録する。定義は "equivalent to" 形式で、32 ビット実装の分のみ（64 ビット専用の cmpd/clrldi 系と、POWER 由来の古いニーモニック a/ae/cal 系は対象外）。一覧にも通常のエントリとして載り（riscv の疑似命令と同じ方針）、ページは元命令の内容 + 詳細欄に「拡張形式」として等価形式を表示する。元命令が未収録のため除外している拡張形式: `crset`/`crnot`（CREQV/CRNOR が未収録）。
 
 ## 使い方
 
@@ -76,9 +76,9 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
       "addressing": ["相対分岐"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "分岐成立", "cycles": 13}, {"cond": "不成立", "cycles": 8}],
-      "encodings": [{"syntax": "DJNZ d", "opcode": "18 dd", "bytes": 2}],
+      "encodings": [{"syntax": "DJNZ d", "opcode": "10 dd", "bytes": 2}],
       "notes": "補足（複数行可）",
-      "src": "knowledge"
+      "src": "book"
     }
   ]
 }
@@ -89,7 +89,7 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
 - `flagNames` / `flags` は同長の配列。RISC-V のようにフラグレジスタがないアーキは両方 `[]`（`flags` 欄を省略して出力する）
 - `cycles` は非空。`cycles` の値は数値または `"70〜77"` のような範囲文字列。実装依存のアーキ（RISC-V/ARM64）は cond にその旨を書く
 - `encodings` は任意。不確実なオペコードは載せない
-- `src` は任意の根拠タグ: `book`（22_Library の書籍で確認）/ `note`（21_Knowledge で確認）/ `knowledge`（未確認・AI 知識）
+- `src` は任意の根拠タグ: `book`（参照書籍で確認）/ `note`（Knowledge ノートで確認）/ `knowledge`（未確認・AI 知識。現行 data では不使用）。根拠の書籍名・場所は公開リポジトリに書かず、非公開の参照記録で管理する
 
 ## フラグ記号の凡例
 
@@ -102,8 +102,8 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
 
 ## データ追加の手順
 
-1. `<arch>/CPU.md`（リポジトリ内）と Obsidian `21_Knowledge` の対応ノートを一次情報にする
-2. 不確実なクロック数・オペコードだけ `22_Library` の該当書籍で確認し `src` に記録する
+1. `<arch>/CPU.md`（リポジトリ内）を一次情報にし、手元の参照書籍で確認する
+2. 確認したら `src: book` にする。根拠の書籍名・章は非公開の参照記録に残す（公開リポジトリには書かない）。Knowledge ノートで確認した場合のみ `src: note` にする
 3. `isa data/<arch>.json` を書いたら `isa build` で検証（スキーマ違反はエラーで止まる）し、`isa <arch>` で目視確認する
 
 ## 実装メモ

@@ -29,7 +29,6 @@ LD dst, src — Z80（データ転送）
   LD A,(nn): 3A nn nn  (3 バイト)
 
 備考:
-  r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。
-  LD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。
+  r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。\nLD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。\n
 
-（根拠: knowledge）
+（根拠: book）

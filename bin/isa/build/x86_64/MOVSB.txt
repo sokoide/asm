@@ -16,7 +16,7 @@ RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI �
   MOVSQ: REX.W A5  (2 バイト)
 
 備考:
-  転送方向は DF（cld=増加、std=減少）。Microsoft ABI はプロシージャ入口で DF=0 を要求する（本書14章）。
+  転送方向は DF（cld=増加、std=減少）。Microsoft ABI はプロシージャ入口で DF=0 を要求する。
   ソースは DS:RSI、転送先は ES:RDI（64bit では両ベース 0）。
 
 （根拠: book）

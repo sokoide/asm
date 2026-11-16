@@ -12,7 +12,7 @@
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp / zp,x", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "LDA #n", "opcode": "A9", "bytes": 2}, {"syntax": "LDA zp", "opcode": "A5", "bytes": 2}, {"syntax": "LDA zp,x", "opcode": "B5", "bytes": 2}, {"syntax": "LDA abs", "opcode": "AD", "bytes": 3}, {"syntax": "LDA abs,x", "opcode": "BD", "bytes": 3}, {"syntax": "LDA abs,y", "opcode": "B9", "bytes": 3}, {"syntax": "LDA (zp,x)", "opcode": "A1", "bytes": 2}, {"syntax": "LDA (zp),y", "opcode": "B1", "bytes": 2}],
       "notes": "B/ポインタ系のページ境界ペナルティは読み出しアドレス計算時のみ（書き込み命令 STA は常に固定）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "LDX",
@@ -24,7 +24,7 @@
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,y", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,y（ページ境界 +1）", "cycles": 4}],
       "encodings": [{"syntax": "LDX #n", "opcode": "A2", "bytes": 2}, {"syntax": "LDX zp", "opcode": "A6", "bytes": 2}, {"syntax": "LDX zp,y", "opcode": "B6", "bytes": 2}, {"syntax": "LDX abs", "opcode": "AE", "bytes": 3}, {"syntax": "LDX abs,y", "opcode": "BE", "bytes": 3}],
       "notes": "X のみ zp,y が使える点に注意（Y は zp,x）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "LDY",
@@ -35,8 +35,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x（ページ境界 +1）", "cycles": 4}],
       "encodings": [{"syntax": "LDY #n", "opcode": "A0", "bytes": 2}, {"syntax": "LDY zp", "opcode": "A4", "bytes": 2}, {"syntax": "LDY zp,x", "opcode": "B4", "bytes": 2}, {"syntax": "LDY abs", "opcode": "AC", "bytes": 3}, {"syntax": "LDY abs,x", "opcode": "BC", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "STA",
@@ -48,7 +47,7 @@
       "cycles": [{"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x", "cycles": 5}, {"cond": "abs,y", "cycles": 5}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y", "cycles": 6}],
       "encodings": [{"syntax": "STA zp", "opcode": "85", "bytes": 2}, {"syntax": "STA zp,x", "opcode": "95", "bytes": 2}, {"syntax": "STA abs", "opcode": "8D", "bytes": 3}, {"syntax": "STA abs,x", "opcode": "9D", "bytes": 3}, {"syntax": "STA abs,y", "opcode": "99", "bytes": 3}, {"syntax": "STA (zp,x)", "opcode": "81", "bytes": 2}, {"syntax": "STA (zp),y", "opcode": "91", "bytes": 2}],
       "notes": "即値アドレッシングは存在しない。abs,x / abs,y / (zp),y でもページ境界ペナルティはない（書込みは固定サイクル）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "STX",
@@ -59,8 +58,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "zp", "cycles": 3}, {"cond": "zp,y", "cycles": 4}, {"cond": "abs", "cycles": 4}],
       "encodings": [{"syntax": "STX zp", "opcode": "86", "bytes": 2}, {"syntax": "STX zp,y", "opcode": "96", "bytes": 2}, {"syntax": "STX abs", "opcode": "8E", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "STY",
@@ -71,8 +69,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}],
       "encodings": [{"syntax": "STY zp", "opcode": "84", "bytes": 2}, {"syntax": "STY zp,x", "opcode": "94", "bytes": 2}, {"syntax": "STY abs", "opcode": "8C", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "TAX",
@@ -83,8 +80,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "TAX", "opcode": "AA", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "TAY",
@@ -95,8 +91,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "TAY", "opcode": "A8", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "TXA",
@@ -107,8 +102,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "TXA", "opcode": "8A", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "TYA",
@@ -119,8 +113,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "TYA", "opcode": "98", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "TSX",
@@ -131,8 +124,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "TSX", "opcode": "BA", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "TXS",
@@ -144,7 +136,7 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "TXS", "opcode": "9A", "bytes": 1}],
       "notes": "SP 更新命令で唯一フラグを変えない。スタックはページ 1（0x0100-0x01FF）固定。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "PHA",
@@ -155,8 +147,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "PHA", "opcode": "48", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "PHP",
@@ -167,8 +158,8 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "PHP", "opcode": "08", "bytes": 1}],
-      "notes": "実機では B フラグ（bit4）と bit5 が 1 で積まれる。復帰時は PLP/RTI で B を無視して復帰。",
-      "src": "knowledge"
+      "notes": "実機では B フラグ（bit4）と bit5 が 1 で積まれる。復帰時は PLP/RTI で B を無視して復帰。（bit5 は未使用・値は任意）",
+      "src": "book"
     },
     {
       "mnemonic": "PLA",
@@ -179,8 +170,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "PLA", "opcode": "68", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "PLP",
@@ -192,7 +182,7 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "PLP", "opcode": "28", "bytes": 1}],
       "notes": "全フラグがスタックの内容で上書きされる。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "ADC",
@@ -203,8 +193,8 @@
       "flags": ["‡", "‡", "-", "-", "-", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "ADC #n", "opcode": "69", "bytes": 2}, {"syntax": "ADC zp", "opcode": "65", "bytes": 2}, {"syntax": "ADC zp,x", "opcode": "75", "bytes": 2}, {"syntax": "ADC abs", "opcode": "6D", "bytes": 3}, {"syntax": "ADC abs,x", "opcode": "7D", "bytes": 3}, {"syntax": "ADC abs,y", "opcode": "79", "bytes": 3}, {"syntax": "ADC (zp,x)", "opcode": "61", "bytes": 2}, {"syntax": "ADC (zp),y", "opcode": "71", "bytes": 2}],
-      "notes": "V は符号付きオーバーフロー。Z80 と異なり Z は演算結果そのもの。",
-      "src": "knowledge"
+      "notes": "V は符号付きオーバーフロー。Z80 と異なり Z は演算結果そのもの。ただし10進 (BCD) モードでは Z フラグは無効。",
+      "src": "book"
     },
     {
       "mnemonic": "SBC",
@@ -216,7 +206,7 @@
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "SBC #n", "opcode": "E9", "bytes": 2}, {"syntax": "SBC zp", "opcode": "E5", "bytes": 2}, {"syntax": "SBC zp,x", "opcode": "F5", "bytes": 2}, {"syntax": "SBC abs", "opcode": "ED", "bytes": 3}, {"syntax": "SBC abs,x", "opcode": "FD", "bytes": 3}, {"syntax": "SBC abs,y", "opcode": "F9", "bytes": 3}, {"syntax": "SBC (zp,x)", "opcode": "E1", "bytes": 2}, {"syntax": "SBC (zp),y", "opcode": "F1", "bytes": 2}],
       "notes": "Borrow 概念は C の反転。SEC の後で SBC するのが多倍長減算の定番。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "AND",
@@ -227,8 +217,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "AND #n", "opcode": "29", "bytes": 2}, {"syntax": "AND zp", "opcode": "25", "bytes": 2}, {"syntax": "AND zp,x", "opcode": "35", "bytes": 2}, {"syntax": "AND abs", "opcode": "2D", "bytes": 3}, {"syntax": "AND abs,x", "opcode": "3D", "bytes": 3}, {"syntax": "AND abs,y", "opcode": "39", "bytes": 3}, {"syntax": "AND (zp,x)", "opcode": "21", "bytes": 2}, {"syntax": "AND (zp),y", "opcode": "31", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "ORA",
@@ -239,8 +228,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "ORA #n", "opcode": "09", "bytes": 2}, {"syntax": "ORA zp", "opcode": "05", "bytes": 2}, {"syntax": "ORA zp,x", "opcode": "15", "bytes": 2}, {"syntax": "ORA abs", "opcode": "0D", "bytes": 3}, {"syntax": "ORA abs,x", "opcode": "1D", "bytes": 3}, {"syntax": "ORA abs,y", "opcode": "19", "bytes": 3}, {"syntax": "ORA (zp,x)", "opcode": "01", "bytes": 2}, {"syntax": "ORA (zp),y", "opcode": "11", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "EOR",
@@ -252,7 +240,7 @@
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "EOR #n", "opcode": "49", "bytes": 2}, {"syntax": "EOR zp", "opcode": "45", "bytes": 2}, {"syntax": "EOR zp,x", "opcode": "55", "bytes": 2}, {"syntax": "EOR abs", "opcode": "4D", "bytes": 3}, {"syntax": "EOR abs,x", "opcode": "5D", "bytes": 3}, {"syntax": "EOR abs,y", "opcode": "59", "bytes": 3}, {"syntax": "EOR (zp,x)", "opcode": "41", "bytes": 2}, {"syntax": "EOR (zp),y", "opcode": "51", "bytes": 2}],
       "notes": "EOR #$FF はビット反転（CPL 相当）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "CMP",
@@ -263,8 +251,8 @@
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "CMP #n", "opcode": "C9", "bytes": 2}, {"syntax": "CMP zp", "opcode": "C5", "bytes": 2}, {"syntax": "CMP zp,x", "opcode": "D5", "bytes": 2}, {"syntax": "CMP abs", "opcode": "CD", "bytes": 3}, {"syntax": "CMP abs,x", "opcode": "DD", "bytes": 3}, {"syntax": "CMP abs,y", "opcode": "D9", "bytes": 3}, {"syntax": "CMP (zp,x)", "opcode": "C1", "bytes": 2}, {"syntax": "CMP (zp),y", "opcode": "D1", "bytes": 2}],
-      "notes": "C=1: A >= src、C=0: A < src。BCC/BCS と組み合わせる。",
-      "src": "knowledge"
+      "notes": "C=1: A >= src、C=0: A < src。BCC/BCS と組み合わせる。影響フラグは S/Z/C のみ（V 不変）。",
+      "src": "book"
     },
     {
       "mnemonic": "CPX",
@@ -275,8 +263,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "abs", "cycles": 4}],
       "encodings": [{"syntax": "CPX #n", "opcode": "E0", "bytes": 2}, {"syntax": "CPX zp", "opcode": "E4", "bytes": 2}, {"syntax": "CPX abs", "opcode": "EC", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "CPY",
@@ -287,8 +274,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "abs", "cycles": 4}],
       "encodings": [{"syntax": "CPY #n", "opcode": "C0", "bytes": 2}, {"syntax": "CPY zp", "opcode": "C4", "bytes": 2}, {"syntax": "CPY abs", "opcode": "CC", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BIT",
@@ -300,7 +286,7 @@
       "cycles": [{"cond": "zp", "cycles": 3}, {"cond": "abs", "cycles": 4}],
       "encodings": [{"syntax": "BIT zp", "opcode": "24", "bytes": 2}, {"syntax": "BIT abs", "opcode": "2C", "bytes": 3}],
       "notes": "I/O ステータスレジスタの上位 2 ビットを直接調べられるのが利点（N/V にオペランドのビットがそのまま入る）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "ASL",
@@ -312,7 +298,7 @@
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "ASL A", "opcode": "0A", "bytes": 1}, {"syntax": "ASL zp", "opcode": "06", "bytes": 2}, {"syntax": "ASL zp,x", "opcode": "16", "bytes": 2}, {"syntax": "ASL abs", "opcode": "0E", "bytes": 3}, {"syntax": "ASL abs,x", "opcode": "1E", "bytes": 3}],
       "notes": "A 版のみニーモニックの後に A を書く（`ASL` 単独も可）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "LSR",
@@ -323,8 +309,7 @@
       "flags": ["0", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "LSR A", "opcode": "4A", "bytes": 1}, {"syntax": "LSR zp", "opcode": "46", "bytes": 2}, {"syntax": "LSR zp,x", "opcode": "56", "bytes": 2}, {"syntax": "LSR abs", "opcode": "4E", "bytes": 3}, {"syntax": "LSR abs,x", "opcode": "5E", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "ROL",
@@ -336,7 +321,7 @@
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "ROL A", "opcode": "2A", "bytes": 1}, {"syntax": "ROL zp", "opcode": "26", "bytes": 2}, {"syntax": "ROL zp,x", "opcode": "36", "bytes": 2}, {"syntax": "ROL abs", "opcode": "2E", "bytes": 3}, {"syntax": "ROL abs,x", "opcode": "3E", "bytes": 3}],
       "notes": "多倍長左シフトは下位バイトから ROL を連結する。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "ROR",
@@ -348,7 +333,7 @@
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "ROR A", "opcode": "6A", "bytes": 1}, {"syntax": "ROR zp", "opcode": "66", "bytes": 2}, {"syntax": "ROR zp,x", "opcode": "76", "bytes": 2}, {"syntax": "ROR abs", "opcode": "6E", "bytes": 3}, {"syntax": "ROR abs,x", "opcode": "7E", "bytes": 3}],
       "notes": "ROR はオリジナル 6502 の初期ロットでは実装されていなかった（6502A 以降で使用可）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "INC",
@@ -360,7 +345,7 @@
       "cycles": [{"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "INC zp", "opcode": "E6", "bytes": 2}, {"syntax": "INC zp,x", "opcode": "F6", "bytes": 2}, {"syntax": "INC abs", "opcode": "EE", "bytes": 3}, {"syntax": "INC abs,x", "opcode": "FE", "bytes": 3}],
       "notes": "A への INC は存在しない（INX を使う）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "INX",
@@ -371,8 +356,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "INX", "opcode": "E8", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "INY",
@@ -383,8 +367,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "INY", "opcode": "C8", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "DEC",
@@ -395,8 +378,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "DEC zp", "opcode": "C6", "bytes": 2}, {"syntax": "DEC zp,x", "opcode": "D6", "bytes": 2}, {"syntax": "DEC abs", "opcode": "CE", "bytes": 3}, {"syntax": "DEC abs,x", "opcode": "DE", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "DEX",
@@ -407,8 +389,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "DEX", "opcode": "CA", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "DEY",
@@ -419,8 +400,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "DEY", "opcode": "88", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "JMP",
@@ -432,7 +412,7 @@
       "cycles": [{"cond": "abs", "cycles": 3}, {"cond": "(abs)", "cycles": 5}],
       "encodings": [{"syntax": "JMP abs", "opcode": "4C", "bytes": 3}, {"syntax": "JMP (abs)", "opcode": "6C", "bytes": 3}],
       "notes": "JMP (abs) の間接アドレスはページ境界を跨げない（abs の下位バイト $FF のとき上位バイトが繰り上がらず同じページに戻るバグ）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "JSR",
@@ -444,7 +424,7 @@
       "cycles": [{"cond": "abs", "cycles": 6}],
       "encodings": [{"syntax": "JSR abs", "opcode": "20", "bytes": 3}],
       "notes": "退避されるのは「最後の命令バイトのアドレス」。RTS が +1 して戻る設計。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "RTS",
@@ -455,8 +435,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 6}],
       "encodings": [{"syntax": "RTS", "opcode": "60", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "RTI",
@@ -468,31 +447,31 @@
       "cycles": [{"cond": "常時", "cycles": 6}],
       "encodings": [{"syntax": "RTI", "opcode": "40", "bytes": 1}],
       "notes": "復帰順は P が先（低アドレス）、PC が後。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BRK",
       "operands": "",
       "category": "サブルーチン",
-      "summary": "ソフトウェア割り込み。PC+1 と P をスタックに退避し、IRQ ベクタ（$FFFE/$FFFF）へジャンプ。",
+      "summary": "ソフトウェア割り込み。PC+2（2回インクリメントした値）と P をスタックに退避し、IRQ ベクタ（$FFFE/$FFFF）へジャンプ。",
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "1", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 7}],
       "encodings": [{"syntax": "BRK", "opcode": "00", "bytes": 1}],
       "notes": "退避する P は B フラグが 1。モニタへのブレークトラップに使われる。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BCC",
       "operands": "d",
       "category": "分岐",
-      "summary": "C = 0（A < src、 borrow なし）なら相対分岐する。",
+      "summary": "C = 0（A < src、CMP 後はボローあり）なら相対分岐する。",
       "addressing": ["相対分岐"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BCC d", "opcode": "90", "bytes": 2}],
       "notes": "d は次の命令からの相対オフセット（-128〜+127）。CMP の後の「未満」分岐。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BCS",
@@ -503,8 +482,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BCS d", "opcode": "B0", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BEQ",
@@ -516,7 +494,7 @@
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BEQ d", "opcode": "F0", "bytes": 2}],
       "notes": "INC/DEC の結果判定にも使える。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BNE",
@@ -527,8 +505,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BNE d", "opcode": "D0", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BMI",
@@ -539,8 +516,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BMI d", "opcode": "30", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BPL",
@@ -551,8 +527,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BPL d", "opcode": "10", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BVC",
@@ -564,7 +539,7 @@
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BVC d", "opcode": "50", "bytes": 2}],
       "notes": "BIT 命令と組み合わせて I/O ステータス監視によく使う。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "BVS",
@@ -575,8 +550,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BVS d", "opcode": "70", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "CLC",
@@ -588,7 +562,7 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CLC", "opcode": "18", "bytes": 1}],
       "notes": "ADC の前のクリアが定番。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "SEC",
@@ -600,7 +574,7 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "SEC", "opcode": "38", "bytes": 1}],
       "notes": "SBC の前のセットが定番。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "CLD",
@@ -611,8 +585,7 @@
       "flags": ["-", "-", "0", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CLD", "opcode": "D8", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "SED",
@@ -624,7 +597,7 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "SED", "opcode": "F8", "bytes": 1}],
       "notes": "ADC/SBC が BCD で動作する。使い終わったら必ず CLD。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "CLI",
@@ -635,8 +608,7 @@
       "flags": ["-", "-", "-", "0", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CLI", "opcode": "58", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "SEI",
@@ -648,7 +620,7 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "SEI", "opcode": "78", "bytes": 1}],
       "notes": "NMI は I の影響を受けない。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "CLV",
@@ -660,7 +632,7 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CLV", "opcode": "B8", "bytes": 1}],
       "notes": "V を 1 にする命令は存在しない（BIT や演算のみ）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "NOP",
@@ -671,8 +643,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "NOP", "opcode": "EA", "bytes": 1}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     }
   ]
 }

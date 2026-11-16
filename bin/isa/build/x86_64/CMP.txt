@@ -17,7 +17,7 @@ dst - src を計算してフラグのみ更新する（dst は不変）。分岐
   CMP r/m64, imm8: REX.W 83 /7 ib  (4 バイト)
 
 備考:
-  符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe（本書6章）。
+  符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。
   C=1 が「dst < src」（符号なし）。
 
 （根拠: book）

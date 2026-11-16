@@ -1,6 +1,6 @@
 TBZ src, #bit, label — ARM64（分岐）
 
-指定ビットが 0 なら分岐。TBNZ は 1 なら分岐。
+指定ビットが 0 なら分岐（±32KB）。TBNZ は 1 なら分岐。
 
 アドレッシング: 相対分岐
 フラグ: N-  Z-  C-  V-
@@ -10,10 +10,7 @@ TBZ src, #bit, label — ARM64（分岐）
 消費クロック:
   実装依存: 1〜2
 
-オペコード:
-  TBZ Xt,#b,label: 0 011011 0 b40 imm14 Rt
-
 備考:
   bit はレジスタ幅に応じ 0〜31（W）/0〜63（X）。
 
-（根拠: knowledge）
+（根拠: book）

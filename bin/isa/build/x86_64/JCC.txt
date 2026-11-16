@@ -18,6 +18,6 @@ Jcc label — x86-64（分岐）
 備考:
   cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。
   主な別名: je=jz / jne=jnz / jb=jc=jnae / jae=jnc=jnb / jbe=jna / ja=jnbe / jl=jnge / jge=jnl / jle=jng / jg=jnle / jp=jpe / jnp=jpo。
-  符号付きは SF と O、符号なしは C と Z で判定（本書2章 表2-8、7章）。
+  符号付きは SF と O、符号なしは C と Z で判定。
 
 （根拠: book）

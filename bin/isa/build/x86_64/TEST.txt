@@ -16,6 +16,6 @@ dst AND src を計算してフラグのみ更新する（dst は不変）。ビ�
   TEST r/m64, imm32: REX.W F7 /0 id  (6 バイト)
 
 備考:
-  test reg, reg は「レジスタが 0 か」の判定イディオム（本書6章）。
+  test reg, reg は「レジスタが 0 か」の判定イディオム。
 
 （根拠: book）

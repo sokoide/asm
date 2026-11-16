@@ -1,6 +1,6 @@
 CSET dst, cond — ARM64（分岐）
 
-条件成立なら 1、不成立なら 0 をセット（疑似命令）。
+条件成立なら 1、不成立なら 0 をセット（Gas 組込みマクロ）。
 
 アドレッシング: レジスタ
 フラグ: N-  Z-  C-  V-
@@ -11,6 +11,6 @@ CSET dst, cond — ARM64（分岐）
   実装依存: 1
 
 オペコード:
-  CSET Xd,cond: CSINC Xd,WZR,WZR,inv(cond)
+  CSET Xd,cond: CSINC Xd,WZR,WZR,inv(cond) と等価
 
-（根拠: knowledge）
+（根拠: book）

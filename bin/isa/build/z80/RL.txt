@@ -16,4 +16,4 @@ RL r — Z80（シフト/ビット）
   RL r: CB 00DDD010  (2 バイト)
   RL (HL): CB 16  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

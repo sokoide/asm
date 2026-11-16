@@ -16,4 +16,4 @@ SRA r — Z80（シフト/ビット）
   SRA r: CB 00DDD101  (2 バイト)
   SRA (HL): CB 2E  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

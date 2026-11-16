@@ -10,7 +10,4 @@ UMULL dst64, src1w, src2w — ARM64（算術）
 消費クロック:
   実装依存: 2〜5
 
-オペコード:
-  UMULL Xd,Wn,Wm: 1 10 110110 01 Rm ...
-
-（根拠: knowledge）
+（根拠: book）

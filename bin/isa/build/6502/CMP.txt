@@ -27,6 +27,6 @@ A と src を比較（A - src のフラグのみ反映、A は不変）。Z80 �
   CMP (zp),y: D1  (2 バイト)
 
 備考:
-  C=1: A >= src、C=0: A < src。BCC/BCS と組み合わせる。
+  C=1: A >= src、C=0: A < src。BCC/BCS と組み合わせる。影響フラグは S/Z/C のみ（V 不変）。
 
-（根拠: knowledge）
+（根拠: book）

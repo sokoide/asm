@@ -1278,7 +1278,7 @@
       "mnemonic": "LMW",
       "operands": "rT, d(rA)",
       "category": "ロード",
-      "summary": "連続ワードを rT 以降のレジスタへ一括ロード（Load Multiple）。",
+      "summary": "rT から r31 までのすべての GPR へ連続ワードを一括ロード（Load Multiple Word）。",
       "addressing": [
         "D-Form"
       ],
@@ -1290,18 +1290,25 @@
       ],
       "cycles": [
         {
-          "cond": "440 コア（キャッシュに乗ればワード当たり 1）",
+          "cond": "601（ワードアライン時、レジスタ 1 本につき IE で 1 サイクル）",
           "cycles": "1n"
         }
       ],
-      "notes": "クラシック PowerPC の命令。Book E（PPC440）では非サポート — 440 では lswi/stswi を使う。",
-      "src": "knowledge"
+      "encodings": [
+        {
+          "syntax": "lmw rT,d(rA)",
+          "opcode": "0x2E D rA rT",
+          "bytes": 4
+        }
+      ],
+      "notes": "クラシック PowerPC の命令。Book E（PPC440）では非サポート — 440 では lswi/stswi を使う。POWER 旧ニーモニックは lm。rA がロード対象範囲に含まれる形式は無効（601 を除く）。",
+      "src": "book"
     },
     {
       "mnemonic": "STMW",
       "operands": "rS, d(rA)",
       "category": "ストア",
-      "summary": "rS 以降の連続レジスタをメモリへ一括ストア（Store Multiple）。",
+      "summary": "rS から r31 までの連続 GPR の下位ワードをメモリへ一括ストア（Store Multiple Word）。",
       "addressing": [
         "D-Form"
       ],
@@ -1313,12 +1320,19 @@
       ],
       "cycles": [
         {
-          "cond": "440 コア",
+          "cond": "601（ワードアライン時、レジスタ 1 本につき IE で 1 サイクル）",
           "cycles": "1n"
         }
       ],
-      "notes": "Book E（PPC440）では非サポート。",
-      "src": "knowledge"
+      "encodings": [
+        {
+          "syntax": "stmw rS,d(rA)",
+          "opcode": "0x2F D rA rS",
+          "bytes": 4
+        }
+      ],
+      "notes": "Book E（PPC440）では非サポート。POWER 旧ニーモニックは stm。",
+      "src": "book"
     },
     {
       "mnemonic": "LSWI",
@@ -3141,74 +3155,6 @@
       ],
       "notes": "icbi（無効化）は自己書換コードの icbt→icbi→isync 手順で使う。",
       "src": "book"
-    },
-    {
-      "mnemonic": "MACC",
-      "operands": "rT, rA, rB",
-      "category": "MAC(440)",
-      "summary": "PPC440 の積和（multiply-accumulate）: rT = rT + rA×rB の 32 ビット結果。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
-      "cycles": [
-        {
-          "cond": "440 コア",
-          "cycles": 3
-        }
-      ],
-      "notes": "440 固有の割り当て済み算術（4xx 系標準）。サブセット: macchw（上位ハーフ）、macchws、macchwu、macchwsu などのハーフワード版も存在。ニーモニック詳細は IBM PPC440 リファレンスを参照。",
-      "src": "knowledge"
-    },
-    {
-      "mnemonic": "MACHHW",
-      "operands": "rT, rA, rB",
-      "category": "MAC(440)",
-      "summary": "PPC440 のハーフワード積和（上位 32 ビット版）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
-      "cycles": [
-        {
-          "cond": "440 コア",
-          "cycles": 3
-        }
-      ],
-      "notes": "macxws/nmac など符号・否定・w/x 変種の一式がある。フィルタ・DSP ループ向け。",
-      "src": "knowledge"
-    },
-    {
-      "mnemonic": "MACLHW",
-      "operands": "rT, rA, rB",
-      "category": "MAC(440)",
-      "summary": "PPC440 のハーフワード積和（下位 32 ビット版）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
-      "cycles": [
-        {
-          "cond": "440 コア",
-          "cycles": 3
-        }
-      ],
-      "src": "knowledge"
     }
   ]
 }

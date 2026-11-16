@@ -16,4 +16,4 @@ SLA r — Z80（シフト/ビット）
   SLA r: CB 00DDD100  (2 バイト)
   SLA (HL): CB 26  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

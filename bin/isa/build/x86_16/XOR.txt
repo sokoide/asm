@@ -9,7 +9,7 @@ XOR dst, src — 8086（論理）
 
 消費クロック:
   reg,reg: 3
-  mem,reg: 16
+  mem,reg: 16+EA
 
 オペコード:
   XOR r/m,r: 0011000w /r  (2 バイト)
@@ -18,4 +18,4 @@ XOR dst, src — 8086（論理）
 備考:
   XOR AX,AX は AX=0 + フラグクリアの 1 バイト定番。
 
-（根拠: knowledge）
+（根拠: book）

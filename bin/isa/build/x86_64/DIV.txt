@@ -17,6 +17,6 @@ DIV src — x86-64（算術）
 
 備考:
   0 除算や商があふれると #DE 例外。事前準備: 64bit は RDX=0、32bit は CDQ 前処理で EDX=0（符号なし）。
-  8bit は AX÷src → AL=商/AH=剰余、16bit は DX:AX、32bit は EDX:EAX（本書6章）。
+  8bit は AX÷src → AL=商/AH=剰余、16bit は DX:AX、32bit は EDX:EAX。
 
 （根拠: book）

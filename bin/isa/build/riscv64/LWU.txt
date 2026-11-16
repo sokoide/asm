@@ -9,10 +9,7 @@ LWU rd, offset(rs1) — RISC-V 64（データ転送）
 消費クロック:
   実装依存（L1 キャッシュヒット時は概ね数サイクル、ミス時は数十サイクル以上）: 1
 
-オペコード:
-  LWU rd, offset(rs1): imm[11:0] rs1 funct3=110 rd op=0000011  (4 バイト)
-
 備考:
   RV64 固有命令。C の unsigned int（32 ビット）を 64 ビットレジスタに読むときに生成される。
 
-（根拠: knowledge）
+（根拠: book）

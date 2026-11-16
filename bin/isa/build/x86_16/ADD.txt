@@ -10,8 +10,8 @@ ADD dst, src — 8086（算術）
 消費クロック:
   reg,reg: 3
   reg,imm: 4
-  mem,reg: 16
-  reg,mem: 9
+  mem,reg: 16+EA
+  reg,mem: 9+EA
 
 オペコード:
   ADD r/m,r: 0000000w /r  (2 バイト)
@@ -21,4 +21,4 @@ ADD dst, src — 8086（算術）
 備考:
   EA はメモリオペランド実効アドレスの加算クロック。
 
-（根拠: knowledge）
+（根拠: book）

@@ -9,7 +9,7 @@ CMPS dst, src — 8086（文字列）
 
 消費クロック:
   1回: 22
-  REP 時 1回ごと: 22+9n
+  REP 時 1回ごと: 9+22n
 
 オペコード:
   CMPSB: A6  (1 バイト)
@@ -18,4 +18,4 @@ CMPS dst, src — 8086（文字列）
 備考:
   REPE/REPNE と組み合わせて文字列一致探索。
 
-（根拠: knowledge）
+（根拠: book）

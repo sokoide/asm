@@ -1,6 +1,6 @@
 B.cond label — ARM64（分岐）
 
-条件付き相対分岐（±1MB）。条件コード 14 種（EQ NE CS HS LO MI PL VS VC HI LS GE LT GT LE）。
+条件付き相対分岐（±1MB）。条件は EQ/NE/CS/CC/MI/PL/VS/VC/HS/LO/HI/LS/GE/LT/GT/LE の 16 種。Gas は B.cond と BXX（ドットなし）の両表記を許す。
 
 アドレッシング: 相対分岐
 フラグ: N-  Z-  C-  V-
@@ -10,10 +10,7 @@ B.cond label — ARM64（分岐）
 消費クロック:
   実装依存（成立で概ね 2）: 1〜2
 
-オペコード:
-  B.EQ label: 0101010 0 imm19 ...
-
 備考:
   フラグを更新しない命令群（MOV/SUB 等）の後では意味が安定しない。CMP 等の S 付き命令の直後に使う。
 
-（根拠: knowledge）
+（根拠: book）

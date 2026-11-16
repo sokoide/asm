@@ -9,7 +9,7 @@ SCAS dst — 8086（文字列）
 
 消費クロック:
   1回: 15
-  REP 時 1回ごと: 15+9n
+  REP 時 1回ごと: 9+15n
 
 オペコード:
   SCASB: AE  (1 バイト)
@@ -18,4 +18,4 @@ SCAS dst — 8086（文字列）
 備考:
   REPNE SCASB で特定文字の検索（memchr 相当）。
 
-（根拠: knowledge）
+（根拠: book）

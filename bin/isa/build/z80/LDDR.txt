@@ -15,6 +15,6 @@ LDD を BC=0 になるまで繰り返す。後方ブロックコピー。
   LDDR: ED B8  (2 バイト)
 
 備考:
-  DE > HL で範囲が重なる場合の安全なコピー（memmove の dst>src 相当）はこちら。
+  DE > HL で範囲が重なる場合の安全なコピー（memmove の dst>src 相当）はこちら。\n
 
-（根拠: knowledge）
+（根拠: book）

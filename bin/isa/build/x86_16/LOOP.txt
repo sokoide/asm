@@ -17,4 +17,4 @@ CX を -1 し、CX≠0 なら相対分岐（カウンタループ）。
 備考:
   LOOPE（E1、CX≠0 かつ ZF=1）/LOOPNE（E0、CX≠0 かつ ZF=0）もあり。
 
-（根拠: knowledge）
+（根拠: book）

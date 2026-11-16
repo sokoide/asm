@@ -19,4 +19,4 @@ DEC dst — 6502（算術）
   DEC abs: CE  (3 バイト)
   DEC abs,x: DE  (3 バイト)
 
-（根拠: knowledge）
+（根拠: book）

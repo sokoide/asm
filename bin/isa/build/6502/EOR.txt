@@ -29,4 +29,4 @@ A = A XOR src（排他的論理和）。N/Z 更新、C/V は不変。
 備考:
   EOR #$FF はビット反転（CPL 相当）。
 
-（根拠: knowledge）
+（根拠: book）

@@ -10,10 +10,7 @@ MOVZ dst, #imm16{, LSL #shift} — ARM64（データ転送）
 消費クロック:
   実装依存: 1
 
-オペコード:
-  MOVZ Xd,#imm16,LSL #shift: 1 11 100101 hw imm16 Rd
-
 備考:
   shift は 0/16/32/48。64 ビット即値の組み立てに使う。
 
-（根拠: knowledge）
+（根拠: book）

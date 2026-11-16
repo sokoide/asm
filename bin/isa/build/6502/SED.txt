@@ -16,4 +16,4 @@ SED — 6502（システム制御）
 備考:
   ADC/SBC が BCD で動作する。使い終わったら必ず CLD。
 
-（根拠: knowledge）
+（根拠: book）

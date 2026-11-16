@@ -10,10 +10,7 @@ SMULL dst64, src1w, src2w — ARM64（算術）
 消費クロック:
   実装依存: 2〜5
 
-オペコード:
-  SMULL Xd,Wn,Wm: 1 00 110110 01 Rm ...
-
 備考:
   上位 64 ビットは SMULH。64 ビット積算は MUL + MSUB で分割。
 
-（根拠: knowledge）
+（根拠: book）

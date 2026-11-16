@@ -13,4 +13,4 @@ SP を X に転送し、N/Z を更新する。
 オペコード:
   TSX: BA  (1 バイト)
 
-（根拠: knowledge）
+（根拠: book）

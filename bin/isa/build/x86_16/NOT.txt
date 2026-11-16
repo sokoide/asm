@@ -9,9 +9,9 @@ NOT dst — 8086（論理）
 
 消費クロック:
   reg: 3
-  mem: 16
+  mem: 16+EA
 
 オペコード:
   NOT r/m: F6 /2, F7 /2  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

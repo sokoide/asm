@@ -26,4 +26,4 @@ A = A OR src。N/Z 更新、C/V は不変。
   ORA (zp,x): 01  (2 バイト)
   ORA (zp),y: 11  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

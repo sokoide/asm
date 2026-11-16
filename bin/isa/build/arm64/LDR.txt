@@ -2,7 +2,7 @@ LDR dst, [base{, #imm/Xm}] — ARM64（データ転送）
 
 メモリからレジスタへロード（32/64 ビット）。PC 相対リテラルロードの形もある。
 
-アドレッシング: 即値オフセット [Xn, #imm]、レジスタオフセット [Xn, Xm]、プレインデックス [Xn, #imm]!、ポストインデックス [Xn], #imm、PC 相対リテラル LDR Xd,=label
+アドレッシング: PC 相対（ラベル、ワード/dword のみ）、レジスタ間接 [Xn]、間接＋オフセット [Xn, #imm]、スケール付きインデックス [Xn, Xi]/[Xn, Wi, uxtw/sxtw]、前インデックス [Xn, #imm]!、後インデックス [Xn], #imm、擬似命令 LDR Xd,=constant
 フラグ: N-  Z-  C-  V-
 
 ────────────── 詳細 ──────────────
@@ -10,10 +10,7 @@ LDR dst, [base{, #imm/Xm}] — ARM64（データ転送）
 消費クロック:
   実装依存（キャッシュヒットで概ね 4〜5 サイクル）: 4〜5
 
-オペコード:
-  LDR Xt,[Xn,#imm]: 1x 111001 01 imm12 Rn Rt
-
 備考:
   符号拡張版は LDRSB/LDRSH/LDRSW。32 ビット LDR Wt は上位ビットを 0 クリア。
 
-（根拠: knowledge）
+（根拠: book）

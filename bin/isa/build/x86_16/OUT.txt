@@ -15,4 +15,4 @@ I/O ポートへ出力。
   OUT imm8,AL: E6 ib  (2 バイト)
   OUT DX,AL: EE  (1 バイト)
 
-（根拠: knowledge）
+（根拠: book）

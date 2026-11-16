@@ -9,11 +9,14 @@ CMP dst, src — 8086（比較）
 
 消費クロック:
   reg,reg: 3
-  mem,reg: 16
-  reg,mem: 9
+  mem,reg: 9+EA
+  reg,mem: 9+EA
 
 オペコード:
   CMP r/m,r: 0011100w /r  (2 バイト)
   CMP AL,imm: 3C ib  (2 バイト)
 
-（根拠: knowledge）
+備考:
+  結果を書き戻さないため SUB より mem,reg が速い（9+EA）。
+
+（根拠: book）

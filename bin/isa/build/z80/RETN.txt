@@ -13,4 +13,4 @@ NMI からの復帰。PC を復帰し、IFF2 の値を IFF1 に戻す。
 オペコード:
   RETN: ED 45  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

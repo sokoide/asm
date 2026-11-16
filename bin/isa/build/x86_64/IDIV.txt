@@ -16,7 +16,7 @@ IDIV src — x86-64（算術）
   IDIV r/m32: F7 /7  (2 バイト)
 
 備考:
-  符号拡張準備: 64bit は CQO、32bit は CDQ（本書6章）。
+  符号拡張準備: 64bit は CQO、32bit は CDQ。
   0 除算・商あふれ（RAX=-2^63 ÷ -1 など）で #DE。
 
 （根拠: book）

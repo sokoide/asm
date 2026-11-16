@@ -9,12 +9,12 @@ SHR dst, 1/CL — 8086（シフト）
 
 消費クロック:
   reg,1: 2
-  reg,CL: 8
-  mem,1: 15
-  mem,CL: 20
+  reg,CL: 8+4n
+  mem,1: 15+EA
+  mem,CL: 20+EA+4n
 
 オペコード:
   SHR r/m,1: D0/D1 /5  (2 バイト)
   SHR r/m,CL: D2/D3 /5  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

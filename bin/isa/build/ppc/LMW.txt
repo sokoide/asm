@@ -1,6 +1,6 @@
 LMW rT, d(rA) — PowerPC（ロード）
 
-連続ワードを rT 以降のレジスタへ一括ロード（Load Multiple）。
+rT から r31 までのすべての GPR へ連続ワードを一括ロード（Load Multiple Word）。
 
 アドレッシング: D-Form
 フラグ: LT-  GT-  EQ-  SO-
@@ -8,9 +8,12 @@ LMW rT, d(rA) — PowerPC（ロード）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  440 コア（キャッシュに乗ればワード当たり 1）: 1n
+  601（ワードアライン時、レジスタ 1 本につき IE で 1 サイクル）: 1n
+
+オペコード:
+  lmw rT,d(rA): 0x2E D rA rT  (4 バイト)
 
 備考:
-  クラシック PowerPC の命令。Book E（PPC440）では非サポート — 440 では lswi/stswi を使う。
+  クラシック PowerPC の命令。Book E（PPC440）では非サポート — 440 では lswi/stswi を使う。POWER 旧ニーモニックは lm。rA がロード対象範囲に含まれる形式は無効（601 を除く）。
 
-（根拠: knowledge）
+（根拠: book）

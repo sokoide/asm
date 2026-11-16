@@ -16,4 +16,4 @@ LOCK — 8086（システム制御）
 備考:
   XCHG や ADD [mem],reg など RMW 命令に付けるのが本来の用法。
 
-（根拠: knowledge）
+（根拠: book）

@@ -16,4 +16,4 @@ RRC r — Z80（シフト/ビット）
   RRC r: CB 00DDD001  (2 バイト)
   RRC (HL): CB 0E  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

@@ -17,6 +17,6 @@ MUL src — x86-64（算術）
 
 備考:
   上位半分（RDX）が 0 なら C=O=0、0 でなければ C=O=1。S/Z/A/P は未定義。
-  8bit は AX=AL×src、16bit は DX:AX、32bit は EDX:EAX（本書6章 表参照）。
+  8bit は AX=AL×src、16bit は DX:AX、32bit は EDX:EAX。
 
 （根拠: book）

@@ -9,7 +9,7 @@ OR dst, src — 8086（論理）
 
 消費クロック:
   reg,reg: 3
-  mem,reg: 16
+  mem,reg: 16+EA
 
 オペコード:
   OR r/m,r: 0000100w /r  (2 バイト)
@@ -18,4 +18,4 @@ OR dst, src — 8086（論理）
 備考:
   OR AX,AX で値を保ったままフラグ更新。
 
-（根拠: knowledge）
+（根拠: book）

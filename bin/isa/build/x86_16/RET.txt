@@ -10,11 +10,13 @@ RET [imm] — 8086（サブルーチン）
 消費クロック:
   near: 8
   near imm: 12
-  far: 17
-  far imm: 18
+  far: 18
+  far imm: 17
 
 オペコード:
-  RET: C3  (1 バイト)
-  RET imm16: C2 iw  (3 バイト)
+  RET (near): C3  (1 バイト)
+  RET imm16 (near): C2 iw  (3 バイト)
+  RET (far): CB  (1 バイト)
+  RET imm16 (far): CA iw  (3 バイト)
 
-（根拠: knowledge）
+（根拠: book）

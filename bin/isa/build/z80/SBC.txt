@@ -19,6 +19,6 @@ SBC A, r — Z80（算術）
   SBC HL,ss: ED 42/52/62/72  (2 バイト)
 
 備考:
-  SBC HL,ss は 32 ビット演算や多倍長減算で使う。
+  SBC HL,ss は 32 ビット演算や多倍長減算で使う。\n
 
-（根拠: knowledge）
+（根拠: book）

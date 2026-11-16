@@ -9,7 +9,7 @@ STOS dst — 8086（文字列）
 
 消費クロック:
   1回: 11
-  REP 時 1回ごと: 17+4n
+  REP 時 1回ごと: 9+10n
 
 オペコード:
   STOSB: AA  (1 バイト)
@@ -18,4 +18,4 @@ STOS dst — 8086（文字列）
 備考:
   REP STOSB でメモリの初期化（memset 相当）。
 
-（根拠: knowledge）
+（根拠: book）

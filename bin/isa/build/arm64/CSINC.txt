@@ -1,6 +1,6 @@
 CSINC dst, src1, src2, cond — ARM64（分岐）
 
-条件成立なら src1、不成立なら src2+1 を選択。CSET の実体。
+条件成立なら src1、不成立なら src2+1 を選択。
 
 アドレッシング: レジスタ
 フラグ: N-  Z-  C-  V-
@@ -10,10 +10,7 @@ CSINC dst, src1, src2, cond — ARM64（分岐）
 消費クロック:
   実装依存: 1
 
-オペコード:
-  CSINC Xd,Xn,Xm,cond: 1 001101010 Rm cond 11 Rn Rd
-
 備考:
   CSET Xd,cond は CSINC Xd,WZR,WZR,inv(cond) に展開。
 
-（根拠: knowledge）
+（根拠: book）

@@ -10,10 +10,7 @@ SDIV dst, src1, src2 — ARM64（算術）
 消費クロック:
   実装依存（桁数依存）: 10〜20
 
-オペコード:
-  SDIV Xd,Xn,Xm: 1 00 110110 10 Rm ...
-
 備考:
   剰余は MSD/Xd = Xn - SDIV/Xd × Xm。
 
-（根拠: knowledge）
+（根拠: book）

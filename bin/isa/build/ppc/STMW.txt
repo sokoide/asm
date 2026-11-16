@@ -1,6 +1,6 @@
 STMW rS, d(rA) — PowerPC（ストア）
 
-rS 以降の連続レジスタをメモリへ一括ストア（Store Multiple）。
+rS から r31 までの連続 GPR の下位ワードをメモリへ一括ストア（Store Multiple Word）。
 
 アドレッシング: D-Form
 フラグ: LT-  GT-  EQ-  SO-
@@ -8,9 +8,12 @@ rS 以降の連続レジスタをメモリへ一括ストア（Store Multiple）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  440 コア: 1n
+  601（ワードアライン時、レジスタ 1 本につき IE で 1 サイクル）: 1n
+
+オペコード:
+  stmw rS,d(rA): 0x2F D rA rS  (4 バイト)
 
 備考:
-  Book E（PPC440）では非サポート。
+  Book E（PPC440）では非サポート。POWER 旧ニーモニックは stm。
 
-（根拠: knowledge）
+（根拠: book）

@@ -14,6 +14,6 @@ RSP を RBP に戻したうえで RBP をポップする（フレームポイン
   LEAVE: C9  (1 バイト)
 
 備考:
-  本書5章の標準エピローグ（mov rsp, rbp / pop rbp）を 1 命令にしたもの。
+  標準エピローグ（mov rsp, rbp / pop rbp）を 1 命令にしたもの。\n
 
-（根拠: knowledge）
+（根拠: book）

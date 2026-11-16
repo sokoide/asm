@@ -1,6 +1,6 @@
-ADRP dst, label — ARM64（アドレス計算）
+ADRP dst64, label — ARM64（アドレス計算）
 
-ラベルの 4KB ページアドレス（PC 相対 ±4GB）をレジスタに作る。大域変数アドレスの定番。
+ラベルの 4KB ページアドレス（下位 12 ビットは 0）をレジスタに作る。大域変数アドレスの定番。
 
 アドレッシング: PC 相対
 フラグ: N-  Z-  C-  V-
@@ -10,10 +10,7 @@ ADRP dst, label — ARM64（アドレス計算）
 消費クロック:
   実装依存: 1
 
-オペコード:
-  ADRP Xd,label: 1 immlo 10000 immhi Rd
-
 備考:
   ADR Xd,label + LDR または ADRP + ADD でアドレス生成。リンカが再配置を処理する。
 
-（根拠: knowledge）
+（根拠: book）

@@ -10,7 +10,4 @@ MUL dst, src1, src2 — ARM64（算術）
 消費クロック:
   実装依存（2〜5 サイクル目安）: 2〜5
 
-オペコード:
-  MUL Xd,Xn,Xm: 1 00 110110 00 Rm ...
-
-（根拠: knowledge）
+（根拠: book）

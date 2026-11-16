@@ -10,10 +10,7 @@ SXTW dst64, srcw — ARM64（データ転送）
 消費クロック:
   実装依存: 1
 
-オペコード:
-  SXTW Xd,Wn: SBFM に展開
-
 備考:
   C の int → long 変換に相当。
 
-（根拠: knowledge）
+（根拠: book）

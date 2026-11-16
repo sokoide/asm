@@ -15,7 +15,7 @@ SETcc dst8 — x86-64（データ転送）
   SETcc r/m8: 0F 90+cc /0  (3 バイト)
 
 備考:
-  cc の種類と別名は Jcc の備考と同じ。本書6章 表で sete/setne/seta/setb/setg/setl 等を詳述。
+  cc の種類と別名は Jcc の備考と同じ。（sete/setne/seta/setb/setg/setl 等）。
   条件を値（0/1）として扱いたい（比較結果の bool 化）ときに使う。
 
 （根拠: book）

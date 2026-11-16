@@ -10,10 +10,7 @@ SXTB dst, src — ARM64（データ転送）
 消費クロック:
   実装依存: 1
 
-オペコード:
-  SXTB Wd,Wn: SBFM に展開
-
 備考:
   符号なし拡張は UXTB/UXTH（32 ビット幅まで）。
 
-（根拠: knowledge）
+（根拠: book）

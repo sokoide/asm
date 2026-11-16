@@ -17,4 +17,4 @@ REP — 8086（文字列）
 備考:
   REPE=F3、REPNE=F2。F3 は他の文脈でも PAUSE 等に流用される。
 
-（根拠: knowledge）
+（根拠: book）

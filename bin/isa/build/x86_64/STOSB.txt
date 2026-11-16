@@ -16,6 +16,6 @@ AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1
   STOSQ: REX.W AB  (2 バイト)
 
 備考:
-  rep stosb でメモリ領域を一括フィル（memset 的用途）。本書14章。
+  rep stosb でメモリ領域を一括フィル（memset 的用途）。
 
 （根拠: book）

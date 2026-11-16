@@ -24,4 +24,4 @@ LDX src — 6502（データ転送）
 備考:
   X のみ zp,y が使える点に注意（Y は zp,x）。
 
-（根拠: knowledge）
+（根拠: book）

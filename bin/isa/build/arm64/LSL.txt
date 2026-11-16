@@ -1,8 +1,8 @@
-LSL dst, src, #imm / LSLV dst, src1, src2 — ARM64（シフト）
+LSL dst, src, count（即値またはレジスタ） — ARM64（シフト）
 
-左論理シフト（即値版 LSL、レジスタ版 LSLV）。
+左論理シフト。count はレジスタまたは 0〜31/0〜63 の即値。
 
-アドレッシング: 即値（1〜63）、レジスタ
+アドレッシング: 即値（0〜31/0〜63）、レジスタ
 フラグ: N-  Z-  C-  V-
 
 ────────────── 詳細 ──────────────
@@ -11,9 +11,9 @@ LSL dst, src, #imm / LSLV dst, src1, src2 — ARM64（シフト）
   実装依存: 1
 
 オペコード:
-  LSL Xd,Xn,#imm: UBFM に展開
+  LSL Xd,Xn,#imm: UBFM と等価
 
 備考:
   LSL #0 は MOV 相当に展開される。
 
-（根拠: knowledge）
+（根拠: book）

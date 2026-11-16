@@ -19,6 +19,6 @@ ADC A, r — Z80（算術）
   ADC HL,ss: ED 4A/5A/6A/7A  (2 バイト)
 
 備考:
-  ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。
+  ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。\n
 
-（根拠: knowledge）
+（根拠: book）

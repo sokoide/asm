@@ -29,4 +29,4 @@ A = A - src - (1 - C)。全フラグ更新。
 備考:
   Borrow 概念は C の反転。SEC の後で SBC するのが多倍長減算の定番。
 
-（根拠: knowledge）
+（根拠: book）

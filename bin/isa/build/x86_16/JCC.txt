@@ -15,6 +15,6 @@ Jcc short — 8086（分岐）
   Jcc rel8: 70〜7F  (2 バイト)
 
 備考:
-  70 JB, 71 JNB, 72 JE, 73 JNE, 74 JE(=JZ), 76 JBE, 77 JA, 7C JL, 7D JGE, 7E JLE, 7F JG など（8086 の一覧）。符号付き比較は JG/JGE/JL/JLE、符号なしは JA/JAE/JB/JBE。
+  70 JO, 71 JNO, 72 JB/JNAE, 73 JAE/JNB, 74 JE/JZ, 75 JNE/JNZ, 76 JBE/JNA, 77 JA/JNBE, 78 JS, 79 JNS, 7A JP/JPE, 7B JNP/JPO, 7C JL/JNGE, 7D JGE/JNL, 7E JLE/JNG, 7F JG/JNLE（8086 の一覧）。符号付き比較は JG/JGE/JL/JLE、符号なしは JA/JAE/JB/JBE。
 
-（根拠: knowledge）
+（根拠: book）

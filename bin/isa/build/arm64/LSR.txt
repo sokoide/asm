@@ -1,8 +1,8 @@
-LSR dst, src, #imm / LSRV dst, src1, src2 — ARM64（シフト）
+LSR dst, src, count（即値またはレジスタ） — ARM64（シフト）
 
-右論理シフト（符号なし ÷2n）。
+右論理シフト（符号なし ÷2n）。HO ビットに 0 をシフト込む。
 
-アドレッシング: 即値（1〜63）、レジスタ
+アドレッシング: 即値（0〜31/0〜63）、レジスタ
 フラグ: N-  Z-  C-  V-
 
 ────────────── 詳細 ──────────────
@@ -11,6 +11,6 @@ LSR dst, src, #imm / LSRV dst, src1, src2 — ARM64（シフト）
   実装依存: 1
 
 オペコード:
-  LSR Xd,Xn,#imm: UBFM に展開
+  LSR Xd,Xn,#imm: UBFM と等価
 
-（根拠: knowledge）
+（根拠: book）

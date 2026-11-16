@@ -16,6 +16,6 @@ RSI と RDI の指す 1 バイトを比較（フラグのみ更新）し、両�
   CMPSQ: REX.W A7  (2 バイト)
 
 備考:
-  repe cmpsb で文字列一致判定（strcmp 的用途）。本書14章。
+  repe cmpsb で文字列一致判定（strcmp 的用途）。
 
 （根拠: book）

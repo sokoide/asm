@@ -1,8 +1,8 @@
-ROR dst, src, #imm / RORV dst, src1, src2 — ARM64（シフト）
+ROR dst, src, count（即値またはレジスタ） — ARM64（シフト）
 
-右ローテート。
+右ローテート（左ローテート命令は存在しない）。
 
-アドレッシング: 即値（1〜63）、レジスタ
+アドレッシング: 即値（0〜31/0〜63）、レジスタ
 フラグ: N-  Z-  C-  V-
 
 ────────────── 詳細 ──────────────
@@ -11,6 +11,6 @@ ROR dst, src, #imm / RORV dst, src1, src2 — ARM64（シフト）
   実装依存: 1
 
 オペコード:
-  ROR Xd,Xn,#imm: EXTR に展開
+  ROR Xd,Xn,#imm: EXTR（Rl=Rr）の別名
 
-（根拠: knowledge）
+（根拠: book）

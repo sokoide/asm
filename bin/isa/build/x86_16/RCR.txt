@@ -9,12 +9,15 @@ RCR dst, 1/CL — 8086（シフト）
 
 消費クロック:
   reg,1: 2
-  reg,CL: 8
-  mem,1: 15
-  mem,CL: 20
+  reg,CL: 8+4n
+  mem,1: 15+EA
+  mem,CL: 20+EA+4n
 
 オペコード:
   RCR r/m,1: D0/D1 /3  (2 バイト)
   RCR r/m,CL: D2/D3 /3  (2 バイト)
 
-（根拠: knowledge）
+備考:
+  CL 指定（複数ビット回転）時の OF は未定義。
+
+（根拠: book）

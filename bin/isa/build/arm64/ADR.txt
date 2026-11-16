@@ -1,4 +1,4 @@
-ADR dst, label — ARM64（アドレス計算）
+ADR dst64, label — ARM64（アドレス計算）
 
 PC 相対 ±1MB 範囲のアドレスをレジスタに作る。
 
@@ -10,7 +10,4 @@ PC 相対 ±1MB 範囲のアドレスをレジスタに作る。
 消費クロック:
   実装依存: 1
 
-オペコード:
-  ADR Xd,label: 0 immlo 10000 immhi Rd
-
-（根拠: knowledge）
+（根拠: book）

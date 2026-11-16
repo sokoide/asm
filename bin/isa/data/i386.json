@@ -114,25 +114,25 @@
       "mnemonic": "PUSHA",
       "operands": "",
       "category": "スタック",
-      "summary": "AX/CX/DX/BX/命令前の SP/BP/SI/DI の順に 8 個の 16bit レジスタを一括退避する（80386 で導入）。",
+      "summary": "AX/CX/DX/BX/命令前の SP/BP/SI/DI の順に 8 個の 16bit レジスタを一括退避する（80286 で導入）。",
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 18}],
-      "encodings": [{"syntax": "PUSHA", "opcode": "60", "bytes": 1}, {"syntax": "PUSHAD（32bit）", "opcode": "66 60（32bit モード既定）", "bytes": 1}],
-      "notes": "32bit モードでは EAX/ECX/EDX/EBX/ESP/EBP/ESI/EDI を積む（PUSHAD）。8086 にない 80386 の新命令。",
-      "src": "knowledge"
+      "encodings": [{"syntax": "PUSHAD（32bit モード既定）", "opcode": "60", "bytes": 1}, {"syntax": "PUSHA（66 プレフィックス）", "opcode": "66 60", "bytes": 2}],
+      "notes": "32bit モードでは EAX/ECX/EDX/EBX/ESP/EBP/ESI/EDI を積む（PUSHAD、80386 から）。8086 にない命令で、80286 から導入。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "POPA",
       "operands": "",
       "category": "スタック",
-      "summary": "スタックから DI/SI/BP をスキップした SP/BX/DX/CX/AX の順に 8 個の 16bit レジスタを一括復帰する（80386 で導入）。",
+      "summary": "スタックから 16 バイトを取り除き、DI/SI/BP/SP 位置/BX/DX/CX/AX の順（PUSHA と逆順）に 8 個の 16bit レジスタを一括復帰する（80286 で導入）。",
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 24}],
-      "encodings": [{"syntax": "POPA", "opcode": "61", "bytes": 1}, {"syntax": "POPAD（32bit）", "opcode": "66 61（32bit モード既定）", "bytes": 1}],
-      "notes": "スタック上の SP 値は読み捨てる（復帰後に使用しない）。",
-      "src": "knowledge"
+      "encodings": [{"syntax": "POPAD（32bit モード既定）", "opcode": "61", "bytes": 1}, {"syntax": "POPA（66 プレフィックス）", "opcode": "66 61", "bytes": 2}],
+      "notes": "スタック上の SP 値は読み捨てる（復帰後に使用しない）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "PUSHFD",
@@ -143,8 +143,8 @@
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "PUSHFD", "opcode": "9C（32bit モード既定）", "bytes": 1}],
-      "notes": "16bit 幅の退避は PUSHF（66 プレフィックス）。",
-      "src": "knowledge"
+      "notes": "16bit 幅の退避は PUSHF（66 プレフィックス）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "POPFD",
@@ -155,8 +155,8 @@
       "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 5}],
       "encodings": [{"syntax": "POPFD", "opcode": "9D（32bit モード既定）", "bytes": 1}],
-      "notes": "IF/IOPL の変更には CPL≤IOPL が必要。VM/RF ビットは書き換えられない。",
-      "src": "knowledge"
+      "notes": "IF/IOPL の変更には CPL≤IOPL が必要。VM/RF ビットは書き換えられない。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "ADD",
@@ -479,8 +479,8 @@
       "flags": ["U", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "DAA", "opcode": "27", "bytes": 1}],
-      "notes": "AF/C を見て +6/+0x60 補正。64bit モードでは廃止（#UD）。",
-      "src": "knowledge"
+      "notes": "AF/C を見て +6/+0x60 補正。64bit モードでは廃止（#UD）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "DAS",
@@ -491,8 +491,8 @@
       "flags": ["U", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "DAS", "opcode": "2F", "bytes": 1}],
-      "notes": "64bit モードでは廃止（#UD）。",
-      "src": "knowledge"
+      "notes": "64bit モードでは廃止（#UD）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "AAA",
@@ -503,8 +503,8 @@
       "flags": ["U", "-", "-", "U", "U", "‡", "U", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "AAA", "opcode": "37", "bytes": 1}],
-      "notes": "下位ニブルが A〜F または AF=1 で AL+6・AH+1。64bit モードでは廃止（#UD）。",
-      "src": "knowledge"
+      "notes": "下位ニブルが A〜F または AF=1 で AL+6・AH+1。64bit モードでは廃止（#UD）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "AAS",
@@ -515,8 +515,8 @@
       "flags": ["U", "-", "-", "U", "U", "‡", "U", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "AAS", "opcode": "3F", "bytes": 1}],
-      "notes": "64bit モードでは廃止（#UD）。",
-      "src": "knowledge"
+      "notes": "64bit モードでは廃止（#UD）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "AAM",
@@ -527,8 +527,8 @@
       "flags": ["U", "-", "-", "‡", "‡", "U", "‡", "U"],
       "cycles": [{"cond": "常時", "cycles": 17}],
       "encodings": [{"syntax": "AAM imm8", "opcode": "D4 ib", "bytes": 2}],
-      "notes": "imm8=0 で #DE。S/Z/P は結果の AL から設定。64bit モードでは廃止（#UD）。",
-      "src": "knowledge"
+      "notes": "imm8=0 で #DE。S/Z/P は結果の AL から設定。64bit モードでは廃止（#UD）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "AAD",
@@ -539,8 +539,8 @@
       "flags": ["U", "-", "-", "‡", "‡", "U", "‡", "U"],
       "cycles": [{"cond": "常時", "cycles": 19}],
       "encodings": [{"syntax": "AAD imm8", "opcode": "D5 ib", "bytes": 2}],
-      "notes": "64bit モードでは廃止（#UD）。",
-      "src": "knowledge"
+      "notes": "64bit モードでは廃止（#UD）。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "JMP",
@@ -573,10 +573,10 @@
       "summary": "CX が 0 のときだけ rel8 へ分岐する。",
       "addressing": ["相対分岐(short)"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "成立", "cycles": "7〜9"}, {"cond": "不成立", "cycles": 4}],
+      "cycles": [{"cond": "成立", "cycles": 9}, {"cond": "不成立", "cycles": 5}],
       "encodings": [{"syntax": "JCXZ rel8", "opcode": "E3 cb", "bytes": 2}],
-      "notes": "アドレスサイズ 32 では JECXZ（67 プレフィックス）で ECX をテスト。分岐先は short のみ。",
-      "src": "knowledge"
+      "notes": "アドレスサイズ 32 では JECXZ（67 プレフィックス）で ECX をテスト。分岐先は short のみ。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "LOOP",
@@ -585,10 +585,10 @@
       "summary": "CX（32bit アドレスサイズなら ECX）を 1 減算し、0 でなければ rel8 へ分岐する。",
       "addressing": ["相対分岐(short)"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "分岐成立", "cycles": "9〜11"}, {"cond": "不成立", "cycles": 5}],
+      "cycles": [{"cond": "常時", "cycles": 11}],
       "encodings": [{"syntax": "LOOP rel8", "opcode": "E2 cb", "bytes": 2}],
-      "notes": "80386 では遅く、dec/jnz が定石。減算はフラグに影響しない。",
-      "src": "knowledge"
+      "notes": "80386 では遅く、dec/jnz が定石。減算はフラグに影響しない。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "LOOPE",
@@ -597,10 +597,10 @@
       "summary": "CX/ECX を 1 減算し、0 以外かつ ZF=1 のとき rel8 へ分岐する。LOOPZ と同じ。",
       "addressing": ["相対分岐(short)"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "分岐成立", "cycles": "9〜11"}, {"cond": "不成立", "cycles": 5}],
+      "cycles": [{"cond": "常時", "cycles": 11}],
       "encodings": [{"syntax": "LOOPE rel8", "opcode": "E1 cb", "bytes": 2}],
-      "notes": "cmps/scas と組み合わせて一致の連なりをたどる。",
-      "src": "knowledge"
+      "notes": "cmps/scas と組み合わせて一致の連なりをたどる。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "LOOPNE",
@@ -609,10 +609,9 @@
       "summary": "CX/ECX を 1 減算し、0 以外かつ ZF=0 のとき rel8 へ分岐する。LOOPNZ と同じ。",
       "addressing": ["相対分岐(short)"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "分岐成立", "cycles": "9〜11"}, {"cond": "不成立", "cycles": 5}],
+      "cycles": [{"cond": "常時", "cycles": 11}],
       "encodings": [{"syntax": "LOOPNE rel8", "opcode": "E0 cb", "bytes": 2}],
-      "notes": "",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "CALL",
@@ -846,13 +845,13 @@
       "mnemonic": "HLT",
       "operands": "",
       "category": "システム制御",
-      "summary": "CPU を停止状態にする。割り込み・NMI・RESET で再開する。特権命令。",
+      "summary": "CPU を停止状態にする。割り込み・ハードウェアリセット・DMA 動作の間に再開する。特権命令。",
       "addressing": ["暗黙"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時（再開まで待機）", "cycles": "実装依存"}],
+      "cycles": [{"cond": "常時（停止状態への移行）", "cycles": 5}],
       "encodings": [{"syntax": "HLT", "opcode": "F4", "bytes": 1}],
-      "notes": "CPL>IOPL で実行すると #GP。アイドルループや電源管理の入口。",
-      "src": "knowledge"
+      "notes": "CPL>IOPL で実行すると #GP。アイドルループや電源管理の入口。\\n",
+      "src": "book"
     },
     {
       "mnemonic": "NOP",
@@ -862,9 +861,8 @@
       "addressing": ["暗黙"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 3}],
-      "encodings": [{"syntax": "NOP", "opcode": "90", "bytes": 1}, {"syntax": "NOP 多バイト", "opcode": "0F 1F /0", "bytes": 3}],
-      "notes": "",
-      "src": "knowledge"
+      "encodings": [{"syntax": "NOP", "opcode": "90", "bytes": 1}],
+      "src": "book"
     },
     {
       "mnemonic": "IN",

@@ -22,4 +22,4 @@ INC dst — 6502（算術）
 備考:
   A への INC は存在しない（INX を使う）。
 
-（根拠: knowledge）
+（根拠: book）

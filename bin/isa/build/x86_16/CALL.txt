@@ -11,7 +11,7 @@ CALL dst — 8086（サブルーチン）
   near: 19
   far: 28
   reg 間接: 16
-  mem 間接: 21
+  mem 間接: 21+EA
 
 オペコード:
   CALL rel16: E8 rel16  (3 バイト)
@@ -20,4 +20,4 @@ CALL dst — 8086（サブルーチン）
 備考:
   far call は CS と IP の両方を退避。
 
-（根拠: knowledge）
+（根拠: book）

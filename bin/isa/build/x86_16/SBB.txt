@@ -9,9 +9,9 @@ SBB dst, src — 8086（算術）
 
 消費クロック:
   reg,reg: 3
-  mem,reg: 16
+  mem,reg: 16+EA
 
 オペコード:
   SBB r/m,r: 0001100w /r  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

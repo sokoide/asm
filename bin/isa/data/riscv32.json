@@ -653,17 +653,6 @@
       "src": "book"
     },
     {
-      "mnemonic": "CALL",
-      "operands": "label",
-      "category": "サブルーチン",
-      "summary": "ラベル（遠距離も可）への関数呼び出しを行う疑似命令。",
-      "addressing": ["PC相対"],
-      "flags": [],
-      "cycles": [{"cond": "実装依存（AUIPC+JALR の 2 命令が多い）", "cycles": 2}],
-      "notes": "近距離なら JAL ra が、遠距離なら AUIPC ra + JALR ra に展開される（リンカが選択）。",
-      "src": "knowledge"
-    },
-    {
       "mnemonic": "ECALL",
       "operands": "",
       "category": "システム制御",

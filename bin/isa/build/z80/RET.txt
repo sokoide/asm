@@ -17,6 +17,6 @@ RET — Z80（サブルーチン）
   RET cc: C0/C8/D0/D8/E0/E8/F0/F8  (1 バイト)
 
 備考:
-  RETI（ED 4D）/RETN（ED 45）は割り込みからの復帰用。
+  RETI（ED 4D）/RETN（ED 45）は割り込みからの復帰用。\n
 
-（根拠: knowledge）
+（根拠: book）

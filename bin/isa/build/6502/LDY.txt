@@ -21,4 +21,4 @@ LDY src — 6502（データ転送）
   LDY abs: AC  (3 バイト)
   LDY abs,x: BC  (3 バイト)
 
-（根拠: knowledge）
+（根拠: book）

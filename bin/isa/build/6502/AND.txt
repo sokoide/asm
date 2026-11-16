@@ -26,4 +26,4 @@ A = A AND src。N/Z 更新、C/V は不変。
   AND (zp,x): 21  (2 バイト)
   AND (zp),y: 31  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）

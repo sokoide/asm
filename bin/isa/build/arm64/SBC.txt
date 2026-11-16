@@ -1,6 +1,6 @@
 SBC dst, src1, src2 — ARM64（算術）
 
-キャリー込み減算（dst = src1 - src2 - (1-C)）。
+キャリー込み減算（subtract with carry）。多倍長減算の上位語に使う。
 
 アドレッシング: レジスタ
 フラグ: N-  Z-  C-  V-
@@ -10,10 +10,7 @@ SBC dst, src1, src2 — ARM64（算術）
 消費クロック:
   実装依存: 1
 
-オペコード:
-  SBC Xd,Xn,Xm: 1 0 100100 1 Rm ...
-
 備考:
   128 ビット減算は SUBS + SBC。
 
-（根拠: knowledge）
+（根拠: book）

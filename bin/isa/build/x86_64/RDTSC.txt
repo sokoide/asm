@@ -10,10 +10,7 @@ RDTSC — x86-64（システム制御）
 消費クロック:
   実装依存: 6〜30
 
-オペコード:
-  RDTSC: 0F 31  (2 バイト)
-
 備考:
-  実行順序が保障されないため、精密測定は CPUID/RLFENCE 併用や RDTSCP が定番。
+  実行順序が保障されないため、精密測定は CPUID/LFENCE 併用や RDTSCP が定番。\n
 
-（根拠: knowledge）
+（根拠: book）

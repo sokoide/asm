@@ -16,8 +16,7 @@
 ;
 ; ---- Cycle breakdown of the COPY BODY (hand calculation) ----
 ; Basis: 8086 Family User's Manual Table 2-21 (MOVS: 18 OR 9+17n; the same
-;        table row appears in 8086マシン語秘伝の書(1990) 三の章ニモニック表,
-;        mirrored in `isa x86_16 MOVS`). Sanity check: an 8086 bus cycle is
+;        table row is mirrored in `isa x86_16 MOVS`). Sanity check: an 8086 bus cycle is
 ;        4 clocks, so a byte move (read + write) cannot be fewer than 8
 ;        clocks/byte - 17 clocks/byte is the physically consistent figure.
 ;   cld                 =  2

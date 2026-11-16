@@ -16,4 +16,4 @@ DAS — 8086（BCD）
 備考:
   SUB/SBB 直後に使用。
 
-（根拠: knowledge）
+（根拠: book）

@@ -26,12 +26,12 @@
       "operands": "#d, Dn",
       "category": "データ転送",
       "summary": "8 ビット符号拡張即値をデータレジスタへ高速転送（A = -1 で 32 ビット -1 が入る）。フラグ更新あり。",
-      "addressing": ["即値"],
+      "addressing": ["即値 → Dn（.L のみ）"],
       "flags": ["‡", "‡", "0", "0", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
-      "encodings": [{"syntax": "MOVEQ #d,Dn", "opcode": "0 111 DDD dddddddd", "bytes": 2}],
+      "encodings": [{"syntax": "MOVEQ #d,Dn", "opcode": "0 111 DDD 0 dddddddd", "bytes": 2}],
       "notes": "MOVE.L #imm,D0 より 2 クロック速い。-128〜127 のみ。フラグを変えるのが MOVE.L #imm との違い。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "MOVEM",
@@ -146,12 +146,12 @@
       "mnemonic": "ADDQ",
       "operands": "#1-8, dst",
       "category": "算術",
-      "summary": "小さい即値（1〜8）の高速加算。ADDI より短くて速い。An への ADDQ はフラグ不変ではない（ADDQ はフラグ更新する）。",
+      "summary": "小さい即値（1〜8）の高速加算。ADDI より短くて速い。An 宛は .B 不可、.W/.L で全 32 ビットが演算対象、フラグは変化しない。",
       "addressing": ["データ可変 / An"],
       "flags": ["‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "ADDQ.W #1,D0", "cycles": 4}, {"cond": "ADDQ.L #1,A0（フラグ不変）", "cycles": 8}],
       "notes": "レジスタに対する ADDQ は 4/8 クロック。ADDQ #1,A0 でフラグは更新されない（アドレスレジスタ宛はフラグ不変）。",
-      "src": "knowledge"
+      "src": "book"
     },
     {
       "mnemonic": "ADDX",

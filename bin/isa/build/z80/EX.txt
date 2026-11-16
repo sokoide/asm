@@ -20,6 +20,6 @@ EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP
   EX (SP),IX: DD E3  (2 バイト)
 
 備考:
-  EXX は BC/DE/HL と裏レジスタを一括切替する別命令（D9）。
+  EXX は BC/DE/HL と裏レジスタを一括切替する別命令（D9）。\n
 
-（根拠: knowledge）
+（根拠: book）

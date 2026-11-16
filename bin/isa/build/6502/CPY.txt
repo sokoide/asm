@@ -17,4 +17,4 @@ Y と src を比較。C=1 が「Y >= src」。
   CPY zp: C4  (2 バイト)
   CPY abs: CC  (3 バイト)
 
-（根拠: knowledge）
+（根拠: book）

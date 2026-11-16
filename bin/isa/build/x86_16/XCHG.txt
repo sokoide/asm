@@ -9,7 +9,7 @@ XCHG dst, src — 8086（データ転送）
 
 消費クロック:
   reg,reg: 4
-  mem,reg: 17
+  mem,reg: 17+EA
 
 オペコード:
   XCHG AX,r: 90+r  (1 バイト)
@@ -17,4 +17,4 @@ XCHG dst, src — 8086（データ転送）
 備考:
   XCHG AX,reg（オペコード 90〜97）は 1 バイト。
 
-（根拠: knowledge）
+（根拠: book）

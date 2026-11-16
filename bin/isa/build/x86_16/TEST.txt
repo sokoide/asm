@@ -9,10 +9,13 @@ AND のフラグのみ反映（dst は不変）。ビットテスト用。
 
 消費クロック:
   reg,reg: 3
-  mem,reg: 16
+  mem,reg: 9+EA
 
 オペコード:
   TEST r/m,r: 1000010w /r  (2 バイト)
   TEST AL,imm: A8 ib  (2 バイト)
 
-（根拠: knowledge）
+備考:
+  結果を書き戻さないため mem,reg は 9+EA と AND より速い。
+
+（根拠: book）

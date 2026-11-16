@@ -15,6 +15,6 @@ dst の全ビットを反転する（1 の補数）。フラグは一切変化�
   NOT r/m64: REX.W F7 /2  (3 バイト)
 
 備考:
-  フラグ更新が必要なら xor dst, dst / sub dst, 1 か NEG を使う（本書2章の flag 一覧参照）。
+  フラグ更新が必要なら xor dst, dst / sub dst, 1 か NEG を使う。
 
 （根拠: book）

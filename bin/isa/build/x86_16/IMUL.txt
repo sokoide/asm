@@ -3,7 +3,7 @@ IMUL src — 8086（算術）
 符号付き乗算。8ビット: AX = AL×src、16ビット: DX:AX = AX×src。
 
 アドレッシング: レジスタ、メモリ
-フラグ: OU  DU  I-  SU  ZU  AU  PU  C‡
+フラグ: O‡  D-  I-  SU  ZU  AU  PU  C‡
 
 ────────────── 詳細 ──────────────
 
@@ -18,4 +18,4 @@ IMUL src — 8086（算術）
 備考:
   CF=OF=1 は DX:AX の符号拡張として上位半分が有効（桁あふれ）。
 
-（根拠: knowledge）
+（根拠: book）

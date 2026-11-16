@@ -1,6 +1,6 @@
 ORN dst, src1, src2 — ARM64（論理）
 
-OR NOT（dst = src1 OR NOT src2）。
+OR NOT。ソースの 0 ビット位置に対応するデスティネーションのビットを 1 にセットできる。それ以外は ORR と同様。
 
 アドレッシング: レジスタ
 フラグ: N-  Z-  C-  V-
@@ -10,7 +10,4 @@ OR NOT（dst = src1 OR NOT src2）。
 消費クロック:
   実装依存: 1
 
-オペコード:
-  ORN Xd,Xn,Xm: 1 0 101010 1 Rm ...
-
-（根拠: knowledge）
+（根拠: book）

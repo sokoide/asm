@@ -13,4 +13,4 @@ A と (HL) を比較し、HL を -1、BC を -1。
 オペコード:
   CPD: ED A9  (2 バイト)
 
-（根拠: knowledge）
+（根拠: book）
