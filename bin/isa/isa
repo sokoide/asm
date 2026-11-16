@@ -19,6 +19,8 @@ CPU が実行できる命令の仕様一覧。この CLI は収録アーキの I
 
 使い方:
   isa MNEMONIC      命令を検索（コンパクト表示。大文字小文字は同一視）
+                    拡張ニーモニック（ppc の blr/li/mr など）は一覧にも載る。
+                    元命令（例: blr → bclr）のページに詳細欄「拡張形式」付き
   isa -v MNEMONIC   詳細全文を表示（クロック・オペコード・備考）
   isa -a ARCH MNEMONIC
   isa ARCH MNEMONIC アーキを限定して検索
@@ -76,6 +78,7 @@ print_page() {
 
 arch_line() {
   # Print arch-specific lines from index.tsv; '-' means all archs.
+  # (Extended mnemonics like ppc blr are regular index rows.)
   local arch="$1"
   if [[ "$arch" == "-" ]]; then
     cat "$BUILD_DIR/index.tsv"

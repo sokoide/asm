@@ -1,0 +1,20 @@
+cmplw（拡張ニーモニック）→ CMPL crfT, L, rA, rB — PowerPC（比較）
+
+符号なし（logical）比較。拡張形式 cmplw。
+
+アドレッシング: レジスタ
+フラグ: LT‡  GT‡  EQ‡  SO‡
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  cmplw crT,rA,rB ⇔ cmpl crT, 0, rA, rB
+  論理ワード比較（Compare Logical Word）
+  比較命令の第 2 オペランド L で幅を選ぶ。cmplw は L=0（ワード）を明示する形式。
+
+元命令: isa ppc CMPL
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

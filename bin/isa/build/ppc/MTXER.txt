@@ -1,0 +1,20 @@
+mtxer（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ管理）
+
+特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  mtxer rS ⇔ mtspr 1, rS
+  固定小数点例外レジスタへの移動（Move to XER）
+  SPR 1 = XER。
+
+元命令: isa ppc MTSPR
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

@@ -1,0 +1,20 @@
+mtlr（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ管理）
+
+特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  mtlr rS ⇔ mtspr 8, rS
+  リンクレジスタへの移動（Move to Link Register）
+  SPR 8 = LR。bl の戻り先保存先。
+
+元命令: isa ppc MTSPR
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

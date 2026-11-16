@@ -1,0 +1,19 @@
+crmove（拡張ニーモニック）→ CROR crbT, crbA, crbB — PowerPC（CR操作）
+
+CR ビット同士の論理和。
+
+アドレッシング: CR ビット
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  crmove crbT,crbA ⇔ cror crbT, crbA, crbA
+  コンディションレジスタビットの移動（Condition Register Move）
+
+元命令: isa ppc CROR
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

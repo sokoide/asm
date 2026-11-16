@@ -1,0 +1,20 @@
+rotlw（拡張ニーモニック）→ RLWNM rA, rS, rB, mB, mE — PowerPC（回転/シフト）
+
+rB の下位 5 ビットで左回転後、マスクと AND。rotlw 拡張形式が全ビット回転。
+
+アドレッシング: レジスタ回転 + 即値マスク
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  rotlw rA,rS,rB ⇔ rlwnm rA, rS, rB, 0, 31
+  ワード左回転（レジスタ）（Rotate Left Word）
+  回転量は rB の下位 5 ビット。
+
+元命令: isa ppc RLWNM
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

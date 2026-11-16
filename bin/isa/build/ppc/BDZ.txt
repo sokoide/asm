@@ -1,0 +1,24 @@
+bdz（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
+
+条件付き分岐（B-Form）。BO/BI の組合せで CTR 減算・CR ビットテストを制御する。
+
+アドレッシング: 相対、絶対（bca）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  bdz addr ⇔ bc 0x12, 0, addr
+  減算後のCTRがゼロのとき分岐（Branch if Decremented CTR is Zero）
+  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。
+
+元命令: isa ppc BC
+
+消費クロック:
+  440 コア（fold 時）: 0
+
+備考:
+  拡張形式: bne/beq/blt/bge 等の CR 条件形、bdnz（CTR≠0 で減算分岐）、bdz。
+  BO=16（CTR 減算のみ）、12（CR 真）、4（CR 偽）、20（減算+CR）等。
+
+（根拠: book）

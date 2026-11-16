@@ -1,0 +1,20 @@
+cmplwi（拡張ニーモニック）→ CMPLI crfT, L, rA, u16 — PowerPC（比較）
+
+符号なし即値比較。拡張形式 cmplwi。
+
+アドレッシング: 即値（D-Form）
+フラグ: LT‡  GT‡  EQ‡  SO‡
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  cmplwi crT,rA,u16 ⇔ cmpli crT, 0, rA, u16
+  論理ワード即値比較（Compare Logical Word Immediate）
+  比較命令の第 2 オペランド L で幅を選ぶ。cmplwi は L=0（ワード）を明示する形式。
+
+元命令: isa ppc CMPLI
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

@@ -1,0 +1,20 @@
+bnuctr（拡張ニーモニック）→ BCCTR BO, BI — PowerPC（分岐）
+
+CTR への条件分岐。bctr 拡張形式で関数ポインタ呼出・グローバルリンケージに使う。
+
+アドレッシング: レジスタ間接（CTR）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  bnuctr [crT] ⇔ bcctr 0x04, (crT*4)+3
+  順序付けなしでないときCTRへ分岐（Branch if Not Unordered to CTR）
+  [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。
+
+元命令: isa ppc BCCTR
+
+消費クロック:
+  440 コア（fold 時）: 0
+
+（根拠: book）

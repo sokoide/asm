@@ -11,7 +11,7 @@ ISA = Instruction Set Architecture（命令セットアーキテクチャ）。C
 | 6502 | `data/6502.json` | 公式命令セット全 56 ニーモニック |
 | z80 | `data/z80.json` | 8080 上位 + DD/CB プレフィックス含む 67 エントリ |
 | m68k | `data/m68k.json` | MC68000 コア 71 エントリ |
-| ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E）96 エントリ |
+| ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E）96 命令 + 拡張ニーモニック 118 = 214 エントリ |
 | x86_16 | `data/x86_16.json` | 8086/8088 実モード 61 エントリ |
 | i386 | `data/i386.json` | 80386 32ビットプロテクトモード |
 | x86_64 | `data/x86_64.json` | x86-64 コア整数命令 |
@@ -21,11 +21,14 @@ ISA = Instruction Set Architecture（命令セットアーキテクチャ）。C
 
 ppc の根拠は `22_Library` の Optimizing PowerPC Code(1995)（クラシック部分）と PowerPC 440 プログラミングモデル(2001)（Book E・キャッシュ管理・440 コアのサイクル数）。QEMU `bamboo`（PPC440）を想定し、クラシック命令と 440 固有命令（MAC 系は知識ベース）を両方収録。クラシック専用の lmw/stmw は Book E 非サポートを notes に記載。
 
+ppc は拡張ニーモニック（`blr` → `bclr 0x14, 0` のような固定オペランド形式）を `aliases` として収録する。根拠は Optimizing PowerPC Code(1995) 付録B の "equivalent to" 形式で、32 ビット実装の分のみ（64 ビット専用の cmpd/clrldi 系と、POWER 由来の古いニーモニック a/ae/cal 系は対象外）。一覧にも通常のエントリとして載り（riscv の疑似命令と同じ方針）、ページは元命令の内容 + 詳細欄に「拡張形式」として等価形式を表示する。元命令が未収録のため除外している拡張形式: `crset`/`crnot`（CREQV/CRNOR が未収録）。
+
 ## 使い方
 
 ```sh
 isa DJNZ          # 全アーキから検索（コンパクト表示。大文字小文字は同一視）
 isa -v DJNZ       # 詳細全文（消費クロック・オペコード・備考）
+isa blr           # 拡張ニーモニックも検索可（ppc: blr → bclr のページ + 詳細欄に「拡張形式」）
 isa z80 DJNZ      # アーキを限定（isa -a z80 DJNZ と同じ）
 isa LSR           # 複数アーキに同名ニーモニックがある場合は一覧 + 絞り込みヒント
 isa z80           # アーキ内の命令一覧（カテゴリごとにグループ表示）
@@ -54,6 +57,16 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
 {
   "arch": "z80",
   "flagNames": ["S", "Z", "H", "P/V", "N", "C"],
+  "aliases": [
+    {
+      "mnemonic": "bdnz",
+      "operands": "addr",
+      "target": "BC",
+      "equivalent": "bc 0x10, 0, addr",
+      "summary": "減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）",
+      "notes": "補足（省略可）"
+    }
+  ],
   "instructions": [
     {
       "mnemonic": "DJNZ",
@@ -72,6 +85,7 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
 ```
 
 - `mnemonic` は 1 ファイル内でユニーク。条件接尾 `cc`（m68k）や `.cond`（arm64）のみ小文字を許可。バリエーションは 1 エントリに統合し `operands`/`encodings`/`notes` で説明する
+- `aliases` は任意の拡張ニーモニック一覧（PowerPC の `blr`/`li` 等）。`mnemonic` は小文字で基本命令と重複不可、`target` は `instructions` の `mnemonic` を指す。一覧には通常エントリと同じく載り（riscv の疑似命令と同じ方針）、ページは元命令の内容 + 詳細欄に「拡張形式」（`equivalent` と等価）を出力する
 - `flagNames` / `flags` は同長の配列。RISC-V のようにフラグレジスタがないアーキは両方 `[]`（`flags` 欄を省略して出力する）
 - `cycles` は非空。`cycles` の値は数値または `"70〜77"` のような範囲文字列。実装依存のアーキ（RISC-V/ARM64）は cond にその旨を書く
 - `encodings` は任意。不確実なオペコードは載せない
@@ -96,3 +110,4 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
 
 - `tools/generate.py`（python3 標準ライブラリのみ）がスキーマ検証 + `build/` 生成を担う。`build/` はコミット済みなので、クエリ時は zsh + cat + fzf だけで動く（生成環境不要）
 - 生成ページは `─ 詳細 ─` の区切り線より前がコンパクト表示、以降が詳細。`isa MNEMONIC` は前者のみ、`-v` は全文を出す
+- 拡張ニーモニック（ppc `aliases`）は index.tsv に通常行として入るため、一覧・fzf・命令数は基本命令と区別なく扱う

@@ -18,6 +18,7 @@ DATA_DIR = ROOT / "data"
 BUILD_DIR = ROOT / "build"
 
 REQUIRED_FIELDS = ("mnemonic", "operands", "category", "summary", "flags")
+REQUIRED_ALIAS_FIELDS = ("mnemonic", "target", "equivalent", "summary")
 FLAG_SYMBOLS = {"-", "1", "0", "‡", "U"}
 ALLOWED_SRC = {"book", "note", "knowledge"}
 ARCH_DISPLAY = {
@@ -113,6 +114,38 @@ def validate(path, doc):
         notes = inst.get("notes", "")
         if not isinstance(notes, str):
             raise ValidationError(f"{where}: notes は文字列で指定してください")
+
+    # aliases: extended mnemonics (e.g. PowerPC blr -> bclr). Not listed in the
+    # index; looked up via build/aliases.tsv only.
+    base_mnems = {inst["mnemonic"].upper() for inst in doc["instructions"]}
+    seen_alias = set()
+    for i, alias in enumerate(doc.get("aliases", []), start=1):
+        where = f"{name}: aliases[{i}]"
+        for key in REQUIRED_ALIAS_FIELDS:
+            if key not in alias:
+                raise ValidationError(f"{where}: 必須フィールド {key} がありません")
+        mnem = alias["mnemonic"]
+        if not isinstance(mnem, str) or not re.fullmatch(r"[a-z][a-z0-9]*\.?", mnem):
+            raise ValidationError(f"{where}: alias の mnemonic は小文字ニーモニックで指定してください ({mnem!r})")
+        if mnem.upper() in seen_alias:
+            raise ValidationError(f"{where}: alias mnemonic 重複 ({mnem})")
+        seen_alias.add(mnem.upper())
+        if mnem.upper() in base_mnems:
+            raise ValidationError(f"{where}: alias mnemonic が基本命令と重複 ({mnem})")
+        if alias["target"].upper() not in base_mnems:
+            raise ValidationError(f"{where}: target {alias['target']!r} が instructions にありません")
+        for key in ("equivalent", "summary"):
+            value = alias[key]
+            if not isinstance(value, str) or not value:
+                raise ValidationError(f"{where}: {key} は非空の文字列で指定してください")
+            if "\t" in value or "\n" in value:
+                raise ValidationError(f"{where}: {key} にタブ/改行は使えません")
+        operands = alias.get("operands", "")
+        if not isinstance(operands, str) or "\t" in operands or "\n" in operands:
+            raise ValidationError(f"{where}: operands はタブ/改行なしの文字列で指定してください")
+        notes = alias.get("notes", "")
+        if not isinstance(notes, str):
+            raise ValidationError(f"{where}: notes は文字列で指定してください")
     return flag_names
 
 
@@ -120,20 +153,10 @@ def format_flags(flag_names, flags):
     return "  ".join(f"{n}{v}" for n, v in zip(flag_names, flags))
 
 
-def render(inst, arch, flag_names):
-    operands = inst["operands"]
-    head = inst["mnemonic"] + (f" {operands}" if operands else "")
-    lines = [
-        f"{head} — {ARCH_DISPLAY[arch]}（{inst['category']}）",
-        "",
-        inst["summary"],
-        "",
-        f"アドレッシング: {'、'.join(inst['addressing'])}",
-    ]
-    if flag_names:
-        lines.append(f"フラグ: {format_flags(flag_names, inst['flags'])}")
-
-    detail = [SEPARATOR, ""]
+def inst_detail(inst):
+    # Detail section body (cycles / encodings / notes / source), shared by
+    # base pages and alias pages.
+    detail = []
     if inst["cycles"]:
         detail += ["消費クロック:"]
         for entry in inst["cycles"]:
@@ -152,6 +175,54 @@ def render(inst, arch, flag_names):
         detail += ["", "備考:"] + [f"  {line}" for line in notes.splitlines()]
     if src:
         detail += ["", f"（根拠: {src}）"]
+    return detail
+
+
+def render(inst, arch, flag_names):
+    operands = inst["operands"]
+    head = inst["mnemonic"] + (f" {operands}" if operands else "")
+    lines = [
+        f"{head} — {ARCH_DISPLAY[arch]}（{inst['category']}）",
+        "",
+        inst["summary"],
+        "",
+        f"アドレッシング: {'、'.join(inst['addressing'])}",
+    ]
+    if flag_names:
+        lines.append(f"フラグ: {format_flags(flag_names, inst['flags'])}")
+
+    detail = [SEPARATOR, ""] + inst_detail(inst)
+
+    return "\n".join(lines + [""] + detail) + "\n"
+
+
+def render_alias(alias, target, arch, flag_names):
+    # Extended mnemonic page: shows the base instruction (target), with the
+    # alias's equivalence described at the top of the detail section.
+    mnem = alias["mnemonic"]
+    operands = alias.get("operands", "")
+    lines = [
+        f"{mnem}（拡張ニーモニック）→ {target['mnemonic']} {target['operands']} — {ARCH_DISPLAY[arch]}（{target['category']}）",
+        "",
+        target["summary"],
+        "",
+        f"アドレッシング: {'、'.join(target['addressing'])}",
+    ]
+    if flag_names:
+        lines.append(f"フラグ: {format_flags(flag_names, target['flags'])}")
+
+    form = mnem + (f" {operands}" if operands else "")
+    detail = [
+        SEPARATOR,
+        "",
+        "拡張形式:",
+        f"  {form} ⇔ {alias['equivalent']}",
+        f"  {alias['summary']}",
+    ]
+    for line in alias.get("notes", "").splitlines():
+        detail.append(f"  {line}")
+    detail += ["", f"元命令: isa {arch} {target['mnemonic']}"]
+    detail += [""] + inst_detail(target)
 
     return "\n".join(lines + [""] + detail) + "\n"
 
@@ -182,19 +253,31 @@ def main():
     BUILD_DIR.mkdir(parents=True)
 
     total = 0
+    alias_total = 0
     index_lines = []
     for arch, (doc, flag_names) in per_arch.items():
         arch_dir = BUILD_DIR / arch
         arch_dir.mkdir()
+        targets = {inst["mnemonic"].upper(): inst for inst in doc["instructions"]}
         for inst in doc["instructions"]:
             page = render(inst, arch, flag_names)
             (arch_dir / f"{inst['mnemonic'].upper()}.txt").write_text(page, encoding="utf-8")
             index_lines.append(f"{arch}\t{inst['mnemonic']}\t{inst['category']}\t{inst['summary']}")
             total += 1
+        # Extended mnemonics are regular index entries (same convention as the
+        # riscv pseudo-instructions); their pages render the base instruction
+        # with the equivalence in the detail section.
+        for alias in doc.get("aliases", []):
+            target = targets[alias["target"].upper()]
+            page = render_alias(alias, target, arch, flag_names)
+            (arch_dir / f"{alias['mnemonic'].upper()}.txt").write_text(page, encoding="utf-8")
+            index_lines.append(f"{arch}\t{alias['mnemonic']}\t{target['category']}\t{alias['summary']}")
+            alias_total += 1
+            total += 1
 
     index_lines.sort()
     (BUILD_DIR / "index.tsv").write_text("\n".join(index_lines) + "\n", encoding="utf-8")
-    print(f"生成完了: {total} 命令 / {len(per_arch)} アーキ → {BUILD_DIR}")
+    print(f"生成完了: {total} エントリ（拡張ニーモニック {alias_total} 含む）/ {len(per_arch)} アーキ → {BUILD_DIR}")
     return 0
 
 

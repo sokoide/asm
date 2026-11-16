@@ -1,0 +1,27 @@
+clrlslwi（拡張ニーモニック）→ RLWINM rA, rS, n, mB, mE — PowerPC（回転/シフト）
+
+左回転 n ビット後、マスク mB..mE で AND（Rotate Left Word Immediate then AND with Mask）。ビットフィールド抽出の万能命令。
+
+アドレッシング: 即値回転 + 即値マスク
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  clrlslwi rA,rS,nBits,shift ⇔ rlwinm rA, rS, shift, nBits-shift, 31-shift
+  ワード左クリア左シフト即値（Clear Left and Shift Left Word Immediate）
+  nBits <= shift <= 31 の範囲の組み合わせのみ表現できる。
+
+元命令: isa ppc RLWINM
+
+消費クロック:
+  440 コア: 1
+
+オペコード:
+  rlwinm[.] rA,rS,n,mB,mE: 0x17  (4 バイト)
+
+備考:
+  拡張形式: rotlwi/rotrwi（マスク全開）、slwi/srwi（シフト）、extrwi（抽出）。
+  M = 1（mB=mE で 1 ビットマスク）のとき LT は抽出ビットそのもの。
+
+（根拠: book）

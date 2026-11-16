@@ -1,0 +1,23 @@
+mflr（拡張ニーモニック）→ MFSPR rT, SPR — PowerPC（レジスタ管理）
+
+特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式 mflr/mtctr/mfxer。
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  mflr rT ⇔ mfspr rT, 8
+  リンクレジスタからの移動（Move from Link Register）
+  SPR 8 = LR。
+
+元命令: isa ppc MFSPR
+
+消費クロック:
+  440 コア: 1
+
+備考:
+  LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。
+
+（根拠: book）

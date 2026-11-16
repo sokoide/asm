@@ -1,0 +1,21 @@
+twnei（拡張ニーモニック）→ TWI TO, rA, s16 — PowerPC（システム制御）
+
+即値比較付き条件トラップ。範囲チェック（配列境界）の実装に使う。
+
+アドレッシング: 即値（D-Form）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  twnei rA,s16 ⇔ twi 24, rA, s16
+  等しくない場合のワード即値トラップ（Trap Word if Not Equal Immediate）
+  trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。
+
+元命令: isa ppc TWI
+
+消費クロック:
+  不成立: 1
+  トラップ: 例外
+
+（根拠: book）

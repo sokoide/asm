@@ -1,0 +1,20 @@
+cmpwi（拡張ニーモニック）→ CMPI crfT, L, rA, s16 — PowerPC（比較）
+
+符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。
+
+アドレッシング: 即値（D-Form）
+フラグ: LT‡  GT‡  EQ‡  SO‡
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  cmpwi crT,rA,s16 ⇔ cmpi crT, 0, rA, s16
+  ワード即値比較（Compare Word Immediate）
+  比較命令の第 2 オペランド L で幅を選ぶ。cmpwi は L=0（ワード）を明示する形式。
+
+元命令: isa ppc CMPI
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

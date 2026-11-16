@@ -1,0 +1,19 @@
+crclr（拡張ニーモニック）→ CRXOR crbT, crbA, crbB — PowerPC（CR操作）
+
+CR ビット同士の排他的論理和。
+
+アドレッシング: CR ビット
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  crclr crbT ⇔ crxor crbT, crbT, crbT
+  コンディションレジスタビットのクリア（Condition Register Clear）
+
+元命令: isa ppc CRXOR
+
+消費クロック:
+  440 コア: 1
+
+（根拠: book）

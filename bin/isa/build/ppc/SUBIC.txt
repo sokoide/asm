@@ -1,0 +1,22 @@
+subic（拡張ニーモニック）→ ADDIC rT, rA, s16 — PowerPC（算術）
+
+即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。
+
+アドレッシング: 即値（D-Form）
+フラグ: LT‡  GT‡  EQ‡  SO‡
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  subic rT,rA,s16 ⇔ addic rT, rA, -s16
+  キャリー付き即値減算（Subtract Immediate Carrying）
+
+元命令: isa ppc ADDIC
+
+消費クロック:
+  440 コア: 1
+
+備考:
+  addic. は CR0 更新あり。addi とは違い r0 を 0 に置換しない（rA 必須）。
+
+（根拠: book）

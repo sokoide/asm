@@ -362,6 +362,124 @@ ppc	TWI	システム制御	即値比較付き条件トラップ。範囲チェ�
 ppc	XOR	論理	排他的論理和。
 ppc	XORI	論理	ゼロ拡張即値との排他的論理和。
 ppc	XORIS	論理	16 ビット左シフト即値との排他的論理和。
+ppc	bctr	分岐	CTRへの無条件分岐（Branch Unconditionally to CTR）
+ppc	bdnz	分岐	減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）
+ppc	bdnzf	分岐	減算後のCTRが非ゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Not Zero and Condition False）
+ppc	bdnzflr	分岐	減算後のCTRが非ゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition False to LR）
+ppc	bdnzlr	分岐	減算後のCTRが非ゼロのときLRへ分岐（Branch if Decremented CTR is Not Zero to LR）
+ppc	bdnzt	分岐	減算後のCTRが非ゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Not Zero and Condition True）
+ppc	bdnztlr	分岐	減算後のCTRが非ゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition True to LR）
+ppc	bdz	分岐	減算後のCTRがゼロのとき分岐（Branch if Decremented CTR is Zero）
+ppc	bdzf	分岐	減算後のCTRがゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Zero and Condition False）
+ppc	bdzflr	分岐	減算後のCTRがゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Zero and Condition False to LR）
+ppc	bdzlr	分岐	減算後のCTRがゼロのときLRへ分岐（Branch if Decremented CTR is Zero to LR）
+ppc	bdzt	分岐	減算後のCTRがゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Zero and Condition True）
+ppc	bdztlr	分岐	減算後のCTRがゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Zero and Condition True to LR）
+ppc	beq	分岐	等しいとき分岐（Branch if Equal）
+ppc	beqctr	分岐	等しいときCTRへ分岐（Branch if Equal to CTR）
+ppc	beqlr	分岐	等しいときLRへ分岐（Branch if Equal to LR）
+ppc	bf	分岐	条件が偽のとき分岐（Branch if Condition False）
+ppc	bfctr	分岐	条件が偽のときCTRへ分岐（Branch if Condition False to CTR）
+ppc	bflr	分岐	条件が偽のときLRへ分岐（Branch if Condition False to LR）
+ppc	bge	分岐	以上のとき分岐（Branch if Greater Than or Equal）
+ppc	bgectr	分岐	以上のときCTRへ分岐（Branch if Greater Than or Equal to CTR）
+ppc	bgelr	分岐	以上のときLRへ分岐（Branch if Greater Than or Equal to LR）
+ppc	bgt	分岐	より大きいとき分岐（Branch if Greater Than）
+ppc	bgtctr	分岐	より大きいときCTRへ分岐（Branch if Greater Than to CTR）
+ppc	bgtlr	分岐	より大きいときLRへ分岐（Branch if Greater Than to LR）
+ppc	ble	分岐	以下のとき分岐（Branch if Less Than or Equal）
+ppc	blectr	分岐	以下のときCTRへ分岐（Branch if Less Than or Equal to CTR）
+ppc	blelr	分岐	以下のときLRへ分岐（Branch if Less Than or Equal to LR）
+ppc	blr	分岐	LRへの無条件分岐（Branch Unconditionally to LR）
+ppc	blt	分岐	未満のとき分岐（Branch if Less Than）
+ppc	bltctr	分岐	未満のときCTRへ分岐（Branch if Less Than to CTR）
+ppc	bltlr	分岐	未満のときLRへ分岐（Branch if Less Than to LR）
+ppc	bne	分岐	等しくないとき分岐（Branch if Not Equal）
+ppc	bnectr	分岐	等しくないときCTRへ分岐（Branch if Not Equal to CTR）
+ppc	bnelr	分岐	等しくないときLRへ分岐（Branch if Not Equal to LR）
+ppc	bng	分岐	大きくないとき分岐（Branch if Not Greater Than）
+ppc	bngctr	分岐	大きくないときCTRへ分岐（Branch if Not Greater Than to CTR）
+ppc	bnglr	分岐	大きくないときLRへ分岐（Branch if Not Greater Than to LR）
+ppc	bnl	分岐	小さくないとき分岐（Branch if Not Less Than）
+ppc	bnlctr	分岐	小さくないときCTRへ分岐（Branch if Not Less Than to CTR）
+ppc	bnllr	分岐	小さくないときLRへ分岐（Branch if Not Less Than to LR）
+ppc	bns	分岐	サマリーオーバーフローでないとき分岐（Branch if Not Summary Overflow）
+ppc	bnsctr	分岐	サマリーオーバーフローでないときCTRへ分岐（Branch if Not Summary Overflow to CTR）
+ppc	bnslr	分岐	サマリーオーバーフローでないときLRへ分岐（Branch if Not Summary Overflow to LR）
+ppc	bnu	分岐	順序付けなしでないとき分岐（Branch if Not Unordered）
+ppc	bnuctr	分岐	順序付けなしでないときCTRへ分岐（Branch if Not Unordered to CTR）
+ppc	bnulr	分岐	順序付けなしでないときLRへ分岐（Branch if Not Unordered to LR）
+ppc	bso	分岐	サマリーオーバーフローのとき分岐（Branch if Summary Overflow）
+ppc	bsoctr	分岐	サマリーオーバーフローのときCTRへ分岐（Branch if Summary Overflow to CTR）
+ppc	bsolr	分岐	サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）
+ppc	bt	分岐	条件が真のとき分岐（Branch if Condition True）
+ppc	btctr	分岐	条件が真のときCTRへ分岐（Branch if Condition True to CTR）
+ppc	btlr	分岐	条件が真のときLRへ分岐（Branch if Condition True to LR）
+ppc	bun	分岐	順序付けなしのとき分岐（Branch if Unordered）
+ppc	bunctr	分岐	順序付けなしのときCTRへ分岐（Branch if Unordered to CTR）
+ppc	bunlr	分岐	順序付けなしのときLRへ分岐（Branch if Unordered to LR）
+ppc	clrlslwi	回転/シフト	ワード左クリア左シフト即値（Clear Left and Shift Left Word Immediate）
+ppc	clrlwi	回転/シフト	ワード左クリア即値（Clear Left Word Immediate）
+ppc	clrrwi	回転/シフト	ワード右クリア即値（Clear Right Word Immediate）
+ppc	cmplw	比較	論理ワード比較（Compare Logical Word）
+ppc	cmplwi	比較	論理ワード即値比較（Compare Logical Word Immediate）
+ppc	cmpw	比較	ワード比較（Compare Word）
+ppc	cmpwi	比較	ワード即値比較（Compare Word Immediate）
+ppc	crclr	CR操作	コンディションレジスタビットのクリア（Condition Register Clear）
+ppc	crmove	CR操作	コンディションレジスタビットの移動（Condition Register Move）
+ppc	extlwi	回転/シフト	ワード即値抽出・左詰め（Extract and Left Justify Word Immediate）
+ppc	extrwi	回転/シフト	ワード即値抽出・右詰め（Extract and Right Justify Word Immediate）
+ppc	inslwi	回転/シフト	ワード即値左側挿入（Insert from Left Word Immediate）
+ppc	insrwi	回転/シフト	ワード即値右側挿入（Insert from Right Word Immediate）
+ppc	la	算術	アドレスロード（Load Address）
+ppc	li	算術	即値ロード（Load Immediate）
+ppc	lis	算術	即値ロード・シフト付き（Load Immediate Shifted）
+ppc	mfctr	レジスタ管理	カウントレジスタからの移動（Move from Count Register）
+ppc	mflr	レジスタ管理	リンクレジスタからの移動（Move from Link Register）
+ppc	mfxer	レジスタ管理	固定小数点例外レジスタからの移動（Move from XER）
+ppc	mr	論理	レジスタ間移動（Move Register）
+ppc	mtctr	レジスタ管理	カウントレジスタへの移動（Move to Count Register）
+ppc	mtlr	レジスタ管理	リンクレジスタへの移動（Move to Link Register）
+ppc	mtxer	レジスタ管理	固定小数点例外レジスタへの移動（Move to XER）
+ppc	nop	論理	ノーオペレーション（No Operation）
+ppc	not	論理	NOT（ビット反転）（Logical NOT）
+ppc	rotlw	回転/シフト	ワード左回転（レジスタ）（Rotate Left Word）
+ppc	rotlwi	回転/シフト	ワード左回転（即値）（Rotate Left Word Immediate）
+ppc	rotrwi	回転/シフト	ワード右回転（即値）（Rotate Right Word Immediate）
+ppc	slwi	回転/シフト	ワード左シフト（即値）（Shift Left Word Immediate）
+ppc	srwi	回転/シフト	ワード右シフト（即値）（Shift Right Word Immediate）
+ppc	subi	算術	即値減算（Subtract Immediate）
+ppc	subic	算術	キャリー付き即値減算（Subtract Immediate Carrying）
+ppc	subis	算術	シフト付き即値減算（Subtract Immediate Shifted）
+ppc	trap	システム制御	無条件トラップ（Trap Unconditionally）
+ppc	tweq	システム制御	等しい場合のワードトラップ（Trap Word if Equal）
+ppc	tweqi	システム制御	等しい場合のワード即値トラップ（Trap Word if Equal Immediate）
+ppc	twge	システム制御	大きいまたは等しい場合のワードトラップ（Trap Word if Greater Than or Equal）
+ppc	twgei	システム制御	大きいまたは等しい場合のワード即値トラップ（Trap Word if Greater Than or Equal Immediate）
+ppc	twgt	システム制御	大きい場合のワードトラップ（Trap Word if Greater Than）
+ppc	twgti	システム制御	大きい場合のワード即値トラップ（Trap Word if Greater Than Immediate）
+ppc	twle	システム制御	小さいまたは等しい場合のワードトラップ（Trap Word if Less Than or Equal）
+ppc	twlei	システム制御	小さいまたは等しい場合のワード即値トラップ（Trap Word if Less Than or Equal Immediate）
+ppc	twlge	システム制御	論理的に大きいまたは等しい場合のワードトラップ（Trap Word if Logically Greater Than or Equal）
+ppc	twlgei	システム制御	論理的に大きいまたは等しい場合のワード即値トラップ（Trap Word if Logically Greater Than or Equal Immediate）
+ppc	twlgt	システム制御	論理的に大きい場合のワードトラップ（Trap Word if Logically Greater Than）
+ppc	twlgti	システム制御	論理的に大きい場合のワード即値トラップ（Trap Word if Logically Greater Than Immediate）
+ppc	twlle	システム制御	論理的に小さいまたは等しい場合のワードトラップ（Trap Word if Logically Less Than or Equal）
+ppc	twllei	システム制御	論理的に小さいまたは等しい場合のワード即値トラップ（Trap Word if Logically Less Than or Equal Immediate）
+ppc	twllt	システム制御	論理的に小さい場合のワードトラップ（Trap Word if Logically Less Than）
+ppc	twllti	システム制御	論理的に小さい場合のワード即値トラップ（Trap Word if Logically Less Than Immediate）
+ppc	twlng	システム制御	論理的に大きくない場合のワードトラップ（Trap Word if Logically Not Greater Than）
+ppc	twlngi	システム制御	論理的に大きくない場合のワード即値トラップ（Trap Word if Logically Not Greater Than Immediate）
+ppc	twlnl	システム制御	論理的に小さくない場合のワードトラップ（Trap Word if Logically Not Less Than）
+ppc	twlnli	システム制御	論理的に小さくない場合のワード即値トラップ（Trap Word if Logically Not Less Than Immediate）
+ppc	twlt	システム制御	小さい場合のワードトラップ（Trap Word if Less Than）
+ppc	twlti	システム制御	小さい場合のワード即値トラップ（Trap Word if Less Than Immediate）
+ppc	twne	システム制御	等しくない場合のワードトラップ（Trap Word if Not Equal）
+ppc	twnei	システム制御	等しくない場合のワード即値トラップ（Trap Word if Not Equal Immediate）
+ppc	twng	システム制御	大きくない場合のワードトラップ（Trap Word if Not Greater Than）
+ppc	twngi	システム制御	大きくない場合のワード即値トラップ（Trap Word if Not Greater Than Immediate）
+ppc	twnl	システム制御	小さくない場合のワードトラップ（Trap Word if Not Less Than）
+ppc	twnli	システム制御	小さくない場合のワード即値トラップ（Trap Word if Not Less Than Immediate）
 riscv32	ADD	算術	rs1 + rs2 を rd に代入する（32 ビット）。
 riscv32	ADDI	算術	rs1 + 符号拡張 12 ビット即値を rd に代入する（32 ビット）。
 riscv32	AND	論理	rs1 と rs2 の論理積を rd に入れる。

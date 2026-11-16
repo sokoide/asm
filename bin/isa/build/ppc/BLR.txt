@@ -1,0 +1,23 @@
+blr（拡張ニーモニック）→ BCLR BO, BI — PowerPC（分岐）
+
+LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。
+
+アドレッシング: レジスタ間接（LR）
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  blr ⇔ bclr 0x14, 0
+  LRへの無条件分岐（Branch Unconditionally to LR）
+  [l] 接尾可（blrl）。サブルーチンからの return の定型。
+
+元命令: isa ppc BCLR
+
+消費クロック:
+  440 コア（fold 時）: 0
+
+備考:
+  btlr/bflr（CR ビット条件復帰）などの拡張形式あり。
+
+（根拠: book）

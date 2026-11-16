@@ -6,6 +6,952 @@
     "EQ",
     "SO"
   ],
+  "aliases": [
+    {
+      "mnemonic": "bdnz",
+      "operands": "addr",
+      "target": "BC",
+      "equivalent": "bc 0x10, 0, addr",
+      "summary": "減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdz",
+      "operands": "addr",
+      "target": "BC",
+      "equivalent": "bc 0x12, 0, addr",
+      "summary": "減算後のCTRがゼロのとき分岐（Branch if Decremented CTR is Zero）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdnzf",
+      "operands": "crbT,addr",
+      "target": "BC",
+      "equivalent": "bc 0x00, crbT, addr",
+      "summary": "減算後のCTRが非ゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Not Zero and Condition False）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdnzt",
+      "operands": "crbT,addr",
+      "target": "BC",
+      "equivalent": "bc 0x08, crbT, addr",
+      "summary": "減算後のCTRが非ゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Not Zero and Condition True）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdzf",
+      "operands": "crbT,addr",
+      "target": "BC",
+      "equivalent": "bc 0x02, crbT, addr",
+      "summary": "減算後のCTRがゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Zero and Condition False）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdzt",
+      "operands": "crbT,addr",
+      "target": "BC",
+      "equivalent": "bc 0x0A, crbT, addr",
+      "summary": "減算後のCTRがゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Zero and Condition True）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "beq",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x0C, (crT*4)+2, addr",
+      "summary": "等しいとき分岐（Branch if Equal）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bne",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, (crT*4)+2, addr",
+      "summary": "等しくないとき分岐（Branch if Not Equal）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "blt",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x0C, (crT*4)+0, addr",
+      "summary": "未満のとき分岐（Branch if Less Than）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bge",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, (crT*4)+0, addr",
+      "summary": "以上のとき分岐（Branch if Greater Than or Equal）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bgt",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x0C, (crT*4)+1, addr",
+      "summary": "より大きいとき分岐（Branch if Greater Than）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "ble",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, (crT*4)+1, addr",
+      "summary": "以下のとき分岐（Branch if Less Than or Equal）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bng",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, (crT*4)+1, addr",
+      "summary": "大きくないとき分岐（Branch if Not Greater Than）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnl",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, (crT*4)+0, addr",
+      "summary": "小さくないとき分岐（Branch if Not Less Than）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bns",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, (crT*4)+3, addr",
+      "summary": "サマリーオーバーフローでないとき分岐（Branch if Not Summary Overflow）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bso",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x0C, (crT*4)+3, addr",
+      "summary": "サマリーオーバーフローのとき分岐（Branch if Summary Overflow）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnu",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, (crT*4)+3, addr",
+      "summary": "順序付けなしでないとき分岐（Branch if Not Unordered）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。 浮動小数点比較の結果用。"
+    },
+    {
+      "mnemonic": "bun",
+      "operands": "[crT,]addr",
+      "target": "BC",
+      "equivalent": "bc 0x0C, (crT*4)+3, addr",
+      "summary": "順序付けなしのとき分岐（Branch if Unordered）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。 浮動小数点比較の結果用。"
+    },
+    {
+      "mnemonic": "bt",
+      "operands": "crbT,addr",
+      "target": "BC",
+      "equivalent": "bc 0x0C, crbT, addr",
+      "summary": "条件が真のとき分岐（Branch if Condition True）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bf",
+      "operands": "crbT,addr",
+      "target": "BC",
+      "equivalent": "bc 0x04, crbT, addr",
+      "summary": "条件が偽のとき分岐（Branch if Condition False）",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "blr",
+      "operands": "",
+      "target": "BCLR",
+      "equivalent": "bclr 0x14, 0",
+      "summary": "LRへの無条件分岐（Branch Unconditionally to LR）",
+      "notes": "[l] 接尾可（blrl）。サブルーチンからの return の定型。"
+    },
+    {
+      "mnemonic": "bctr",
+      "operands": "",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x14, 0",
+      "summary": "CTRへの無条件分岐（Branch Unconditionally to CTR）",
+      "notes": "[l] 接尾可（bctrl）。switch/jump table や末尾呼び出しに使う。"
+    },
+    {
+      "mnemonic": "bdnzlr",
+      "operands": "",
+      "target": "BCLR",
+      "equivalent": "bclr 0x10, 0",
+      "summary": "減算後のCTRが非ゼロのときLRへ分岐（Branch if Decremented CTR is Not Zero to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdzlr",
+      "operands": "",
+      "target": "BCLR",
+      "equivalent": "bclr 0x12, 0",
+      "summary": "減算後のCTRがゼロのときLRへ分岐（Branch if Decremented CTR is Zero to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdnzflr",
+      "operands": "crbT",
+      "target": "BCLR",
+      "equivalent": "bclr 0x00, crbT",
+      "summary": "減算後のCTRが非ゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition False to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdnztlr",
+      "operands": "crbT",
+      "target": "BCLR",
+      "equivalent": "bclr 0x08, crbT",
+      "summary": "減算後のCTRが非ゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition True to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdzflr",
+      "operands": "crbT",
+      "target": "BCLR",
+      "equivalent": "bclr 0x02, crbT",
+      "summary": "減算後のCTRがゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Zero and Condition False to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bdztlr",
+      "operands": "crbT",
+      "target": "BCLR",
+      "equivalent": "bclr 0x0A, crbT",
+      "summary": "減算後のCTRがゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Zero and Condition True to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "beqlr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x0C, (crT*4)+2",
+      "summary": "等しいときLRへ分岐（Branch if Equal to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnelr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, (crT*4)+2",
+      "summary": "等しくないときLRへ分岐（Branch if Not Equal to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bltlr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x0C, (crT*4)+0",
+      "summary": "未満のときLRへ分岐（Branch if Less Than to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bgelr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, (crT*4)+0",
+      "summary": "以上のときLRへ分岐（Branch if Greater Than or Equal to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bgtlr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x0C, (crT*4)+1",
+      "summary": "より大きいときLRへ分岐（Branch if Greater Than to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "blelr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, (crT*4)+1",
+      "summary": "以下のときLRへ分岐（Branch if Less Than or Equal to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnglr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, (crT*4)+1",
+      "summary": "大きくないときLRへ分岐（Branch if Not Greater Than to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnllr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, (crT*4)+0",
+      "summary": "小さくないときLRへ分岐（Branch if Not Less Than to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnslr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, (crT*4)+3",
+      "summary": "サマリーオーバーフローでないときLRへ分岐（Branch if Not Summary Overflow to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bsolr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x0C, (crT*4)+3",
+      "summary": "サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnulr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, (crT*4)+3",
+      "summary": "順序付けなしでないときLRへ分岐（Branch if Not Unordered to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。"
+    },
+    {
+      "mnemonic": "bunlr",
+      "operands": "[crT]",
+      "target": "BCLR",
+      "equivalent": "bclr 0x0C, (crT*4)+3",
+      "summary": "順序付けなしのときLRへ分岐（Branch if Unordered to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。"
+    },
+    {
+      "mnemonic": "btlr",
+      "operands": "crbT",
+      "target": "BCLR",
+      "equivalent": "bclr 0x0C, crbT",
+      "summary": "条件が真のときLRへ分岐（Branch if Condition True to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bflr",
+      "operands": "crbT",
+      "target": "BCLR",
+      "equivalent": "bclr 0x04, crbT",
+      "summary": "条件が偽のときLRへ分岐（Branch if Condition False to LR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "beqctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x0C, (crT*4)+2",
+      "summary": "等しいときCTRへ分岐（Branch if Equal to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnectr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, (crT*4)+2",
+      "summary": "等しくないときCTRへ分岐（Branch if Not Equal to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bltctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x0C, (crT*4)+0",
+      "summary": "未満のときCTRへ分岐（Branch if Less Than to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bgectr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, (crT*4)+0",
+      "summary": "以上のときCTRへ分岐（Branch if Greater Than or Equal to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bgtctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x0C, (crT*4)+1",
+      "summary": "より大きいときCTRへ分岐（Branch if Greater Than to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "blectr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, (crT*4)+1",
+      "summary": "以下のときCTRへ分岐（Branch if Less Than or Equal to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bngctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, (crT*4)+1",
+      "summary": "大きくないときCTRへ分岐（Branch if Not Greater Than to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnlctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, (crT*4)+0",
+      "summary": "小さくないときCTRへ分岐（Branch if Not Less Than to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnsctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, (crT*4)+3",
+      "summary": "サマリーオーバーフローでないときCTRへ分岐（Branch if Not Summary Overflow to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bsoctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x0C, (crT*4)+3",
+      "summary": "サマリーオーバーフローのときCTRへ分岐（Branch if Summary Overflow to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bnuctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, (crT*4)+3",
+      "summary": "順序付けなしでないときCTRへ分岐（Branch if Not Unordered to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。"
+    },
+    {
+      "mnemonic": "bunctr",
+      "operands": "[crT]",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x0C, (crT*4)+3",
+      "summary": "順序付けなしのときCTRへ分岐（Branch if Unordered to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。"
+    },
+    {
+      "mnemonic": "btctr",
+      "operands": "crbT",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x0C, crbT",
+      "summary": "条件が真のときCTRへ分岐（Branch if Condition True to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "bfctr",
+      "operands": "crbT",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x04, crbT",
+      "summary": "条件が偽のときCTRへ分岐（Branch if Condition False to CTR）",
+      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。"
+    },
+    {
+      "mnemonic": "li",
+      "operands": "rT,s16",
+      "target": "ADDI",
+      "equivalent": "addi rT, 0, s16",
+      "summary": "即値ロード（Load Immediate）",
+      "notes": "rA=0 の場合、addi は d をそのまま加算するため即値ロードになる。"
+    },
+    {
+      "mnemonic": "lis",
+      "operands": "rT,s16",
+      "target": "ADDIS",
+      "equivalent": "addis rT, 0, s16",
+      "summary": "即値ロード・シフト付き（Load Immediate Shifted）",
+      "notes": "16 ビット即値を上位 16 ビットに置く。32 ビット定数は lis + ori の 2 命令で構成する。"
+    },
+    {
+      "mnemonic": "la",
+      "operands": "rT,d(rA)",
+      "target": "ADDI",
+      "equivalent": "addi rT, rA, d",
+      "summary": "アドレスロード（Load Address）",
+      "notes": "実効アドレス rA+d を rT に入れる。メモリアクセスはしない。"
+    },
+    {
+      "mnemonic": "subi",
+      "operands": "rT,rA,s16",
+      "target": "ADDI",
+      "equivalent": "addi rT, rA, -s16",
+      "summary": "即値減算（Subtract Immediate）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "subic",
+      "operands": "rT,rA,s16",
+      "target": "ADDIC",
+      "equivalent": "addic rT, rA, -s16",
+      "summary": "キャリー付き即値減算（Subtract Immediate Carrying）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "subis",
+      "operands": "rT,rA,s16",
+      "target": "ADDIS",
+      "equivalent": "addis rT, rA, -s16",
+      "summary": "シフト付き即値減算（Subtract Immediate Shifted）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "nop",
+      "operands": "",
+      "target": "ORI",
+      "equivalent": "ori r0, r0, 0",
+      "summary": "ノーオペレーション（No Operation）",
+      "notes": "r0 への書き込みは破棄されるため何も起きない。"
+    },
+    {
+      "mnemonic": "mr",
+      "operands": "rA,rS",
+      "target": "OR",
+      "equivalent": "or rA, rS, rS",
+      "summary": "レジスタ間移動（Move Register）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "not",
+      "operands": "rA,rS",
+      "target": "NOR",
+      "equivalent": "nor rA, rS, rS",
+      "summary": "NOT（ビット反転）（Logical NOT）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "crclr",
+      "operands": "crbT",
+      "target": "CRXOR",
+      "equivalent": "crxor crbT, crbT, crbT",
+      "summary": "コンディションレジスタビットのクリア（Condition Register Clear）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "crmove",
+      "operands": "crbT,crbA",
+      "target": "CROR",
+      "equivalent": "cror crbT, crbA, crbA",
+      "summary": "コンディションレジスタビットの移動（Condition Register Move）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "rotlwi",
+      "operands": "rA,rS,nBits",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, nBits, 0, 31",
+      "summary": "ワード左回転（即値）（Rotate Left Word Immediate）",
+      "notes": "マスクなしの回転（全 32 ビット）。"
+    },
+    {
+      "mnemonic": "rotrwi",
+      "operands": "rA,rS,nBits",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, 32-nBits, 0, 31",
+      "summary": "ワード右回転（即値）（Rotate Right Word Immediate）",
+      "notes": "右回転 nBits は左回転 32-nBits と同じ。"
+    },
+    {
+      "mnemonic": "rotlw",
+      "operands": "rA,rS,rB",
+      "target": "RLWNM",
+      "equivalent": "rlwnm rA, rS, rB, 0, 31",
+      "summary": "ワード左回転（レジスタ）（Rotate Left Word）",
+      "notes": "回転量は rB の下位 5 ビット。"
+    },
+    {
+      "mnemonic": "slwi",
+      "operands": "rA,rS,nBits",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, nBits, 0, 31-nBits",
+      "summary": "ワード左シフト（即値）（Shift Left Word Immediate）",
+      "notes": ""
+    },
+    {
+      "mnemonic": "srwi",
+      "operands": "rA,rS,nBits",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, 32-nBits, nBits, 31",
+      "summary": "ワード右シフト（即値）（Shift Right Word Immediate）",
+      "notes": "論理シフト（符号拡張は srawi を使う）。"
+    },
+    {
+      "mnemonic": "clrlwi",
+      "operands": "rA,rS,nBits",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, 0, nBits, 31",
+      "summary": "ワード左クリア即値（Clear Left Word Immediate）",
+      "notes": "下位 32-nBits ビットを残す。"
+    },
+    {
+      "mnemonic": "clrrwi",
+      "operands": "rA,rS,nBits",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, 0, 0, 31-nBits",
+      "summary": "ワード右クリア即値（Clear Right Word Immediate）",
+      "notes": "上位 32-nBits ビットを残す。"
+    },
+    {
+      "mnemonic": "clrlslwi",
+      "operands": "rA,rS,nBits,shift",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, shift, nBits-shift, 31-shift",
+      "summary": "ワード左クリア左シフト即値（Clear Left and Shift Left Word Immediate）",
+      "notes": "nBits <= shift <= 31 の範囲の組み合わせのみ表現できる。"
+    },
+    {
+      "mnemonic": "extlwi",
+      "operands": "rA,rS,nBits,start",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, start, 0, nBits-1",
+      "summary": "ワード即値抽出・左詰め（Extract and Left Justify Word Immediate）",
+      "notes": "rS の bit start から nBits ビットを取り出し左詰めする。"
+    },
+    {
+      "mnemonic": "extrwi",
+      "operands": "rA,rS,nBits,start",
+      "target": "RLWINM",
+      "equivalent": "rlwinm rA, rS, start+nBits, 32-nBits, 31",
+      "summary": "ワード即値抽出・右詰め（Extract and Right Justify Word Immediate）",
+      "notes": "rS の bit start から nBits ビットを取り出し右詰めする。"
+    },
+    {
+      "mnemonic": "inslwi",
+      "operands": "rA,rS,nBits,start",
+      "target": "RLWIMI",
+      "equivalent": "rlwimi rA, rS, 32-start, start, (start+nBits)-1",
+      "summary": "ワード即値左側挿入（Insert from Left Word Immediate）",
+      "notes": "rS の nBits ビットを rA の bit start 以降に挿入する。"
+    },
+    {
+      "mnemonic": "insrwi",
+      "operands": "rA,rS,nBits,start",
+      "target": "RLWIMI",
+      "equivalent": "rlwimi rA, rS, 32-end, start, end-1",
+      "summary": "ワード即値右側挿入（Insert from Right Word Immediate）",
+      "notes": "end = start+nBits。rS の下位 nBits ビットを rA の bit start 以降に挿入する。"
+    },
+    {
+      "mnemonic": "cmpw",
+      "operands": "crT,rA,rB",
+      "target": "CMP",
+      "equivalent": "cmp crT, 0, rA, rB",
+      "summary": "ワード比較（Compare Word）",
+      "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmpw は L=0（ワード）を明示する形式。"
+    },
+    {
+      "mnemonic": "cmpwi",
+      "operands": "crT,rA,s16",
+      "target": "CMPI",
+      "equivalent": "cmpi crT, 0, rA, s16",
+      "summary": "ワード即値比較（Compare Word Immediate）",
+      "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmpwi は L=0（ワード）を明示する形式。"
+    },
+    {
+      "mnemonic": "cmplw",
+      "operands": "crT,rA,rB",
+      "target": "CMPL",
+      "equivalent": "cmpl crT, 0, rA, rB",
+      "summary": "論理ワード比較（Compare Logical Word）",
+      "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmplw は L=0（ワード）を明示する形式。"
+    },
+    {
+      "mnemonic": "cmplwi",
+      "operands": "crT,rA,u16",
+      "target": "CMPLI",
+      "equivalent": "cmpli crT, 0, rA, u16",
+      "summary": "論理ワード即値比較（Compare Logical Word Immediate）",
+      "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmplwi は L=0（ワード）を明示する形式。"
+    },
+    {
+      "mnemonic": "trap",
+      "operands": "",
+      "target": "TW",
+      "equivalent": "tw 31, r0, r0",
+      "summary": "無条件トラップ（Trap Unconditionally）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "tweq",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 4, rA, rB",
+      "summary": "等しい場合のワードトラップ（Trap Word if Equal）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twne",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 24, rA, rB",
+      "summary": "等しくない場合のワードトラップ（Trap Word if Not Equal）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twgt",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 8, rA, rB",
+      "summary": "大きい場合のワードトラップ（Trap Word if Greater Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlt",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 16, rA, rB",
+      "summary": "小さい場合のワードトラップ（Trap Word if Less Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twge",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 12, rA, rB",
+      "summary": "大きいまたは等しい場合のワードトラップ（Trap Word if Greater Than or Equal）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twle",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 20, rA, rB",
+      "summary": "小さいまたは等しい場合のワードトラップ（Trap Word if Less Than or Equal）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlgt",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 1, rA, rB",
+      "summary": "論理的に大きい場合のワードトラップ（Trap Word if Logically Greater Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twllt",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 2, rA, rB",
+      "summary": "論理的に小さい場合のワードトラップ（Trap Word if Logically Less Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlge",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 5, rA, rB",
+      "summary": "論理的に大きいまたは等しい場合のワードトラップ（Trap Word if Logically Greater Than or Equal）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlle",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 6, rA, rB",
+      "summary": "論理的に小さいまたは等しい場合のワードトラップ（Trap Word if Logically Less Than or Equal）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twng",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 20, rA, rB",
+      "summary": "大きくない場合のワードトラップ（Trap Word if Not Greater Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twnl",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 12, rA, rB",
+      "summary": "小さくない場合のワードトラップ（Trap Word if Not Less Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlng",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 6, rA, rB",
+      "summary": "論理的に大きくない場合のワードトラップ（Trap Word if Logically Not Greater Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlnl",
+      "operands": "rA,rB",
+      "target": "TW",
+      "equivalent": "tw 5, rA, rB",
+      "summary": "論理的に小さくない場合のワードトラップ（Trap Word if Logically Not Less Than）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "tweqi",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 4, rA, s16",
+      "summary": "等しい場合のワード即値トラップ（Trap Word if Equal Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twnei",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 24, rA, s16",
+      "summary": "等しくない場合のワード即値トラップ（Trap Word if Not Equal Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twgti",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 8, rA, s16",
+      "summary": "大きい場合のワード即値トラップ（Trap Word if Greater Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlti",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 16, rA, s16",
+      "summary": "小さい場合のワード即値トラップ（Trap Word if Less Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twgei",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 12, rA, s16",
+      "summary": "大きいまたは等しい場合のワード即値トラップ（Trap Word if Greater Than or Equal Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlei",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 20, rA, s16",
+      "summary": "小さいまたは等しい場合のワード即値トラップ（Trap Word if Less Than or Equal Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlgti",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 1, rA, s16",
+      "summary": "論理的に大きい場合のワード即値トラップ（Trap Word if Logically Greater Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twllti",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 2, rA, s16",
+      "summary": "論理的に小さい場合のワード即値トラップ（Trap Word if Logically Less Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlgei",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 5, rA, s16",
+      "summary": "論理的に大きいまたは等しい場合のワード即値トラップ（Trap Word if Logically Greater Than or Equal Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twllei",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 6, rA, s16",
+      "summary": "論理的に小さいまたは等しい場合のワード即値トラップ（Trap Word if Logically Less Than or Equal Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twngi",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 20, rA, s16",
+      "summary": "大きくない場合のワード即値トラップ（Trap Word if Not Greater Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twnli",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 12, rA, s16",
+      "summary": "小さくない場合のワード即値トラップ（Trap Word if Not Less Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlngi",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 6, rA, s16",
+      "summary": "論理的に大きくない場合のワード即値トラップ（Trap Word if Logically Not Greater Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "twlnli",
+      "operands": "rA,s16",
+      "target": "TWI",
+      "equivalent": "twi 5, rA, s16",
+      "summary": "論理的に小さくない場合のワード即値トラップ（Trap Word if Logically Not Less Than Immediate）",
+      "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。"
+    },
+    {
+      "mnemonic": "mflr",
+      "operands": "rT",
+      "target": "MFSPR",
+      "equivalent": "mfspr rT, 8",
+      "summary": "リンクレジスタからの移動（Move from Link Register）",
+      "notes": "SPR 8 = LR。"
+    },
+    {
+      "mnemonic": "mtlr",
+      "operands": "rS",
+      "target": "MTSPR",
+      "equivalent": "mtspr 8, rS",
+      "summary": "リンクレジスタへの移動（Move to Link Register）",
+      "notes": "SPR 8 = LR。bl の戻り先保存先。"
+    },
+    {
+      "mnemonic": "mfctr",
+      "operands": "rT",
+      "target": "MFSPR",
+      "equivalent": "mfspr rT, 9",
+      "summary": "カウントレジスタからの移動（Move from Count Register）",
+      "notes": "SPR 9 = CTR。"
+    },
+    {
+      "mnemonic": "mtctr",
+      "operands": "rS",
+      "target": "MTSPR",
+      "equivalent": "mtspr 9, rS",
+      "summary": "カウントレジスタへの移動（Move to Count Register）",
+      "notes": "SPR 9 = CTR。bctr・bdnz 系の分岐先指定に使う。"
+    },
+    {
+      "mnemonic": "mfxer",
+      "operands": "rT",
+      "target": "MFSPR",
+      "equivalent": "mfspr rT, 1",
+      "summary": "固定小数点例外レジスタからの移動（Move from XER）",
+      "notes": "SPR 1 = XER。"
+    },
+    {
+      "mnemonic": "mtxer",
+      "operands": "rS",
+      "target": "MTSPR",
+      "equivalent": "mtspr 1, rS",
+      "summary": "固定小数点例外レジスタへの移動（Move to XER）",
+      "notes": "SPR 1 = XER。"
+    }
+  ],
   "instructions": [
     {
       "mnemonic": "LBZ",
