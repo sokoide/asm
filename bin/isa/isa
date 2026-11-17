@@ -231,11 +231,12 @@ interactive() {
   require_build
   command -v fzf >/dev/null 2>&1 \
     || die "fzf が見つかりません（対話モードに必要）。'brew install fzf' または 'isa MNEMONIC' で直接検索してください。"
-  # Default order: ARCH → mnemonic (= index.tsv line order). alt-1/2/3 reload the
+  # Default order: ARCH → mnemonic. Prefer matches near the start of a row so
+  # an exact mnemonic match wins over occurrences in summaries. alt-1/2/3 reload the
   # list re-sorted with the chosen primary key (query preserved; the prompt shows
   # the current sort). Preview pane scrolls with pgup/pgdn, ctrl-b/f, alt-k/j.
   fzf --prompt="ISA [ARCH]> " --delimiter='\t' --with-nth=1,2,3,4 \
-      --tiebreak=index \
+      --tiebreak=begin,length \
       --header=$'並び替え: alt-1 ARCH / alt-2 ニーモニック / alt-3 カテゴリ（既定 ARCH→ニーモニック）\n詳細欄: pgup/pgdn ページ / ctrl-b・ctrl-f 半ページ / alt-k・alt-j 行' \
       --bind="alt-1:reload($SELF -s arch)+change-prompt(ISA [ARCH]> ),alt-2:reload($SELF -s mnem)+change-prompt(ISA [MNEM]> ),alt-3:reload($SELF -s cat)+change-prompt(ISA [CAT]> )" \
       --bind="pgup:preview-page-up,pgdn:preview-page-down" \

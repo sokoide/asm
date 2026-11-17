@@ -43,7 +43,7 @@ isa cats          # カテゴリの一覧 + 件数（isa z80 cats / isa -a z80 c
 isa arch          # サポートしているアーキの一覧（命令数つき）
 isa               # fzf 対話モード（絞り込み + 右ペインに詳細プレビュー）
                   #   alt-1: ARCH / alt-2: ニーモニック / alt-3: カテゴリ を
-                  #   第1キーに並べ替え（既定: ARCH→ニーモニック、絞り込み維持）
+                  #   第1キーに並べ替え（既定: ARCH→ニーモニック、完全一致を優先）
                   #   pgup/pgdn: ページ / ctrl-b・ctrl-f: 半ページ / alt-k・alt-j: 行
                   #   で詳細欄をスクロール
 isa build         # data/*.json から build/ を再生成
