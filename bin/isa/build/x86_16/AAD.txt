@@ -14,7 +14,7 @@ AAD — 8086（BCD）
   AAD: D5 0A  (2 バイト)
 
 使用例:
-  aad ax
+  aad
 
 解説:
   この例では 除算前の ASCII 補正（AL = AH×10+AL、AH=0）。

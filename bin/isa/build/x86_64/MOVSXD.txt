@@ -20,6 +20,6 @@ MOVSXD dst, src — x86-64（データ転送）
   この例では 32ビットの src を符号拡張して 64ビットの dst に転送する（64ビットモード専用）。
 
 備考:
-  NASM では movsxd、MASM では MOVSXD。src がレジスタのときは MOV と同結果になる。
+  MOVSXD は r/m32 の下位 32 ビットを読み、符号拡張して r64 に書く。レジスタソースでも同じで、`movsxd rax, ecx` は有効、64 ビットソース `rcx` は指定できない。GNU assembler では `movslq %ecx,%rax` と表記する。
 
 （根拠: book）

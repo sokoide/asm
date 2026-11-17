@@ -14,7 +14,7 @@ BFM dst, src, #rotate, #bitposn — ARM64（シフト/ビット）
   BFM Rd,Rn,#immr,#imms: sf 01 100110 N immr imms Rn Rd  (4 バイト)
 
 使用例:
-  bfm x0,[x1],#1,#7
+  bfm x0,x1,#1,#7
 
 解説:
   この例では ビットフィールド移動。src を即値で右回転し、即値から生成したマスクに対応するビットを dst に挿入する。マスク外の dst ビットは保持する。

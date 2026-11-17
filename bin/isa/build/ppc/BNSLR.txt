@@ -10,7 +10,7 @@ bnslr（拡張ニーモニック）→ BCLR BO, BI — PowerPC（分岐）
 拡張形式:
   bnslr [crT] ⇔ bclr 0x04, (crT*4)+3
   サマリーオーバーフローでないときLRへ分岐（Branch if Not Summary Overflow to LR）
-  [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。
+  [l] 接尾でリンク（LR 更新）。
 
 使用例:
   bnslr

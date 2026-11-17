@@ -97,6 +97,10 @@
       ],
       "cycles": [
         {
+          "cond": "XCHG AX,r16",
+          "cycles": 3
+        },
+        {
           "cond": "reg,reg",
           "cycles": 4
         },
@@ -280,7 +284,7 @@
       "cycles": [
         {
           "cond": "reg",
-          "cycles": 10
+          "cycles": 11
         },
         {
           "cond": "seg reg",
@@ -308,7 +312,7 @@
           "bytes": 1
         }
       ],
-      "notes": "PUSH SP の退避値は 8086 では SP-2 の新値（実装差あり、186 以降は元の値）。",
+      "notes": "8086 は PUSH SP で SP を 2 減算した新しい値を退避する。80186 以降は減算前の SP を退避する。",
       "src": "book",
       "example": {"code": ["push ax"],"explanation": "この例では 16 ビット値をスタックに退避（SP を -2 して書き込む）。"}
     },
@@ -340,6 +344,10 @@
         {
           "cond": "mem",
           "cycles": "17+EA"
+        },
+        {
+          "cond": "seg reg",
+          "cycles": 8
         }
       ],
       "encodings": [
@@ -726,6 +734,11 @@
           "syntax": "INC r/m8",
           "opcode": "FE /0",
           "length": "可変"
+        },
+        {
+          "syntax": "INC r/m16",
+          "opcode": "FF /0",
+          "length": "可変"
         }
       ],
       "notes": "CF が変わらないためループカウンタに使える。",
@@ -774,6 +787,11 @@
         {
           "syntax": "DEC r/m8",
           "opcode": "FE /1",
+          "length": "可変"
+        },
+        {
+          "syntax": "DEC r/m16",
+          "opcode": "FF /1",
           "length": "可変"
         }
       ],
@@ -1296,9 +1314,9 @@
           "bytes": 2
         }
       ],
-      "notes": "第二オペランド（8086 では常に 0A）を変える非公式な除算使いが知られる。",
+      "notes": "AAM imm8 は AL を imm8 で除算する。8086 では命令の即値を任意に変更でき、標準的な10進補正では 0A を使う。",
       "src": "book",
-      "example": {"code": ["aam ax"],"explanation": "この例では 乗算後の ASCII 補正（AX = AL÷10 で AH=商 AL=剰余）。"}
+      "example": {"code": ["aam"],"explanation": "この例では 乗算後の ASCII 補正（AX = AL÷10 で AH=商 AL=剰余）。"}
     },
     {
       "mnemonic": "AAD",
@@ -1332,7 +1350,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["aad ax"],"explanation": "この例では 除算前の ASCII 補正（AL = AH×10+AL、AH=0）。"}
+      "example": {"code": ["aad"],"explanation": "この例では 除算前の ASCII 補正（AL = AH×10+AL、AH=0）。"}
     },
     {
       "mnemonic": "AND",
@@ -1538,6 +1556,10 @@
         {
           "cond": "mem,reg",
           "cycles": "9+EA"
+        },
+        {
+          "cond": "r/m,imm（reg / mem）",
+          "cycles": "5 / 11+EA"
         }
       ],
       "encodings": [
@@ -1550,6 +1572,21 @@
           "syntax": "TEST AL,imm",
           "opcode": "A8 ib",
           "bytes": 2
+        },
+        {
+          "syntax": "TEST r/m8,imm8",
+          "opcode": "F6 /0 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "TEST r/m16,imm16",
+          "opcode": "F7 /0 iw",
+          "length": "可変"
+        },
+        {
+          "syntax": "TEST AX,imm16",
+          "opcode": "A9 iw",
+          "bytes": 3
         }
       ],
       "notes": "結果を書き戻さないため mem,reg は 9+EA と AND より速い。",
@@ -1977,6 +2014,10 @@
         {
           "cond": "mem 間接",
           "cycles": "18+EA"
+        },
+        {
+          "cond": "far mem 間接 (FF /5)",
+          "cycles": "24+EA"
         }
       ],
       "encodings": [
@@ -2232,6 +2273,10 @@
         {
           "cond": "mem 間接",
           "cycles": "21+EA"
+        },
+        {
+          "cond": "far mem 間接 (FF /3)",
+          "cycles": "37+EA"
         }
       ],
       "encodings": [

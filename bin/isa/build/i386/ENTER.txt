@@ -13,7 +13,7 @@ ENTER imm16, imm8 — 80386（サブルーチン）
   ネストレベル n（2〜31）: 15+4(n-1)
 
 オペコード:
-  ENTER imm16,0（一般形 C8 iw ib）: C8 iw 00  (4 バイト)
+  ENTER imm16,0（一般形 C8 iw ib）: C8 iw ib  (4 バイト)
 
 使用例:
   enter 4, 0

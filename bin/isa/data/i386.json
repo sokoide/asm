@@ -754,7 +754,7 @@
       "encodings": [{"syntax": "AAM imm8", "opcode": "D4 ib", "bytes": 2}],
       "notes": "imm8=0 で #DE。S/Z/P は結果の AL から設定。64bit モードでは廃止（#UD）。\n",
       "src": "book",
-      "example": {"code": ["aam eax"],"explanation": "この例では AL を imm8 で除算し、商を AH、剰余を AL に置く（2 進→非パック BCD 変換の補助）。"}
+      "example": {"code": ["aam 10"],"explanation": "この例では AL を imm8 で除算し、商を AH、剰余を AL に置く（2 進→非パック BCD 変換の補助）。"}
     },
     {
       "mnemonic": "AAD",
@@ -767,7 +767,7 @@
       "encodings": [{"syntax": "AAD imm8", "opcode": "D5 ib", "bytes": 2}],
       "notes": "64bit モードでは廃止（#UD）。\n",
       "src": "book",
-      "example": {"code": ["aad eax"],"explanation": "この例では AH×imm8 + AL の下位 8 ビットを AL に置き、AH を 0 にする（非パック BCD→2 進変換の補助）。"}
+      "example": {"code": ["aad 10"],"explanation": "この例では AH×imm8 + AL の下位 8 ビットを AL に置き、AH を 0 にする（非パック BCD→2 進変換の補助）。"}
     },
     {
       "mnemonic": "JMP",
@@ -908,7 +908,7 @@
       "flags": ["-", "-", "‡", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "INT 3、リアルモード", "cycles": 33}, {"cond": "INT imm8、リアルモード", "cycles": 37}, {"cond": "プロテクトモード同一特権", "cycles": 59}, {"cond": "プロテクトモード内側の特権へ移行", "cycles": 99}, {"cond": "仮想 8086 から特権レベル 0 へ移行", "cycles": 119}, {"cond": "タスクゲート経由", "cycles": "条件による"}],
       "encodings": [{"syntax": "INT imm8", "opcode": "CD ib", "bytes": 2}, {"syntax": "INT3", "opcode": "CC", "bytes": 1}],
-      "notes": "ゲート通過で EFLAGS/CS/EIP（特権変化時は SS/ESP も）がスタックに積まれ、TF はクリアされ、IF は割り込みゲートではクリア、トラップゲートでは保持される。\nINTO は OF=1 のときだけベクタ 4 への割り込み（未成立なら 4 クロックで無視）。\nDOS や旧 Linux（int 0x80）のシステムコール入口。",
+      "notes": "ゲート通過で EFLAGS/CS/EIP（特権変化時は SS/ESP も）がスタックに積まれ、TF はクリアされ、IF は割り込みゲートではクリア、トラップゲートでは保持される。\nINTO は OF=1 のときだけベクタ 4 への割り込み（未成立なら 3 クロックで無視）。\nDOS や旧 Linux（int 0x80）のシステムコール入口。",
       "src": "note",
       "example": {"code": ["int 0x10"],"explanation": "この例では ソフトウェア割り込みを発生させる。IDT の n 番ゲートへ制御を移す。INT3（CC）は 1 バイトのブレークポイント。"}
     },
@@ -1426,7 +1426,7 @@
       "addressing": ["I/O（ポート番号は imm8 または DX）"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "imm8 ポート、リアルモード", "cycles": 12}, {"cond": "DX ポート、リアルモード", "cycles": 13}, {"cond": "imm8 ポート、プロテクトモード CPL≤IOPL", "cycles": 6}, {"cond": "DX ポート、プロテクトモード CPL≤IOPL", "cycles": 7}, {"cond": "imm8 ポート、I/O ビットマップ検査あり", "cycles": 26}, {"cond": "DX ポート、I/O ビットマップ検査あり", "cycles": 27}],
-      "encodings": [{"syntax": "IN AL, imm8", "opcode": "E4 ib", "bytes": 2}, {"syntax": "IN AL, DX", "opcode": "EC", "bytes": 1}, {"syntax": "IN eAX, DX", "opcode": "ED", "bytes": 1}],
+      "encodings": [{"syntax":"IN AL, imm8","opcode":"E4 ib","bytes":2},{"syntax":"IN AL, DX","opcode":"EC","bytes":1},{"syntax":"IN eAX, DX","opcode":"ED","bytes":1},{"syntax":"IN eAX, imm8","opcode":"E5 ib","bytes":2}],
       "notes": "プロテクトモードの CPL>IOPL および仮想 8086 モードでは、TSS の I/O 許可ビットマップを検査する。アクセスする全バイトのポートが許可されなければ #GP。",
       "src": "note",
       "example": {"code": ["in al, dx"],"explanation": "この例では I/O ポート（0000〜FFFF）からデータを読み込み AL/AX/EAX に格納する。"}
@@ -1439,7 +1439,7 @@
       "addressing": ["I/O（ポート番号は imm8 または DX）"],
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "imm8 ポート、リアルモード", "cycles": 10}, {"cond": "DX ポート、リアルモード", "cycles": 11}, {"cond": "imm8 ポート、プロテクトモード CPL≤IOPL", "cycles": 4}, {"cond": "DX ポート、プロテクトモード CPL≤IOPL", "cycles": 5}, {"cond": "imm8 ポート、I/O ビットマップ検査あり", "cycles": 24}, {"cond": "DX ポート、I/O ビットマップ検査あり", "cycles": 25}],
-      "encodings": [{"syntax": "OUT imm8, AL", "opcode": "E6 ib", "bytes": 2}, {"syntax": "OUT DX, AL", "opcode": "EE", "bytes": 1}, {"syntax": "OUT DX, eAX", "opcode": "EF", "bytes": 1}],
+      "encodings": [{"syntax":"OUT imm8, AL","opcode":"E6 ib","bytes":2},{"syntax":"OUT DX, AL","opcode":"EE","bytes":1},{"syntax":"OUT DX, eAX","opcode":"EF","bytes":1},{"syntax":"OUT imm8, eAX","opcode":"E7 ib","bytes":2}],
       "notes": "プロテクトモードの CPL>IOPL および仮想 8086 モードでは、TSS の I/O 許可ビットマップを検査する。アクセスする全バイトのポートが許可されなければ #GP。",
       "src": "note",
       "example": {"code": ["out dx, al"],"explanation": "この例では AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ書き込む。"}
@@ -1478,12 +1478,12 @@
       ],
       "cycles": [{"cond": "ネストレベル 0", "cycles": 10}, {"cond": "ネストレベル 1", "cycles": 12}, {"cond": "ネストレベル n（2〜31）", "cycles": "15+4(n-1)"}],
       "encodings": [
-        {
-          "syntax": "ENTER imm16,0（一般形 C8 iw ib）",
-          "opcode": "C8 iw 00",
-          "bytes": 4
-        }
-      ],
+                     {
+                       "syntax": "ENTER imm16,0（一般形 C8 iw ib）",
+                       "opcode": "C8 iw ib",
+                       "bytes": 4
+                     }
+                   ],
       "notes": "第 2 オペランドの下位 5 ビットが字句ネストレベル。レベル 1 以上では上位フレームを参照するディスプレイを構築する。",
       "src": "book",
       "example": {"code": ["enter 4, 0"],"explanation": "この例では スタックフレームを作成し、imm16 バイトのローカル領域を確保する。オペランドサイズに応じて BP または EBP を退避する（LEAVE と対）。"}
@@ -2022,11 +2022,15 @@
         "-"
       ],
       "cycles": [
-        {
-          "cond": "reg/mem",
-          "cycles": 2
-        }
-      ],
+                  {
+                    "cond": "protected mode, reg",
+                    "cycles": 23
+                  },
+                  {
+                    "cond": "protected mode, mem",
+                    "cycles": 27
+                  }
+                ],
       "encodings": [
         {
           "syntax": "STR r/m16",
@@ -2299,7 +2303,7 @@
       "mnemonic": "SAL",
       "operands": "dst, count",
       "category": "シフト",
-      "summary": "左論理シフト。上位ビットを C に送り出し、下位に 0 を詰める。×2^count に相当。SAL と同一。",
+      "summary": "左論理シフト。上位ビットを C に送り出し、下位に 0 を詰める。×2^count に相当。SHL と同一。",
       "addressing": [
         "レジスタ",
         "間接(base+index×scale+disp)",
@@ -2360,7 +2364,7 @@
       ],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。 SHL と同一命令の別名。",
       "src": "note",
-      "example": {"code": ["sal eax, 1"],"explanation": "この例では 左論理シフト。上位ビットを C に送り出し、下位に 0 を詰める。×2^count に相当。SAL と同一。"}
+      "example": {"code": ["sal eax, 1"],"explanation": "この例では 左論理シフト。上位ビットを C に送り出し、下位に 0 を詰める。×2^count に相当。SHL と同一。"}
     }
   ]
 }

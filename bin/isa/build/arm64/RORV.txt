@@ -14,7 +14,7 @@ RORV dst, src, count_reg — ARM64（シフト）
   RORV Rd,Rn,Rm: sf 0011010110 Rm 001011 Rn Rd  (4 バイト)
 
 使用例:
-  rorv x0,[x1],x2
+  rorv x0,x1,x2
 
 解説:
   この例では レジスタで指定した回数の右ローテート。

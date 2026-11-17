@@ -10,7 +10,7 @@ btctr（拡張ニーモニック）→ BCCTR BO, BI — PowerPC（分岐）
 拡張形式:
   btctr crbT ⇔ bcctr 0x0C, crbT
   条件が真のときCTRへ分岐（Branch if Condition True to CTR）
-  [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。
+  [l] 接尾でリンク（LR 更新）。
 
 使用例:
   btctr 2

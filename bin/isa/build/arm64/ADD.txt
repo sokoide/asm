@@ -16,7 +16,7 @@ ADD dst, src1, src2{, shift} — ARM64（算術）
   ADD Rd,Rn,Rm,extend{ #amount}: sf 0 0 01011 00 1 Rm option imm3 Rn Rd  (4 バイト)
 
 使用例:
-  add x0,[x1],#1,lsl #12
+  add x0,x1,#1,lsl #12
 
 解説:
   この例では 加算（レジスタ/即値、LSL/LSR 等のシフト付き）。フラグは変化しない。

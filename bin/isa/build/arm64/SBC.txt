@@ -14,7 +14,7 @@ SBC dst, src1, src2 — ARM64（算術）
   SBC Rd,Rn,Rm: sf 1 0 11010000 Rm 000000 Rn Rd  (4 バイト)
 
 使用例:
-  sbc x0,[x1],x2
+  sbc x0,x1,x2
 
 解説:
   この例では キャリー込み減算（dst = src1 - src2 - (1 - C)）。多倍長減算の上位語に使う。

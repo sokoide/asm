@@ -16,7 +16,7 @@ ADDS dst, src1, src2{, shift} — ARM64（算術）
   ADDS Rd,Rn,Rm,extend{ #amount}: sf 0 1 01011 00 1 Rm option imm3 Rn Rd  (4 バイト)
 
 使用例:
-  adds x0,[x1],#1,lsl #12
+  adds x0,x1,#1,lsl #12
 
 解説:
   この例では 加算して N/Z/C/V を更新。C は最上位ビットからのキャリー、V は符号付きオーバーフローを示す。

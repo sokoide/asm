@@ -10,7 +10,7 @@ bdnztlr（拡張ニーモニック）→ BCLR BO, BI — PowerPC（分岐）
 拡張形式:
   bdnztlr crbT ⇔ bclr 0x08, crbT
   減算後のCTRが非ゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition True to LR）
-  [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。
+  [l] 接尾でリンク（LR 更新）。
 
 使用例:
   bdnztlr 2

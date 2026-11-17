@@ -15,7 +15,7 @@ ORR dst, src1, src2 — ARM64（論理）
   ORR Rd,Rn,#bitmask: sf 01 100100 N immr imms Rn Rd  (4 バイト)
 
 使用例:
-  orr x0,[x1],x2,lsl #2
+  orr x0,x1,x2,lsl #2
 
 解説:
   この例では 論理和。ビットのセットとビット列の挿入に使う。

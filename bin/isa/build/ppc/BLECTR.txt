@@ -10,7 +10,7 @@ blectr（拡張ニーモニック）→ BCCTR BO, BI — PowerPC（分岐）
 拡張形式:
   blectr [crT] ⇔ bcctr 0x04, (crT*4)+1
   以下のときCTRへ分岐（Branch if Less Than or Equal to CTR）
-  [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。
+  [l] 接尾でリンク（LR 更新）。
 
 使用例:
   blectr

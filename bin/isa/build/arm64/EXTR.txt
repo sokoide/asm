@@ -14,7 +14,7 @@ EXTR dst, src1, src2, #posn — ARM64（シフト/ビット）
   EXTR Rd,Rn,Rm,#lsb: sf 00 100111 N 0 Rm imms Rn Rd  (4 バイト)
 
 使用例:
-  extr x0,[x1],x2,#0
+  extr x0,x1,x2,#0
 
 解説:
   この例では 2 レジスタ連結（src1:src2）からビット位置 posn を起点にビット列を抽出する（レジスタペアにまたがる抽出）。

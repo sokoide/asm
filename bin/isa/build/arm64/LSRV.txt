@@ -14,7 +14,7 @@ LSRV dst, src, count_reg — ARM64（シフト）
   LSRV Rd,Rn,Rm: sf 0011010110 Rm 001001 Rn Rd  (4 バイト)
 
 使用例:
-  lsrv x0,[x1],x2
+  lsrv x0,x1,x2
 
 解説:
   この例では レジスタで指定した回数の右論理シフト。

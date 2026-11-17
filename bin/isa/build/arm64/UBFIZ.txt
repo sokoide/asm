@@ -14,7 +14,7 @@ src の下位 len ビットを dst のビット位置 posn へ配置し、他の
   UBFIZ Xd,Xn,#lsb,#width: UBFM Xd,Xn,#(Rsize-lsb)%Rsize,#width-1 と等価
 
 使用例:
-  ubfiz x0,[x1],#0,#8
+  ubfiz x0,x1,#0,#8
 
 解説:
   この例では src の下位 len ビットを dst のビット位置 posn へ配置し、他のビットを 0 にする。

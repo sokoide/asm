@@ -10,7 +10,7 @@ bunctr（拡張ニーモニック）→ BCCTR BO, BI — PowerPC（分岐）
 拡張形式:
   bunctr [crT] ⇔ bcctr 0x0C, (crT*4)+3
   順序付けなしのときCTRへ分岐（Branch if Unordered to CTR）
-  [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。
+  [l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。
 
 使用例:
   bunctr

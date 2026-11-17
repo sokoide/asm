@@ -15,7 +15,7 @@ AND dst, src1, src2 — ARM64（論理）
   AND Rd,Rn,#bitmask: sf 00 100100 N immr imms Rn Rd  (4 バイト)
 
 使用例:
-  and x0,[x1],x2,lsl #2
+  and x0,x1,x2,lsl #2
 
 解説:
   この例では 論理積。フラグは変化しない（S 付きは ANDS）。

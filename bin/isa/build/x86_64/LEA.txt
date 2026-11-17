@@ -21,6 +21,6 @@ LEA reg, mem — x86-64（データ転送）
 
 備考:
   [base + index×scale + disp] の計算を 1 命令で行えるため、乗算（scale=2/4/8）やアドレス演算のイディオムに使う。
-  NASM 64ビットでは lea rsi, [msg] が RIP 相対の実効アドレス取得になる。
+  NASM 64ビットで `[msg]` は既定で絶対アドレス指定。RIP 相対にするには `default rel` を有効にするか `[rel msg]` と書く。
 
 （根拠: book）

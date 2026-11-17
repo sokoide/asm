@@ -14,7 +14,7 @@ UBFM dst, src, #immr, #imms — ARM64（シフト/ビット）
   UBFM Rd,Rn,#immr,#imms: sf 10 100110 N immr imms Rn Rd  (4 バイト)
 
 使用例:
-  ubfm x0,[x1],#1,#7
+  ubfm x0,x1,#1,#7
 
 解説:
   この例では 符号なしビットフィールド移動。src を回転し即値から生成するマスクで抽出・配置して、残りのビットを 0 にする。

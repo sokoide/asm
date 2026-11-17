@@ -15,7 +15,7 @@ ANDS dst, src1, src2 — ARM64（論理）
   ANDS Rd,Rn,#bitmask: sf 11 100100 N immr imms Rn Rd  (4 バイト)
 
 使用例:
-  ands x0,[x1],x2,lsl #2
+  ands x0,x1,x2,lsl #2
 
 解説:
   この例では 論理積を計算し N/Z を更新、C/V をクリアする。宛先が WZR または XZR の形は TST。

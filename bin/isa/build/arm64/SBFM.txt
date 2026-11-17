@@ -14,7 +14,7 @@ SBFM dst, src, #immr, #imms — ARM64（シフト/ビット）
   SBFM Rd,Rn,#immr,#imms: sf 00 100110 N immr imms Rn Rd  (4 バイト)
 
 使用例:
-  sbfm x0,[x1],#1,#7
+  sbfm x0,x1,#1,#7
 
 解説:
   この例では 符号付きビットフィールド移動。指定されたビット列を抽出または配置し、上位を符号拡張する。

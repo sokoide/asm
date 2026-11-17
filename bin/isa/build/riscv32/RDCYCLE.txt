@@ -10,7 +10,7 @@ RDCYCLE rd — RISC-V 32（システム制御）
   ISA では規定されない: 実装依存
 
 オペコード:
-  rdcycle rd: 110000000000 00000 010 rd 1110011  (4 バイト)
+  rdcycle rd: csr=0xC00 rs1=00000 funct3=010 rd opcode=1110011  (4 バイト)
 
 使用例:
   rdcycle t0

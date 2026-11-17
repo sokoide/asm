@@ -14,7 +14,7 @@ BFXIL dst, src, #posn, #len — ARM64（シフト/ビット）
   BFXIL Xd,Xn,#posn,#len: BFM Xd,Xn,#posn,#len+posn-1 と等価
 
 使用例:
-  bfxil x0,[x1],#0,#8
+  bfxil x0,x1,#0,#8
 
 解説:
   この例では ビットフィールド抽出して下位へ挿入（src のビット位置 posn から len ビットを取り出し dst の LO ビット位置へコピー）。

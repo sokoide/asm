@@ -13,7 +13,7 @@
       "target": "BC",
       "equivalent": "bc 0x10, 0, addr",
       "summary": "減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bdnz target","target:"],"explanation": "この例では 減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）"}
     },
     {
@@ -22,7 +22,7 @@
       "target": "BC",
       "equivalent": "bc 0x12, 0, addr",
       "summary": "減算後のCTRがゼロのとき分岐（Branch if Decremented CTR is Zero）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bdz target","target:"],"explanation": "この例では 減算後のCTRがゼロのとき分岐（Branch if Decremented CTR is Zero）"}
     },
     {
@@ -31,7 +31,7 @@
       "target": "BC",
       "equivalent": "bc 0x00, crbT, addr",
       "summary": "減算後のCTRが非ゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Not Zero and Condition False）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bdnzf 2,target","target:"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Not Zero and Condition False）"}
     },
     {
@@ -40,7 +40,7 @@
       "target": "BC",
       "equivalent": "bc 0x08, crbT, addr",
       "summary": "減算後のCTRが非ゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Not Zero and Condition True）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bdnzt 2,target","target:"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Not Zero and Condition True）"}
     },
     {
@@ -49,7 +49,7 @@
       "target": "BC",
       "equivalent": "bc 0x02, crbT, addr",
       "summary": "減算後のCTRがゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Zero and Condition False）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bdzf 2,target","target:"],"explanation": "この例では 減算後のCTRがゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Zero and Condition False）"}
     },
     {
@@ -58,7 +58,7 @@
       "target": "BC",
       "equivalent": "bc 0x0A, crbT, addr",
       "summary": "減算後のCTRがゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Zero and Condition True）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bdzt 2,target","target:"],"explanation": "この例では 減算後のCTRがゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Zero and Condition True）"}
     },
     {
@@ -67,7 +67,7 @@
       "target": "BC",
       "equivalent": "bc 0x0C, (crT*4)+2, addr",
       "summary": "等しいとき分岐（Branch if Equal）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["beq target","target:"],"explanation": "この例では 等しいとき分岐（Branch if Equal）"}
     },
     {
@@ -76,7 +76,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, (crT*4)+2, addr",
       "summary": "等しくないとき分岐（Branch if Not Equal）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["bne target","target:"],"explanation": "この例では 等しくないとき分岐（Branch if Not Equal）"}
     },
     {
@@ -85,7 +85,7 @@
       "target": "BC",
       "equivalent": "bc 0x0C, (crT*4)+0, addr",
       "summary": "未満のとき分岐（Branch if Less Than）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["blt target","target:"],"explanation": "この例では 未満のとき分岐（Branch if Less Than）"}
     },
     {
@@ -94,7 +94,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, (crT*4)+0, addr",
       "summary": "以上のとき分岐（Branch if Greater Than or Equal）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["bge target","target:"],"explanation": "この例では 以上のとき分岐（Branch if Greater Than or Equal）"}
     },
     {
@@ -103,7 +103,7 @@
       "target": "BC",
       "equivalent": "bc 0x0C, (crT*4)+1, addr",
       "summary": "より大きいとき分岐（Branch if Greater Than）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["bgt target","target:"],"explanation": "この例では より大きいとき分岐（Branch if Greater Than）"}
     },
     {
@@ -112,7 +112,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, (crT*4)+1, addr",
       "summary": "以下のとき分岐（Branch if Less Than or Equal）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["ble target","target:"],"explanation": "この例では 以下のとき分岐（Branch if Less Than or Equal）"}
     },
     {
@@ -121,7 +121,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, (crT*4)+1, addr",
       "summary": "大きくないとき分岐（Branch if Not Greater Than）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["bng target","target:"],"explanation": "この例では 大きくないとき分岐（Branch if Not Greater Than）"}
     },
     {
@@ -130,7 +130,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, (crT*4)+0, addr",
       "summary": "小さくないとき分岐（Branch if Not Less Than）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["bnl target","target:"],"explanation": "この例では 小さくないとき分岐（Branch if Not Less Than）"}
     },
     {
@@ -139,7 +139,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, (crT*4)+3, addr",
       "summary": "サマリーオーバーフローでないとき分岐（Branch if Not Summary Overflow）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["bns target","target:"],"explanation": "この例では サマリーオーバーフローでないとき分岐（Branch if Not Summary Overflow）"}
     },
     {
@@ -148,7 +148,7 @@
       "target": "BC",
       "equivalent": "bc 0x0C, (crT*4)+3, addr",
       "summary": "サマリーオーバーフローのとき分岐（Branch if Summary Overflow）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
       "example": {"code": ["bso target","target:"],"explanation": "この例では サマリーオーバーフローのとき分岐（Branch if Summary Overflow）"}
     },
     {
@@ -157,7 +157,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, (crT*4)+3, addr",
       "summary": "順序付けなしでないとき分岐（Branch if Not Unordered）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。 浮動小数点比較の結果用。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。 浮動小数点比較の結果用。",
       "example": {"code": ["bnu target","target:"],"explanation": "この例では 順序付けなしでないとき分岐（Branch if Not Unordered）"}
     },
     {
@@ -166,7 +166,7 @@
       "target": "BC",
       "equivalent": "bc 0x0C, (crT*4)+3, addr",
       "summary": "順序付けなしのとき分岐（Branch if Unordered）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。 浮動小数点比較の結果用。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。 浮動小数点比較の結果用。",
       "example": {"code": ["bun target","target:"],"explanation": "この例では 順序付けなしのとき分岐（Branch if Unordered）"}
     },
     {
@@ -175,7 +175,7 @@
       "target": "BC",
       "equivalent": "bc 0x0C, crbT, addr",
       "summary": "条件が真のとき分岐（Branch if Condition True）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bt 2,target","target:"],"explanation": "この例では 条件が真のとき分岐（Branch if Condition True）"}
     },
     {
@@ -184,7 +184,7 @@
       "target": "BC",
       "equivalent": "bc 0x04, crbT, addr",
       "summary": "条件が偽のとき分岐（Branch if Condition False）",
-      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
       "example": {"code": ["bf 2,target","target:"],"explanation": "この例では 条件が偽のとき分岐（Branch if Condition False）"}
     },
     {
@@ -211,7 +211,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x10, 0",
       "summary": "減算後のCTRが非ゼロのときLRへ分岐（Branch if Decremented CTR is Not Zero to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bdnzlr"],"explanation": "この例では 減算後のCTRが非ゼロのときLRへ分岐（Branch if Decremented CTR is Not Zero to LR）"}
     },
     {
@@ -220,7 +220,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x12, 0",
       "summary": "減算後のCTRがゼロのときLRへ分岐（Branch if Decremented CTR is Zero to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bdzlr"],"explanation": "この例では 減算後のCTRがゼロのときLRへ分岐（Branch if Decremented CTR is Zero to LR）"}
     },
     {
@@ -229,7 +229,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x00, crbT",
       "summary": "減算後のCTRが非ゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition False to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bdnzflr 2"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition False to LR）"}
     },
     {
@@ -238,7 +238,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x08, crbT",
       "summary": "減算後のCTRが非ゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition True to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bdnztlr 2"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition True to LR）"}
     },
     {
@@ -247,7 +247,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x02, crbT",
       "summary": "減算後のCTRがゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Zero and Condition False to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bdzflr 2"],"explanation": "この例では 減算後のCTRがゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Zero and Condition False to LR）"}
     },
     {
@@ -256,7 +256,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x0A, crbT",
       "summary": "減算後のCTRがゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Zero and Condition True to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bdztlr 2"],"explanation": "この例では 減算後のCTRがゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Zero and Condition True to LR）"}
     },
     {
@@ -265,7 +265,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x0C, (crT*4)+2",
       "summary": "等しいときLRへ分岐（Branch if Equal to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["beqlr"],"explanation": "この例では 等しいときLRへ分岐（Branch if Equal to LR）"}
     },
     {
@@ -274,7 +274,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, (crT*4)+2",
       "summary": "等しくないときLRへ分岐（Branch if Not Equal to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bnelr"],"explanation": "この例では 等しくないときLRへ分岐（Branch if Not Equal to LR）"}
     },
     {
@@ -283,7 +283,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x0C, (crT*4)+0",
       "summary": "未満のときLRへ分岐（Branch if Less Than to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bltlr"],"explanation": "この例では 未満のときLRへ分岐（Branch if Less Than to LR）"}
     },
     {
@@ -292,7 +292,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, (crT*4)+0",
       "summary": "以上のときLRへ分岐（Branch if Greater Than or Equal to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bgelr"],"explanation": "この例では 以上のときLRへ分岐（Branch if Greater Than or Equal to LR）"}
     },
     {
@@ -301,7 +301,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x0C, (crT*4)+1",
       "summary": "より大きいときLRへ分岐（Branch if Greater Than to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bgtlr"],"explanation": "この例では より大きいときLRへ分岐（Branch if Greater Than to LR）"}
     },
     {
@@ -310,7 +310,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, (crT*4)+1",
       "summary": "以下のときLRへ分岐（Branch if Less Than or Equal to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["blelr"],"explanation": "この例では 以下のときLRへ分岐（Branch if Less Than or Equal to LR）"}
     },
     {
@@ -319,7 +319,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, (crT*4)+1",
       "summary": "大きくないときLRへ分岐（Branch if Not Greater Than to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bnglr"],"explanation": "この例では 大きくないときLRへ分岐（Branch if Not Greater Than to LR）"}
     },
     {
@@ -328,7 +328,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, (crT*4)+0",
       "summary": "小さくないときLRへ分岐（Branch if Not Less Than to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bnllr"],"explanation": "この例では 小さくないときLRへ分岐（Branch if Not Less Than to LR）"}
     },
     {
@@ -337,7 +337,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, (crT*4)+3",
       "summary": "サマリーオーバーフローでないときLRへ分岐（Branch if Not Summary Overflow to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bnslr"],"explanation": "この例では サマリーオーバーフローでないときLRへ分岐（Branch if Not Summary Overflow to LR）"}
     },
     {
@@ -346,7 +346,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x0C, (crT*4)+3",
       "summary": "サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bsolr"],"explanation": "この例では サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）"}
     },
     {
@@ -355,7 +355,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, (crT*4)+3",
       "summary": "順序付けなしでないときLRへ分岐（Branch if Not Unordered to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。",
+      "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
       "example": {"code": ["bnulr"],"explanation": "この例では 順序付けなしでないときLRへ分岐（Branch if Not Unordered to LR）"}
     },
     {
@@ -364,7 +364,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x0C, (crT*4)+3",
       "summary": "順序付けなしのときLRへ分岐（Branch if Unordered to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。",
+      "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
       "example": {"code": ["bunlr"],"explanation": "この例では 順序付けなしのときLRへ分岐（Branch if Unordered to LR）"}
     },
     {
@@ -373,7 +373,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x0C, crbT",
       "summary": "条件が真のときLRへ分岐（Branch if Condition True to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["btlr 2"],"explanation": "この例では 条件が真のときLRへ分岐（Branch if Condition True to LR）"}
     },
     {
@@ -382,7 +382,7 @@
       "target": "BCLR",
       "equivalent": "bclr 0x04, crbT",
       "summary": "条件が偽のときLRへ分岐（Branch if Condition False to LR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bflr 2"],"explanation": "この例では 条件が偽のときLRへ分岐（Branch if Condition False to LR）"}
     },
     {
@@ -391,7 +391,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x0C, (crT*4)+2",
       "summary": "等しいときCTRへ分岐（Branch if Equal to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["beqctr"],"explanation": "この例では 等しいときCTRへ分岐（Branch if Equal to CTR）"}
     },
     {
@@ -400,7 +400,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, (crT*4)+2",
       "summary": "等しくないときCTRへ分岐（Branch if Not Equal to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bnectr"],"explanation": "この例では 等しくないときCTRへ分岐（Branch if Not Equal to CTR）"}
     },
     {
@@ -409,7 +409,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x0C, (crT*4)+0",
       "summary": "未満のときCTRへ分岐（Branch if Less Than to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bltctr"],"explanation": "この例では 未満のときCTRへ分岐（Branch if Less Than to CTR）"}
     },
     {
@@ -418,7 +418,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, (crT*4)+0",
       "summary": "以上のときCTRへ分岐（Branch if Greater Than or Equal to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bgectr"],"explanation": "この例では 以上のときCTRへ分岐（Branch if Greater Than or Equal to CTR）"}
     },
     {
@@ -427,7 +427,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x0C, (crT*4)+1",
       "summary": "より大きいときCTRへ分岐（Branch if Greater Than to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bgtctr"],"explanation": "この例では より大きいときCTRへ分岐（Branch if Greater Than to CTR）"}
     },
     {
@@ -436,7 +436,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, (crT*4)+1",
       "summary": "以下のときCTRへ分岐（Branch if Less Than or Equal to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["blectr"],"explanation": "この例では 以下のときCTRへ分岐（Branch if Less Than or Equal to CTR）"}
     },
     {
@@ -445,7 +445,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, (crT*4)+1",
       "summary": "大きくないときCTRへ分岐（Branch if Not Greater Than to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bngctr"],"explanation": "この例では 大きくないときCTRへ分岐（Branch if Not Greater Than to CTR）"}
     },
     {
@@ -454,7 +454,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, (crT*4)+0",
       "summary": "小さくないときCTRへ分岐（Branch if Not Less Than to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bnlctr"],"explanation": "この例では 小さくないときCTRへ分岐（Branch if Not Less Than to CTR）"}
     },
     {
@@ -463,7 +463,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, (crT*4)+3",
       "summary": "サマリーオーバーフローでないときCTRへ分岐（Branch if Not Summary Overflow to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bnsctr"],"explanation": "この例では サマリーオーバーフローでないときCTRへ分岐（Branch if Not Summary Overflow to CTR）"}
     },
     {
@@ -472,7 +472,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x0C, (crT*4)+3",
       "summary": "サマリーオーバーフローのときCTRへ分岐（Branch if Summary Overflow to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bsoctr"],"explanation": "この例では サマリーオーバーフローのときCTRへ分岐（Branch if Summary Overflow to CTR）"}
     },
     {
@@ -481,7 +481,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, (crT*4)+3",
       "summary": "順序付けなしでないときCTRへ分岐（Branch if Not Unordered to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。",
+      "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
       "example": {"code": ["bnuctr"],"explanation": "この例では 順序付けなしでないときCTRへ分岐（Branch if Not Unordered to CTR）"}
     },
     {
@@ -490,7 +490,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x0C, (crT*4)+3",
       "summary": "順序付けなしのときCTRへ分岐（Branch if Unordered to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。 浮動小数点比較の結果用。",
+      "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
       "example": {"code": ["bunctr"],"explanation": "この例では 順序付けなしのときCTRへ分岐（Branch if Unordered to CTR）"}
     },
     {
@@ -499,7 +499,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x0C, crbT",
       "summary": "条件が真のときCTRへ分岐（Branch if Condition True to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["btctr 2"],"explanation": "この例では 条件が真のときCTRへ分岐（Branch if Condition True to CTR）"}
     },
     {
@@ -508,7 +508,7 @@
       "target": "BCCTR",
       "equivalent": "bcctr 0x04, crbT",
       "summary": "条件が偽のときCTRへ分岐（Branch if Condition False to CTR）",
-      "notes": "[l] 接尾でリンク（LR 更新）。crT を省略すると CR0。",
+      "notes": "[l] 接尾でリンク（LR 更新）。",
       "example": {"code": ["bfctr 2"],"explanation": "この例では 条件が偽のときCTRへ分岐（Branch if Condition False to CTR）"}
     },
     {
@@ -538,7 +538,8 @@
       "notes": "実効アドレス rA+d を rT に入れる。メモリアクセスはしない。",
       "example": {"code": ["la 3, 4(4)"],"explanation": "この例では アドレスロード（Load Address）"}
     },
-    {
+        {"mnemonic":"sub","operands":"rT,rA,rB","target":"SUBF","equivalent":"subf rT, rB, rA","summary":"減算（Subtract）","notes":"subf のオペランド順を入れ替え、rT = rA - rB とする拡張形式。","example":{"code":["sub %r3,%r4,%r5"],"explanation":"r4 から r5 を減算して r3 に格納する。"}},
+{
       "mnemonic": "subi",
       "operands": "rT,rA,s16",
       "target": "ADDI",
@@ -571,7 +572,7 @@
       "target": "ORI",
       "equivalent": "ori r0, r0, 0",
       "summary": "ノーオペレーション（No Operation）",
-      "notes": "r0 への書き込みは破棄されるため何も起きない。",
+      "notes": "r0 は通常の GPR であり、書き込みは保持される。ori r0,r0,0 は r0 の値を変えない演算なので何も起きない。",
       "example": {"code": ["nop"],"explanation": "この例では ノーオペレーション（No Operation）"}
     },
     {
@@ -2445,7 +2446,7 @@
         }
       ],
       "encodings": [{"syntax": "subf[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000101000 Rc", "bytes": 4}],
-      "notes": "拡張形式 sub rT,rA,rB は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
+      "notes": "拡張形式 sub rT,rA,rB（別名一覧参照）は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
       "example": {"code": ["subf %r3,%r5,%r6"],"explanation": "この例では rT = rB - rA（Subtract From — オペランド順に注意）。"}
     },
@@ -2699,12 +2700,7 @@
         "-",
         "-"
       ],
-      "cycles": [
-        {
-          "cond": "440 コア",
-          "cycles": 3
-        }
-      ],
+      "cycles": [{"cond":"440 コア","cycles":2}],
       "encodings": [{"syntax": "mulli rT,rA,s16", "opcode": "000111 rT rA s16", "bytes": 4}],
       "src": "book",
       "example": {"code": ["mulli %r3,%r5,1"],"explanation": "この例では rT = rA × 符号拡張即値（下位ワード）。上位は取得不能。"}
@@ -2723,16 +2719,7 @@
         "-",
         "-"
       ],
-      "cycles": [
-        {
-          "cond": "601",
-          "cycles": 36
-        },
-        {
-          "cond": "440 コア",
-          "cycles": "実装依存（除算は唯一の例外）"
-        }
-      ],
+      "cycles": [{"cond":"601","cycles":36},{"cond":"440 コア","cycles":33}],
       "encodings": [{"syntax": "divw[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 111101011 Rc", "bytes": 4}],
       "notes": "0 除算・オーバーフロー時の rT は未定義（o 版で SO/OV により検出）。商は 0 方向へ丸め。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
@@ -2752,12 +2739,7 @@
         "-",
         "-"
       ],
-      "cycles": [
-        {
-          "cond": "440 コア",
-          "cycles": "実装依存"
-        }
-      ],
+      "cycles": [{"cond":"440 コア","cycles":33}],
       "encodings": [{"syntax": "divwu[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 111001011 Rc", "bytes": 4}],
       "notes": "除数が 0 の場合、結果は未定義。o 形式では XER[OV/SO] を更新する。. 形式の CR0 は結果を符号付きとみなして LT/GT/EQ を設定する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
@@ -3590,7 +3572,7 @@
         }
       ],
       "encodings": [{"syntax": "crand BT,BA,BB", "opcode": "010011 BT BA BB 0100000001 0", "bytes": 4}],
-      "notes": "同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror crbT,crbA,crbA はビットのコピー（crmove）。セットは creqv crbT,crbT,crbT。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror crbT,crbA,crbA はビットのコピー（crmove）。セットは creqv crbT,crbT,crbT。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["crand 2,3,4"],"explanation": "この例では CR ビット同士の論理積（条件レジスタ論理）。"}
     },
@@ -3615,7 +3597,7 @@
         }
       ],
       "encodings": [{"syntax": "crandc BT,BA,BB", "opcode": "010011 BT BA BB 0010000001 0", "bytes": 4}],
-      "notes": "同系: crand、creqv、crnand、crnor、cror、crorc、crxor。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "同系: crand、creqv、crnand、crnor、cror、crorc、crxor。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["crandc 2,3,4"],"explanation": "この例では CR ビット同士の論理積で crB の補数を取る（crA AND NOT crB）。"}
     },
@@ -3640,7 +3622,7 @@
         }
       ],
       "encodings": [{"syntax": "cror BT,BA,BB", "opcode": "010011 BT BA BB 0111000001 0", "bytes": 4}],
-      "notes": "対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["cror 2,3,4"],"explanation": "この例では CR ビット同士の論理和。"}
     },
@@ -3665,7 +3647,7 @@
         }
       ],
       "encodings": [{"syntax": "crxor BT,BA,BB", "opcode": "010011 BT BA BB 0011000001 0", "bytes": 4}],
-      "notes": "対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["crxor 2,3,4"],"explanation": "この例では CR ビット同士の排他的論理和。"}
     },
@@ -3690,7 +3672,7 @@
         }
       ],
       "encodings": [{"syntax": "creqv BT,BA,BB", "opcode": "010011 BT BA BB 0100100001 0", "bytes": 4}],
-      "notes": "crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["creqv 2,3,4"],"explanation": "この例では CR ビット同士の同値（XNOR）。両ビットが等しいとき 1。"}
     },
@@ -3715,7 +3697,7 @@
         }
       ],
       "encodings": [{"syntax": "crnand BT,BA,BB", "opcode": "010011 BT BA BB 0011100001 0", "bytes": 4}],
-      "notes": "対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["crnand 2,3,4"],"explanation": "この例では CR ビット同士の NAND。"}
     },
@@ -3740,7 +3722,7 @@
         }
       ],
       "encodings": [{"syntax": "crnor BT,BA,BB", "opcode": "010011 BT BA BB 0000100001 0", "bytes": 4}],
-      "notes": "crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["crnor 2,3,4"],"explanation": "この例では CR ビット同士の NOR。"}
     },
@@ -3765,7 +3747,7 @@
         }
       ],
       "encodings": [{"syntax": "crorc BT,BA,BB", "opcode": "010011 BT BA BB 0110100001 0", "bytes": 4}],
-      "notes": "crandc の OR 版。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
+      "notes": "crandc の OR 版。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
       "example": {"code": ["crorc 2,3,4"],"explanation": "この例では CR ビット同士の論理和で crB の補数を取る（crA OR NOT crB）。"}
     },
@@ -3790,7 +3772,7 @@
         }
       ],
       "encodings": [{"syntax": "mcrf BF,BFA", "opcode": "010011 BF 00 BFA 00 0000000000000000", "bytes": 4}],
-      "notes": "指定先 CR フィールドだけを更新する。",
+      "notes": "指定先 CR フィールドだけを更新する。 flags の ‡ はコピー元の値に依存する。実際に更新される CR フィールドはオペランドで指定される。",
       "src": "book",
       "example": {"code": ["mcrf 0,1"],"explanation": "この例では CR フィールド（4 ビット単位）のコピー。"}
     },
@@ -3864,7 +3846,7 @@
         }
       ],
       "encodings": [{"syntax": "mtcrf FM,rS", "opcode": "011111 rS 0 FM 0 0010010000 0", "bytes": 4}],
-      "notes": "マスクで指定した CR フィールドだけを更新する。",
+      "notes": "マスクで指定した CR フィールドだけを更新する。 flags の ‡ はコピー元の値に依存する。実際に更新される CR フィールドはオペランドで指定される。",
       "src": "book",
       "example": {"code": ["mtcrf 255,%r4"],"explanation": "この例では GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0xFF の全フィールド版。"}
     },
@@ -5226,7 +5208,7 @@
       "category": "システム制御",
       "summary": "即値 E（0 または 1）を MSR[EE] に設定する。",
       "addressing": [
-        "レジスタ"
+        "即値（0 または 1）"
       ],
       "flags": [
         "-",

@@ -16,7 +16,7 @@ SUBS dst, src1, src2{, shift} — ARM64（算術）
   SUBS Rd,Rn,Rm,extend{ #amount}: sf 1 1 01011 00 1 Rm option imm3 Rn Rd  (4 バイト)
 
 使用例:
-  subs x0,[x1],#1,lsl #12
+  subs x0,x1,#1,lsl #12
 
 解説:
   この例では 減算してフラグ更新。C は桁借り（符号なしアンダーフロー）でクリア、それ以外でセット。V は符号付きオーバーフローでセット。dst = WZR/XZR の形が CMP。

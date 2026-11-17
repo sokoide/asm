@@ -15,7 +15,7 @@ EOR dst, src1, src2 — ARM64（論理）
   EOR Rd,Rn,#bitmask: sf 10 100100 N immr imms Rn Rd  (4 バイト)
 
 使用例:
-  eor x0,[x1],x2,lsl #2
+  eor x0,x1,x2,lsl #2
 
 解説:
   この例では 排他的論理和。選択したビットだけを反転する。

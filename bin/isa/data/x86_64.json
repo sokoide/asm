@@ -178,7 +178,7 @@
           "length": "可変"
         }
       ],
-      "notes": "NASM では movsxd、MASM では MOVSXD。src がレジスタのときは MOV と同結果になる。",
+      "notes": "MOVSXD は r/m32 の下位 32 ビットを読み、符号拡張して r64 に書く。レジスタソースでも同じで、`movsxd rax, ecx` は有効、64 ビットソース `rcx` は指定できない。GNU assembler では `movslq %ecx,%rax` と表記する。",
       "src": "book",
       "example": {"code": ["movsxd rax, dword [rdi]"],"explanation": "この例では 32ビットの src を符号拡張して 64ビットの dst に転送する（64ビットモード専用）。"}
     },
@@ -255,7 +255,7 @@
           "length": "可変"
         }
       ],
-      "notes": "[base + index×scale + disp] の計算を 1 命令で行えるため、乗算（scale=2/4/8）やアドレス演算のイディオムに使う。\nNASM 64ビットでは lea rsi, [msg] が RIP 相対の実効アドレス取得になる。",
+      "notes": "[base + index×scale + disp] の計算を 1 命令で行えるため、乗算（scale=2/4/8）やアドレス演算のイディオムに使う。\nNASM 64ビットで `[msg]` は既定で絶対アドレス指定。RIP 相対にするには `default rel` を有効にするか `[rel msg]` と書く。",
       "src": "book",
       "example": {"code": ["lea rax, [rsi+4]"],"explanation": "この例では メモリ参照式の実効アドレスを計算してレジスタに入れる。メモリアクセスは行わない。"}
     },
@@ -292,7 +292,7 @@
       ],
       "notes": "AL の値はテーブルのインデックスとしてのみ使われる。8bit インデックスのためテーブルは最大 256 バイト。lea rbx, table でテーブル先頭を設定してから使う。",
       "src": "book",
-      "example": {"code": ["xlat rax"],"explanation": "この例では テーブル変換。AL = [RBX + AL]。RBX を 256 バイト変換テーブルの先頭として、AL をインデックスに 1 バイトを読み込み AL に格納する。"}
+      "example": {"code": ["xlatb"],"explanation": "この例では テーブル変換。AL = [RBX + AL]。RBX を 256 バイト変換テーブルの先頭として、AL をインデックスに 1 バイトを読み込み AL に格納する。"}
     },
     {
       "mnemonic": "CBW",
@@ -395,7 +395,7 @@
           "bytes": 2
         }
       ],
-      "notes": "IDIV 前の EAX→RDX:RAX 準備には CDQ（→RDX もセット）を使うことが多い。",
+      "notes": "EAX を符号拡張して RAX を作る。64 ビット符号付き除算の被除数 RDX:RAX を準備する場合は CDQE ではなく CQO を使う。",
       "src": "book",
       "example": {"code": ["cdqe"],"explanation": "この例では EAX の符号拡張（32→64bit）で RAX に転送する（64ビットモード専用）。"}
     },
@@ -403,7 +403,7 @@
       "mnemonic": "CDQ",
       "operands": "",
       "category": "データ転送",
-      "summary": "EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。",
+      "summary": "EAX を符号拡張して EDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。",
       "addressing": [
         "暗黙"
       ],
@@ -430,7 +430,7 @@
           "bytes": 1
         }
       ],
-      "notes": "64bit 除算では EDX:RAX ではなく RDX:RAX を使うため CQO を使う。",
+      "notes": "32 ビット符号付き除算では EDX:EAX を作る。64 ビットの RDX:RAX を作る場合は CQO を使う。",
       "src": "book",
       "example": {"code": ["cdq"],"explanation": "この例では EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。"}
     },
@@ -1197,6 +1197,61 @@
       "notes": "符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。\nC=1 が「dst < src」（符号なし）。",
       "src": "book",
       "example": {"code": ["cmp rax, rbx"],"explanation": "この例では dst - src を計算してフラグのみ更新する（dst は不変）。分岐・条件転送の判定に使う。"}
+    },
+    {
+      "mnemonic": "CMPXCHG",
+      "operands": "dst, src",
+      "category": "算術",
+      "summary": "AL/AX/EAX/RAX と dst を比較し、一致なら src を dst に書く。不一致なら dst の値をアキュムレータへ戻す。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMPXCHG r/m8, r8",
+          "opcode": "0F B0 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "CMPXCHG r/m16, r16",
+          "opcode": "66 0F B1 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "CMPXCHG r/m32, r32",
+          "opcode": "0F B1 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "CMPXCHG r/m64, r64",
+          "opcode": "REX.W 0F B1 /r",
+          "length": "可変"
+        }
+      ],
+      "notes": "フラグは暗黙のアキュムレータから dst を減算した結果に従う。dst がメモリなら LOCK prefix を付けて比較と条件付き書込みをアトミックにできる。",
+      "example": {
+        "code": [
+          "lock cmpxchg qword [rdi], rbx"
+        ],
+        "explanation": "RAX と [rdi] が等しければ RBX を [rdi] に書き、異なれば [rdi] の値を RAX に読み込む。LOCK により比較と更新をアトミックに行う。"
+      }
     },
     {
       "mnemonic": "TEST",
@@ -2064,7 +2119,7 @@
           "length": "可変"
         }
       ],
-      "notes": "LZCNT 拡張が符号付き処理で安全な代替。",
+      "notes": "src が 0 の場合、BSR の dst は未定義。LZCNT は src=0 のときオペランド幅を返すため、そのケースで定義済みの結果が必要なら代替になる。非ゼロ時は結果の意味が異なり、LZCNT の機能確認も必要。",
       "src": "book",
       "example": {"code": ["bsr rax, rbx"],"explanation": "この例では src の最上位側から最初に 1 になっているビットの位置を dst に入れる。src=0 なら ZF=1。"}
     },
@@ -4040,7 +4095,7 @@
       "mnemonic": "NOP",
       "operands": "",
       "category": "システム制御",
-      "summary": "何もしない（90 = XCHG AX, AX）。命令パッチやアライン調整のプレースホルダ。",
+      "summary": "何もしない（90h は XCHG (E)AX,(E)AX と等価な NOP。64 ビットモードの既定オペランド幅は EAX）。命令パッチやアライン調整のプレースホルダ。",
       "addressing": [
         "暗黙"
       ],
@@ -4061,12 +4116,17 @@
         }
       ],
       "encodings": [
-        {
-          "syntax": "NOP",
-          "opcode": "90",
-          "bytes": 1
-        }
-      ],
+      {
+        "syntax": "NOP",
+        "opcode": "90",
+        "bytes": 1
+      },
+      {
+        "syntax": "NOP r/m16/32/64",
+        "opcode": "0F 1F /0（REX.W 可）",
+        "length": "可変"
+      }
+    ],
       "notes": "可変長命令の x86 ではコードパッチの潤しや 16 バイトアライン調整に使われる。\n",
       "src": "book",
       "example": {"code": ["nop"],"explanation": "この例では 何もしない（90 = XCHG AX, AX）。命令パッチやアライン調整のプレースホルダ。"}
@@ -4212,7 +4272,7 @@
       "mnemonic": "SYSEXIT",
       "operands": "",
       "category": "システム制御",
-      "summary": "SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。",
+      "summary": "SYSENTER でカーネルに入った後、CPL 0 から CPL 3 へ制御を戻す高速な特権遷移命令。",
       "addressing": [
         "暗黙"
       ],

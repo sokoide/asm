@@ -19,6 +19,7 @@ AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ書き込む。
   OUT imm8, AL: E6 ib  (2 バイト)
   OUT DX, AL: EE  (1 バイト)
   OUT DX, eAX: EF  (1 バイト)
+  OUT imm8, eAX: E7 ib  (2 バイト)
 
 使用例:
   out dx, al

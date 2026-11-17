@@ -10,7 +10,7 @@ beq（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
 拡張形式:
   beq [crT,]addr ⇔ bc 0x0C, (crT*4)+2, addr
   等しいとき分岐（Branch if Equal）
-  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。
+  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。
 
 使用例:
   beq target

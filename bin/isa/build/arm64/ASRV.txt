@@ -14,7 +14,7 @@ ASRV dst, src, count_reg — ARM64（シフト）
   ASRV Rd,Rn,Rm: sf 0011010110 Rm 001010 Rn Rd  (4 バイト)
 
 使用例:
-  asrv x0,[x1],x2
+  asrv x0,x1,x2
 
 解説:
   この例では レジスタで指定した回数の右算術シフト。

@@ -14,7 +14,7 @@ BFI dst, src, #posn, #len — ARM64（シフト/ビット）
   BFI Xd,Xn,#posn,#len: BFM Xd,Xn,#((64-posn)%64),#(len-1) と等価
 
 使用例:
-  bfi x0,[x1],#0,#8
+  bfi x0,x1,#0,#8
 
 解説:
   この例では ビットフィールド挿入（src の下位 len ビットを dst のビット位置 posn から挿入、dst の他のビットは保持）。posn+len はレジスタサイズ以下。

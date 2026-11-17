@@ -14,7 +14,7 @@ BICS dst, src1, src2 — ARM64（論理）
   BICS Rd,Rn,Rm{,shift #amount}: sf 11 01010 shift 1 Rm imm6 Rn Rd  (4 バイト)
 
 使用例:
-  bics x0,[x1],x2,lsl #2
+  bics x0,x1,x2,lsl #2
 
 解説:
   この例では ビットクリア。残った値に基づいて N/Z をセットする。

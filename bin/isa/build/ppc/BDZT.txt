@@ -10,7 +10,7 @@ bdzt（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
 拡張形式:
   bdzt crbT,addr ⇔ bc 0x0A, crbT, addr
   減算後のCTRがゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Zero and Condition True）
-  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。
+  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。
 
 使用例:
   bdzt 2,target

@@ -11,7 +11,7 @@ MSR sysreg, Xn または PSTATE フィールド, #imm — ARM64（システム�
   ISA では規定されない: 実装依存
 
 オペコード:
-  MSR sysreg,Xt: 11010101000 op0 op1 CRn CRm op2 Xt  (4 バイト)
+  MSR sysreg,Xt: 1101010100 L=0 op0(2) op1 CRn CRm op2 Xt  (4 バイト)
   MSR PSTATEfield,#imm: 1101010100000 op1 0100 CRm op2 11111  (4 バイト)
 
 使用例:

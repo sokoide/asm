@@ -14,7 +14,7 @@ MOVN dst, #imm16{, LSL #shift} — ARM64（データ転送）
   MOVN Rd,#imm16{,LSL #shift}: sf 00 100101 hw imm16 Rd  (4 バイト)
 
 使用例:
-  movn x0,#0x1234,lsl #2
+  movn x0,#0x1234,lsl #16
 
 解説:
   この例では 16 ビット即値を反転（NOT）して配置し、残りを 1 で満たす。-1 に近い即値の生成用。

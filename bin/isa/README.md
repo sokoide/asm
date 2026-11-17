@@ -11,7 +11,7 @@ ISA = Instruction Set Architecture（命令セットアーキテクチャ）。C
 | 6502 | `data/6502.json` | NMOS 6502 の公式命令セット全 56 ニーモニック（151 オペコード） |
 | z80 | `data/z80.json` | Z80 の公式命令 67 エントリ（DD/FD/CB/ED プレフィックスを含む） |
 | m68k | `data/m68k.json` | MC68000 コア 86 エントリ |
-| ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E と実装依存命令）168 命令 + 拡張ニーモニック 127 = 295 エントリ |
+| ppc | `data/ppc.json` | クラシック PowerPC + PPC440（Book E と実装依存命令）168 命令 + 拡張ニーモニック 128 = 296 エントリ |
 | x86_16 | `data/x86_16.json` | 8086/8088 実モード 83 エントリ |
 | i386 | `data/i386.json` | 80386 32ビットプロテクトモード |
 | x86_64 | `data/x86_64.json` | x86-64 コア整数命令 |

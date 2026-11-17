@@ -10,7 +10,7 @@ bnu（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
 拡張形式:
   bnu [crT,]addr ⇔ bc 0x04, (crT*4)+3, addr
   順序付けなしでないとき分岐（Branch if Not Unordered）
-  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。 浮動小数点比較の結果用。
+  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。 浮動小数点比較の結果用。
 
 使用例:
   bnu target

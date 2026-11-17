@@ -14,7 +14,7 @@ cond が成立なら src1、不成立なら src2 を dst にコピーする。�
   CSEL Rd,Rn,Rm,cond: sf 0 0 11010100 Rm cond 0 0 Rn Rd  (4 バイト)
 
 使用例:
-  csel x0,[x1],x2,eq
+  csel x0,x1,x2,eq
 
 解説:
   この例では cond が成立なら src1、不成立なら src2 を dst にコピーする。フラグは変更しない。

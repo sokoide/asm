@@ -10,10 +10,14 @@ AND のフラグのみ反映（dst は不変）。ビットテスト用。
 消費クロック:
   reg,reg: 3
   mem,reg: 9+EA
+  r/m,imm（reg / mem）: 5 / 11+EA
 
 オペコード:
   TEST r/m,r: 1000010w /r  (長さ可変)
   TEST AL,imm: A8 ib  (2 バイト)
+  TEST r/m8,imm8: F6 /0 ib  (長さ可変)
+  TEST r/m16,imm16: F7 /0 iw  (長さ可変)
+  TEST AX,imm16: A9 iw  (3 バイト)
 
 使用例:
   test ax, bx

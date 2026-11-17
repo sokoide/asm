@@ -14,7 +14,7 @@ src の lsb から width ビットを抽出し、上位を符号拡張して dst
   SBFX Xd,Xn,#lsb,#width: SBFM Xd,Xn,#lsb,#(lsb+width-1) と等価
 
 使用例:
-  sbfx x0,[x1],#0,#8
+  sbfx x0,x1,#0,#8
 
 解説:
   この例では src の lsb から width ビットを抽出し、上位を符号拡張して dst に格納する。

@@ -14,7 +14,7 @@ SDIV dst, src1, src2 — ARM64（算術）
   SDIV Rd,Rn,Rm: sf 0011010110 Rm 000011 Rn Rd  (4 バイト)
 
 使用例:
-  sdiv x0,[x1],x2
+  sdiv x0,x1,x2
 
 解説:
   この例では 符号付き除算（0 除算は結果 0、剰余は MSUB で求める）。

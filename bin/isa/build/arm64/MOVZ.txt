@@ -14,7 +14,7 @@ MOVZ dst, #imm16{, LSL #shift} — ARM64（データ転送）
   MOVZ Rd,#imm16{,LSL #shift}: sf 10 100101 hw imm16 Rd  (4 バイト)
 
 使用例:
-  movz x0,#0x1234,lsl #2
+  movz x0,#0x1234,lsl #16
 
 解説:
   この例では 16 ビット即値を指定シフト位置に配置し、残りを 0 でクリアする。

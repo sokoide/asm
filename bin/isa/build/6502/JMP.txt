@@ -18,7 +18,6 @@ JMP dst — 6502（分岐）
 使用例:
   jmp next
   ; ...
-  next:
   next: nop
 
 解説:

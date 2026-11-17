@@ -14,7 +14,7 @@ MOVK dst, #imm16{, LSL #shift} — ARM64（データ転送）
   MOVK Rd,#imm16{,LSL #shift}: sf 11 100101 hw imm16 Rd  (4 バイト)
 
 使用例:
-  movk x0,#0x1234,lsl #2
+  movk x0,#0x1234,lsl #16
 
 解説:
   この例では 16 ビット即値を指定シフト位置に上書き（他のビットは保持）。64 ビット即値の組み立て用。

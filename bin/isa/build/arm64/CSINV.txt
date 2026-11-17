@@ -14,7 +14,7 @@ CSINV dst, src1, src2, cond — ARM64（分岐）
   CSINV Rd,Rn,Rm,cond: sf 1 0 11010100 Rm cond 0 0 Rn Rd  (4 バイト)
 
 使用例:
-  csinv x0,[x1],x2,eq
+  csinv x0,x1,x2,eq
 
 解説:
   この例では 条件選択 + 反転。cond 成立なら src1、不成立なら NOT src2 を dst へコピーする。

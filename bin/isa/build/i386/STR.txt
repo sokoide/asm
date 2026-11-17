@@ -8,7 +8,8 @@ STR reg/mem16 — 80386（プロテクトモード管理）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg/mem: 2
+  protected mode, reg: 23
+  protected mode, mem: 27
 
 オペコード:
   STR r/m16: 0F 00 /1  (長さ可変)

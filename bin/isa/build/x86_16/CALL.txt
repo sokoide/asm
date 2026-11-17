@@ -12,6 +12,7 @@ CALL dst — 8086（サブルーチン）
   far: 28
   reg 間接: 16
   mem 間接: 21+EA
+  far mem 間接 (FF /3): 37+EA
 
 オペコード:
   CALL rel16: E8 rel16  (3 バイト)

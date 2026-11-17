@@ -16,7 +16,7 @@ SUB dst, src1, src2{, shift} — ARM64（算術）
   SUB Rd,Rn,Rm,extend{ #amount}: sf 1 0 01011 00 1 Rm option imm3 Rn Rd  (4 バイト)
 
 使用例:
-  sub x0,[x1],#1,lsl #12
+  sub x0,x1,#1,lsl #12
 
 解説:
   この例では 減算。フラグは変化しない。

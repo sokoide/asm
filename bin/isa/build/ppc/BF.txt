@@ -10,7 +10,7 @@ bf（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
 拡張形式:
   bf crbT,addr ⇔ bc 0x04, crbT, addr
   条件が偽のとき分岐（Branch if Condition False）
-  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。
+  [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。
 
 使用例:
   bf 2,target

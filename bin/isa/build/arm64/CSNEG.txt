@@ -14,7 +14,7 @@ CSNEG dst, src1, src2, cond — ARM64（分岐）
   CSNEG Rd,Rn,Rm,cond: sf 1 0 11010100 Rm cond 0 1 Rn Rd  (4 バイト)
 
 使用例:
-  csneg x0,[x1],x2,eq
+  csneg x0,x1,x2,eq
 
 解説:
   この例では 条件選択 + 符号反転。cond 成立なら src1、不成立なら -src2 を dst へコピーする。

@@ -1,6 +1,6 @@
 CDQ — x86-64（データ転送）
 
-EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。
+EAX を符号拡張して EDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。
 
 アドレッシング: 暗黙
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
@@ -20,6 +20,6 @@ EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満
   この例では EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。
 
 備考:
-  64bit 除算では EDX:RAX ではなく RDX:RAX を使うため CQO を使う。
+  32 ビット符号付き除算では EDX:EAX を作る。64 ビットの RDX:RAX を作る場合は CQO を使う。
 
 （根拠: book）

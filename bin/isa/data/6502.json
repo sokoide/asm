@@ -450,7 +450,7 @@
       "encodings": [{"syntax": "JMP abs", "opcode": "4C", "bytes": 3}, {"syntax": "JMP (abs)", "opcode": "6C", "bytes": 3}],
       "notes": "JMP (abs) の間接アドレスはページ境界を跨げない（abs の下位バイト $FF のとき上位バイトが繰り上がらず同じページに戻るバグ）。",
       "src": "book",
-      "example": {"code": ["jmp next","; ...","next:","next: nop"],"explanation": "実行位置を next へ無条件に移す。JMP は戻りアドレスを保存しない。"}
+      "example": {"code": ["jmp next","; ...","next: nop"],"explanation": "実行位置を next へ無条件に移す。JMP は戻りアドレスを保存しない。"}
     },
     {
       "mnemonic": "JSR",
@@ -512,7 +512,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BCC d", "opcode": "90", "bytes": 2}],
-      "notes": "d は次の命令からの相対オフセット（-128〜+127）。CMP の後の「未満」分岐。変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
+      "notes": "CMP の後の「未満」分岐。変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book",
       "example": {"code": ["lda $20","cmp #$10","bcc below","below: nop"],"explanation": "CMP 後、A<$10（C=0）のとき below へ分岐する。"}
     },

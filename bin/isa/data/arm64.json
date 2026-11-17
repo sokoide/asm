@@ -11,7 +11,7 @@
       "mnemonic": "MOV",
       "operands": "dst, src",
       "category": "データ転送",
-      "summary": "汎用データ転送。レジスタ間コピーと即値定数のロード（16 ビット符号なし即値、論理ビットマスク #pattern）。フラグは変化しない。",
+      "summary": "汎用データ転送。レジスタ間コピーと即値定数のロード（16 ビット即値を必要な位置へ配置、または論理ビットマスク #pattern）。フラグは変化しない。",
       "addressing": [
         "レジスタ",
         "即値（16ビット符号なし）",
@@ -31,13 +31,25 @@
       ],
       "encodings": [
         {
-          "syntax": "MOV Wd, #pattern",
-          "opcode": "ORR Wd, WZR, #pattern と等価"
+          "syntax": "MOV Wd,#imm",
+          "opcode": "MOVZ 形式、または補数即値を使う MOVN 形式（16 ビット位置シフト可）"
+        },
+        {
+          "syntax": "MOV Xd,#imm",
+          "opcode": "MOVZ 形式、または補数即値を使う MOVN 形式（16 ビット位置シフト可）"
+        },
+        {
+          "syntax": "MOV Wd,#pattern",
+          "opcode": "ORR Wd,WZR,#pattern と等価"
+        },
+        {
+          "syntax": "MOV Xd,#pattern",
+          "opcode": "ORR Xd,XZR,#pattern と等価"
         }
       ],
       "notes": "MOV 即値は MOVZ/MOVN または論理即値 ORR の別名で、単一命令で表現できる定数に制限される。任意の 64 ビット定数には MOVZ/MOVN と MOVK の組合せなどを使う。",
       "src": "book",
-      "example": {"code": ["mov w0, #0x12"],"explanation": "この例では 汎用データ転送。レジスタ間コピーと即値定数のロード（16 ビット符号なし即値、論理ビットマスク #pattern）。フラグは変化しない。"}
+      "example": {"code": ["mov w0, #0x12"],"explanation": "この例では 汎用データ転送。レジスタ間コピーと即値定数のロード（16 ビット即値を必要な位置へ配置、または論理ビットマスク #pattern）。フラグは変化しない。"}
     },
     {
       "mnemonic": "MOVZ",
@@ -68,7 +80,7 @@
       ],
       "notes": "W レジスタは shift 0/16、X レジスタは 0/16/32/48。64 ビット即値の組み立てに使う。 sf=0 は W レジスタ、sf=1 は X レジスタ。hw は 16 ビット単位のシフト量を表す（W は 0〜1、X は 0〜3）。",
       "src": "book",
-      "example": {"code": ["movz x0,#0x1234,lsl #2"],"explanation": "この例では 16 ビット即値を指定シフト位置に配置し、残りを 0 でクリアする。"}
+      "example": {"code": ["movz x0,#0x1234,lsl #16"],"explanation": "この例では 16 ビット即値を指定シフト位置に配置し、残りを 0 でクリアする。"}
     },
     {
       "mnemonic": "MOVN",
@@ -99,7 +111,7 @@
       ],
       "notes": "sf=0 は W レジスタ、sf=1 は X レジスタ。hw は 16 ビット単位のシフト量を表す（W は 0〜1、X は 0〜3）。",
       "src": "book",
-      "example": {"code": ["movn x0,#0x1234,lsl #2"],"explanation": "この例では 16 ビット即値を反転（NOT）して配置し、残りを 1 で満たす。-1 に近い即値の生成用。"}
+      "example": {"code": ["movn x0,#0x1234,lsl #16"],"explanation": "この例では 16 ビット即値を反転（NOT）して配置し、残りを 1 で満たす。-1 に近い即値の生成用。"}
     },
     {
       "mnemonic": "MOVK",
@@ -130,7 +142,7 @@
       ],
       "notes": "MOVZ と MOVK の組合せが 64 ビット即値ロードの定番（adr/litpool に次ぐ方法）。 sf=0 は W レジスタ、sf=1 は X レジスタ。hw は 16 ビット単位のシフト量を表す（W は 0〜1、X は 0〜3）。",
       "src": "book",
-      "example": {"code": ["movk x0,#0x1234,lsl #2"],"explanation": "この例では 16 ビット即値を指定シフト位置に上書き（他のビットは保持）。64 ビット即値の組み立て用。"}
+      "example": {"code": ["movk x0,#0x1234,lsl #16"],"explanation": "この例では 16 ビット即値を指定シフト位置に上書き（他のビットは保持）。64 ビット即値の組み立て用。"}
     },
     {
       "mnemonic": "MVN",
@@ -976,7 +988,7 @@
       ],
       "notes": "フラグが必要なら ADDS。即値形式は 12 ビット即値をそのまま、または 12 ビット左シフトして使う。 即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["add x0,[x1],#1,lsl #12"],"explanation": "この例では 加算（レジスタ/即値、LSL/LSR 等のシフト付き）。フラグは変化しない。"}
+      "example": {"code": ["add x0,x1,#1,lsl #12"],"explanation": "この例では 加算（レジスタ/即値、LSL/LSR 等のシフト付き）。フラグは変化しない。"}
     },
     {
       "mnemonic": "ADDS",
@@ -1020,7 +1032,7 @@
       ],
       "notes": "S 接尾辞はフラグを更新する。宛先が WZR/XZR の形は CMN の別名。 即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["adds x0,[x1],#1,lsl #12"],"explanation": "この例では 加算して N/Z/C/V を更新。C は最上位ビットからのキャリー、V は符号付きオーバーフローを示す。"}
+      "example": {"code": ["adds x0,x1,#1,lsl #12"],"explanation": "この例では 加算して N/Z/C/V を更新。C は最上位ビットからのキャリー、V は符号付きオーバーフローを示す。"}
     },
     {
       "mnemonic": "ADC",
@@ -1051,7 +1063,7 @@
       ],
       "notes": "128 ビット加算は ADDS + ADC。 sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["adc x0,[x1],x2"],"explanation": "この例では キャリー込み加算（dst = src1 + src2 + C）。多倍長演算の上位語に使う。"}
+      "example": {"code": ["adc x0,x1,x2"],"explanation": "この例では キャリー込み加算（dst = src1 + src2 + C）。多倍長演算の上位語に使う。"}
     },
     {
       "mnemonic": "ADCS",
@@ -1082,7 +1094,7 @@
       ],
       "notes": "sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["adcs x0,[x1],x2"],"explanation": "この例では キャリー込み加算（dst = src1 + src2 + C）。フラグは ADDS と同じ方法で更新する。"}
+      "example": {"code": ["adcs x0,x1,x2"],"explanation": "この例では キャリー込み加算（dst = src1 + src2 + C）。フラグは ADDS と同じ方法で更新する。"}
     },
     {
       "mnemonic": "SUB",
@@ -1126,7 +1138,7 @@
       ],
       "notes": "即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["sub x0,[x1],#1,lsl #12"],"explanation": "この例では 減算。フラグは変化しない。"}
+      "example": {"code": ["sub x0,x1,#1,lsl #12"],"explanation": "この例では 減算。フラグは変化しない。"}
     },
     {
       "mnemonic": "SUBS",
@@ -1170,7 +1182,7 @@
       ],
       "notes": "CMP Xn,Xm は SUBS XZR,Xn,Xm の別名。 即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["subs x0,[x1],#1,lsl #12"],"explanation": "この例では 減算してフラグ更新。C は桁借り（符号なしアンダーフロー）でクリア、それ以外でセット。V は符号付きオーバーフローでセット。dst = WZR/XZR の形が CMP。"}
+      "example": {"code": ["subs x0,x1,#1,lsl #12"],"explanation": "この例では 減算してフラグ更新。C は桁借り（符号なしアンダーフロー）でクリア、それ以外でセット。V は符号付きオーバーフローでセット。dst = WZR/XZR の形が CMP。"}
     },
     {
       "mnemonic": "SBC",
@@ -1201,7 +1213,7 @@
       ],
       "notes": "128 ビット減算は SUBS + SBC。 sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["sbc x0,[x1],x2"],"explanation": "この例では キャリー込み減算（dst = src1 - src2 - (1 - C)）。多倍長減算の上位語に使う。"}
+      "example": {"code": ["sbc x0,x1,x2"],"explanation": "この例では キャリー込み減算（dst = src1 - src2 - (1 - C)）。多倍長減算の上位語に使う。"}
     },
     {
       "mnemonic": "SBCS",
@@ -1232,7 +1244,7 @@
       ],
       "notes": "sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["sbcs x0,[x1],x2"],"explanation": "この例では キャリー込み減算（dst = src1 - src2 - (1 - C)、フラグ更新）。多倍長減算では LO を SUBS、上位を SBCS で処理する。"}
+      "example": {"code": ["sbcs x0,x1,x2"],"explanation": "この例では キャリー込み減算（dst = src1 - src2 - (1 - C)、フラグ更新）。多倍長減算では LO を SUBS、上位を SBCS で処理する。"}
     },
     {
       "mnemonic": "NEG",
@@ -1261,7 +1273,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["neg x0,[x1]"],"explanation": "この例では 符号反転（dst = -src、2 の補数）。オペランドはレジスタのみ。フラグは変化しない。"}
+      "example": {"code": ["neg x0,x1"],"explanation": "この例では 符号反転（dst = -src、2 の補数）。オペランドはレジスタのみ。フラグは変化しない。"}
     },
     {
       "mnemonic": "NEGS",
@@ -1291,7 +1303,7 @@
       ],
       "notes": "SUBS Wd,WZR,Wm または SUBS Xd,XZR,Xm の別名。多倍長の符号反転では下位語を NEGS、上位語を NGCS（または SBCS）で処理できる。",
       "src": "book",
-      "example": {"code": ["negs x0,[x1]"],"explanation": "この例では 符号反転してフラグ更新。最小の負の値の符号反転は V をセットする。"}
+      "example": {"code": ["negs x0,x1"],"explanation": "この例では 符号反転してフラグ更新。最小の負の値の符号反転は V をセットする。"}
     },
     {
       "mnemonic": "MUL",
@@ -1388,7 +1400,7 @@
       ],
       "notes": "配列要素アドレス計算（i*size + j）に使える。A64 の整数乗算・積和命令は NZCV を更新しない。",
       "src": "book",
-      "example": {"code": ["madd x0,[x1],x2,x3"],"explanation": "この例では 乗算して加算（dst = src1 * src2 + src3）。積のオーバーフローは無視（下位 32/64 ビットのみ保持）。"}
+      "example": {"code": ["madd x0,x1,x2,x3"],"explanation": "この例では 乗算して加算（dst = src1 * src2 + src3）。積のオーバーフローは無視（下位 32/64 ビットのみ保持）。"}
     },
     {
       "mnemonic": "MSUB",
@@ -1419,7 +1431,7 @@
       ],
       "notes": "除算後の剰余は UDIV/SDIV + MSUB で求める。",
       "src": "book",
-      "example": {"code": ["msub x0,[x1],x2,x3"],"explanation": "この例では 乗算して減算（dst = src3 - src1 * src2）。積のオーバーフローは無視。"}
+      "example": {"code": ["msub x0,x1,x2,x3"],"explanation": "この例では 乗算して減算（dst = src3 - src1 * src2）。積のオーバーフローは無視。"}
     },
     {
       "mnemonic": "SDIV",
@@ -1450,7 +1462,7 @@
       ],
       "notes": "商は 0 方向に丸める。0 除算の商は 0。最小の負数を -1 で割る場合は同じ最小の負数を返す。算術例外を発生させず、NZCV も変えない。剰余は MSUB r,q,除数,被除数 で求められる。",
       "src": "book",
-      "example": {"code": ["sdiv x0,[x1],x2"],"explanation": "この例では 符号付き除算（0 除算は結果 0、剰余は MSUB で求める）。"}
+      "example": {"code": ["sdiv x0,x1,x2"],"explanation": "この例では 符号付き除算（0 除算は結果 0、剰余は MSUB で求める）。"}
     },
     {
       "mnemonic": "UDIV",
@@ -1481,7 +1493,7 @@
       ],
       "notes": "0 除算の商は 0。算術例外を発生させず、NZCV も変えない。MSUB で被除数から商と除数の積を引けば剰余を得られる。",
       "src": "book",
-      "example": {"code": ["udiv x0,[x1],x2"],"explanation": "この例では 符号なし除算（0 除算は結果 0）。"}
+      "example": {"code": ["udiv x0,x1,x2"],"explanation": "この例では 符号なし除算（0 除算は結果 0）。"}
     },
     {
       "mnemonic": "SMULL",
@@ -1571,7 +1583,7 @@
       ],
       "notes": "MUL（下位 64 ビット）と組み合わせれば完全な 128 ビット積が得られる。",
       "src": "book",
-      "example": {"code": ["smulh x0,[x1],x2"],"explanation": "この例では 符号付き 64×64 乗算の上位 64 ビット（積を算術右シフト 64 した値）。"}
+      "example": {"code": ["smulh x0,x1,x2"],"explanation": "この例では 符号付き 64×64 乗算の上位 64 ビット（積を算術右シフト 64 した値）。"}
     },
     {
       "mnemonic": "UMULH",
@@ -1602,7 +1614,7 @@
       ],
       "notes": "10 進変換の ×10 オーバーフロー検出などに使う。",
       "src": "book",
-      "example": {"code": ["umulh x0,[x1],x2"],"explanation": "この例では 符号なし 64×64 乗算の上位 64 ビット。"}
+      "example": {"code": ["umulh x0,x1,x2"],"explanation": "この例では 符号なし 64×64 乗算の上位 64 ビット。"}
     },
     {
       "mnemonic": "SMADDL",
@@ -1818,7 +1830,7 @@
       ],
       "notes": "即値は特殊なビットマスクエンコーディングのみ。 sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["and x0,[x1],x2,lsl #2"],"explanation": "この例では 論理積。フラグは変化しない（S 付きは ANDS）。"}
+      "example": {"code": ["and x0,x1,x2,lsl #2"],"explanation": "この例では 論理積。フラグは変化しない（S 付きは ANDS）。"}
     },
     {
       "mnemonic": "ANDS",
@@ -1856,7 +1868,7 @@
       ],
       "notes": "TST Xn,Xm は ANDS XZR,Xn,Xm の別名。 sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["ands x0,[x1],x2,lsl #2"],"explanation": "この例では 論理積を計算し N/Z を更新、C/V をクリアする。宛先が WZR または XZR の形は TST。"}
+      "example": {"code": ["ands x0,x1,x2,lsl #2"],"explanation": "この例では 論理積を計算し N/Z を更新、C/V をクリアする。宛先が WZR または XZR の形は TST。"}
     },
     {
       "mnemonic": "ORR",
@@ -1894,7 +1906,7 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["orr x0,[x1],x2,lsl #2"],"explanation": "この例では 論理和。ビットのセットとビット列の挿入に使う。"}
+      "example": {"code": ["orr x0,x1,x2,lsl #2"],"explanation": "この例では 論理和。ビットのセットとビット列の挿入に使う。"}
     },
     {
       "mnemonic": "ORN",
@@ -1926,7 +1938,7 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["orn x0,[x1],x2,lsl #2"],"explanation": "この例では OR NOT。ソースの 0 ビット位置に対応するデスティネーションのビットを 1 にセットできる。それ以外は ORR と同様。"}
+      "example": {"code": ["orn x0,x1,x2,lsl #2"],"explanation": "この例では OR NOT。ソースの 0 ビット位置に対応するデスティネーションのビットを 1 にセットできる。それ以外は ORR と同様。"}
     },
     {
       "mnemonic": "EOR",
@@ -1964,7 +1976,7 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["eor x0,[x1],x2,lsl #2"],"explanation": "この例では 排他的論理和。選択したビットだけを反転する。"}
+      "example": {"code": ["eor x0,x1,x2,lsl #2"],"explanation": "この例では 排他的論理和。選択したビットだけを反転する。"}
     },
     {
       "mnemonic": "EON",
@@ -1996,7 +2008,7 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["eon x0,[x1],x2,lsl #2"],"explanation": "この例では EOR NOT（dst = src1 EOR NOT src2）。ソースの 0 ビット位置に対応するデスティネーションのビットを反転できる。それ以外は EOR と同様。"}
+      "example": {"code": ["eon x0,x1,x2,lsl #2"],"explanation": "この例では EOR NOT（dst = src1 EOR NOT src2）。ソースの 0 ビット位置に対応するデスティネーションのビットを反転できる。それ以外は EOR と同様。"}
     },
     {
       "mnemonic": "BIC",
@@ -2028,7 +2040,7 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["bic x0,[x1],x2,lsl #2"],"explanation": "この例では ビットクリア（dst = src1 AND NOT src2）。ソースに 1 がある位置のデスティネーションビットをクリアする。S 付きは BICS。"}
+      "example": {"code": ["bic x0,x1,x2,lsl #2"],"explanation": "この例では ビットクリア（dst = src1 AND NOT src2）。ソースに 1 がある位置のデスティネーションビットをクリアする。S 付きは BICS。"}
     },
     {
       "mnemonic": "BICS",
@@ -2060,7 +2072,7 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["bics x0,[x1],x2,lsl #2"],"explanation": "この例では ビットクリア。残った値に基づいて N/Z をセットする。"}
+      "example": {"code": ["bics x0,x1,x2,lsl #2"],"explanation": "この例では ビットクリア。残った値に基づいて N/Z をセットする。"}
     },
     {
       "mnemonic": "LSL",
@@ -2239,7 +2251,7 @@
       ],
       "notes": "RBIT + CLZ で最初のセットビット位置を求められる。",
       "src": "book",
-      "example": {"code": ["rbit x0,[x1]"],"explanation": "この例では ビット順の完全逆転（32 ビットでは 0↔31、1↔30、…。64 ビットでは 0↔63、1↔62、…）。"}
+      "example": {"code": ["rbit x0,x1"],"explanation": "この例では ビット順の完全逆転（32 ビットでは 0↔31、1↔30、…。64 ビットでは 0↔63、1↔62、…）。"}
     },
     {
       "mnemonic": "REV16",
@@ -2269,7 +2281,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["rev16 x0,[x1]"],"explanation": "この例では 各 16 ビットハーフワード内の 2 バイトを入れ替え（32 ビットで 2 組、64 ビットで 4 組）。ビッグエンディアン 16 ビット値の変換用。"}
+      "example": {"code": ["rev16 x0,x1"],"explanation": "この例では 各 16 ビットハーフワード内の 2 バイトを入れ替え（32 ビットで 2 組、64 ビットで 4 組）。ビッグエンディアン 16 ビット値の変換用。"}
     },
     {
       "mnemonic": "REV32",
@@ -2299,7 +2311,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["rev32 x0,[x1]"],"explanation": "この例では 64 ビットレジスタの各 32 ビットワード内で 4 バイトを入れ替え。ビッグエンディアン 32 ビット値の変換用。"}
+      "example": {"code": ["rev32 x0,x1"],"explanation": "この例では 64 ビットレジスタの各 32 ビットワード内で 4 バイトを入れ替え。ビッグエンディアン 32 ビット値の変換用。"}
     },
     {
       "mnemonic": "REV",
@@ -2366,7 +2378,7 @@
       ],
       "notes": "先行する 1 の数は値を反転（MVN）してから CLZ。下位側の探索は RBIT してから CLZ。",
       "src": "book",
-      "example": {"code": ["clz x0,[x1]"],"explanation": "この例では 先行する 0 ビットの数を数える（符号ビットを含む）。最初のセットビット探索の専用命令。"}
+      "example": {"code": ["clz x0,x1"],"explanation": "この例では 先行する 0 ビットの数を数える（符号ビットを含む）。最初のセットビット探索の専用命令。"}
     },
     {
       "mnemonic": "CLS",
@@ -2396,7 +2408,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cls x0,[x1]"],"explanation": "この例では 先行する符号ビット（HO ビットと一致するビット）の数を数える。符号（HO）ビット自体はカウントに含まない。"}
+      "example": {"code": ["cls x0,x1"],"explanation": "この例では 先行する符号ビット（HO ビットと一致するビット）の数を数える。符号（HO）ビット自体はカウントに含まない。"}
     },
     {
       "mnemonic": "UBFX",
@@ -2426,7 +2438,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["ubfx x0,[x1],#0,#8"],"explanation": "この例では ビットフィールド抽出（src のビット位置 lsb から len ビットを取り出し dst のビット 0 から格納、上位は 0）。"}
+      "example": {"code": ["ubfx x0,x1,#0,#8"],"explanation": "この例では ビットフィールド抽出（src のビット位置 lsb から len ビットを取り出し dst のビット 0 から格納、上位は 0）。"}
     },
     {
       "mnemonic": "UBFIZ",
@@ -2456,7 +2468,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["ubfiz x0,[x1],#0,#8"],"explanation": "この例では src の下位 len ビットを dst のビット位置 posn へ配置し、他のビットを 0 にする。"}
+      "example": {"code": ["ubfiz x0,x1,#0,#8"],"explanation": "この例では src の下位 len ビットを dst のビット位置 posn へ配置し、他のビットを 0 にする。"}
     },
     {
       "mnemonic": "UBFM",
@@ -2488,7 +2500,7 @@
       ],
       "notes": "LSL/LSR/UBFX/UBFIZ など多くの別名の基礎。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。",
       "src": "book",
-      "example": {"code": ["ubfm x0,[x1],#1,#7"],"explanation": "この例では 符号なしビットフィールド移動。src を回転し即値から生成するマスクで抽出・配置して、残りのビットを 0 にする。"}
+      "example": {"code": ["ubfm x0,x1,#1,#7"],"explanation": "この例では 符号なしビットフィールド移動。src を回転し即値から生成するマスクで抽出・配置して、残りのビットを 0 にする。"}
     },
     {
       "mnemonic": "SBFM",
@@ -2519,7 +2531,7 @@
         }
       ],
       "notes": "ASR 即値、SBFX、SBFIZ、SXTB/SXTH/SXTW の基本命令。imms と immr の大小関係で抽出または左詰めの形式になる。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。",
-      "example": {"code": ["sbfm x0,[x1],#1,#7"],"explanation": "この例では 符号付きビットフィールド移動。指定されたビット列を抽出または配置し、上位を符号拡張する。"}
+      "example": {"code": ["sbfm x0,x1,#1,#7"],"explanation": "この例では 符号付きビットフィールド移動。指定されたビット列を抽出または配置し、上位を符号拡張する。"}
     },
     {
       "mnemonic": "SBFX",
@@ -2549,7 +2561,7 @@
         }
       ],
       "notes": "lsb は 0 以上、width は 1 以上で、lsb+width はレジスタ幅以下。",
-      "example": {"code": ["sbfx x0,[x1],#0,#8"],"explanation": "この例では src の lsb から width ビットを抽出し、上位を符号拡張して dst に格納する。"}
+      "example": {"code": ["sbfx x0,x1,#0,#8"],"explanation": "この例では src の lsb から width ビットを抽出し、上位を符号拡張して dst に格納する。"}
     },
     {
       "mnemonic": "SBFIZ",
@@ -2579,7 +2591,7 @@
         }
       ],
       "notes": "lsb は 0 以上、width は 1 以上で、lsb+width はレジスタ幅以下。32 ビット形式は 64 を 32 に置き換える。",
-      "example": {"code": ["sbfiz x0,[x1],#0,#8"],"explanation": "この例では src の下位 width ビットを lsb 位置へ配置し、その上位を符号拡張、下位を 0 にする。"}
+      "example": {"code": ["sbfiz x0,x1,#0,#8"],"explanation": "この例では src の下位 width ビットを lsb 位置へ配置し、その上位を符号拡張、下位を 0 にする。"}
     },
     {
       "mnemonic": "BFI",
@@ -2609,7 +2621,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["bfi x0,[x1],#0,#8"],"explanation": "この例では ビットフィールド挿入（src の下位 len ビットを dst のビット位置 posn から挿入、dst の他のビットは保持）。posn+len はレジスタサイズ以下。"}
+      "example": {"code": ["bfi x0,x1,#0,#8"],"explanation": "この例では ビットフィールド挿入（src の下位 len ビットを dst のビット位置 posn から挿入、dst の他のビットは保持）。posn+len はレジスタサイズ以下。"}
     },
     {
       "mnemonic": "BFC",
@@ -2670,7 +2682,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["bfxil x0,[x1],#0,#8"],"explanation": "この例では ビットフィールド抽出して下位へ挿入（src のビット位置 posn から len ビットを取り出し dst の LO ビット位置へコピー）。"}
+      "example": {"code": ["bfxil x0,x1,#0,#8"],"explanation": "この例では ビットフィールド抽出して下位へ挿入（src のビット位置 posn から len ビットを取り出し dst の LO ビット位置へコピー）。"}
     },
     {
       "mnemonic": "BFM",
@@ -2702,7 +2714,7 @@
       ],
       "notes": "BFI/BFC/BFXIL はすべてこの命令の別名。通常は別名を使う。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。",
       "src": "book",
-      "example": {"code": ["bfm x0,[x1],#1,#7"],"explanation": "この例では ビットフィールド移動。src を即値で右回転し、即値から生成したマスクに対応するビットを dst に挿入する。マスク外の dst ビットは保持する。"}
+      "example": {"code": ["bfm x0,x1,#1,#7"],"explanation": "この例では ビットフィールド移動。src を即値で右回転し、即値から生成したマスクに対応するビットを dst に挿入する。マスク外の dst ビットは保持する。"}
     },
     {
       "mnemonic": "EXTR",
@@ -2734,7 +2746,7 @@
       ],
       "notes": "ROR（即値）は src1=src2 に同じレジスタを指定した EXTR の別名。EXTR 自体は C フラグを入力にも出力にも使わない。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式ではシフト量の上位ビットは 0。",
       "src": "book",
-      "example": {"code": ["extr x0,[x1],x2,#0"],"explanation": "この例では 2 レジスタ連結（src1:src2）からビット位置 posn を起点にビット列を抽出する（レジスタペアにまたがる抽出）。"}
+      "example": {"code": ["extr x0,x1,x2,#0"],"explanation": "この例では 2 レジスタ連結（src1:src2）からビット位置 posn を起点にビット列を抽出する（レジスタペアにまたがる抽出）。"}
     },
     {
       "mnemonic": "CMP",
@@ -2931,7 +2943,7 @@
       ],
       "notes": "CSINC・CSINV・CSNEG は条件不成立時に第 2 ソースを変換する別命令。CSET などはそれらの別名。 sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
       "src": "book",
-      "example": {"code": ["csel x0,[x1],x2,eq"],"explanation": "この例では cond が成立なら src1、不成立なら src2 を dst にコピーする。フラグは変更しない。"}
+      "example": {"code": ["csel x0,x1,x2,eq"],"explanation": "この例では cond が成立なら src1、不成立なら src2 を dst にコピーする。フラグは変更しない。"}
     },
     {
       "mnemonic": "CSINC",
@@ -2962,7 +2974,7 @@
       ],
       "notes": "CSET Xd,cond は CSINC Xd,XZR,XZR,inv(cond) に展開。 sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
       "src": "book",
-      "example": {"code": ["csinc x0,[x1],x2,eq"],"explanation": "この例では 条件成立なら src1、不成立なら src2+1 を選択。"}
+      "example": {"code": ["csinc x0,x1,x2,eq"],"explanation": "この例では 条件成立なら src1、不成立なら src2+1 を選択。"}
     },
     {
       "mnemonic": "CSET",
@@ -3053,7 +3065,7 @@
       ],
       "src": "book",
       "notes": "sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
-      "example": {"code": ["csinv x0,[x1],x2,eq"],"explanation": "この例では 条件選択 + 反転。cond 成立なら src1、不成立なら NOT src2 を dst へコピーする。"}
+      "example": {"code": ["csinv x0,x1,x2,eq"],"explanation": "この例では 条件選択 + 反転。cond 成立なら src1、不成立なら NOT src2 を dst へコピーする。"}
     },
     {
       "mnemonic": "CSNEG",
@@ -3084,7 +3096,7 @@
       ],
       "src": "book",
       "notes": "sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
-      "example": {"code": ["csneg x0,[x1],x2,eq"],"explanation": "この例では 条件選択 + 符号反転。cond 成立なら src1、不成立なら -src2 を dst へコピーする。"}
+      "example": {"code": ["csneg x0,x1,x2,eq"],"explanation": "この例では 条件選択 + 符号反転。cond 成立なら src1、不成立なら -src2 を dst へコピーする。"}
     },
     {
       "mnemonic": "CINC",
@@ -3114,7 +3126,7 @@
       ],
       "notes": "CSINC の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["cinc x0,[x1],eq"],"explanation": "この例では 条件成立なら src+1、不成立なら src をセットする。"}
+      "example": {"code": ["cinc x0,x1,eq"],"explanation": "この例では 条件成立なら src+1、不成立なら src をセットする。"}
     },
     {
       "mnemonic": "CINV",
@@ -3144,7 +3156,7 @@
       ],
       "notes": "CSINV の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["cinv x0,[x1],eq"],"explanation": "この例では 条件成立なら NOT src、不成立なら src をセットする。"}
+      "example": {"code": ["cinv x0,x1,eq"],"explanation": "この例では 条件成立なら NOT src、不成立なら src をセットする。"}
     },
     {
       "mnemonic": "CNEG",
@@ -3174,7 +3186,7 @@
       ],
       "notes": "CSNEG の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["cneg x0,[x1],eq"],"explanation": "この例では 条件成立なら -src、不成立なら src をセットする。"}
+      "example": {"code": ["cneg x0,x1,eq"],"explanation": "この例では 条件成立なら -src、不成立なら src をセットする。"}
     },
     {
       "mnemonic": "B",
@@ -3719,7 +3731,7 @@
       "encodings": [
         {
           "syntax": "MSR sysreg,Xt",
-          "opcode": "11010101000 op0 op1 CRn CRm op2 Xt",
+          "opcode": "1101010100 L=0 op0(2) op1 CRn CRm op2 Xt",
           "bytes": 4
         },
         {
@@ -3755,7 +3767,7 @@
       "encodings": [
         {
           "syntax": "MRS Xt,sysreg",
-          "opcode": "11010101001 op0 op1 CRn CRm op2 Xt",
+          "opcode": "1101010100 L=1 op0(2) op1 CRn CRm op2 Xt",
           "bytes": 4
         }
       ],
@@ -4117,7 +4129,7 @@
       ],
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。LSL のレジスタ回数形式と同じ符号化。",
       "src": "note",
-      "example": {"code": ["lslv x0,[x1],x2"],"explanation": "この例では レジスタで指定した回数の左論理シフト。"}
+      "example": {"code": ["lslv x0,x1,x2"],"explanation": "この例では レジスタで指定した回数の左論理シフト。"}
     },
     {
       "mnemonic": "LSRV",
@@ -4148,7 +4160,7 @@
       ],
       "src": "note",
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。LSR のレジスタ回数形式と同じ符号化。",
-      "example": {"code": ["lsrv x0,[x1],x2"],"explanation": "この例では レジスタで指定した回数の右論理シフト。"}
+      "example": {"code": ["lsrv x0,x1,x2"],"explanation": "この例では レジスタで指定した回数の右論理シフト。"}
     },
     {
       "mnemonic": "ASRV",
@@ -4179,7 +4191,7 @@
       ],
       "src": "note",
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。ASR のレジスタ回数形式と同じ符号化。",
-      "example": {"code": ["asrv x0,[x1],x2"],"explanation": "この例では レジスタで指定した回数の右算術シフト。"}
+      "example": {"code": ["asrv x0,x1,x2"],"explanation": "この例では レジスタで指定した回数の右算術シフト。"}
     },
     {
       "mnemonic": "RORV",
@@ -4210,7 +4222,7 @@
       ],
       "src": "note",
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。ROR のレジスタ回数形式と同じ符号化。",
-      "example": {"code": ["rorv x0,[x1],x2"],"explanation": "この例では レジスタで指定した回数の右ローテート。"}
+      "example": {"code": ["rorv x0,x1,x2"],"explanation": "この例では レジスタで指定した回数の右ローテート。"}
     },
     {
       "mnemonic": "HVC",

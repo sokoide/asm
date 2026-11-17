@@ -14,7 +14,7 @@ UMULH dst64, src1, src2 — ARM64（算術）
   UMULH Xd,Xn,Xm: 10011011110 Rm 0 11111 Rn Rd  (4 バイト)
 
 使用例:
-  umulh x0,[x1],x2
+  umulh x0,x1,x2
 
 解説:
   この例では 符号なし 64×64 乗算の上位 64 ビット。

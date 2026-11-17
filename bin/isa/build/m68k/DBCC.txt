@@ -17,7 +17,6 @@ DBcc Dn, d — 68000（分岐）
 
 使用例:
   dbeq d0,target
-  dbeq d0,target
   target:
 
 解説:

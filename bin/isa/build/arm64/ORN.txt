@@ -14,7 +14,7 @@ OR NOT。ソースの 0 ビット位置に対応するデスティネーショ�
   ORN Rd,Rn,Rm{,shift #amount}: sf 01 01010 shift 1 Rm imm6 Rn Rd  (4 バイト)
 
 使用例:
-  orn x0,[x1],x2,lsl #2
+  orn x0,x1,x2,lsl #2
 
 解説:
   この例では OR NOT。ソースの 0 ビット位置に対応するデスティネーションのビットを 1 にセットできる。それ以外は ORR と同様。

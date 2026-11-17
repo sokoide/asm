@@ -19,6 +19,7 @@ I/O ポート（0000〜FFFF）からデータを読み込み AL/AX/EAX に格納
   IN AL, imm8: E4 ib  (2 バイト)
   IN AL, DX: EC  (1 バイト)
   IN eAX, DX: ED  (1 バイト)
+  IN eAX, imm8: E5 ib  (2 バイト)
 
 使用例:
   in al, dx

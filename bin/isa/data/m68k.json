@@ -116,7 +116,7 @@
       "summary": "実効アドレスの値（アドレス計算結果）をスタックに PUSH する。",
       "addressing": ["(An)", "(d16,An)", "(d8,An,Xn.W/L)", "絶対 .W/.L", "(d16,PC)", "(d8,PC,Xn.W/L)"],
       "flags": ["-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "PEA (d16,An)", "cycles": 18}],
+      "cycles": [{"cond":"PEA (d16,An)","cycles":16}],
       "encodings": [{"syntax": "PEA ea", "opcode": "0100100001 MMM RRR", "length": "可変"}],
       "example": {"code": ["pea (a0)"],"explanation": "この例では 実効アドレスの値（アドレス計算結果）をスタックに PUSH する。"}
     },
@@ -509,7 +509,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ANDI.B #d,CCR", "opcode": "00000010 00 111100 00000000 dddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["andi.w.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 0 ならクリア）。特権命令ではない。"}
+      "example": {"code": ["andi.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 0 ならクリア）。特権命令ではない。"}
     },
     {
       "mnemonic": "ORITOCCR",
@@ -521,7 +521,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ORI.B #d,CCR", "opcode": "00000000 00 111100 00000000 dddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["ori.w.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 1 ならセット）。特権命令ではない。"}
+      "example": {"code": ["ori.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 1 ならセット）。特権命令ではない。"}
     },
     {
       "mnemonic": "EORITOCCR",
@@ -533,7 +533,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "EORI.B #d,CCR", "opcode": "00001010 00 111100 00000000 dddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["eori.w.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 1 なら反転）。特権命令ではない。"}
+      "example": {"code": ["eori.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 1 なら反転）。特権命令ではない。"}
     },
     {
       "mnemonic": "ANDITOSR",
@@ -545,7 +545,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ANDI.W #d,SR", "opcode": "00000010 01 111100 dddddddddddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["andi.w.w #1,sr"],"explanation": "この例では SR と即値の論理積。T/S/割り込みマスクを含む SR の個別ビットをクリアするのに便利（スーパーバイザモード専用）。"}
+      "example": {"code": ["andi.w #1,sr"],"explanation": "この例では SR と即値の論理積。T/S/割り込みマスクを含む SR の個別ビットをクリアするのに便利（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "ORITOSR",
@@ -557,7 +557,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ORI.W #d,SR", "opcode": "00000000 01 111100 dddddddddddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["ori.w.w #1,sr"],"explanation": "この例では SR と即値の論理和。T/S/割り込みマスクを含む SR の個別ビットをセットするのに便利（スーパーバイザモード専用）。"}
+      "example": {"code": ["ori.w #1,sr"],"explanation": "この例では SR と即値の論理和。T/S/割り込みマスクを含む SR の個別ビットをセットするのに便利（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "EORITOSR",
@@ -569,7 +569,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "EORI.W #d,SR", "opcode": "00001010 01 111100 dddddddddddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["eori.w.w #1,sr"],"explanation": "この例では SR と即値の排他的論理和。T/S/割り込みマスクを含む SR の個別ビットを反転するのに便利（スーパーバイザモード専用）。"}
+      "example": {"code": ["eori.w #1,sr"],"explanation": "この例では SR と即値の排他的論理和。T/S/割り込みマスクを含む SR の個別ビットを反転するのに便利（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "NOT",
@@ -638,9 +638,9 @@
       "summary": "アドレスレジスタからソースを減算して比較する（.W/.L）。.W のソースは 32 ビットに符号拡張され、An 全体と比較される。",
       "addressing": ["全 EA（src、.W/.L のみ）"],
       "flags": ["‡", "‡", "‡", "‡", "-"],
-      "cycles": [{"cond": "CMPA.L D0,A0", "cycles": 8}],
+      "cycles": [{"cond":"CMPA.L D0,A0","cycles":6}],
       "encodings": [{"syntax": "CMPA.W ea,An", "opcode": "1011 AAA 011 MMM RRR", "length": "可変"}, {"syntax": "CMPA.L ea,An", "opcode": "1011 AAA 111 MMM RRR", "length": "可変"}],
-      "example": {"code": ["cmpa.w.w (a0),a0"],"explanation": "この例では アドレスレジスタからソースを減算して比較する（.W/.L）。.W のソースは 32 ビットに符号拡張され、An 全体と比較される。"}
+      "example": {"code": ["cmpa.w (a0),a0"],"explanation": "この例では アドレスレジスタからソースを減算して比較する（.W/.L）。.W のソースは 32 ビットに符号拡張され、An 全体と比較される。"}
     },
     {
       "mnemonic": "CMPI",
@@ -767,7 +767,7 @@
       "operands": "Dn/#d, dst",
       "category": "シフト/ビット",
       "summary": "ビットテスト（.B/.L）。Z フラグのみ更新（指定ビットが 0 で Z=1）。",
-      "addressing": ["Dn（ロングワード）", "メモリ（バイト）", "PC 相対（読み出し専用）"],
+      "addressing": ["Dn（ロングワード）","メモリ（バイト）","PC 相対（読み出し専用）","即値ビット番号"],
       "flags": ["-", "‡", "-", "-", "-"],
       "cycles": [{"cond": "BTST #n,D0", "cycles": 10}, {"cond": "BTST #n,(A0)", "cycles": 12}],
       "encodings": [{"syntax": "BTST Dn,ea", "opcode": "0000 NNN 1 00 MMM RRR", "length": "可変"}, {"syntax": "BTST #imm,ea", "opcode": "00001000 00 MMM RRR imm16", "length": "可変"}],
@@ -779,7 +779,7 @@
       "operands": "Dn/#d, dst",
       "category": "シフト/ビット",
       "summary": "指定ビットの変更前の値を Z で示し、そのビットを 1 にセットする。",
-      "addressing": ["Dn（ロングワード）", "メモリ（バイト）"],
+      "addressing": ["Dn（ロングワード）","メモリ（バイト）","即値ビット番号"],
       "flags": ["-", "‡", "-", "-", "-"],
       "cycles": [{"cond": "BSET #n,D0（最大）", "cycles": 12}, {"cond": "BSET #n,(A0)", "cycles": 16}],
       "encodings": [{"syntax": "BSET Dn,ea", "opcode": "0000 NNN 1 11 MMM RRR", "length": "可変"}, {"syntax": "BSET #imm,ea", "opcode": "00001000 11 MMM RRR imm16", "length": "可変"}],
@@ -791,7 +791,7 @@
       "operands": "Dn/#d, dst",
       "category": "シフト/ビット",
       "summary": "ビットテスト後にそのビットを 0 にクリア。",
-      "addressing": ["Dn（ロングワード）", "メモリ（バイト）"],
+      "addressing": ["Dn（ロングワード）","メモリ（バイト）","即値ビット番号"],
       "flags": ["-", "‡", "-", "-", "-"],
       "cycles": [{"cond": "BCLR #n,D0（最大）", "cycles": 14}, {"cond": "BCLR #n,(A0)", "cycles": 16}],
       "encodings": [{"syntax": "BCLR Dn,ea", "opcode": "0000 NNN 1 10 MMM RRR", "length": "可変"}, {"syntax": "BCLR #imm,ea", "opcode": "00001000 10 MMM RRR imm16", "length": "可変"}],
@@ -803,7 +803,7 @@
       "operands": "Dn/#d, dst",
       "category": "シフト/ビット",
       "summary": "ビットテスト後にそのビットを反転。",
-      "addressing": ["Dn（ロングワード）", "メモリ（バイト）"],
+      "addressing": ["Dn（ロングワード）","メモリ（バイト）","即値ビット番号"],
       "flags": ["-", "‡", "-", "-", "-"],
       "cycles": [{"cond": "BCHG #n,D0（最大）", "cycles": 12}, {"cond": "BCHG #n,(A0)", "cycles": 16}],
       "encodings": [{"syntax": "BCHG Dn,ea", "opcode": "0000 NNN 1 01 MMM RRR", "length": "可変"}, {"syntax": "BCHG #imm,ea", "opcode": "00001000 01 MMM RRR imm16", "length": "可変"}],
@@ -856,7 +856,7 @@
       "cycles": [{"cond": "不成立・分岐", "cycles": 10}, {"cond": "不成立・ループ終了", "cycles": 14}, {"cond": "成立（脱出）", "cycles": 12}],
       "encodings": [{"syntax": "DBcc Dn,disp16", "opcode": "0101 cccc 11001 RRR disp16", "bytes": 4}],
       "notes": "Dn の上位 16 ビットは変化しない。変位は符号付き 16 ビットで、基準は命令先頭 + 2。DBRA は条件が常に偽の DBF の別名。DBT は条件が常に真で、減算せず直後へ進む。",
-      "example": {"code": ["dbeq d0,target","dbeq d0,target","target:"],"explanation": "この例では 条件成立なら何も減算せず次へ進む。不成立なら Dn の下位ワードを減算し、結果が $FFFF でなければ分岐する。"}
+      "example": {"code": ["dbeq d0,target","target:"],"explanation": "この例では 条件成立なら何も減算せず次へ進む。不成立なら Dn の下位ワードを減算し、結果が $FFFF でなければ分岐する。"}
     },
     {
       "mnemonic": "Scc",
@@ -943,7 +943,7 @@
       "category": "システム制御",
       "summary": "データレジスタ（下位ワード）の範囲チェック。0 ≤ Dn ≤ src の範囲外なら例外（ベクタ番号 6、ベクタ表アドレス $18）を発生。",
       "addressing": ["データモード"],
-      "flags": ["‡", "U", "U", "U", "-"],
+      "flags": ["U","U","U","U","-"],
       "cycles": [{"cond": "範囲内（Dn ソース）", "cycles": 10}, {"cond": "範囲外（Dn ソース・トラップ）", "cycles": 40}, {"cond": "範囲内（(An) ソース）", "cycles": 14}, {"cond": "範囲外（(An) ソース・トラップ）", "cycles": 44}],
       "encodings": [{"syntax": "CHK.W src,Dn", "opcode": "0100 RRR 110 MMM RRR", "length": "可変"}],
       "notes": "Dn<0 で N=1、Dn>src で N=0 にしてトラップ。範囲内なら実行を継続。N は範囲内では不定。Z/V/C は不定、X は不変。MC68000 では .W のみ。上限値は 2 の補数（符号付き）で比較。",

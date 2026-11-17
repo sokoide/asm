@@ -1208,7 +1208,7 @@
       "addressing": ["CSR 読出し"],
       "flags": [],
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "rdcycle rd", "opcode": "110000000000 00000 010 rd 1110011", "bytes": 4}],
+      "encodings": [{"syntax":"rdcycle rd","opcode":"csr=0xC00 rs1=00000 funct3=010 rd opcode=1110011","bytes":4}],
       "notes": "CSRRS rd, cycle, x0 と等価。CSR 0xC00。実行環境・特権設定により読出しが禁止される場合がある。",
       "example": {"code": ["rdcycle t0"],"explanation": "この例では サイクルカウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。"}
     },
@@ -1220,7 +1220,7 @@
       "addressing": ["CSR 読出し"],
       "flags": [],
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "rdtime rd", "opcode": "110000000001 00000 010 rd 1110011", "bytes": 4}],
+      "encodings": [{"syntax":"rdtime rd","opcode":"csr=0xC01 rs1=00000 funct3=010 rd opcode=1110011","bytes":4}],
       "notes": "CSRRS rd, time, x0 と等価。CSR 0xC01。実行環境・特権設定により読出しが禁止される場合がある。",
       "example": {"code": ["rdtime t0"],"explanation": "この例では 時間カウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。"}
     },
@@ -1232,7 +1232,7 @@
       "addressing": ["CSR 読出し"],
       "flags": [],
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "rdinstret rd", "opcode": "110000000010 00000 010 rd 1110011", "bytes": 4}],
+      "encodings": [{"syntax":"rdinstret rd","opcode":"csr=0xC02 rs1=00000 funct3=010 rd opcode=1110011","bytes":4}],
       "notes": "CSRRS rd, instret, x0 と等価。CSR 0xC02。実行環境・特権設定により読出しが禁止される場合がある。",
       "example": {"code": ["rdinstret t0"],"explanation": "この例では retired 命令カウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。"}
     },

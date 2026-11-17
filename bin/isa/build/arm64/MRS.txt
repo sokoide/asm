@@ -11,7 +11,7 @@ MRS dst, sysreg — ARM64（システム制御）
   ISA では規定されない: 実装依存
 
 オペコード:
-  MRS Xt,sysreg: 11010101001 op0 op1 CRn CRm op2 Xt  (4 バイト)
+  MRS Xt,sysreg: 1101010100 L=1 op0(2) op1 CRn CRm op2 Xt  (4 バイト)
 
 使用例:
   mrs x0,nzcv

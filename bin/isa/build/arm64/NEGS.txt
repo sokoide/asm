@@ -14,7 +14,7 @@ NEGS dst, src — ARM64（算術）
   NEGS Xd,Xn: SUBS Xd,XZR,Xn のエイリアス
 
 使用例:
-  negs x0,[x1]
+  negs x0,x1
 
 解説:
   この例では 符号反転してフラグ更新。最小の負の値の符号反転は V をセットする。

@@ -1,0 +1,26 @@
+CMPXCHG dst, src — x86-64（算術）
+
+AL/AX/EAX/RAX と dst を比較し、一致なら src を dst に書く。不一致なら dst の値をアキュムレータへ戻す。
+
+アドレッシング: レジスタ、間接(base+index×scale+disp)
+フラグ: O‡  D-  I-  S‡  Z‡  A‡  P‡  C‡
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  CPU・実行条件に依存: 実装依存
+
+オペコード:
+  CMPXCHG r/m8, r8: 0F B0 /r  (長さ可変)
+  CMPXCHG r/m16, r16: 66 0F B1 /r  (長さ可変)
+  CMPXCHG r/m32, r32: 0F B1 /r  (長さ可変)
+  CMPXCHG r/m64, r64: REX.W 0F B1 /r  (長さ可変)
+
+使用例:
+  lock cmpxchg qword [rdi], rbx
+
+解説:
+  RAX と [rdi] が等しければ RBX を [rdi] に書き、異なれば [rdi] の値を RAX に読み込む。LOCK により比較と更新をアトミックに行う。
+
+備考:
+  フラグは暗黙のアキュムレータから dst を減算した結果に従う。dst がメモリなら LOCK prefix を付けて比較と条件付き書込みをアトミックにできる。

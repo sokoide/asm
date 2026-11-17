@@ -12,6 +12,7 @@ JMP dst — 8086（分岐）
   far: 15
   reg 間接: 11
   mem 間接: 18+EA
+  far mem 間接 (FF /5): 24+EA
 
 オペコード:
   JMP short: EB rel8  (2 バイト)
