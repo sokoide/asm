@@ -14,6 +14,6 @@ SR 全体（システムバイト + CCR）へのワード転送。T/S/割り込�
   MOVE.W d16(A0),SR: 20
 
 オペコード:
-  MOVE.W src,SR: 0100011011 MMM RRR  (2 バイト)
+  MOVE.W src,SR: 0100011011 MMM RRR  (長さ可変)
 
 （根拠: book）

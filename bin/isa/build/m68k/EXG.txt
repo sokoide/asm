@@ -9,3 +9,8 @@ EXG Rx, Ry — 68000（データ転送）
 
 消費クロック:
   常時: 6
+
+オペコード:
+  EXG Dn,Dm: 1100 NNN 1 01000 MMM  (2 バイト)
+  EXG An,Am: 1100 NNN 1 01001 MMM  (2 バイト)
+  EXG Dn,Am: 1100 NNN 1 10001 MMM  (2 バイト)

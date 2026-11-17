@@ -1,6 +1,6 @@
 not（拡張ニーモニック）→ NOR rA, rS, rB — PowerPC（論理）
 
-NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
+NOT（ビット反転）（Logical NOT）
 
 アドレッシング: レジスタ
 フラグ: LT-  GT-  EQ-  SO-
@@ -12,8 +12,12 @@ NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
   NOT（ビット反転）（Logical NOT）
 
 元命令: isa ppc NOR
+NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  nor[.] rA,rS,rB: 011111 rS rA rB 0001111100 Rc  (4 バイト)
 
 （根拠: book）

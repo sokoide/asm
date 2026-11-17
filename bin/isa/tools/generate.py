@@ -108,6 +108,8 @@ def validate(path, doc):
         for entry in encodings:
             if not isinstance(entry, dict) or "syntax" not in entry or "opcode" not in entry:
                 raise ValidationError(f"{where}: encodings の各要素は syntax と opcode を持つ必要があります")
+            if "length" in entry and (entry["length"] != "可変" or "bytes" in entry):
+                raise ValidationError(f"{where}: length は bytes と併用せず、可変 を指定してください")
         src = inst.get("src", "")
         if src and src not in ALLOWED_SRC:
             raise ValidationError(f"{where}: src は {sorted(ALLOWED_SRC)} のいずれか ({src!r})")
@@ -115,8 +117,8 @@ def validate(path, doc):
         if not isinstance(notes, str):
             raise ValidationError(f"{where}: notes は文字列で指定してください")
 
-    # aliases: extended mnemonics (e.g. PowerPC blr -> bclr). Not listed in the
-    # index; looked up via build/aliases.tsv only.
+    # aliases: extended mnemonics (e.g. PowerPC blr -> bclr). Indexed alongside
+    # base instructions and rendered as instruction reference pages.
     base_mnems = {inst["mnemonic"].upper() for inst in doc["instructions"]}
     seen_alias = set()
     for i, alias in enumerate(doc.get("aliases", []), start=1):
@@ -125,7 +127,7 @@ def validate(path, doc):
             if key not in alias:
                 raise ValidationError(f"{where}: 必須フィールド {key} がありません")
         mnem = alias["mnemonic"]
-        if not isinstance(mnem, str) or not re.fullmatch(r"[a-z][a-z0-9]*\.?", mnem):
+        if not isinstance(mnem, str) or not re.fullmatch(r"[a-z][a-z0-9]*(?:\.[a-z0-9]+)*\.?", mnem):
             raise ValidationError(f"{where}: alias の mnemonic は小文字ニーモニックで指定してください ({mnem!r})")
         if mnem.upper() in seen_alias:
             raise ValidationError(f"{where}: alias mnemonic 重複 ({mnem})")
@@ -166,7 +168,7 @@ def inst_detail(inst):
     if encodings:
         detail += ["", "オペコード:"]
         for entry in encodings:
-            bytes_part = f"  ({entry['bytes']} バイト)" if "bytes" in entry else ""
+            bytes_part = f"  ({entry['bytes']} バイト)" if "bytes" in entry else "  (長さ可変)" if entry.get("length") == "可変" else ""
             detail.append(f"  {entry['syntax']}: {entry['opcode']}{bytes_part}")
 
     notes = inst.get("notes", "")
@@ -204,7 +206,7 @@ def render_alias(alias, target, arch, flag_names):
     lines = [
         f"{mnem}（拡張ニーモニック）→ {target['mnemonic']} {target['operands']} — {ARCH_DISPLAY[arch]}（{target['category']}）",
         "",
-        target["summary"],
+        alias["summary"],
         "",
         f"アドレッシング: {'、'.join(target['addressing'])}",
     ]
@@ -221,7 +223,7 @@ def render_alias(alias, target, arch, flag_names):
     ]
     for line in alias.get("notes", "").splitlines():
         detail.append(f"  {line}")
-    detail += ["", f"元命令: isa {arch} {target['mnemonic']}"]
+    detail += ["", f"元命令: isa {arch} {target['mnemonic']}", target["summary"]]
     detail += [""] + inst_detail(target)
 
     return "\n".join(lines + [""] + detail) + "\n"

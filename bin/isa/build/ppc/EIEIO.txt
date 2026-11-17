@@ -1,6 +1,6 @@
 EIEIO — PowerPC（システム制御）
 
-先行するロード/ストアを後続のロード/ストアより先に完了させる（Enforce In-Order Execution of I/O）。メモリマップド I/O 用。
+I/O などのストレージアクセスに順序を与える（Enforce In-Order Execution of I/O）。
 
 アドレッシング: 暗黙
 フラグ: LT-  GT-  EQ-  SO-
@@ -10,7 +10,10 @@ EIEIO — PowerPC（システム制御）
 消費クロック:
   601（sync と同一機能のため sync のタイミング）: ≥8
 
+オペコード:
+  eieio: 011111 00000 00000 00000 1101010110 0  (4 バイト)
+
 備考:
-  Book E（440）の記憶域同期命令は msync/mbar で、eieio は載らない。601 では機能的に sync と同一。
+  対象となるアクセスと保証はメモリ属性および実装に依存し、すべての通常メモリアクセスを完了させる全命令バリアではない。601 では sync と同等。Book E（440）の記憶域同期命令は msync/mbar。
 
 （根拠: book）

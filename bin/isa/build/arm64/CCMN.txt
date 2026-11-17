@@ -8,6 +8,13 @@ CCMN src1, src2, #nzcv, cond — ARM64（比較）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  CCMN Rn,Rm,#nzcv,cond: sf 0 1 11010010 Rm cond 00 Rn 0 nzcv  (4 バイト)
+  CCMN Rn,#imm5,#nzcv,cond: sf 0 1 11010010 imm5 cond 10 Rn 0 nzcv  (4 バイト)
+
+備考:
+  第 2 オペランドはレジスタまたは 0〜31 の即値。条件不成立時は #nzcv の bit3〜0 を N/Z/C/V に書き込む。
 
 （根拠: book）

@@ -1,6 +1,6 @@
 ANDS dst, src1, src2 — ARM64（論理）
 
-論理積（N/Z 更新、C/V クリア）。dst = WZR の形が TST。
+論理積を計算し N/Z を更新、C/V をクリアする。宛先が WZR または XZR の形は TST。
 
 アドレッシング: レジスタ、即値 #pattern（論理ビットマスク）、シフト付きレジスタ
 フラグ: N‡  Z‡  C0  V0
@@ -8,9 +8,13 @@ ANDS dst, src1, src2 — ARM64（論理）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  ANDS Rd,Rn,Rm{,shift #amount}: sf 11 01010 shift 0 Rm imm6 Rn Rd  (4 バイト)
+  ANDS Rd,Rn,#bitmask: sf 11 100100 N immr imms Rn Rd  (4 バイト)
 
 備考:
-  TST Xn,Xm は ANDS WZR,Xn,Xm の別名。
+  TST Xn,Xm は ANDS XZR,Xn,Xm の別名。 sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。
 
 （根拠: book）

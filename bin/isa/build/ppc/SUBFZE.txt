@@ -11,7 +11,10 @@ rT = 0 - rA + XER[CA] - 1（Subtract From Zero Extended）。XER[CA] を更新�
   601: 3
   440 コア: 1
 
+オペコード:
+  subfze rT,rA: 011111 rT rA 00000 OE 011001000 Rc  (4 バイト)
+
 備考:
-  SUBFE の定数版（0 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。
+  SUBFE の定数版（0 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。 この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。
 
 （根拠: book）

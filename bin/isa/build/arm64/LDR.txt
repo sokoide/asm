@@ -8,9 +8,21 @@ LDR dst, [base{, #imm/Xm}] — ARM64（データ転送）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存（キャッシュヒットで概ね 4〜5 サイクル）: 4〜5
+  ISA では規定されない: 実装依存
+
+オペコード:
+  LDR Wt,[Xn,#uimm]: 10 111001 01 imm12 Rn Rt  (4 バイト)
+  LDR Wt,[Xn,#simm9]!: 10 111000 01 0 imm9 11 Rn Rt  (4 バイト)
+  LDR Wt,[Xn],#simm9: 10 111000 01 0 imm9 01 Rn Rt  (4 バイト)
+  LDR Wt,[Xn,Rm,extend]: 10 111000 01 1 Rm option S 10 Rn Rt  (4 バイト)
+  LDR Xt,[Xn,#uimm]: 11 111001 01 imm12 Rn Rt  (4 バイト)
+  LDR Xt,[Xn,#simm9]!: 11 111000 01 0 imm9 11 Rn Rt  (4 バイト)
+  LDR Xt,[Xn],#simm9: 11 111000 01 0 imm9 01 Rn Rt  (4 バイト)
+  LDR Xt,[Xn,Rm,extend]: 11 111000 01 1 Rm option S 10 Rn Rt  (4 バイト)
+  LDR Wt,label: 00011000 imm19 Rt  (4 バイト)
+  LDR Xt,label: 01011000 imm19 Rt  (4 バイト)
 
 備考:
-  符号拡張版は LDRSB/LDRSH/LDRSW。32 ビット LDR Wt は上位ビットを 0 クリア。
+  符号拡張版は LDRSB/LDRSH/LDRSW。32 ビット LDR Wt は上位ビットを 0 クリア。 符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。 リテラル形式の imm19 は符号付き 4 バイト単位の PC 相対変位。
 
 （根拠: book）

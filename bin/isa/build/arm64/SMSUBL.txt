@@ -1,6 +1,6 @@
 SMSUBL dst64, src1w, src2w, src3 — ARM64（算術）
 
-符号付き 32×32 → 64 ビット乗算から 64 ビット値を減算（dst = (src1w * src2w) - src3）。
+64 ビット値から符号付き 32×32 ビット積を減算（dst = src3 - (src1w * src2w)）。
 
 アドレッシング: レジスタ
 フラグ: N-  Z-  C-  V-
@@ -8,6 +8,9 @@ SMSUBL dst64, src1w, src2w, src3 — ARM64（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 2〜5
+  ISA では規定されない: 実装依存
+
+オペコード:
+  SMSUBL Xd,Wn,Wm,Xa: 10011011001 Rm 1 Ra Rn Rd  (4 バイト)
 
 （根拠: book）

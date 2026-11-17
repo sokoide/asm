@@ -8,11 +8,17 @@ OR dst, src — 80386（論理）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, 即値: 7
+  レジスタとメモリ: 6〜7
 
 オペコード:
-  OR r/m, r: 09 /r（8bit は 08 /r）  (2 バイト)
-  OR r/m, imm: 81 /1 iv  (4 バイト)
+  OR r/m, r: 09 /r（8bit は 08 /r）  (長さ可変)
+  OR r, r/m: 0B /r（8bit は 0A /r）  (長さ可変)
+  OR r/m8, imm8: 80 /1 ib  (長さ可変)
+  OR r/m16/32, imm16/32: 81 /1 iw/id  (長さ可変)
+  OR r/m16/32, imm8（符号拡張）: 83 /1 ib  (長さ可変)
+  OR AL, imm8: 0C ib  (長さ可変)
+  OR AX/EAX, imm16/32: 0D iw/id  (長さ可変)
 
 （根拠: book）

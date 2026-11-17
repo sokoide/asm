@@ -3,12 +3,15 @@ ADDIC rT, rA, s16 — PowerPC（算術）
 即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。
 
 アドレッシング: 即値（D-Form）
-フラグ: LT‡  GT‡  EQ‡  SO‡
+フラグ: LT-  GT-  EQ-  SO-
 
 ────────────── 詳細 ──────────────
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  addic rT,rA,s16: 001100 rT rA s16  (4 バイト)
 
 備考:
   addic. は CR0 更新あり。addi とは違い r0 を 0 に置換しない（rA 必須）。

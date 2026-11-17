@@ -10,3 +10,9 @@ CMPI #d, dst — 68000（比較）
 消費クロック:
   CMPI.W #n,D0: 8
   CMPI.L #n,D0: 14
+
+オペコード:
+  CMPI #imm,ea: 00001100 ss MMM RRR imm  (長さ可変)
+
+備考:
+  サイズフィールド ss は .B=00、.W=01、.L=10。

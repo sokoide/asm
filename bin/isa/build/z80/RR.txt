@@ -10,10 +10,12 @@ RR r — Z80（シフト/ビット）
 消費クロック:
   RR r: 8
   RR (HL): 15
-  RR (IX+d): 23
+  RR (IX/IY+d): 23
 
 オペコード:
-  RR r: CB 00DDD011  (2 バイト)
+  RR r: CB 00011DDD  (2 バイト)
   RR (HL): CB 1E  (2 バイト)
+  RR (IX+d): DD CB d 1E  (4 バイト)
+  RR (IY+d): FD CB d 1E  (4 バイト)
 
 （根拠: book）

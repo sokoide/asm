@@ -14,6 +14,6 @@ LOCK — 80386（システム制御）
   LOCK: F0  (1 バイト)
 
 備考:
-  XCHG や ADD [mem],reg など read-modify-write 命令に付けるのが本来の用法。ロックされた命令列の間はアサートされ続ける。
+  80386 の命令表では、BT/BTS/BTR/BTC、XCHG、ADD/OR/ADC/SBB/AND/SUB/XOR、NOT/NEG/INC/DEC の指定されたメモリ形式に使用できる。XCHG のメモリ形式は LOCK がなくてもバスロックされる。プロセッサ以外のバスマスタとの排他にはシステム側の対応も必要。
 
 （根拠: book）

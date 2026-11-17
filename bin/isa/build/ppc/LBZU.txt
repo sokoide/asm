@@ -1,6 +1,6 @@
 LBZU rT, d(rA) — PowerPC（ロード）
 
-1 バイトロード後、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。
+1 バイトロード後、実効アドレスを rA に書き戻す（update 形式）。
 
 アドレッシング: D-Form + アドレス更新
 フラグ: LT-  GT-  EQ-  SO-
@@ -9,5 +9,11 @@ LBZU rT, d(rA) — PowerPC（ロード）
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  lbzu rT,d(rA): 100011 rT rA D  (4 バイト)
+
+備考:
+  rA=0 または rA=rT は無効な命令形式。
 
 （根拠: book）

@@ -11,6 +11,6 @@ STH rS, d(rA) — PowerPC（ストア）
   440 コア: 1
 
 オペコード:
-  sth rS,d(rA): 0x3C D rA rT  (4 バイト)
+  sth rS,d(rA): 0x2C rS rA D  (4 バイト)
 
 （根拠: book）

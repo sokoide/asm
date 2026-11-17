@@ -10,4 +10,10 @@ rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。
 消費クロック:
   440 コア: 1
 
+オペコード:
+  addme rT,rA: 011111 rT rA 00000 OE 011101010 Rc  (4 バイト)
+
+備考:
+  この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。
+
 （根拠: book）

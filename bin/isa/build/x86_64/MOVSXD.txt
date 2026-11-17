@@ -8,11 +8,10 @@ MOVSXD dst, src — x86-64（データ転送）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg: 1〜3
-  メモリオペランド: 3〜5
+  CPU・実行条件に依存: 実装依存
 
 オペコード:
-  MOVSXD r64, r/m32: REX.W 63 /r  (3 バイト)
+  MOVSXD r64, r/m32: REX.W 63 /r  (長さ可変)
 
 備考:
   NASM では movsxd、MASM では MOVSXD。src がレジスタのときは MOV と同結果になる。

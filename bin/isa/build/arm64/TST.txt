@@ -8,9 +8,9 @@ TST src1, src2 — ARM64（比較）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
 
 オペコード:
-  TST Xn,Xm: ANDS WZR/XZR,Xn,Xm のエイリアス
+  TST Xn,Xm: ANDS XZR,Xn,Xm のエイリアス
 
 （根拠: book）

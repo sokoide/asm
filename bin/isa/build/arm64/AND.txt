@@ -8,9 +8,13 @@ AND dst, src1, src2 — ARM64（論理）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  AND Rd,Rn,Rm{,shift #amount}: sf 00 01010 shift 0 Rm imm6 Rn Rd  (4 バイト)
+  AND Rd,Rn,#bitmask: sf 00 100100 N immr imms Rn Rd  (4 バイト)
 
 備考:
-  即値は特殊なビットマスクエンコーディングのみ。
+  即値は特殊なビットマスクエンコーディングのみ。 sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。
 
 （根拠: book）

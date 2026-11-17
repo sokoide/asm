@@ -571,9 +571,9 @@
       "mnemonic": "rotrwi",
       "operands": "rA,rS,nBits",
       "target": "RLWINM",
-      "equivalent": "rlwinm rA, rS, 32-nBits, 0, 31",
+      "equivalent": "rlwinm rA, rS, (32-nBits)&31, 0, 31",
       "summary": "ワード右回転（即値）（Rotate Right Word Immediate）",
-      "notes": "右回転 nBits は左回転 32-nBits と同じ。"
+      "notes": "nBits は 0〜31。左回転量は (32-nBits)&31 で、0 回転も表現できる。"
     },
     {
       "mnemonic": "rotlw",
@@ -595,7 +595,7 @@
       "mnemonic": "srwi",
       "operands": "rA,rS,nBits",
       "target": "RLWINM",
-      "equivalent": "rlwinm rA, rS, 32-nBits, nBits, 31",
+      "equivalent": "rlwinm rA, rS, (32-nBits)&31, nBits, 31",
       "summary": "ワード右シフト（即値）（Shift Right Word Immediate）",
       "notes": "論理シフト（符号拡張は srawi を使う）。"
     },
@@ -621,7 +621,7 @@
       "target": "RLWINM",
       "equivalent": "rlwinm rA, rS, shift, nBits-shift, 31-shift",
       "summary": "ワード左クリア左シフト即値（Clear Left and Shift Left Word Immediate）",
-      "notes": "nBits <= shift <= 31 の範囲の組み合わせのみ表現できる。"
+      "notes": "0 <= shift <= nBits <= 31 の範囲の組み合わせを指定する。"
     },
     {
       "mnemonic": "extlwi",
@@ -635,7 +635,7 @@
       "mnemonic": "extrwi",
       "operands": "rA,rS,nBits,start",
       "target": "RLWINM",
-      "equivalent": "rlwinm rA, rS, start+nBits, 32-nBits, 31",
+      "equivalent": "rlwinm rA, rS, (start+nBits)&31, 32-nBits, 31",
       "summary": "ワード即値抽出・右詰め（Extract and Right Justify Word Immediate）",
       "notes": "rS の bit start から nBits ビットを取り出し右詰めする。"
     },
@@ -643,7 +643,7 @@
       "mnemonic": "inslwi",
       "operands": "rA,rS,nBits,start",
       "target": "RLWIMI",
-      "equivalent": "rlwimi rA, rS, 32-start, start, (start+nBits)-1",
+      "equivalent": "rlwimi rA, rS, (32-start)&31, start, (start+nBits)-1",
       "summary": "ワード即値左側挿入（Insert from Left Word Immediate）",
       "notes": "rS の nBits ビットを rA の bit start 以降に挿入する。"
     },
@@ -651,7 +651,7 @@
       "mnemonic": "insrwi",
       "operands": "rA,rS,nBits,start",
       "target": "RLWIMI",
-      "equivalent": "rlwimi rA, rS, 32-end, start, end-1",
+      "equivalent": "rlwimi rA, rS, (32-end)&31, start, end-1",
       "summary": "ワード即値右側挿入（Insert from Right Word Immediate）",
       "notes": "end = start+nBits。rS の下位 nBits ビットを rA の bit start 以降に挿入する。"
     },
@@ -967,6 +967,64 @@
       "summary": "固定小数点例外レジスタへの移動（Move to XER）",
       "notes": "SPR 1 = XER。"
     }
+,
+    {
+      "mnemonic": "mtcr",
+      "operands": "rS",
+      "target": "MTCRF",
+      "equivalent": "mtcrf 255, rS",
+      "summary": "条件レジスタ全体への移動（Move to Condition Register）",
+      "notes": "全8フィールドを更新する mtcrf の拡張形式。"
+    },
+    {
+      "mnemonic": "mftb",
+      "operands": "rT",
+      "target": "MFSPR",
+      "equivalent": "mfspr rT, 268",
+      "summary": "Time Base 下位ワードからの移動（Move from Time Base）",
+      "notes": "SPR 268 を読む。"
+    },
+    {
+      "mnemonic": "mftbu",
+      "operands": "rT",
+      "target": "MFSPR",
+      "equivalent": "mfspr rT, 269",
+      "summary": "Time Base 上位ワードからの移動（Move from Time Base Upper）",
+      "notes": "SPR 269 を読む。"
+    }
+,
+    {
+      "mnemonic": "ba",
+      "operands": "target",
+      "target": "B",
+      "equivalent": "b target (AA=1)",
+      "summary": "絶対アドレスへの分岐（Branch Absolute）",
+      "notes": "B 形式の AA ビットを1にする。"
+    },
+    {
+      "mnemonic": "bl",
+      "operands": "target",
+      "target": "B",
+      "equivalent": "b target (LK=1)",
+      "summary": "戻り先を LR に記録して分岐（Branch with Link）",
+      "notes": "B 形式の LK ビットを1にする。"
+    },
+    {
+      "mnemonic": "bla",
+      "operands": "target",
+      "target": "B",
+      "equivalent": "b target (AA=1, LK=1)",
+      "summary": "絶対アドレスへ戻り先を LR に記録して分岐",
+      "notes": "B 形式の AA と LK ビットを1にする。"
+    },
+    {
+      "mnemonic": "bctrl",
+      "operands": "",
+      "target": "BCCTR",
+      "equivalent": "bcctr 0x14, 0 (LK=1)",
+      "summary": "LR を更新して CTR へ無条件分岐（Branch to Count Register with Link）",
+      "notes": "BCCTR の LK ビットを1にする。"
+    }
   ],
   "instructions": [
     {
@@ -992,7 +1050,7 @@
       "encodings": [
         {
           "syntax": "lbz rT,d(rA)",
-          "opcode": "0x22 D rA rT",
+          "opcode": "0x22 rT rA D",
           "bytes": 4
         }
       ],
@@ -1019,13 +1077,15 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lbzx rT,rA,rB", "opcode": "011111 rT rA rB 0001010111 0", "bytes": 4}],
+      "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book"
     },
     {
       "mnemonic": "LBZU",
       "operands": "rT, d(rA)",
       "category": "ロード",
-      "summary": "1 バイトロード後、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。",
+      "summary": "1 バイトロード後、実効アドレスを rA に書き戻す（update 形式）。",
       "addressing": [
         "D-Form + アドレス更新"
       ],
@@ -1041,6 +1101,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lbzu rT,d(rA)", "opcode": "100011 rT rA D", "bytes": 4}],
+      "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1063,6 +1125,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lbzux rT,rA,rB", "opcode": "011111 rT rA rB 0001110111 0", "bytes": 4}],
+      "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1089,7 +1153,7 @@
       "encodings": [
         {
           "syntax": "lhz rT,d(rA)",
-          "opcode": "0x28 D rA rT",
+          "opcode": "0x28 rT rA D",
           "bytes": 4
         }
       ],
@@ -1116,13 +1180,15 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lhzx rT,rA,rB", "opcode": "011111 rT rA rB 0100010111 0", "bytes": 4}],
+      "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book"
     },
     {
       "mnemonic": "LHZU",
       "operands": "rT, d(rA)",
       "category": "ロード",
-      "summary": "2 バイト（ハーフワード）をゼロ拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。",
+      "summary": "2 バイト（ハーフワード）をゼロ拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。",
       "addressing": [
         "D-Form + アドレス更新"
       ],
@@ -1138,6 +1204,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lhzu rT,d(rA)", "opcode": "101001 rT rA D", "bytes": 4}],
+      "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1160,6 +1228,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lhzux rT,rA,rB", "opcode": "011111 rT rA rB 0100110111 0", "bytes": 4}],
+      "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1186,7 +1256,7 @@
       "encodings": [
         {
           "syntax": "lha rT,d(rA)",
-          "opcode": "0x2A D rA rT",
+          "opcode": "0x2A rT rA D",
           "bytes": 4
         }
       ],
@@ -1213,13 +1283,15 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lhax rT,rA,rB", "opcode": "011111 rT rA rB 0101010111 0", "bytes": 4}],
+      "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book"
     },
     {
       "mnemonic": "LHAU",
       "operands": "rT, d(rA)",
       "category": "ロード",
-      "summary": "2 バイトを符号拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。",
+      "summary": "2 バイトを符号拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。",
       "addressing": [
         "D-Form + アドレス更新"
       ],
@@ -1235,7 +1307,8 @@
           "cycles": 1
         }
       ],
-      "notes": "インデックス + 更新は lhaux。",
+      "encodings": [{"syntax": "lhau rT,d(rA)", "opcode": "101011 rT rA D", "bytes": 4}],
+      "notes": "インデックス + 更新は lhaux。 rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1258,6 +1331,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lhaux rT,rA,rB", "opcode": "011111 rT rA rB 0101110111 0", "bytes": 4}],
+      "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1284,11 +1359,11 @@
       "encodings": [
         {
           "syntax": "lwz rT,d(rA)",
-          "opcode": "0x20 D rA rT",
+          "opcode": "0x20 rT rA D",
           "bytes": 4
         }
       ],
-      "notes": "ゼロ拡張という名前だがワードは 32 ビット全体。更新形式は lwzu/lwzx/lwzux。",
+      "notes": "32 ビット PPC440 ではワード全体をロードする。更新形式は lwzu/lwzux、インデックス形式は lwzx。",
       "src": "book"
     },
     {
@@ -1311,6 +1386,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lwzx rT,rA,rB", "opcode": "011111 rT rA rB 0000010111 0", "bytes": 4}],
+      "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book"
     },
     {
@@ -1333,6 +1410,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lwzu rT,d(rA)", "opcode": "100001 rT rA D", "bytes": 4}],
+      "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1355,6 +1434,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lwzux rT,rA,rB", "opcode": "011111 rT rA rB 0000110111 0", "bytes": 4}],
+      "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1377,6 +1458,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lhbrx rT,rA,rB", "opcode": "011111 rT rA rB 1100010110 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -1399,6 +1481,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "lwbrx rT,rA,rB", "opcode": "011111 rT rA rB 1000010110 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -1424,11 +1507,11 @@
       "encodings": [
         {
           "syntax": "lmw rT,d(rA)",
-          "opcode": "0x2E D rA rT",
+          "opcode": "0x2E rT rA D",
           "bytes": 4
         }
       ],
-      "notes": "クラシック PowerPC の命令。Book E（PPC440）では非サポート — 440 では lswi/stswi を使う。POWER 旧ニーモニックは lm。rA がロード対象範囲に含まれる形式は無効（601 を除く）。",
+      "notes": "PPC440 でもサポートする。POWER 旧ニーモニックは lm。rA がロード対象範囲に含まれる形式は無効（601 を除く）。",
       "src": "book"
     },
     {
@@ -1454,18 +1537,18 @@
       "encodings": [
         {
           "syntax": "stmw rS,d(rA)",
-          "opcode": "0x2F D rA rS",
+          "opcode": "0x2F rS rA D",
           "bytes": 4
         }
       ],
-      "notes": "Book E（PPC440）では非サポート。POWER 旧ニーモニックは stm。",
+      "notes": "PPC440 でもサポートする。POWER 旧ニーモニックは stm。",
       "src": "book"
     },
     {
       "mnemonic": "LSWI",
       "operands": "rT, rA, NB",
       "category": "ロード",
-      "summary": "指定バイト数（NB=1〜32、0 は 32）を連続レジスタへロード（Load String Word Immediate）。",
+      "summary": "NB が 1〜31 ならそのバイト数、0 なら 32 バイトを連続レジスタへロードする。",
       "addressing": [
         "X-Form（NB 即値）"
       ],
@@ -1481,7 +1564,8 @@
           "cycles": "1n"
         }
       ],
-      "notes": "rT から順に 4 バイトずつ詰める。Book E（440）でもサポート。",
+      "encodings": [{"syntax": "lswi rT,rA,NB", "opcode": "011111 rT rA NB 1001010101 0", "bytes": 4}],
+      "notes": "rT から順にレジスタの上位バイト側から詰め、r31 の次は r0 に折り返す。rA がロード対象範囲に含まれる場合、および rA=rT=0 は無効な命令形式。",
       "src": "book"
     },
     {
@@ -1504,7 +1588,8 @@
           "cycles": "1n"
         }
       ],
-      "notes": "転送数 0 なら rT は未定義。rT から順に詰め、r31 の次は r0 に折り返す。ロード範囲に rA/rB が含まれる形式は無効。即値版は LSWI。",
+      "encodings": [{"syntax": "lswx rT,rA,rB", "opcode": "011111 rT rA rB 1000010101 0", "bytes": 4}],
+      "notes": "rT から順に詰め、r31 の次は r0 に折り返す。ロード対象範囲に rA/rB が含まれる形式は無効。転送数 0 でも rT=rA または rT=rB なら無効、それ以外では rT は未定義。即値版は LSWI。",
       "src": "book"
     },
     {
@@ -1527,14 +1612,15 @@
           "cycles": "整数ロードと同一"
         }
       ],
-      "notes": "stwcx. と対でプロセッサ間同期（ロック/セマフォ）を実現する。古い予約は次の lwarx で置き換えられる。",
+      "encodings": [{"syntax": "lwarx rT,rA,rB", "opcode": "011111 rT rA rB 0000010100 0", "bytes": 4}],
+      "notes": "stwcx. と対で読み出し・更新を行う。古い予約は次の lwarx で置き換えられる。実効アドレスは 4 バイト境界に揃える。予約が成立しても必要なメモリ順序には別途同期が必要。",
       "src": "book"
     },
     {
       "mnemonic": "STSWI",
       "operands": "rS, rA, NB",
       "category": "ストア",
-      "summary": "連続レジスタから指定バイト数をメモリへストア（Store String Word Immediate）。",
+      "summary": "NB が 1〜31 ならそのバイト数、0 なら 32 バイトを連続レジスタからメモリへストアする。",
       "addressing": [
         "X-Form（NB 即値）"
       ],
@@ -1550,13 +1636,15 @@
           "cycles": "1n"
         }
       ],
+      "encodings": [{"syntax": "stswi rS,rA,NB", "opcode": "011111 rS rA NB 1011010101 0", "bytes": 4}],
+      "notes": "rS の上位バイトから順に取り出し、r31 の次は r0 に折り返す。",
       "src": "book"
     },
     {
       "mnemonic": "STBU",
       "operands": "rS, d(rA)",
       "category": "ストア",
-      "summary": "下位 1 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=rS は禁止。",
+      "summary": "下位 1 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=0 は指定できない。rA=rS は使用可能で、更新前の値をストアする。",
       "addressing": [
         "D-Form + アドレス更新"
       ],
@@ -1572,6 +1660,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "stbu rS,d(rA)", "opcode": "100111 rS rA D", "bytes": 4}],
+      "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book"
     },
     {
@@ -1594,6 +1684,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "stbux rS,rA,rB", "opcode": "011111 rS rA rB 0011110111 0", "bytes": 4}],
+      "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book"
     },
     {
@@ -1616,7 +1708,8 @@
           "cycles": "1n"
         }
       ],
-      "notes": "即値版は STSWI。",
+      "encodings": [{"syntax": "stswx rS,rA,rB", "opcode": "011111 rS rA rB 1010010101 0", "bytes": 4}],
+      "notes": "XER[25:31] がバイト数。rS の上位バイトから順に取り出し、必要に応じて r31 から r0 に折り返す。即値版は STSWI。",
       "src": "book"
     },
     {
@@ -1643,7 +1736,7 @@
       "encodings": [
         {
           "syntax": "stb rS,d(rA)",
-          "opcode": "0x38 D rA rT",
+          "opcode": "0x26 rS rA D",
           "bytes": 4
         }
       ],
@@ -1669,6 +1762,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "stbx rS,rA,rB", "opcode": "011111 rS rA rB 0011010111 0", "bytes": 4}],
+      "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book"
     },
     {
@@ -1695,7 +1790,7 @@
       "encodings": [
         {
           "syntax": "sth rS,d(rA)",
-          "opcode": "0x3C D rA rT",
+          "opcode": "0x2C rS rA D",
           "bytes": 4
         }
       ],
@@ -1721,13 +1816,15 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "sthx rS,rA,rB", "opcode": "011111 rS rA rB 0110010111 0", "bytes": 4}],
+      "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book"
     },
     {
       "mnemonic": "STHU",
       "operands": "rS, d(rA)",
       "category": "ストア",
-      "summary": "下位 2 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=rS は禁止。",
+      "summary": "下位 2 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=0 は指定できない。rA=rS は使用可能で、更新前の値をストアする。",
       "addressing": [
         "D-Form + アドレス更新"
       ],
@@ -1743,6 +1840,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "sthu rS,d(rA)", "opcode": "101101 rS rA D", "bytes": 4}],
+      "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book"
     },
     {
@@ -1765,6 +1864,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "sthux rS,rA,rB", "opcode": "011111 rS rA rB 0110110111 0", "bytes": 4}],
+      "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book"
     },
     {
@@ -1791,11 +1892,11 @@
       "encodings": [
         {
           "syntax": "stw rS,d(rA)",
-          "opcode": "0x90 D rA rT",
+          "opcode": "0x24 rS rA D",
           "bytes": 4
         }
       ],
-      "notes": "関連オペコード: stw=0x90, stb=0x38, sth=0x3C（D-Form は opcode/24ビットd/rA/rS）。",
+      "notes": "主オペコードは stw=0x24、stb=0x26、sth=0x2C。D-Form の配置は主オペコード/rS/rA/16 ビット変位。",
       "src": "book"
     },
     {
@@ -1818,6 +1919,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "stwx rS,rA,rB", "opcode": "011111 rS rA rB 0010010111 0", "bytes": 4}],
+      "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book"
     },
     {
@@ -1840,6 +1943,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "stwu rS,d(rA)", "opcode": "100101 rS rA D", "bytes": 4}],
+      "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book"
     },
     {
@@ -1862,6 +1967,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "stwux rS,rA,rB", "opcode": "011111 rS rA rB 0010110111 0", "bytes": 4}],
+      "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book"
     },
     {
@@ -1888,7 +1995,8 @@
           "cycles": 3
         }
       ],
-      "notes": "lwarx と対で使う。ストア成立時に CR0[EQ]=1、不成立時に EQ=0。SO は XER[SO] のコピー。成立時に予約は解放される。",
+      "encodings": [{"syntax": "stwcx. rS,rA,rB", "opcode": "011111 rS rA rB 0010010110 1", "bytes": 4}],
+      "notes": "lwarx と対で使う。ストア成立時は CR0[EQ]=1、不成立時は EQ=0。SO は XER[SO] のコピー。予約はストアの成否にかかわらず解除される。実効アドレスを 4 バイト境界に揃え、対応する lwarx と同じ対象を使用する。",
       "src": "book"
     },
     {
@@ -1911,6 +2019,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "sthbrx rS,rA,rB", "opcode": "011111 rS rA rB 1110010110 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -1933,6 +2042,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "stwbrx rS,rA,rB", "opcode": "011111 rS rA rB 1010010110 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -1962,7 +2072,7 @@
           "bytes": 4
         }
       ],
-      "notes": "CR0 更新（. 版）は LT/GT/EQ = 結果の符号・零、SO = XER[SO] のコピー。",
+      "notes": "CR0 更新（. 版）は LT/GT/EQ = 結果の符号・零、SO = XER[SO] のコピー。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -1985,6 +2095,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "addc[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000001010 Rc", "bytes": 4}],
+      "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2007,7 +2119,8 @@
           "cycles": 1
         }
       ],
-      "notes": "128 ビット加算は addc（下位）+ adde（上位）。",
+      "encodings": [{"syntax": "adde[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 010001010 Rc", "bytes": 4}],
+      "notes": "32 ビットワード 2 個の 64 ビット加算は下位を addc、上位を adde で処理する。128 ビットなら上位 3 ワードに adde を使う。CA は入力にも出力にも使う。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2030,6 +2143,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "addme rT,rA", "opcode": "011111 rT rA 00000 OE 011101010 Rc", "bytes": 4}],
+      "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book"
     },
     {
@@ -2052,6 +2167,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "addze rT,rA", "opcode": "011111 rT rA 00000 OE 011001010 Rc", "bytes": 4}],
+      "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book"
     },
     {
@@ -2093,10 +2210,10 @@
         "即値（D-Form）"
       ],
       "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
+        "-",
+        "-",
+        "-",
+        "-"
       ],
       "cycles": [
         {
@@ -2104,6 +2221,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "addic rT,rA,s16", "opcode": "001100 rT rA s16", "bytes": 4}],
       "notes": "addic. は CR0 更新あり。addi とは違い r0 を 0 に置換しない（rA 必須）。",
       "src": "book"
     },
@@ -2127,6 +2245,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "addis rT,rA,s16", "opcode": "001111 rT rA s16", "bytes": 4}],
       "notes": "lis + ori で 32 ビット即値を 2 命令で組み立てるのが定番。",
       "src": "book"
     },
@@ -2150,14 +2269,15 @@
           "cycles": 1
         }
       ],
-      "notes": "拡張形式 sub rT,rA,rB は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。",
+      "encodings": [{"syntax": "subf[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000101000 Rc", "bytes": 4}],
+      "notes": "拡張形式 sub rT,rA,rB は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
       "mnemonic": "SUBFC",
       "operands": "rT, rA, rB",
       "category": "算術",
-      "summary": "rT = rB - rA で XER[CA] 更新（borrow 方向）。",
+      "summary": "rT = rB - rA を計算し XER[CA] を更新する。符号なし減算で借りがなければ CA=1。",
       "addressing": [
         "レジスタ"
       ],
@@ -2173,6 +2293,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "subfc[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000001000 Rc", "bytes": 4}],
+      "notes": "内部的には rB + NOT rA + 1 を計算する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2195,6 +2317,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "subfe[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 010001000 Rc", "bytes": 4}],
+      "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2221,7 +2345,8 @@
           "cycles": 1
         }
       ],
-      "notes": "SUBFE の定数版（0 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。",
+      "encodings": [{"syntax": "subfze rT,rA", "opcode": "011111 rT rA 00000 OE 011001000 Rc", "bytes": 4}],
+      "notes": "SUBFE の定数版（0 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。 この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book"
     },
     {
@@ -2248,7 +2373,8 @@
           "cycles": 1
         }
       ],
-      "notes": "SUBFE の定数版（-1 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。",
+      "encodings": [{"syntax": "subfme rT,rA", "opcode": "011111 rT rA 00000 OE 011101000 Rc", "bytes": 4}],
+      "notes": "SUBFE の定数版（-1 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。 この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book"
     },
     {
@@ -2271,6 +2397,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "subfic rT,rA,s16", "opcode": "001000 rT rA s16", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2293,6 +2420,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "neg rT,rA", "opcode": "011111 rT rA 00000 OE 001101000 Rc", "bytes": 4}],
+      "notes": "フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2322,7 +2451,7 @@
           "bytes": 4
         }
       ],
-      "notes": "上位ワードは mulhw（符号付き）/mulhwu（符号なし）。",
+      "notes": "上位ワードは mulhw（符号付き）/mulhwu（符号なし）。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2345,6 +2474,7 @@
           "cycles": 3
         }
       ],
+      "encodings": [{"syntax": "mulhw[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 001001011 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2367,6 +2497,7 @@
           "cycles": 3
         }
       ],
+      "encodings": [{"syntax": "mulhwu[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000001011 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2389,6 +2520,7 @@
           "cycles": 3
         }
       ],
+      "encodings": [{"syntax": "mulli rT,rA,s16", "opcode": "000111 rT rA s16", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2415,7 +2547,8 @@
           "cycles": "実装依存（除算は唯一の例外）"
         }
       ],
-      "notes": "0 除算・オーバーフロー時の rT は未定義（o 版で SO/OV により検出）。商は 0 方向へ丸め。",
+      "encodings": [{"syntax": "divw[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 111101011 Rc", "bytes": 4}],
+      "notes": "0 除算・オーバーフロー時の rT は未定義（o 版で SO/OV により検出）。商は 0 方向へ丸め。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2438,6 +2571,8 @@
           "cycles": "実装依存"
         }
       ],
+      "encodings": [{"syntax": "divwu[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 111001011 Rc", "bytes": 4}],
+      "notes": "除数が 0 の場合、結果は未定義。o 形式では XER[OV/SO] を更新する。. 形式の CR0 は結果を符号付きとみなして LT/GT/EQ を設定する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book"
     },
     {
@@ -2460,6 +2595,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "cntlzw rA,rS", "opcode": "011111 rS rA 00000 0000011010 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2482,6 +2618,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "extsb rA,rS", "opcode": "011111 rS rA 00000 1110111010 0", "bytes": 4}],
       "notes": "ハーフワード版は extsh。",
       "src": "book"
     },
@@ -2505,6 +2642,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "extsh rA,rS", "opcode": "011111 rS rA 00000 1110011010 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2557,6 +2695,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "cmpl crfT,L,rA,rB", "opcode": "011111 BF L 0 rA rB 0000100000 0", "bytes": 4}],
+      "notes": "比較した CR フィールドの LT/GT/EQ を更新し、SO には XER[SO] をコピーする。",
       "src": "book"
     },
     {
@@ -2579,6 +2719,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "cmpi crfT,L,rA,s16", "opcode": "001011 BF L 0 rA s16", "bytes": 4}],
+      "notes": "16 ビット即値は符号拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。",
       "src": "book"
     },
     {
@@ -2601,6 +2743,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "cmpli crfT,L,rA,u16", "opcode": "001010 BF L 0 rA u16", "bytes": 4}],
+      "notes": "16 ビット即値はゼロ拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。",
       "src": "book"
     },
     {
@@ -2623,6 +2767,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "and[.] rA,rS,rB", "opcode": "011111 rS rA rB 0000011100 Rc", "bytes": 4}],
       "notes": "andc（補数 AND）、nand、eqv、nor、orc、xor も同系。",
       "src": "book"
     },
@@ -2646,6 +2791,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "andc[.] rA,rS,rB", "opcode": "011111 rS rA rB 0000111100 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2668,6 +2814,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "or[.] rA,rS,rB", "opcode": "011111 rS rA rB 0110111100 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2690,6 +2837,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "orc[.] rA,rS,rB", "opcode": "011111 rS rA rB 0110011100 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2712,6 +2860,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "xor[.] rA,rS,rB", "opcode": "011111 rS rA rB 0100111100 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2734,6 +2883,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "nor[.] rA,rS,rB", "opcode": "011111 rS rA rB 0001111100 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2756,6 +2906,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "nand[.] rA,rS,rB", "opcode": "011111 rS rA rB 0111011100 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2778,6 +2929,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "eqv[.] rA,rS,rB", "opcode": "011111 rS rA rB 0100011100 Rc", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2800,6 +2952,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "ori rA,rS,u16", "opcode": "011000 rS rA u16", "bytes": 4}],
       "notes": "lis + ori で 32 ビット即値ロード。ORI は CR を更新しない（CR0 更新が必要なら or. を使う）。",
       "src": "book"
     },
@@ -2823,6 +2976,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "oris rA,rS,u16", "opcode": "011001 rS rA u16", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2845,6 +2999,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "xori rA,rS,u16", "opcode": "011010 rS rA u16", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2867,6 +3022,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "xoris rA,rS,u16", "opcode": "011011 rS rA u16", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2889,6 +3045,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "andi. rA,rS,u16", "opcode": "011100 rS rA u16", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2911,6 +3068,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "andis. rA,rS,u16", "opcode": "011101 rS rA u16", "bytes": 4}],
       "src": "book"
     },
     {
@@ -2936,11 +3094,11 @@
       "encodings": [
         {
           "syntax": "rlwinm[.] rA,rS,n,mB,mE",
-          "opcode": "0x17",
+          "opcode": "0x15",
           "bytes": 4
         }
       ],
-      "notes": "拡張形式: rotlwi/rotrwi（マスク全開）、slwi/srwi（シフト）、extrwi（抽出）。\nM = 1（mB=mE で 1 ビットマスク）のとき LT は抽出ビットそのもの。",
+      "notes": "拡張形式には rotlwi/rotrwi、slwi/srwi、extrwi がある。ビット番号は最上位が 0。MB≤ME ならその範囲を、MB>ME なら末尾と先頭にまたがる範囲を残す。. 形式の CR0[LT] は結果の符号ビットであり、抽出したビットが常に LT に入るわけではない。",
       "src": "book"
     },
     {
@@ -2963,6 +3121,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "rlwimi[.] rA,rS,SH,MB,ME", "opcode": "010100 rS rA SH MB ME Rc", "bytes": 4}],
+      "notes": "ビット番号は最上位が 0。マスク内を回転後の値に置換し、マスク外は元の rA を保持する。MB>ME ではマスクが末尾と先頭にまたがる。",
       "src": "book"
     },
     {
@@ -2985,6 +3145,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "rlwnm[.] rA,rS,rB,MB,ME", "opcode": "010111 rS rA rB MB ME Rc", "bytes": 4}],
+      "notes": "rB の下位 5 ビットを回転量として使う。MB/ME のビット番号は最上位が 0 で、MB>ME のマスクは末尾と先頭にまたがる。",
       "src": "book"
     },
     {
@@ -3007,6 +3169,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "slw rA,rS,rB", "opcode": "011111 rS rA rB 0000011000 0", "bytes": 4}],
       "notes": "即値版は拡張形式 slwi（rlwinm 展開）。",
       "src": "book"
     },
@@ -3014,7 +3177,7 @@
       "mnemonic": "SRW",
       "operands": "rA, rS, rB",
       "category": "回転/シフト",
-      "summary": "右論理シフト（上位 0）。符号なし ÷2 相当。",
+      "summary": "右論理シフト。rB の下位 6 ビットを使い、32〜63 なら結果は 0。",
       "addressing": [
         "レジスタ"
       ],
@@ -3030,13 +3193,15 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "srw rA,rS,rB", "opcode": "011111 rS rA rB 1000011000 0", "bytes": 4}],
+      "notes": "上位は 0 を詰める。即値シフトは srwi 拡張形式を使う。",
       "src": "book"
     },
     {
       "mnemonic": "SRAW",
       "operands": "rA, rS, rB",
       "category": "回転/シフト",
-      "summary": "右代数（算術）シフト。捨てられたビットがあれば XER[CA] をセット。",
+      "summary": "右代数（算術）シフト。入力が負で、シフトで捨てたビットに 1 があるとき XER[CA] をセット。",
       "addressing": [
         "レジスタ"
       ],
@@ -3052,14 +3217,15 @@
           "cycles": 1
         }
       ],
-      "notes": "符号付き ÷2 は sraw + . で CA から丸め方向を判定できる。",
+      "encodings": [{"syntax": "sraw rA,rS,rB", "opcode": "011111 rS rA rB 1100011000 0", "bytes": 4}],
+      "notes": "rB の下位 6 ビットがシフト量。32〜63 では結果は符号に応じて 0 または全 1。負の値で捨てたビットに 1 があれば XER[CA]=1、それ以外は 0。負の無限大方向に丸める。",
       "src": "book"
     },
     {
       "mnemonic": "SRAWI",
       "operands": "rA, rS, n",
       "category": "回転/シフト",
-      "summary": "即値右代数シフト（XER[CA] 更新）。",
+      "summary": "32 ビットワードを即値 0〜31 ビットだけ算術右シフトし、XER[CA] を更新する。",
       "addressing": [
         "即値"
       ],
@@ -3075,13 +3241,15 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "srawi rA,rS,SH", "opcode": "011111 rS rA SH 1100111000 0", "bytes": 4}],
+      "notes": "負の入力でシフトにより捨てたビットに 1 があれば CA=1、それ以外は 0。0 ビットシフトでは CA=0。",
       "src": "book"
     },
     {
       "mnemonic": "B",
       "operands": "target",
       "category": "分岐",
-      "summary": "無条件分岐（I-Form）。bl で LR に復帰アドレスを保存。相対は ±32MB、ba は絶対。",
+      "summary": "無条件分岐（I-Form）。相対分岐の範囲は命令アドレスから -33,554,432〜+33,554,428 バイト。",
       "addressing": [
         "相対（AA=0）",
         "絶対（ba/bla）"
@@ -3105,6 +3273,7 @@
           "bytes": 4
         }
       ],
+      "notes": "bl は次命令のアドレスを LR に保存する。ba/bla は符号拡張された絶対アドレスを指定する。",
       "src": "book"
     },
     {
@@ -3128,7 +3297,8 @@
           "cycles": 0
         }
       ],
-      "notes": "拡張形式: bne/beq/blt/bge 等の CR 条件形、bdnz（CTR≠0 で減算分岐）、bdz。\nBO=16（CTR 減算のみ）、12（CR 真）、4（CR 偽）、20（減算+CR）等。",
+      "encodings": [{"syntax": "bc BO,BI,BD", "opcode": "010000 BO BI BD AA LK", "bytes": 4}],
+      "notes": "相対分岐の範囲は命令アドレスから -32,768〜+32,764 バイト。BO=16 は CTR 減算後に非ゼロなら分岐、12 は CR 真、4 は CR 偽、20 は CTR 減算も CR 判定もしない無条件分岐。bdnz/bdz などは拡張形式。LK=1 の形式は、分岐の成否にかかわらず次命令のアドレスを LR に設定する。",
       "src": "book"
     },
     {
@@ -3151,14 +3321,15 @@
           "cycles": 0
         }
       ],
-      "notes": "btlr/bflr（CR ビット条件復帰）などの拡張形式あり。",
+      "encodings": [{"syntax": "bclr BO,BI", "opcode": "010011 BO BI 00000 0000010000 LK", "bytes": 4}],
+      "notes": "btlr/bflr などの拡張形式がある。bclrl は分岐先として更新前の LR を使い、分岐の成否にかかわらず次の命令のアドレスを LR に設定する。",
       "src": "book"
     },
     {
       "mnemonic": "BCCTR",
       "operands": "BO, BI",
       "category": "分岐",
-      "summary": "CTR への条件分岐。bctr 拡張形式で関数ポインタ呼出・グローバルリンケージに使う。",
+      "summary": "CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する間接呼び出しに使う。",
       "addressing": [
         "レジスタ間接（CTR）"
       ],
@@ -3174,6 +3345,8 @@
           "cycles": 0
         }
       ],
+      "encodings": [{"syntax": "bcctr BO,BI", "opcode": "010011 BO BI 00000 1000010000 LK", "bytes": 4}],
+      "notes": "CTR を分岐先に使うため CTR を減算する BO 形式は無効。bcctrl では分岐の成否にかかわらず次の命令のアドレスを LR に設定する。",
       "src": "book"
     },
     {
@@ -3185,10 +3358,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3196,7 +3369,8 @@
           "cycles": 1
         }
       ],
-      "notes": "同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror n,n,n はビットセット（crset）。",
+      "encodings": [{"syntax": "crand BT,BA,BB", "opcode": "010011 BT BA BB 0100000001 0", "bytes": 4}],
+      "notes": "同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror crbT,crbA,crbA はビットのコピー（crmove）。セットは creqv crbT,crbT,crbT。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3208,10 +3382,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3219,7 +3393,8 @@
           "cycles": 1
         }
       ],
-      "notes": "同系: crand、creqv、crnand、crnor、cror、crorc、crxor。",
+      "encodings": [{"syntax": "crandc BT,BA,BB", "opcode": "010011 BT BA BB 0010000001 0", "bytes": 4}],
+      "notes": "同系: crand、creqv、crnand、crnor、cror、crorc、crxor。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3231,10 +3406,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3242,6 +3417,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "cror BT,BA,BB", "opcode": "010011 BT BA BB 0111000001 0", "bytes": 4}],
+      "notes": "対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3253,10 +3430,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3264,6 +3441,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "crxor BT,BA,BB", "opcode": "010011 BT BA BB 0011000001 0", "bytes": 4}],
+      "notes": "対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3275,10 +3454,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3286,7 +3465,8 @@
           "cycles": 1
         }
       ],
-      "notes": "crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。",
+      "encodings": [{"syntax": "creqv BT,BA,BB", "opcode": "010011 BT BA BB 0100100001 0", "bytes": 4}],
+      "notes": "crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3298,10 +3478,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3309,6 +3489,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "crnand BT,BA,BB", "opcode": "010011 BT BA BB 0011100001 0", "bytes": 4}],
+      "notes": "対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3320,10 +3502,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3331,7 +3513,8 @@
           "cycles": 1
         }
       ],
-      "notes": "crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。",
+      "encodings": [{"syntax": "crnor BT,BA,BB", "opcode": "010011 BT BA BB 0000100001 0", "bytes": 4}],
+      "notes": "crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3343,10 +3526,10 @@
         "CR ビット"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3354,7 +3537,8 @@
           "cycles": 1
         }
       ],
-      "notes": "crandc の OR 版。",
+      "encodings": [{"syntax": "crorc BT,BA,BB", "opcode": "010011 BT BA BB 0110100001 0", "bytes": 4}],
+      "notes": "crandc の OR 版。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。",
       "src": "book"
     },
     {
@@ -3366,10 +3550,10 @@
         "CR フィールド"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3377,6 +3561,8 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "mcrf BF,BFA", "opcode": "010011 BF 00 BFA 00 0000000000000000", "bytes": 4}],
+      "notes": "指定先 CR フィールドだけを更新する。",
       "src": "book"
     },
     {
@@ -3399,7 +3585,8 @@
           "cycles": 1
         }
       ],
-      "notes": "XER{0}（SO/OV/予約/CA）が CR フィールドにコピーされ、XER 側のビット 0-3 は 0 にクリアされる。",
+      "encodings": [{"syntax": "mcrxr crfT", "opcode": "011111 crfT 00 00000 00000 1000000000 0", "bytes": 4}],
+      "notes": "XER{0}（SO/OV/CA/予約）が CR フィールドにコピーされ、XER 側のビット 0-3 は 0 にクリアされる。",
       "src": "book"
     },
     {
@@ -3422,6 +3609,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "mfcr rT", "opcode": "011111 rT 00000 00000 0000010011 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -3433,10 +3621,10 @@
         "CR フィールド"
       ],
       "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
+        "‡",
+        "‡",
+        "‡",
+        "‡"
       ],
       "cycles": [
         {
@@ -3444,13 +3632,15 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "mtcrf FM,rS", "opcode": "011111 rS 0 FM 0 0010010000 0", "bytes": 4}],
+      "notes": "マスクで指定した CR フィールドだけを更新する。",
       "src": "book"
     },
     {
       "mnemonic": "MFSPR",
       "operands": "rT, SPR",
       "category": "レジスタ管理",
-      "summary": "特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式 mflr/mtctr/mfxer。",
+      "summary": "特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。",
       "addressing": [
         "レジスタ"
       ],
@@ -3466,6 +3656,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "mfspr rT,SPR", "opcode": "011111 rT SPR[0:4] SPR[5:9] 0101010011 0", "bytes": 4}],
       "notes": "LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。",
       "src": "book"
     },
@@ -3489,6 +3680,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "mtspr SPR,rS", "opcode": "011111 rS SPR[0:4] SPR[5:9] 0111010011 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -3515,6 +3707,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "mfmsr rT", "opcode": "011111 rT 00000 00000 0001010011 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -3545,6 +3738,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "mtmsr rS", "opcode": "011111 rS 00000 00000 0010010010 0", "bytes": 4}],
       "notes": "601 では先行するすべての命令の完了まで ID でストールする。",
       "src": "book"
     },
@@ -3568,6 +3762,7 @@
           "cycles": "例外"
         }
       ],
+      "encodings": [{"syntax": "sc", "opcode": "010001 00000 00000 00000 0000000001 0", "bytes": 4}],
       "notes": "",
       "src": "book"
     },
@@ -3591,6 +3786,7 @@
           "cycles": 16
         }
       ],
+      "encodings": [{"syntax": "rfi", "opcode": "010011 00000 00000 00000 0000110010 0", "bytes": 4}],
       "notes": "32 ビット実装では SRR1 のビット 0, 5:9, 16:31 が MSR に復元される。Book E（440）のシステムリンクカテゴリは sc とともに割り込みからのリターン・クリティカル割り込みからのリターンを含む。",
       "src": "book"
     },
@@ -3598,7 +3794,7 @@
       "mnemonic": "TW",
       "operands": "TO, rA, rB",
       "category": "システム制御",
-      "summary": "条件付きトラップ。TO のビットパターン（lt/gt/eq の否定・肯定）でプログラム割り込みを発生。",
+      "summary": "TO で指定した比較条件に一致するとプログラム割り込みを発生させる。",
       "addressing": [
         "レジスタ"
       ],
@@ -3618,7 +3814,8 @@
           "cycles": "例外"
         }
       ],
-      "notes": "拡張形式 trap（tw 31,r0,r0 = 無条件トラップ）、tweq/twne 等。即値版は twi。",
+      "encodings": [{"syntax": "tw TO,rA,rB", "opcode": "011111 TO rA rB 0000000100 0", "bytes": 4}],
+      "notes": "TO は符号付き less/greater、equal、符号なし less/greater の 5 条件を組み合わせる。trap は tw 31,r0,r0 の拡張形式。即値版は twi。",
       "src": "book"
     },
     {
@@ -3645,13 +3842,15 @@
           "cycles": "例外"
         }
       ],
+      "encodings": [{"syntax": "twi TO,rA,s16", "opcode": "000011 TO rA s16", "bytes": 4}],
+      "notes": "16 ビット即値を符号拡張して比較する。TO の 5 ビットは符号付き less/greater、equal、符号なし less/greater を指定する。",
       "src": "book"
     },
     {
       "mnemonic": "ISYNC",
       "operands": "",
       "category": "システム制御",
-      "summary": "命令同期。先行ストア後の命令フェッチを強制同期（自己書換コードやコンテキスト切替後）。",
+      "summary": "命令同期。先行命令の完了を待ち、後続命令を再取得して実行する。自己書換コードの反映には別途データ・命令キャッシュの同期が必要。",
       "addressing": [
         "暗黙"
       ],
@@ -3667,13 +3866,14 @@
           "cycles": "同期待ち"
         }
       ],
+      "encodings": [{"syntax": "isync", "opcode": "010011 00000 00000 00000 0010010110 0", "bytes": 4}],
       "src": "book"
     },
     {
       "mnemonic": "MSYNC",
       "operands": "",
       "category": "システム制御",
-      "summary": "メモリ同期（Book E）。先行するすべての命令（ストア）の完了を保証する。",
+      "summary": "メモリ同期（Book E）。先行命令とそのストレージアクセスの完了を待ち、後続命令の開始を制限する。",
       "addressing": [
         "暗黙"
       ],
@@ -3689,14 +3889,15 @@
           "cycles": "同期待ち"
         }
       ],
-      "notes": "クラシック PowerPC の sync に相当。440 では msync が正規の名称。",
+      "encodings": [{"syntax": "msync", "opcode": "011111 00000 00000 00000 1001010110 0", "bytes": 4}],
+      "notes": "クラシック PowerPC の sync に対応する。PPC440x5 の実装では mbar も同様の実行同期を行うが、移植性のため必要な保証に合った命令を選ぶ。",
       "src": "book"
     },
     {
       "mnemonic": "EIEIO",
       "operands": "",
       "category": "システム制御",
-      "summary": "先行するロード/ストアを後続のロード/ストアより先に完了させる（Enforce In-Order Execution of I/O）。メモリマップド I/O 用。",
+      "summary": "I/O などのストレージアクセスに順序を与える（Enforce In-Order Execution of I/O）。",
       "addressing": [
         "暗黙"
       ],
@@ -3712,7 +3913,8 @@
           "cycles": "≥8"
         }
       ],
-      "notes": "Book E（440）の記憶域同期命令は msync/mbar で、eieio は載らない。601 では機能的に sync と同一。",
+      "encodings": [{"syntax": "eieio", "opcode": "011111 00000 00000 00000 1101010110 0", "bytes": 4}],
+      "notes": "対象となるアクセスと保証はメモリ属性および実装に依存し、すべての通常メモリアクセスを完了させる全命令バリアではない。601 では sync と同等。Book E（440）の記憶域同期命令は msync/mbar。",
       "src": "book"
     },
     {
@@ -3735,6 +3937,7 @@
           "cycles": "≥8"
         }
       ],
+      "encodings": [{"syntax": "sync", "opcode": "011111 00000 00000 00000 1001010110 0", "bytes": 4}],
       "notes": "Book E（440）では msync が対応（本データの MSYNC 参照）。POWER 旧ニーモニックは dcs。",
       "src": "book"
     },
@@ -3742,7 +3945,7 @@
       "mnemonic": "DCBZ",
       "operands": "rA, rB",
       "category": "キャッシュ",
-      "summary": "データキャッシュブロック（32 バイト）をゼロにして割り当てる。バッファ初期化の高速化に使う。",
+      "summary": "データキャッシュブロックをゼロにして割り当てる。ブロックサイズは実装依存（PPC440 は 32 バイト）。バッファ初期化の高速化に使う。",
       "addressing": [
         "X-Form"
       ],
@@ -3758,7 +3961,8 @@
           "cycles": 1
         }
       ],
-      "notes": "クラシック PowerPC では特権命令だが Book E（440）ではユーザモードからも使用可。",
+      "encodings": [{"syntax": "dcbz rA,rB", "opcode": "011111 00000 rA rB 1111110110 0", "bytes": 4}],
+      "notes": "保護上は対象ブロックへのストアとして扱う。キャッシュ抑止領域などでは使用条件や例外が実装に依存する。旧 POWER の dclz は特権命令。",
       "src": "book"
     },
     {
@@ -3789,6 +3993,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "dcbf rA,rB", "opcode": "011111 00000 rA rB 0001010110 0", "bytes": 4}],
       "notes": "dcbst は書き戻しのみ、dcbi は無効化のみ。",
       "src": "book"
     },
@@ -3816,6 +4021,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "dcbi rA,rB", "opcode": "011111 00000 rA rB 0111010110 0", "bytes": 4}],
       "notes": "dcbf と違い書き戻しを行わないため、変更済みブロックのデータは失われる。",
       "src": "book"
     },
@@ -3847,6 +4053,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "dcbst rA,rB", "opcode": "011111 00000 rA rB 0000110110 0", "bytes": 4}],
       "src": "book"
     },
     {
@@ -3869,6 +4076,7 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "dcbtst rA,rB", "opcode": "011111 00000 rA rB 0011110110 0", "bytes": 4}],
       "notes": "dcbt のストア向け版。",
       "src": "book"
     },
@@ -3892,11 +4100,12 @@
           "cycles": 1
         }
       ],
+      "encodings": [{"syntax": "dcbt rA,rB", "opcode": "011111 00000 rA rB 0100010110 0", "bytes": 4}],
       "src": "book"
     },
     {
       "mnemonic": "ICBT",
-      "operands": "rA, rB",
+      "operands": "CT, rA, rB",
       "category": "キャッシュ",
       "summary": "命令キャッシュブロックタッチ（命令プリフェッチ）。",
       "addressing": [
@@ -3914,7 +4123,8 @@
           "cycles": 1
         }
       ],
-      "notes": "icbi（無効化）は自己書換コードの icbt→icbi→isync 手順で使う。",
+      "encodings": [{"syntax": "icbt CT,rA,rB", "opcode": "011111 CT rA rB 0000010110 0", "bytes": 4}],
+      "notes": "命令キャッシュへの先読みヒント。自己書換コードの同期には、データキャッシュの書戻し・同期と命令キャッシュの無効化・isync を使う。",
       "src": "book"
     },
     {
@@ -3937,7 +4147,1154 @@
           "cycles": 1
         }
       ],
-      "notes": "自己書換コードでは icbi → isync の順で使う。601 のような統合キャッシュ実装ではノーオペレーションとして扱われる。",
+      "encodings": [{"syntax": "icbi rA,rB", "opcode": "011111 00000 rA rB 1111010110 0", "bytes": 4}],
+      "notes": "自己書換コードでは必要なデータキャッシュ書戻しと同期の後に実行し、命令同期を行う。具体的な手順は CPU のキャッシュ構成に依存する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACCHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。積を元の rT に加算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "macchw rT,rA,rB", "opcode": "000100 rT rA rB OE 010101100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACCHWS",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。積を元の rT に加算し、符号付き 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "macchws rT,rA,rB", "opcode": "000100 rT rA rB OE 011101100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACCHWSU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号なしで乗算。積を元の rT に加算し、符号なし 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "macchwsu rT,rA,rB", "opcode": "000100 rT rA rB OE 011001100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACCHWU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号なしで乗算。積を元の rT に加算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "macchwu rT,rA,rB", "opcode": "000100 rT rA rB OE 010001100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "NMACCHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。元の rT から積を減算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "nmacchw rT,rA,rB", "opcode": "000100 rT rA rB OE 010101110 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "NMACCHWS",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。元の rT から積を減算し、符号付き 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "nmacchws rT,rA,rB", "opcode": "000100 rT rA rB OE 011101110 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULCHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。32 ビット積を格納する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "mulchw rT,rA,rB", "opcode": "000100 rT rA rB 0010101000 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULCHWU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA 下位 16 ビットと rB 上位 16 ビットを符号なしで乗算。32 ビット積を格納する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "mulchwu rT,rA,rB", "opcode": "000100 rT rA rB 0010001000 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACHHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "machhw rT,rA,rB", "opcode": "000100 rT rA rB OE 000101100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACHHWS",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、符号付き 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "machhws rT,rA,rB", "opcode": "000100 rT rA rB OE 001101100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACHHWSU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、符号なし 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "machhwsu rT,rA,rB", "opcode": "000100 rT rA rB OE 001001100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACHHWU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "machhwu rT,rA,rB", "opcode": "000100 rT rA rB OE 000001100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "NMACHHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "nmachhw rT,rA,rB", "opcode": "000100 rT rA rB OE 000101110 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "NMACHHWS",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、符号付き 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "nmachhws rT,rA,rB", "opcode": "000100 rT rA rB OE 001101110 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULHHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号付きで乗算。32 ビット積を格納する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "mulhhw rT,rA,rB", "opcode": "000100 rT rA rB 0000101000 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULHHWU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の上位 16 ビット同士を符号なしで乗算。32 ビット積を格納する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "mulhhwu rT,rA,rB", "opcode": "000100 rT rA rB 0000001000 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACLHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "maclhw rT,rA,rB", "opcode": "000100 rT rA rB OE 110101100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACLHWS",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、符号付き 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "maclhws rT,rA,rB", "opcode": "000100 rT rA rB OE 111101100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACLHWSU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、符号なし 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "maclhwsu rT,rA,rB", "opcode": "000100 rT rA rB OE 111001100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MACLHWU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "maclhwu rT,rA,rB", "opcode": "000100 rT rA rB OE 110001100 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "NMACLHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、下位 32 ビットを保持する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "nmaclhw rT,rA,rB", "opcode": "000100 rT rA rB OE 110101110 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "NMACLHWS",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、符号付き 32 ビットの範囲に飽和する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "nmaclhws rT,rA,rB", "opcode": "000100 rT rA rB OE 111101110 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULLHW",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号付きで乗算。32 ビット積を格納する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "mullhw rT,rA,rB", "opcode": "000100 rT rA rB 0110101000 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MULLHWU",
+      "operands": "rT, rA, rB",
+      "category": "MAC(440)",
+      "summary": "rA と rB の下位 16 ビット同士を符号なしで乗算。32 ビット積を格納する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [{"syntax": "mullhwu rT,rA,rB", "opcode": "000100 rT rA rB 0110001000 Rc", "bytes": 4}],
+      "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MBAR",
+      "operands": "MO",
+      "category": "システム制御",
+      "summary": "Book E のメモリバリア。指定されたストレージアクセス間の順序を制約する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MBAR MO",
+          "opcode": "011111 MO 0000000000 1101010110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "PPC440 では MO を無視して 0 として扱う。アーキテクチャ上はアクセス順序を保証し、実行同期は必須ではない。PPC440x5 実装は MSYNC と同様に実行同期する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "RFCI",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "クリティカル割り込みから復帰し、CSRR0 から PC、CSRR1 から MSR を復元する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RFCI",
+          "opcode": "010011 000000000000000 0000110011 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "Book E の特権命令。コンテキスト同期を行う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "RFMCI",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "マシンチェック割り込みから復帰し、MCSRR0 から PC、MCSRR1 から MSR を復元する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RFMCI",
+          "opcode": "010011 000000000000000 0000100110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "PPC440 の特権命令。コンテキスト同期を行う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DLMZB",
+      "operands": "rA, rS, rB",
+      "category": "論理",
+      "summary": "rS:rB の 8 バイトを上位から検索し、最初のゼロバイト位置を 1〜8 で rA と XER[TBC] に設定する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DLMZB rA, rS, rB",
+          "opcode": "011111 rS rA rB 0001001110 Rc",
+          "bytes": 4
+        }
+      ],
+      "notes": "ゼロバイトがない場合も 8。記録形式では CR0 に最初の 4 バイト内、後半 4 バイト内、未検出を示す。PPC440 実装依存命令。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MFDCR",
+      "operands": "rT, DCRN",
+      "category": "システム制御",
+      "summary": "DCRN で指定したデバイス制御レジスタの値を rT に読み出す。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MFDCR rT, DCRN",
+          "opcode": "011111 rT DCRF 0101000011 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。DCR の番号や機能は PPC440 コアではなく個々のチップに依存する。DCRN は命令中で 5 ビットずつ入れ替えて符号化する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "MTDCR",
+      "operands": "DCRN, rS",
+      "category": "システム制御",
+      "summary": "rS の値を DCRN で指定したデバイス制御レジスタへ書き込む。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MTDCR DCRN, rS",
+          "opcode": "011111 rS DCRF 0111000011 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。DCR の番号や機能はチップに依存する。DCRN は命令中で 5 ビットずつ入れ替えて符号化する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "WRTEE",
+      "operands": "rS",
+      "category": "システム制御",
+      "summary": "rS のビット 16（MSB を 0 とする番号）を MSR[EE] に設定する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "WRTEE rS",
+          "opcode": "011111 rS 0000000000 0010000011 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。他の MSR ビットは変更しない。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "WRTEEI",
+      "operands": "E",
+      "category": "システム制御",
+      "summary": "即値 E（0 または 1）を MSR[EE] に設定する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "WRTEEI E",
+          "opcode": "011111 0000000000 E 0000 0010100011 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。他の MSR ビットは変更しない。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "TLBRE",
+      "operands": "rT, rA, WS",
+      "category": "システム制御",
+      "summary": "PPC440 の TLB エントリを rA で選び、WS で指定した部分を rT に読み出す。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "TLBRE rT, rA, WS",
+          "opcode": "011111 rT rA WS 1110110010 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。WS=0/1/2 のみ有効。WS=0 では TID が MMUCR[STID] にもロードされる。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "TLBWE",
+      "operands": "rS, rA, WS",
+      "category": "システム制御",
+      "summary": "PPC440 の TLB エントリを rA で選び、WS で指定した部分に rS を書き込む。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "TLBWE rS, rA, WS",
+          "opcode": "011111 rS rA WS 1111010010 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。WS=0/1/2 のみ有効。WS=0 では MMUCR[STID] も TID として使用される。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "TLBSX",
+      "operands": "rT, rA, rB",
+      "category": "システム制御",
+      "summary": "実効アドレスと MMUCR の検索条件に一致する TLB エントリを検索する。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "TLBSX rT, rA, rB",
+          "opcode": "011111 rT rA rB 1110010010 Rc",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。記録形式 tlbsx. は CR0[EQ] に検索成功を示し、失敗時の rT は未定義。rA=0 の場合はベース値 0 を使う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "TLBSYNC",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "TLB 操作のプロセッサ間同期のための命令。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "TLBSYNC",
+          "opcode": "011111 000000000000000 1000110110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。PPC440x5 ではコヒーレントなマルチプロセッサをサポートしないため何もしない。他の実装では動作を確認する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCCCI",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "データキャッシュを無効化する PPC440x5 固有の命令。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DCCCI rA, rB",
+          "opcode": "011111 00000 rA rB 0111000110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。PPC440x5 ではキャッシュ全体を無効化し、rA/rB の値は使用しない。他の PPC440 実装では動作・対応を確認する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ICCCI",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "命令キャッシュを無効化する PPC440x5 固有の命令。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ICCCI rA, rB",
+          "opcode": "011111 00000 rA rB 1111000110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "特権命令。PPC440x5 ではキャッシュ全体を無効化し、rA/rB の値は使用しない。他の PPC440 実装では動作・対応を確認する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCREAD",
+      "operands": "rT, rA, rB",
+      "category": "キャッシュ",
+      "summary": "指定されたキャッシュ位置のデータワードを rT に、タグ情報を診断レジスタに読み出す。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DCREAD rT, rA, rB",
+          "opcode": "011111 rT rA rB 0111100110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "PPC440x5 固有の特権診断命令。実効アドレスの一部をキャッシュのインデックスとして使用する。他の実装では対応を確認する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ICREAD",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "指定された命令キャッシュ位置のデータとタグを診断レジスタに読み出す。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ICREAD rA, rB",
+          "opcode": "011111 00000 rA rB 1111100110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "PPC440x5 固有の特権診断命令。実効アドレスの一部をキャッシュのインデックスとして使用する。他の実装では対応を確認する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "DCBA",
+      "operands": "rA, rB",
+      "category": "キャッシュ",
+      "summary": "キャッシュブロックの割り付けを示す命令。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DCBA rA, rB",
+          "opcode": "011111 00000 rA rB 1011110110 0",
+          "bytes": 4
+        }
+      ],
+      "notes": "PPC440x5 では何もしない。他の実装での動作は対象 CPU を確認する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ISEL",
+      "operands": "rT, rA, rB, CRb",
+      "category": "データ転送",
+      "summary": "指定した CR ビットが 1 なら rA の値、0 なら rB の値を rT に入れる。",
+      "addressing": [
+        "レジスタ"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ISEL rT, rA, rB, CRb",
+          "opcode": "011111 rT rA rB CRb 01111",
+          "bytes": 4
+        }
+      ],
+      "notes": "CR ビットが 1 かつ rA=0 の場合は GPR0 ではなく 0 を選ぶ。CR は変更しない。PPC440x5 など対象 CPU の対応を確認する。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "ADDIC.",
+      "operands": "rT, rA, s16",
+      "category": "算術",
+      "summary": "符号拡張した 16 ビット即値を rA に加算し、XER[CA] と CR0 を更新する。",
+      "addressing": [
+        "即値（D-Form）"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "440 コア",
+          "cycles": 1
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "addic. rT,rA,s16",
+          "opcode": "001101 rT rA s16",
+          "bytes": 4
+        }
+      ],
+      "notes": "CR0 の LT/GT/EQ は結果に基づき、SO は XER[SO] のコピー。rA=0 は定数 0 ではなく GPR0 を読み出す。",
       "src": "book"
     }
   ]

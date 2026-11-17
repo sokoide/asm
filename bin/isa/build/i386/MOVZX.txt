@@ -12,8 +12,8 @@ MOVZX dst, src — 80386（データ転送）
   reg-mem: 6
 
 オペコード:
-  MOVZX r16/32, r/m8: 0F B6 /r  (3 バイト)
-  MOVZX r32, r/m16: 0F B7 /r  (3 バイト)
+  MOVZX r16/32, r/m8: 0F B6 /r  (長さ可変)
+  MOVZX r32, r/m16: 0F B7 /r  (長さ可変)
 
 備考:
   80386 で導入。imm は取れない。

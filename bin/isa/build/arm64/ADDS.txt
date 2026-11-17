@@ -1,6 +1,6 @@
 ADDS dst, src1, src2{, shift} — ARM64（算術）
 
-加算して N/Z/C/V を更新。C は符号なしオーバーフロー（HO ビットからのキャリー）でセット、V は符号付きオーバーフローでセット。
+加算して N/Z/C/V を更新。C は最上位ビットからのキャリー、V は符号付きオーバーフローを示す。
 
 アドレッシング: レジスタ、即値（0〜4095、12 ビット左シフト可）、シフト付きレジスタ、拡張レジスタ（uxtb/sxtw など）
 フラグ: N‡  Z‡  C‡  V‡
@@ -8,9 +8,14 @@ ADDS dst, src1, src2{, shift} — ARM64（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  ADDS Rd,Rn,#imm12{,LSL #12}: sf 0 1 10001 0 sh imm12 Rn Rd  (4 バイト)
+  ADDS Rd,Rn,Rm{,shift #amount}: sf 0 1 01011 shift 0 Rm imm6 Rn Rd  (4 バイト)
+  ADDS Rd,Rn,Rm,extend{ #amount}: sf 0 1 01011 00 1 Rm option imm3 Rn Rd  (4 バイト)
 
 備考:
-  S 接尾辞がフラグ更新のスイッチ。dst=WZR で CMN に一致。
+  S 接尾辞はフラグを更新する。宛先が WZR/XZR の形は CMN の別名。 即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。
 
 （根拠: book）

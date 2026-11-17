@@ -12,7 +12,7 @@ AND dst, src — 8086（論理）
   mem,reg: 16+EA
 
 オペコード:
-  AND r/m,r: 0010000w /r  (2 バイト)
+  AND r/m,r: 0010000w /r  (長さ可変)
   AND AL,imm: 24 ib  (2 バイト)
 
 （根拠: book）

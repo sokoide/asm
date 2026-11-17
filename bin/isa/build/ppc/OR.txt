@@ -10,4 +10,7 @@ OR rA, rS, rB — PowerPC（論理）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  or[.] rA,rS,rB: 011111 rS rA rB 0110111100 Rc  (4 バイト)
+
 （根拠: book）

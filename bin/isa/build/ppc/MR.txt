@@ -1,6 +1,6 @@
 mr（拡張ニーモニック）→ OR rA, rS, rB — PowerPC（論理）
 
-論理和。or rA,rB,rB はレジスタ移動の推奨形（mr 拡張形式）。
+レジスタ間移動（Move Register）
 
 アドレッシング: レジスタ
 フラグ: LT-  GT-  EQ-  SO-
@@ -12,8 +12,12 @@ mr（拡張ニーモニック）→ OR rA, rS, rB — PowerPC（論理）
   レジスタ間移動（Move Register）
 
 元命令: isa ppc OR
+論理和。or rA,rB,rB はレジスタ移動の推奨形（mr 拡張形式）。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  or[.] rA,rS,rB: 011111 rS rA rB 0110111100 Rc  (4 バイト)
 
 （根拠: book）

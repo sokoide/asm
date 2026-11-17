@@ -10,4 +10,7 @@ STHBRX rS, rA, rB — PowerPC（ストア）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  sthbrx rS,rA,rB: 011111 rS rA rB 1110010110 0  (4 バイト)
+
 （根拠: book）

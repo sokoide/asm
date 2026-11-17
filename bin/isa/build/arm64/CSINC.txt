@@ -8,9 +8,12 @@ CSINC dst, src1, src2, cond — ARM64（分岐）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  CSINC Rd,Rn,Rm,cond: sf 0 0 11010100 Rm cond 0 1 Rn Rd  (4 バイト)
 
 備考:
-  CSET Xd,cond は CSINC Xd,WZR,WZR,inv(cond) に展開。
+  CSET Xd,cond は CSINC Xd,XZR,XZR,inv(cond) に展開。 sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。
 
 （根拠: book）

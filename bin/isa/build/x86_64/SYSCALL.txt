@@ -1,20 +1,20 @@
 SYSCALL — x86-64（サブルーチン）
 
-高速システムコール。RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。
+高速システムコール。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。
 
 アドレッシング: 暗黙
-フラグ: OU  DU  I0  SU  ZU  AU  PU  CU
+フラグ: O‡  D‡  I‡  S‡  Z‡  A‡  P‡  C‡
 
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存（数十クロック規模）: 実装依存
+  CPU・実行条件に依存: 実装依存
 
 オペコード:
   SYSCALL: 0F 05  (2 バイト)
 
 備考:
-  RFLAGS は IA32_FMASK のマスクで AND される（通常 IF/TF 等がクリアされる）。
-  SYSRET が対の復帰命令。32bit の sysenter/int 0x80 に代わる現代の標準。
+  RFLAGS は IA32_FMASK のビットが 1 の位置をクリアする（RFLAGS AND NOT IA32_FMASK）。IF を含む各フラグの変更は MSR 設定に依存する。
+  RSP は保存・切り替えられないため、必要なスタック切り替えは OS が行う。SYSRET が対の復帰命令。
 
 （根拠: note）

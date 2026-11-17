@@ -9,11 +9,11 @@ Jcc label — 80386（分岐）
 
 消費クロック:
   不成立: 3
-  成立: 7〜13
+  成立: 7+m
 
 オペコード:
   Jcc rel8: 70+cc cb  (2 バイト)
-  Jcc rel16/32: 0F 80+cc cd  (6 バイト)
+  Jcc rel16/32（32bit モード）: 66 0F 80+cc cw / 0F 80+cc cd  (長さ可変)
 
 備考:
   cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。

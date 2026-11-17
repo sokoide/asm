@@ -12,11 +12,10 @@ XCHG dst, src — 80386（データ転送）
   mem を含む: 5
 
 オペコード:
-  XCHG AX, r16: 90+r  (1 バイト)
-  XCHG r/m, r: 87 /r（8bit は 86 /r）  (2 バイト)
+  XCHG AX, r16（32bit モード）: 66 90+r  (長さ可変)
+  XCHG r/m, r: 87 /r（8bit は 86 /r）  (長さ可変)
 
 備考:
-  XCHG AX, AX（90）は NOP。
-  メモリを含む場合は暗黙に LOCK されアトミックに実行される。
+  32 ビット既定モードで 90 は XCHG EAX, EAX（NOP）、66 90 は XCHG AX, AX。メモリを含む場合は暗黙に LOCK される。
 
 （根拠: book）

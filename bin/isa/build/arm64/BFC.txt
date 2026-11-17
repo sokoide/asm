@@ -8,12 +8,12 @@ BFC dst, #posn, #len — ARM64（シフト/ビット）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
 
 オペコード:
-  BFC Xd,#posn,#len: BFM の別名（BFI Xd,WZR/XZR,#posn,#len と等価）
+  BFC Xd,#posn,#len: BFM の別名（BFI Xd,XZR,#posn,#len と等価）
 
 備考:
-  ARMv8.2-A 以降が必要（Raspberry Pi 3/4 では使えない。Pi 5 は対応）。
+  BFM の別名であり、Armv8-A の A64 基本命令を使用する。
 
 （根拠: book）

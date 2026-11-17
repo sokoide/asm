@@ -10,4 +10,10 @@ CMPL crfT, L, rA, rB — PowerPC（比較）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  cmpl crfT,L,rA,rB: 011111 BF L 0 rA rB 0000100000 0  (4 バイト)
+
+備考:
+  比較した CR フィールドの LT/GT/EQ を更新し、SO には XER[SO] をコピーする。
+
 （根拠: book）

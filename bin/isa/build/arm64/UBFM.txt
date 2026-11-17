@@ -1,6 +1,6 @@
 UBFM dst, src, #immr, #imms — ARM64（シフト/ビット）
 
-符号なしビットフィールド移動。src の下位ビットを dst の任意の位置へコピーし、他の位置は 0 で埋める。
+符号なしビットフィールド移動。src を回転し即値から生成するマスクで抽出・配置して、残りのビットを 0 にする。
 
 アドレッシング: レジスタ、即値（immr/imms）
 フラグ: N-  Z-  C-  V-
@@ -8,9 +8,12 @@ UBFM dst, src, #immr, #imms — ARM64（シフト/ビット）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  UBFM Rd,Rn,#immr,#imms: sf 10 100110 N immr imms Rn Rd  (4 バイト)
 
 備考:
-  LSL/LSR/UBFX/UBFIZ など多くの別名の基礎。
+  LSL/LSR/UBFX/UBFIZ など多くの別名の基礎。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。
 
 （根拠: book）

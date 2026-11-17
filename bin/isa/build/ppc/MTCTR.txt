@@ -1,6 +1,6 @@
 mtctr（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ管理）
 
-特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
+カウントレジスタへの移動（Move to Count Register）
 
 アドレッシング: レジスタ
 フラグ: LT-  GT-  EQ-  SO-
@@ -13,8 +13,12 @@ mtctr（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ�
   SPR 9 = CTR。bctr・bdnz 系の分岐先指定に使う。
 
 元命令: isa ppc MTSPR
+特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  mtspr SPR,rS: 011111 rS SPR[0:4] SPR[5:9] 0111010011 0  (4 バイト)
 
 （根拠: book）

@@ -2,25 +2,34 @@ MOV dst, src — 80386（データ転送）
 
 転送。src（レジスタ・メモリ・即値・セグメントレジスタ）の値を dst にコピーする。
 
-アドレッシング: レジスタ、即値、間接(base+index×scale+disp)、直接(seg:offset による far)
+アドレッシング: レジスタ、即値、間接(base+index×scale+disp)、直接（セグメント内オフセット）
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
 
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg: 2
-  reg,mem: 4
-  mem-reg / 即値: 2
+  reg, reg / mem, reg / reg/mem, 即値: 2
+  reg, mem: 4
+  Sreg, reg、リアルモード: 2
+  Sreg, mem、リアルモード: 5
+  Sreg, reg、プロテクトモード: 18
+  Sreg, mem、プロテクトモード: 19
 
 オペコード:
-  MOV r/m, r: 89 /r（8bit は 88 /r）  (2 バイト)
-  MOV r, r/m: 8B /r（8bit は 8A /r）  (2 バイト)
-  MOV r, imm: B8+r iv（8bit は B0+r ib）  (2 バイト)
-  MOV r/m16, Sreg: 8C /r  (2 バイト)
-  MOV Sreg, r/m16: 8E /r  (2 バイト)
+  MOV r/m, r: 89 /r（8bit は 88 /r）  (長さ可変)
+  MOV r, r/m: 8B /r（8bit は 8A /r）  (長さ可変)
+  MOV r, imm: B8+r iv（8bit は B0+r ib）  (長さ可変)
+  MOV r/m16, Sreg: 8C /r  (長さ可変)
+  MOV Sreg, r/m16: 8E /r  (長さ可変)
+  MOV r/m8, imm8: C6 /0 ib  (長さ可変)
+  MOV r/m16/32, imm16/32: C7 /0 iw/id  (長さ可変)
+  MOV AL, moffs: A0 offset  (長さ可変)
+  MOV AX/EAX, moffs: A1 offset  (長さ可変)
+  MOV moffs, AL: A2 offset  (長さ可変)
+  MOV moffs, AX/EAX: A3 offset  (長さ可変)
 
 備考:
-  mem→mem は直接転送できない。
+  mem→mem は直接転送できない。moffs のオフセット幅はアドレスサイズで決まる。
   セグメントレジスタ転送（8C/8E）はプロテクトモードでは 16bit 選択子（TI ビットで GDT/LDT、下位 2bit は RPL）を扱い、CS への書き込みは不可。FS/GS は 80386 で追加。
   CR0/DR0 等のシステムレジスタへの転送は 0F 20〜23 の専用形（特権）。
 

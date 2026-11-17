@@ -11,7 +11,7 @@ LHZ rT, d(rA) — PowerPC（ロード）
   440 コア: 1
 
 オペコード:
-  lhz rT,d(rA): 0x28 D rA rT  (4 バイト)
+  lhz rT,d(rA): 0x28 rT rA D  (4 バイト)
 
 備考:
   符号拡張版は LHA。更新形式は lhzu/lhzux。

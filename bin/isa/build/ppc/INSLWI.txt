@@ -1,6 +1,6 @@
 inslwi（拡張ニーモニック）→ RLWIMI rA, rS, n, mB, mE — PowerPC（回転/シフト）
 
-左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。
+ワード即値左側挿入（Insert from Left Word Immediate）
 
 アドレッシング: 即値回転 + 即値マスク
 フラグ: LT-  GT-  EQ-  SO-
@@ -8,13 +8,20 @@ inslwi（拡張ニーモニック）→ RLWIMI rA, rS, n, mB, mE — PowerPC（�
 ────────────── 詳細 ──────────────
 
 拡張形式:
-  inslwi rA,rS,nBits,start ⇔ rlwimi rA, rS, 32-start, start, (start+nBits)-1
+  inslwi rA,rS,nBits,start ⇔ rlwimi rA, rS, (32-start)&31, start, (start+nBits)-1
   ワード即値左側挿入（Insert from Left Word Immediate）
   rS の nBits ビットを rA の bit start 以降に挿入する。
 
 元命令: isa ppc RLWIMI
+左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  rlwimi[.] rA,rS,SH,MB,ME: 010100 rS rA SH MB ME Rc  (4 バイト)
+
+備考:
+  ビット番号は最上位が 0。マスク内を回転後の値に置換し、マスク外は元の rA を保持する。MB>ME ではマスクが末尾と先頭にまたがる。
 
 （根拠: book）

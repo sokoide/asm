@@ -10,4 +10,7 @@ MULHWU rT, rA, rB — PowerPC（算術）
 消費クロック:
   440 コア: 3
 
+オペコード:
+  mulhwu[o][.] rT,rA,rB: 011111 rT rA rB OE 000001011 Rc  (4 バイト)
+
 （根拠: book）

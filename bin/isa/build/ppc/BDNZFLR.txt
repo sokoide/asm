@@ -1,6 +1,6 @@
 bdnzflr（拡張ニーモニック）→ BCLR BO, BI — PowerPC（分岐）
 
-LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。
+減算後のCTRが非ゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition False to LR）
 
 アドレッシング: レジスタ間接（LR）
 フラグ: LT-  GT-  EQ-  SO-
@@ -13,11 +13,15 @@ LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準�
   [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。
 
 元命令: isa ppc BCLR
+LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。
 
 消費クロック:
   440 コア（fold 時）: 0
 
+オペコード:
+  bclr BO,BI: 010011 BO BI 00000 0000010000 LK  (4 バイト)
+
 備考:
-  btlr/bflr（CR ビット条件復帰）などの拡張形式あり。
+  btlr/bflr などの拡張形式がある。bclrl は分岐先として更新前の LR を使い、分岐の成否にかかわらず次の命令のアドレスを LR に設定する。
 
 （根拠: book）

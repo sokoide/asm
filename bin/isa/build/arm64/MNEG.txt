@@ -8,6 +8,10 @@ MNEG dst, src1, src2 — ARM64（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 2〜5
+  ISA では規定されない: 実装依存
+
+オペコード:
+  MNEG Wd,Wn,Wm: MSUB Wd,Wn,Wm,WZR のエイリアス
+  MNEG Xd,Xn,Xm: MSUB Xd,Xn,Xm,XZR のエイリアス
 
 （根拠: book）

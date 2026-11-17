@@ -1,6 +1,6 @@
 CSEL dst, src1, src2, cond — ARM64（分岐）
 
-条件選択（分岐なしで 2 値選択。分岐予測ミス回避の定番）。
+cond が成立なら src1、不成立なら src2 を dst にコピーする。フラグは変更しない。
 
 アドレッシング: レジスタ
 フラグ: N-  Z-  C-  V-
@@ -8,9 +8,12 @@ CSEL dst, src1, src2, cond — ARM64（分岐）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  CSEL Rd,Rn,Rm,cond: sf 0 0 11010100 Rm cond 0 0 Rn Rd  (4 バイト)
 
 備考:
-  CSET（1/0 セット）、CSETM（全 1）、CINV/CSNEG/CSINC はこの系統。
+  CSINC・CSINV・CSNEG は条件不成立時に第 2 ソースを変換する別命令。CSET などはそれらの別名。 sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。
 
 （根拠: book）

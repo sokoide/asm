@@ -1,6 +1,6 @@
 PUSHFQ — x86-64（スタック）
 
-RFLAGS 全体（64bit）をスタックに退避する。
+RFLAGS の 64 ビットイメージをスタックに退避する。
 
 アドレッシング: スタック
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
@@ -8,12 +8,12 @@ RFLAGS 全体（64bit）をスタックに退避する。
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  常時: 1〜3
+  CPU・実行条件に依存: 実装依存
 
 オペコード:
   PUSHFQ: 9C  (1 バイト)
 
 備考:
-  MASM では PUSHFQ、NASM では pushfq。16bit/32bit 版は PUSHF/PUSHFD。
+  保存イメージの RF と VM は 0。64 ビットモードでは PUSHFQ と 16 ビットの PUSHF が使え、PUSHFD は使えない。
 
 （根拠: book）

@@ -2,7 +2,7 @@ MOVE src, dst — 68000（データ転送）
 
 8/16/32 ビット（.B/.W/.L）の汎用データ転送。src → dst。
 
-アドレッシング: 全 EA（dst はデータ可変）
+アドレッシング: src は全 EA（.B では An 直接不可）、dst はデータ可変
 フラグ: N‡  Z‡  V0  C0  X-
 
 ────────────── 詳細 ──────────────
@@ -14,4 +14,7 @@ MOVE src, dst — 68000（データ転送）
   MOVE.L (A0),D0: 12
 
 オペコード:
-  MOVE.B/W/L src,dst: 00 SS RRRMMM ...  (2 バイト)
+  MOVE.B/W/L src,dst: 00 SS DDD MMM mmm rrr（SS: B=01、L=10、W=11；DDD/MMM は転送先レジスタ/モード、mmm/rrr は転送元モード/レジスタ。EA 拡張ワードが続く場合あり）
+
+備考:
+  転送先 An への .W/.L は MOVEA として扱われ、フラグは変化しない。Dn への .B/.W は残りの上位ビットを保持する。

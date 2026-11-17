@@ -10,4 +10,7 @@ STWBRX rS, rA, rB — PowerPC（ストア）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  stwbrx rS,rA,rB: 011111 rS rA rB 1010010110 0  (4 バイト)
+
 （根拠: book）

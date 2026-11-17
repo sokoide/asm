@@ -10,4 +10,7 @@ XORIS rA, rS, u16 — PowerPC（論理）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  xoris rA,rS,u16: 011011 rS rA u16  (4 バイト)
+
 （根拠: book）

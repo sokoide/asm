@@ -1,16 +1,65 @@
 {
   "arch": "x86_64",
-  "flagNames": ["O", "D", "I", "S", "Z", "A", "P", "C"],
+  "flagNames": [
+    "O",
+    "D",
+    "I",
+    "S",
+    "Z",
+    "A",
+    "P",
+    "C"
+  ],
   "instructions": [
     {
       "mnemonic": "MOV",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "転送。src の値（レジスタ・メモリ・即値）を dst にコピーする。x86 の基本命令。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)", "RIP相対"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "MOV r/m64, r64", "opcode": "REX.W 89 /r", "bytes": 3}, {"syntax": "MOV r64, r/m64", "opcode": "REX.W 8B /r", "bytes": 3}, {"syntax": "MOV r64, imm64", "opcode": "REX.W B8+r io", "bytes": 10}, {"syntax": "MOV r/m64, imm32", "opcode": "REX.W C7 /0 id", "bytes": 6}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)",
+        "RIP相対"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOV r/m64, r64",
+          "opcode": "REX.W 89 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOV r64, r/m64",
+          "opcode": "REX.W 8B /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOV r64, imm64",
+          "opcode": "REX.W B8+r io",
+          "bytes": 10
+        },
+        {
+          "syntax": "MOV r/m64, imm32",
+          "opcode": "REX.W C7 /0 id",
+          "length": "可変"
+        }
+      ],
       "notes": "mem→mem は直接転送できない（レジスタを経由）。\n64ビットメモリに書ける即値は imm32（符号拡張される）。imm64 を取れるのはレジスタへの転送のみ（よくある落とし穴）。\nREX プレフィックス使用時は AH/BH/CH/DH の上位8bit部分レジスタは使えない（SIL/DIL/BPL/SPL を使う）。",
       "src": "book"
     },
@@ -19,10 +68,38 @@
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "ゼロ拡張転送。8/16ビットの src を上位ビット 0 埋めで 16/32/64ビットの dst に転送する。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "MOVZX r64, r/m8", "opcode": "REX.W 0F B6 /r", "bytes": 4}, {"syntax": "MOVZX r64, r/m16", "opcode": "REX.W 0F B7 /r", "bytes": 4}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVZX r64, r/m8",
+          "opcode": "REX.W 0F B6 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOVZX r64, r/m16",
+          "opcode": "REX.W 0F B7 /r",
+          "length": "可変"
+        }
+      ],
       "notes": "imm は取れない。32ビットレジスタへの転送は上位32bitが自動クリアされるため movzx edx, al と同義になる。",
       "src": "book"
     },
@@ -31,10 +108,38 @@
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "符号拡張転送。8/16ビットの src を符号拡張して 16/32/64ビットの dst に転送する。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "MOVSX r64, r/m8", "opcode": "REX.W 0F BE /r", "bytes": 4}, {"syntax": "MOVSX r64, r/m16", "opcode": "REX.W 0F BF /r", "bytes": 4}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVSX r64, r/m8",
+          "opcode": "REX.W 0F BE /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOVSX r64, r/m16",
+          "opcode": "REX.W 0F BF /r",
+          "length": "可変"
+        }
+      ],
       "notes": "32→64bit の符号拡張は専用命令 MOVSXD を使う。",
       "src": "book"
     },
@@ -43,10 +148,33 @@
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "32ビットの src を符号拡張して 64ビットの dst に転送する（64ビットモード専用）。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "MOVSXD r64, r/m32", "opcode": "REX.W 63 /r", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVSXD r64, r/m32",
+          "opcode": "REX.W 63 /r",
+          "length": "可変"
+        }
+      ],
       "notes": "NASM では movsxd、MASM では MOVSXD。src がレジスタのときは MOV と同結果になる。",
       "src": "book"
     },
@@ -55,11 +183,39 @@
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "2つのオペランドの内容を交換する。レジスタ同士またはレジスタとメモリ。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "XCHG rAX, r64", "opcode": "REX.W 90+r", "bytes": 2}, {"syntax": "XCHG r/m64, r64", "opcode": "REX.W 87 /r", "bytes": 3}],
-      "notes": "XCHG AX, AX（90）は NOP としてアセンブルされる。\nメモリオペランドを含む場合は暗黙に LOCK され、アトミックに実行される。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "XCHG rAX, r64",
+          "opcode": "REX.W 90+r",
+          "bytes": 2
+        },
+        {
+          "syntax": "XCHG r/m64, r64",
+          "opcode": "REX.W 87 /r",
+          "length": "可変"
+        }
+      ],
+      "notes": "90h は NOP の別名で、64 ビットモードでは 32 ビットレジスタ書き込みによる上位ゼロ拡張も行わない。66 90 はオペランドサイズプレフィックス付き NOP。\nメモリオペランドを含む場合は暗黙に LOCK され、アトミックに実行される。",
       "src": "book"
     },
     {
@@ -67,10 +223,33 @@
       "operands": "reg, mem",
       "category": "データ転送",
       "summary": "メモリ参照式の実効アドレスを計算してレジスタに入れる。メモリアクセスは行わない。",
-      "addressing": ["間接(base+index×scale+disp)", "RIP相対"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg-reg 相当", "cycles": "1〜3"}],
-      "encodings": [{"syntax": "LEA r64, m", "opcode": "REX.W 8D /r", "bytes": 3}],
+      "addressing": [
+        "間接(base+index×scale+disp)",
+        "RIP相対"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LEA r64, m",
+          "opcode": "REX.W 8D /r",
+          "length": "可変"
+        }
+      ],
       "notes": "[base + index×scale + disp] の計算を 1 命令で行えるため、乗算（scale=2/4/8）やアドレス演算のイディオムに使う。\nNASM 64ビットでは lea rsi, [msg] が RIP 相対の実効アドレス取得になる。",
       "src": "book"
     },
@@ -79,10 +258,32 @@
       "operands": "",
       "category": "データ転送",
       "summary": "テーブル変換。AL = [RBX + AL]。RBX を 256 バイト変換テーブルの先頭として、AL をインデックスに 1 バイトを読み込み AL に格納する。",
-      "addressing": ["レジスタ間接"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "XLAT", "opcode": "D7", "bytes": 1}],
+      "addressing": [
+        "レジスタ間接"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "XLAT",
+          "opcode": "D7",
+          "bytes": 1
+        }
+      ],
       "notes": "AL の値はテーブルのインデックスとしてのみ使われる。8bit インデックスのためテーブルは最大 256 バイト。lea rbx, table でテーブル先頭を設定してから使う。",
       "src": "book"
     },
@@ -91,10 +292,32 @@
       "operands": "",
       "category": "データ転送",
       "summary": "AL の符号拡張（8→16bit）で AX に転送する。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CBW", "opcode": "66 98", "bytes": 2}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CBW",
+          "opcode": "66 98",
+          "bytes": 2
+        }
+      ],
       "notes": "AX→EAX は CWDE、EAX→RAX は CDQE。AX→DX:AX の CWD は 16bit コード向け。",
       "src": "book"
     },
@@ -103,10 +326,32 @@
       "operands": "",
       "category": "データ転送",
       "summary": "AX の符号拡張（16→32bit）で EAX に転送する。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CWDE", "opcode": "98", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CWDE",
+          "opcode": "98",
+          "bytes": 1
+        }
+      ],
       "notes": "CDQE が 64bit 版（EAX→RAX）。",
       "src": "book"
     },
@@ -115,10 +360,32 @@
       "operands": "",
       "category": "データ転送",
       "summary": "EAX の符号拡張（32→64bit）で RAX に転送する（64ビットモード専用）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CDQE", "opcode": "REX.W 98", "bytes": 2}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CDQE",
+          "opcode": "REX.W 98",
+          "bytes": 2
+        }
+      ],
       "notes": "IDIV 前の EAX→RDX:RAX 準備には CDQ（→RDX もセット）を使うことが多い。",
       "src": "book"
     },
@@ -127,10 +394,32 @@
       "operands": "",
       "category": "データ転送",
       "summary": "EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CDQ", "opcode": "99", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CDQ",
+          "opcode": "99",
+          "bytes": 1
+        }
+      ],
       "notes": "64bit 除算では EDX:RAX ではなく RDX:RAX を使うため CQO を使う。",
       "src": "book"
     },
@@ -139,10 +428,32 @@
       "operands": "",
       "category": "データ転送",
       "summary": "RAX を符号拡張して RDX:RAX に展開する（RDX に符号ビットを満たす）。64bit IDIV の前処理。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CQO", "opcode": "REX.W 99", "bytes": 2}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CQO",
+          "opcode": "REX.W 99",
+          "bytes": 2
+        }
+      ],
       "notes": "符号なし除算では RDX=0 にする（xor edx, edx）。",
       "src": "book"
     },
@@ -151,10 +462,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "RFLAGS の下位 8 ビット（SF ZF - AF - PF 1 CF）を AH に読み込む。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "LAHF", "opcode": "9F", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LAHF",
+          "opcode": "9F",
+          "bytes": 1
+        }
+      ],
       "notes": "初期の x86-64 CPU の一部は本命令をサポートしない。",
       "src": "book"
     },
@@ -163,10 +496,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "AH の内容を RFLAGS の下位 8 ビット（SF/ZF/AF/PF/CF）へ書き込む。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "SAHF", "opcode": "9E", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SAHF",
+          "opcode": "9E",
+          "bytes": 1
+        }
+      ],
       "notes": "bit1 は 1 固定、bit3/5 は 0 で書かれる。初期の x86-64 CPU の一部は未サポート。",
       "src": "book"
     },
@@ -174,11 +529,44 @@
       "mnemonic": "PUSH",
       "operands": "src",
       "category": "スタック",
-      "summary": "RSP を 8 減算してからオペランド（レジスタ・メモリ・即値）をスタックに格納する。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "PUSH r64", "opcode": "REX.B 50+r", "bytes": 1}, {"syntax": "PUSH imm32", "opcode": "68 id", "bytes": 5}, {"syntax": "PUSH imm8", "opcode": "6A ib", "bytes": 2}],
+      "summary": "RSP をオペランド幅分減算し、レジスタ・メモリ・即値をスタックに格納する（通常 8 バイト、16 ビット形式は 2 バイト）。",
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "PUSH r64",
+          "opcode": "50+r（R8〜R15 は REX.B 50+r）"
+        },
+        {
+          "syntax": "PUSH imm32",
+          "opcode": "68 id",
+          "bytes": 5
+        },
+        {
+          "syntax": "PUSH imm8",
+          "opcode": "6A ib",
+          "bytes": 2
+        }
+      ],
       "notes": "64ビットモードでは既定で 64bit スタック操作（16bit 幅は 66 プレフィックスだがスタック整合が崩れやすい）。\n即値は符号拡張されて 64bit で積まれる。\n関数の呼び出し保存レジスタ退避やローカル変数確保に使う。",
       "src": "book"
     },
@@ -186,36 +574,102 @@
       "mnemonic": "POP",
       "operands": "dst",
       "category": "スタック",
-      "summary": "スタック先頭の 64bit 値を dst に読み込み RSP を 8 加算する。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "POP r64", "opcode": "REX.B 58+r", "bytes": 1}],
-      "notes": "POP した直後に RSP を戻す用途では RET n の方が短いことがある。",
+      "summary": "スタック先頭の値を dst に読み込み、RSP をオペランド幅分加算する（通常 8 バイト、16 ビット形式は 2 バイト）。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "POP r64",
+          "opcode": "58+r（R8〜R15 は REX.B 58+r）"
+        }
+      ],
+      "notes": "64 ビットモードでは 16 ビット形式も使えるが、32 ビットの POP は符号化できない。POP RSP の場合、最終的な RSP は取り出した値になる。",
       "src": "book"
     },
     {
       "mnemonic": "PUSHFQ",
       "operands": "",
       "category": "スタック",
-      "summary": "RFLAGS 全体（64bit）をスタックに退避する。",
-      "addressing": ["スタック"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "1〜3"}],
-      "encodings": [{"syntax": "PUSHFQ", "opcode": "9C", "bytes": 1}],
-      "notes": "MASM では PUSHFQ、NASM では pushfq。16bit/32bit 版は PUSHF/PUSHFD。",
+      "summary": "RFLAGS の 64 ビットイメージをスタックに退避する。",
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "PUSHFQ",
+          "opcode": "9C",
+          "bytes": 1
+        }
+      ],
+      "notes": "保存イメージの RF と VM は 0。64 ビットモードでは PUSHFQ と 16 ビットの PUSHF が使え、PUSHFD は使えない。",
       "src": "book"
     },
     {
       "mnemonic": "POPFQ",
       "operands": "",
       "category": "スタック",
-      "summary": "スタックから RFLAGS 全体（64bit）を復帰する。",
-      "addressing": ["スタック"],
-      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "実装依存（マイクロコード）", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "POPFQ", "opcode": "9D", "bytes": 1}],
-      "notes": "IF/IOPL 等のシステムフラグ変更には特権が必要。ユーザーモードでは条件フラグのみ実質変更可。NASM: popfq。",
+      "summary": "スタックから RFLAGS の 64 ビットイメージを読み込み、変更可能なフラグを復帰する。",
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "POPFQ",
+          "opcode": "9D",
+          "bytes": 1
+        }
+      ],
+      "notes": "IF/IOPL などの変更は権限に制限される。変更できないビットは保持される。DF など条件フラグ以外にも変更可能なビットがある。",
       "src": "book"
     },
     {
@@ -223,10 +677,44 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "dst に src を加算する。符号なし桁上がりは C、符号付きオーバーフローは O で検出。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "ADD r/m64, r64", "opcode": "REX.W 01 /r", "bytes": 3}, {"syntax": "ADD r/m64, imm32", "opcode": "REX.W 81 /0 id", "bytes": 6}, {"syntax": "ADD r/m64, imm8", "opcode": "REX.W 83 /0 ib", "bytes": 4}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ADD r/m64, r64",
+          "opcode": "REX.W 01 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "ADD r/m64, imm32",
+          "opcode": "REX.W 81 /0 id",
+          "length": "可変"
+        },
+        {
+          "syntax": "ADD r/m64, imm8",
+          "opcode": "REX.W 83 /0 ib",
+          "length": "可変"
+        }
+      ],
       "notes": "imm8 形（83 /0）は符号拡張されるため 2〜3 バイト短い。\n多倍長加算は下位ワードから ADC を連結する。",
       "src": "book"
     },
@@ -235,10 +723,39 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み加算。dst = dst + src + C。多倍長加算の上位ワード処理に使う。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "ADC r/m64, r64", "opcode": "REX.W 11 /r", "bytes": 3}, {"syntax": "ADC r/m64, imm32", "opcode": "REX.W 81 /2 id", "bytes": 6}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ADC r/m64, r64",
+          "opcode": "REX.W 11 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "ADC r/m64, imm32",
+          "opcode": "REX.W 81 /2 id",
+          "length": "可変"
+        }
+      ],
       "notes": "多倍長加算の定形: add 下位 → adc 上位。",
       "src": "book"
     },
@@ -247,10 +764,44 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "dst から src を減算する。桁借りは C、符号付きオーバーフローは O で検出。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SUB r/m64, r64", "opcode": "REX.W 29 /r", "bytes": 3}, {"syntax": "SUB r/m64, imm32", "opcode": "REX.W 81 /5 id", "bytes": 6}, {"syntax": "SUB r/m64, imm8", "opcode": "REX.W 83 /5 ib", "bytes": 4}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SUB r/m64, r64",
+          "opcode": "REX.W 29 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "SUB r/m64, imm32",
+          "opcode": "REX.W 81 /5 id",
+          "length": "可変"
+        },
+        {
+          "syntax": "SUB r/m64, imm8",
+          "opcode": "REX.W 83 /5 ib",
+          "length": "可変"
+        }
+      ],
       "notes": "サブトラクション後のフラグは C が符号なし借り、O が符号付き溢れ。",
       "src": "book"
     },
@@ -259,10 +810,39 @@
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み減算。dst = dst - src - C。多倍長減算の上位ワード処理に使う。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SBB r/m64, r64", "opcode": "REX.W 19 /r", "bytes": 3}, {"syntax": "SBB r/m64, imm32", "opcode": "REX.W 81 /3 id", "bytes": 6}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SBB r/m64, r64",
+          "opcode": "REX.W 19 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "SBB r/m64, imm32",
+          "opcode": "REX.W 81 /3 id",
+          "length": "可変"
+        }
+      ],
       "notes": "多倍長演算で使用。",
       "src": "book"
     },
@@ -271,10 +851,33 @@
       "operands": "dst",
       "category": "算術",
       "summary": "dst を 1 加算する。C フラグは変化しない。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
-      "cycles": [{"cond": "reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "INC r/m64", "opcode": "REX.W FF /0", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INC r/m64",
+          "opcode": "REX.W FF /0",
+          "length": "可変"
+        }
+      ],
       "notes": "C を保存するため、キャリーを利用するループ内のカウンタに安全。ADD で代用可。",
       "src": "book"
     },
@@ -283,10 +886,33 @@
       "operands": "dst",
       "category": "算術",
       "summary": "dst を 1 減算する。C フラグは変化しない。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
-      "cycles": [{"cond": "reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "DEC r/m64", "opcode": "REX.W FF /1", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DEC r/m64",
+          "opcode": "REX.W FF /1",
+          "length": "可変"
+        }
+      ],
       "notes": "ループの dec/jnz 形カウンタに使われる。",
       "src": "book"
     },
@@ -295,10 +921,33 @@
       "operands": "dst",
       "category": "算術",
       "summary": "dst を符号反転する（dst = 0 - dst、2 の補数）。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "NEG r/m64", "opcode": "REX.W F7 /3", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "NEG r/m64",
+          "opcode": "REX.W F7 /3",
+          "length": "可変"
+        }
+      ],
       "notes": "dst=0 のとき C=0・ZF=1、それ以外は C=1。NOT はビット反転でフラグ不変、NEG は符号反転でフラグ更新、という対比。",
       "src": "book"
     },
@@ -307,10 +956,38 @@
       "operands": "src",
       "category": "算術",
       "summary": "符号なし乗算。RDX:RAX = RAX × src（64bit）。結果の上位半分が RDX に入る。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "reg", "cycles": "3〜5"}, {"cond": "メモリオペランド", "cycles": "3〜6"}],
-      "encodings": [{"syntax": "MUL r/m64", "opcode": "REX.W F7 /4", "bytes": 3}, {"syntax": "MUL r/m32", "opcode": "F7 /4", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MUL r/m64",
+          "opcode": "REX.W F7 /4",
+          "length": "可変"
+        },
+        {
+          "syntax": "MUL r/m32",
+          "opcode": "F7 /4",
+          "length": "可変"
+        }
+      ],
       "notes": "上位半分（RDX）が 0 なら C=O=0、0 でなければ C=O=1。S/Z/A/P は未定義。\n8bit は AX=AL×src、16bit は DX:AX、32bit は EDX:EAX。",
       "src": "book"
     },
@@ -319,10 +996,49 @@
       "operands": "src / dst, src / dst, src, imm",
       "category": "算術",
       "summary": "符号付き乗算。1オペランド形は RDX:RAX = RAX × src。2/3オペランド形は結果の下位半分のみを dst に格納する。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "reg", "cycles": "3〜5"}, {"cond": "メモリオペランド", "cycles": "3〜6"}],
-      "encodings": [{"syntax": "IMUL r/m64（1オペランド）", "opcode": "REX.W F7 /5", "bytes": 3}, {"syntax": "IMUL r64, r/m64", "opcode": "REX.W 0F AF /r", "bytes": 3}, {"syntax": "IMUL r64, r/m64, imm8", "opcode": "REX.W 6B /r ib", "bytes": 4}, {"syntax": "IMUL r64, r/m64, imm32", "opcode": "REX.W 69 /r id", "bytes": 7}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IMUL r/m64（1オペランド）",
+          "opcode": "REX.W F7 /5",
+          "length": "可変"
+        },
+        {
+          "syntax": "IMUL r64, r/m64",
+          "opcode": "REX.W 0F AF /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "IMUL r64, r/m64, imm8",
+          "opcode": "REX.W 6B /r ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "IMUL r64, r/m64, imm32",
+          "opcode": "REX.W 69 /r id",
+          "length": "可変"
+        }
+      ],
       "notes": "2/3オペランド形は上位半分を切り捨てる。切り捨てにより符号拡張と一致しなければ C=O=1 で検出。\n定数倍は imul 3オペランド形か LEA で実現する。",
       "src": "book"
     },
@@ -331,11 +1047,39 @@
       "operands": "src",
       "category": "算術",
       "summary": "符号なし除算。RDX:RAX ÷ src で RAX=商、RDX=剰余（64bit）。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "U"],
-      "cycles": [{"cond": "8/32bit ÷", "cycles": "10〜30"}, {"cond": "64bit ÷", "cycles": "20〜100"}],
-      "encodings": [{"syntax": "DIV r/m64", "opcode": "REX.W F7 /6", "bytes": 3}, {"syntax": "DIV r/m32", "opcode": "F7 /6", "bytes": 2}],
-      "notes": "0 除算や商があふれると #DE 例外。事前準備: 64bit は RDX=0、32bit は CDQ 前処理で EDX=0（符号なし）。\n8bit は AX÷src → AL=商/AH=剰余、16bit は DX:AX、32bit は EDX:EAX。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "DIV r/m64",
+          "opcode": "REX.W F7 /6",
+          "length": "可変"
+        },
+        {
+          "syntax": "DIV r/m32",
+          "opcode": "F7 /6",
+          "length": "可変"
+        }
+      ],
+      "notes": "0 除算や商があふれると #DE 例外。事前準備: 64bit は RDX=0、32bit は EDX=0（例: xor edx,edx）。CDQ は符号拡張であり符号なし除算のゼロ拡張には使えない。\n8bit は AX÷src → AL=商/AH=剰余、16bit は DX:AX、32bit は EDX:EAX。",
       "src": "book"
     },
     {
@@ -343,10 +1087,38 @@
       "operands": "src",
       "category": "算術",
       "summary": "符号付き除算。RDX:RAX ÷ src で RAX=商、RDX=剰余（64bit）。商は 0 方向へ丸め、剰余は被除数と同符号。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "U"],
-      "cycles": [{"cond": "8/32bit ÷", "cycles": "10〜30"}, {"cond": "64bit ÷", "cycles": "20〜100"}],
-      "encodings": [{"syntax": "IDIV r/m64", "opcode": "REX.W F7 /7", "bytes": 3}, {"syntax": "IDIV r/m32", "opcode": "F7 /7", "bytes": 2}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IDIV r/m64",
+          "opcode": "REX.W F7 /7",
+          "length": "可変"
+        },
+        {
+          "syntax": "IDIV r/m32",
+          "opcode": "F7 /7",
+          "length": "可変"
+        }
+      ],
       "notes": "符号拡張準備: 64bit は CQO、32bit は CDQ。\n0 除算・商あふれ（RAX=-2^63 ÷ -1 など）で #DE。",
       "src": "book"
     },
@@ -355,10 +1127,44 @@
       "operands": "dst, src",
       "category": "比較",
       "summary": "dst - src を計算してフラグのみ更新する（dst は不変）。分岐・条件転送の判定に使う。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "CMP r/m64, r64", "opcode": "REX.W 39 /r", "bytes": 3}, {"syntax": "CMP r/m64, imm32", "opcode": "REX.W 81 /7 id", "bytes": 6}, {"syntax": "CMP r/m64, imm8", "opcode": "REX.W 83 /7 ib", "bytes": 4}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMP r/m64, r64",
+          "opcode": "REX.W 39 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "CMP r/m64, imm32",
+          "opcode": "REX.W 81 /7 id",
+          "length": "可変"
+        },
+        {
+          "syntax": "CMP r/m64, imm8",
+          "opcode": "REX.W 83 /7 ib",
+          "length": "可変"
+        }
+      ],
       "notes": "符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。\nC=1 が「dst < src」（符号なし）。",
       "src": "book"
     },
@@ -367,10 +1173,39 @@
       "operands": "dst, src",
       "category": "比較",
       "summary": "dst AND src を計算してフラグのみ更新する（dst は不変）。ビットの有無やゼロ判定に使う。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "TEST r/m64, r64", "opcode": "REX.W 85 /r", "bytes": 3}, {"syntax": "TEST r/m64, imm32", "opcode": "REX.W F7 /0 id", "bytes": 6}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "TEST r/m64, r64",
+          "opcode": "REX.W 85 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "TEST r/m64, imm32",
+          "opcode": "REX.W F7 /0 id",
+          "length": "可変"
+        }
+      ],
       "notes": "test reg, reg は「レジスタが 0 か」の判定イディオム。",
       "src": "book"
     },
@@ -379,10 +1214,39 @@
       "operands": "dst, src",
       "category": "論理",
       "summary": "ビット単位の論理積を dst に格納する。マスク生成・ビットクリアに使う。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "AND r/m64, r64", "opcode": "REX.W 21 /r", "bytes": 3}, {"syntax": "AND r/m64, imm32", "opcode": "REX.W 81 /4 id", "bytes": 6}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "AND r/m64, r64",
+          "opcode": "REX.W 21 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "AND r/m64, imm32",
+          "opcode": "REX.W 81 /4 id",
+          "length": "可変"
+        }
+      ],
       "notes": "O と C は必ず 0、A は未定義。",
       "src": "book"
     },
@@ -391,10 +1255,39 @@
       "operands": "dst, src",
       "category": "論理",
       "summary": "ビット単位の論理和を dst に格納する。ビットセットに使う。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "OR r/m64, r64", "opcode": "REX.W 09 /r", "bytes": 3}, {"syntax": "OR r/m64, imm32", "opcode": "REX.W 81 /1 id", "bytes": 6}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "OR r/m64, r64",
+          "opcode": "REX.W 09 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "OR r/m64, imm32",
+          "opcode": "REX.W 81 /1 id",
+          "length": "可変"
+        }
+      ],
       "notes": "xor と同様に O=C=0。",
       "src": "book"
     },
@@ -403,10 +1296,39 @@
       "operands": "dst, src",
       "category": "論理",
       "summary": "ビット単位の排他的論理和を dst に格納する。ビット反転や排他選択に使う。",
-      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
-      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "XOR r/m64, r64", "opcode": "REX.W 31 /r", "bytes": 3}, {"syntax": "XOR r/m64, imm32", "opcode": "REX.W 81 /6 id", "bytes": 6}],
+      "addressing": [
+        "レジスタ",
+        "即値",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "0",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "XOR r/m64, r64",
+          "opcode": "REX.W 31 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "XOR r/m64, imm32",
+          "opcode": "REX.W 81 /6 id",
+          "length": "可変"
+        }
+      ],
       "notes": "xor eax, eax は「0 を設定しつつフラグ更新」の 1 命令イディオム。",
       "src": "book"
     },
@@ -415,10 +1337,33 @@
       "operands": "dst",
       "category": "論理",
       "summary": "dst の全ビットを反転する（1 の補数）。フラグは一切変化しない。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "NOT r/m64", "opcode": "REX.W F7 /2", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "NOT r/m64",
+          "opcode": "REX.W F7 /2",
+          "length": "可変"
+        }
+      ],
       "notes": "フラグ更新が必要なら xor dst, dst / sub dst, 1 か NEG を使う。",
       "src": "book"
     },
@@ -427,10 +1372,45 @@
       "operands": "dst, count",
       "category": "シフト",
       "summary": "左論理シフト。上位ビットを C に送り出し、下位に 0 を詰める。×2^count に相当。SAL と同一。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg, 1 ビット", "cycles": 1}, {"cond": "reg, CL", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SHL r/m64, 1", "opcode": "REX.W D1 /4", "bytes": 3}, {"syntax": "SHL r/m64, imm8", "opcode": "REX.W C1 /4 ib", "bytes": 4}, {"syntax": "SHL r/m64, CL", "opcode": "REX.W D3 /4", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SHL r/m64, 1",
+          "opcode": "REX.W D1 /4",
+          "length": "可変"
+        },
+        {
+          "syntax": "SHL r/m64, imm8",
+          "opcode": "REX.W C1 /4 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "SHL r/m64, CL",
+          "opcode": "REX.W D3 /4",
+          "length": "可変"
+        }
+      ],
       "notes": "count は 64bit では mod 64、32bit では mod 32 で使われる。\ncount=1 のときのみ OF が定義（結果の MSB と C の XOR）、count≠0 なら S/Z/P 更新。count=0 ならフラグ不変。\nシフトアウトしたビットが C に入るため、ビットテストに使える。",
       "src": "book"
     },
@@ -439,11 +1419,46 @@
       "operands": "dst, count",
       "category": "シフト",
       "summary": "右論理シフト。下位ビットを C に送り出し、上位に 0 を詰める。符号なし ÷2^count に相当。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg, 1 ビット", "cycles": 1}, {"cond": "reg, CL", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SHR r/m64, 1", "opcode": "REX.W D1 /5", "bytes": 3}, {"syntax": "SHR r/m64, imm8", "opcode": "REX.W C1 /5 ib", "bytes": 4}, {"syntax": "SHR r/m64, CL", "opcode": "REX.W D3 /5", "bytes": 3}],
-      "notes": "count=1 のとき OF は元の MSB。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SHR r/m64, 1",
+          "opcode": "REX.W D1 /5",
+          "length": "可変"
+        },
+        {
+          "syntax": "SHR r/m64, imm8",
+          "opcode": "REX.W C1 /5 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "SHR r/m64, CL",
+          "opcode": "REX.W D3 /5",
+          "length": "可変"
+        }
+      ],
+      "notes": "count=1 のとき OF は元の MSB。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book"
     },
     {
@@ -451,11 +1466,46 @@
       "operands": "dst, count",
       "category": "シフト",
       "summary": "右算術シフト。符号ビット（MSB）をコピーして詰める。符号付き ÷2^count に相当。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg, 1 ビット", "cycles": 1}, {"cond": "reg, CL", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SAR r/m64, 1", "opcode": "REX.W D1 /7", "bytes": 3}, {"syntax": "SAR r/m64, imm8", "opcode": "REX.W C1 /7 ib", "bytes": 4}, {"syntax": "SAR r/m64, CL", "opcode": "REX.W D3 /7", "bytes": 3}],
-      "notes": "count=1 のとき OF=0。符号付き除算では商が 0 方向へ丸められる点に注意（-1÷2 は 0 ではなく -1）。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SAR r/m64, 1",
+          "opcode": "REX.W D1 /7",
+          "length": "可変"
+        },
+        {
+          "syntax": "SAR r/m64, imm8",
+          "opcode": "REX.W C1 /7 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "SAR r/m64, CL",
+          "opcode": "REX.W D3 /7",
+          "length": "可変"
+        }
+      ],
+      "notes": "count=1 のとき OF=0。SAR は負の無限大方向へ丸めるため、0 方向に丸める IDIV とは結果が異なる（-1 の SAR 1 は -1、IDIV 2 は 0）。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book"
     },
     {
@@ -463,11 +1513,46 @@
       "operands": "dst, count",
       "category": "シフト",
       "summary": "左ローテート。送り出した上位ビットが下位に戻る（ビット幅で循環）。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg, 1 ビット", "cycles": 1}, {"cond": "reg, CL", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "ROL r/m64, 1", "opcode": "REX.W D1 /0", "bytes": 3}, {"syntax": "ROL r/m64, imm8", "opcode": "REX.W C1 /0 ib", "bytes": 4}, {"syntax": "ROL r/m64, CL", "opcode": "REX.W D3 /0", "bytes": 3}],
-      "notes": "影響フラグは C と O のみ（O は count=1 のとき定義）。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ROL r/m64, 1",
+          "opcode": "REX.W D1 /0",
+          "length": "可変"
+        },
+        {
+          "syntax": "ROL r/m64, imm8",
+          "opcode": "REX.W C1 /0 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "ROL r/m64, CL",
+          "opcode": "REX.W D3 /0",
+          "length": "可変"
+        }
+      ],
+      "notes": "影響フラグは C と O のみ（O は count=1 のとき定義）。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book"
     },
     {
@@ -475,11 +1560,46 @@
       "operands": "dst, count",
       "category": "シフト",
       "summary": "右ローテート。送り出した下位ビットが上位に戻る。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg, 1 ビット", "cycles": 1}, {"cond": "reg, CL", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "ROR r/m64, 1", "opcode": "REX.W D1 /1", "bytes": 3}, {"syntax": "ROR r/m64, imm8", "opcode": "REX.W C1 /1 ib", "bytes": 4}, {"syntax": "ROR r/m64, CL", "opcode": "REX.W D3 /1", "bytes": 3}],
-      "notes": "パックデータの回転に使用。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "ROR r/m64, 1",
+          "opcode": "REX.W D1 /1",
+          "length": "可変"
+        },
+        {
+          "syntax": "ROR r/m64, imm8",
+          "opcode": "REX.W C1 /1 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "ROR r/m64, CL",
+          "opcode": "REX.W D3 /1",
+          "length": "可変"
+        }
+      ],
+      "notes": "パックデータの回転に使用。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book"
     },
     {
@@ -487,11 +1607,46 @@
       "operands": "dst, count",
       "category": "シフト",
       "summary": "キャリーを含む左ローテート（9/17/33/65 ビット循環）。多倍長シフトの連結に使う。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg, 1 ビット", "cycles": 1}, {"cond": "reg, CL", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "RCL r/m64, 1", "opcode": "REX.W D1 /2", "bytes": 3}, {"syntax": "RCL r/m64, imm8", "opcode": "REX.W C1 /2 ib", "bytes": 4}, {"syntax": "RCL r/m64, CL", "opcode": "REX.W D3 /2", "bytes": 3}],
-      "notes": "C → bit0 ← bit7 → C の順で回る。キャリーフラグをビットアキュムレータとして使う用途の基本。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RCL r/m64, 1",
+          "opcode": "REX.W D1 /2",
+          "length": "可変"
+        },
+        {
+          "syntax": "RCL r/m64, imm8",
+          "opcode": "REX.W C1 /2 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "RCL r/m64, CL",
+          "opcode": "REX.W D3 /2",
+          "length": "可変"
+        }
+      ],
+      "notes": "元の CF が bit0 に入り、元の最上位ビットが CF に入る。キャリーフラグをビットアキュムレータとして使う用途の基本。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。8 ビット形式はさらに 9、16 ビット形式は 17 の剰余を回転回数に使う。",
       "src": "book"
     },
     {
@@ -499,11 +1654,46 @@
       "operands": "dst, count",
       "category": "シフト",
       "summary": "キャリーを含む右ローテート（9/17/33/65 ビット循環）。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "reg, 1 ビット", "cycles": 1}, {"cond": "reg, CL", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "RCR r/m64, 1", "opcode": "REX.W D1 /3", "bytes": 3}, {"syntax": "RCR r/m64, imm8", "opcode": "REX.W C1 /3 ib", "bytes": 4}, {"syntax": "RCR r/m64, CL", "opcode": "REX.W D3 /3", "bytes": 3}],
-      "notes": "",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RCR r/m64, 1",
+          "opcode": "REX.W D1 /3",
+          "length": "可変"
+        },
+        {
+          "syntax": "RCR r/m64, imm8",
+          "opcode": "REX.W C1 /3 ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "RCR r/m64, CL",
+          "opcode": "REX.W D3 /3",
+          "length": "可変"
+        }
+      ],
+      "notes": "回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。8 ビット形式はさらに 9、16 ビット形式は 17 の剰余を回転回数に使う。",
       "src": "book"
     },
     {
@@ -511,11 +1701,41 @@
       "operands": "dst, src, count",
       "category": "シフト",
       "summary": "dst を左に count シフトし、空いたビットに src の上位ビットを詰める（src は不変）。多倍長左シフトに使う。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SHLD r/m64, r64, imm8", "opcode": "REX.W 0F A4 /r ib", "bytes": 5}, {"syntax": "SHLD r/m64, r64, CL", "opcode": "REX.W 0F A5 /r", "bytes": 4}],
-      "notes": "送り出された src のビットが C に入る。多倍長シフトに使用。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SHLD r/m64, r64, imm8",
+          "opcode": "REX.W 0F A4 /r ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "SHLD r/m64, r64, CL",
+          "opcode": "REX.W 0F A5 /r",
+          "length": "可変"
+        }
+      ],
+      "notes": "dst から最後に送り出されたビットが C に入る。多倍長シフトに使用。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book"
     },
     {
@@ -523,11 +1743,41 @@
       "operands": "dst, src, count",
       "category": "シフト",
       "summary": "dst を右に count シフトし、空いた上位ビットに src の下位ビットを詰める（src は不変）。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "CL によるビット数指定", "即値によるビット数指定"],
-      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
-      "cycles": [{"cond": "reg-reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SHRD r/m64, r64, imm8", "opcode": "REX.W 0F AC /r ib", "bytes": 5}, {"syntax": "SHRD r/m64, r64, CL", "opcode": "REX.W 0F AD /r", "bytes": 4}],
-      "notes": "多倍長演算で使用。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "CL によるビット数指定",
+        "即値によるビット数指定"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "U",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SHRD r/m64, r64, imm8",
+          "opcode": "REX.W 0F AC /r ib",
+          "length": "可変"
+        },
+        {
+          "syntax": "SHRD r/m64, r64, CL",
+          "opcode": "REX.W 0F AD /r",
+          "length": "可変"
+        }
+      ],
+      "notes": "多倍長演算で使用。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book"
     },
     {
@@ -535,11 +1785,41 @@
       "operands": "src, bit",
       "category": "シフト/ビット",
       "summary": "src の bit 番目のビットを C フラグにコピーしてテストする。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "reg, 即値", "cycles": 1}, {"cond": "reg/reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜10"}],
-      "encodings": [{"syntax": "BT r/m64, r64", "opcode": "REX.W 0F A3 /r", "bytes": 3}, {"syntax": "BT r/m64, imm8", "opcode": "REX.W 0F BA /4 ib", "bytes": 5}],
-      "notes": "影響フラグは C のみ。メモリのビット番号がオペランド幅を超えると隣接バイトを参照する。\nbts/btc/btr は遅いことがある（性能測定推奨）。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "即値によるビット番号指定",
+        "レジスタによるビット番号指定"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "-",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "BT r/m64, r64",
+          "opcode": "REX.W 0F A3 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "BT r/m64, imm8",
+          "opcode": "REX.W 0F BA /4 ib",
+          "length": "可変"
+        }
+      ],
+      "notes": "ZF は不変、OF/SF/AF/PF は未定義。メモリ形式でビット番号をレジスタ指定すると、番号に応じて対象アドレスが変わる。即値形式では CPU は番号の下位ビットを使い、大きい番号の対応はアセンブラが変位に反映する場合がある。\nbts/btc/btr は遅いことがある（性能測定推奨）。レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。",
       "src": "book"
     },
     {
@@ -547,11 +1827,41 @@
       "operands": "src, bit",
       "category": "シフト/ビット",
       "summary": "指定ビットを C にコピーしたうえで 1 にセットする。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "reg, 即値", "cycles": 1}, {"cond": "reg/reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜10"}],
-      "encodings": [{"syntax": "BTS r/m64, r64", "opcode": "REX.W 0F AB /r", "bytes": 3}, {"syntax": "BTS r/m64, imm8", "opcode": "REX.W 0F BA /5 ib", "bytes": 5}],
-      "notes": "ビットセット（集合）表現の挿入に使える。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "即値によるビット番号指定",
+        "レジスタによるビット番号指定"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "-",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "BTS r/m64, r64",
+          "opcode": "REX.W 0F AB /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "BTS r/m64, imm8",
+          "opcode": "REX.W 0F BA /5 ib",
+          "length": "可変"
+        }
+      ],
+      "notes": "ビットセット（集合）表現の挿入に使える。レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。メモリを変更する形式には LOCK を付けて原子的に操作できる。",
       "src": "book"
     },
     {
@@ -559,11 +1869,41 @@
       "operands": "src, bit",
       "category": "シフト/ビット",
       "summary": "指定ビットを C にコピーしたうえで 0 にリセットする。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "reg, 即値", "cycles": 1}, {"cond": "reg/reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜10"}],
-      "encodings": [{"syntax": "BTR r/m64, r64", "opcode": "REX.W 0F B3 /r", "bytes": 3}, {"syntax": "BTR r/m64, imm8", "opcode": "REX.W 0F BA /6 ib", "bytes": 5}],
-      "notes": "",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "即値によるビット番号指定",
+        "レジスタによるビット番号指定"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "-",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "BTR r/m64, r64",
+          "opcode": "REX.W 0F B3 /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "BTR r/m64, imm8",
+          "opcode": "REX.W 0F BA /6 ib",
+          "length": "可変"
+        }
+      ],
+      "notes": "レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。メモリを変更する形式には LOCK を付けて原子的に操作できる。",
       "src": "book"
     },
     {
@@ -571,11 +1911,41 @@
       "operands": "src, bit",
       "category": "シフト/ビット",
       "summary": "指定ビットを C にコピーしたうえで反転（補数）する。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)", "即値によるビット番号指定", "レジスタによるビット番号指定"],
-      "flags": ["U", "-", "-", "U", "U", "U", "U", "‡"],
-      "cycles": [{"cond": "reg, 即値", "cycles": 1}, {"cond": "reg/reg", "cycles": "1〜3"}, {"cond": "メモリオペランド", "cycles": "3〜10"}],
-      "encodings": [{"syntax": "BTC r/m64, r64", "opcode": "REX.W 0F BB /r", "bytes": 3}, {"syntax": "BTC r/m64, imm8", "opcode": "REX.W 0F BA /7 ib", "bytes": 5}],
-      "notes": "",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)",
+        "即値によるビット番号指定",
+        "レジスタによるビット番号指定"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "-",
+        "U",
+        "U",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "BTC r/m64, r64",
+          "opcode": "REX.W 0F BB /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "BTC r/m64, imm8",
+          "opcode": "REX.W 0F BA /7 ib",
+          "length": "可変"
+        }
+      ],
+      "notes": "レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。メモリを変更する形式には LOCK を付けて原子的に操作できる。",
       "src": "book"
     },
     {
@@ -583,10 +1953,33 @@
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "src の最下位側から最初に 1 になっているビットの位置を dst に入れる。src=0 なら ZF=1。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["U", "-", "-", "U", "‡", "U", "U", "U"],
-      "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "BSF r64, r/m64", "opcode": "REX.W 0F BC /r", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "‡",
+        "U",
+        "U",
+        "U"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "BSF r64, r/m64",
+          "opcode": "REX.W 0F BC /r",
+          "length": "可変"
+        }
+      ],
       "notes": "src=0 のとき dst は未定義（BMI1 の TZCNT は src=0 でビット幅を返す）。ビット走査は BSF ループでも書ける。",
       "src": "book"
     },
@@ -595,10 +1988,33 @@
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "src の最上位側から最初に 1 になっているビットの位置を dst に入れる。src=0 なら ZF=1。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["U", "-", "-", "U", "‡", "U", "U", "U"],
-      "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "BSR r64, r/m64", "opcode": "REX.W 0F BD /r", "bytes": 3}],
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "U",
+        "-",
+        "-",
+        "U",
+        "‡",
+        "U",
+        "U",
+        "U"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "BSR r64, r/m64",
+          "opcode": "REX.W 0F BD /r",
+          "length": "可変"
+        }
+      ],
       "notes": "LZCNT 拡張が符号付き処理で安全な代替。",
       "src": "book"
     },
@@ -607,10 +2023,43 @@
       "operands": "label / reg / mem",
       "category": "分岐",
       "summary": "無条件ジャンプ。ラベルへの相対分岐のほか、レジスタ・メモリ間接ジャンプが可能。",
-      "addressing": ["相対分岐(short/near)", "間接(reg/mem)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "分岐予測成功", "cycles": "1〜2"}, {"cond": "分岐予測ミス", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "JMP rel8", "opcode": "EB cb", "bytes": 2}, {"syntax": "JMP rel32", "opcode": "E9 cd", "bytes": 5}, {"syntax": "JMP r/m64", "opcode": "REX.W FF /4", "bytes": 3}],
+      "addressing": [
+        "相対分岐(short/near)",
+        "間接(reg/mem)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "JMP rel8",
+          "opcode": "EB cb",
+          "bytes": 2
+        },
+        {
+          "syntax": "JMP rel32",
+          "opcode": "E9 cd",
+          "bytes": 5
+        },
+        {
+          "syntax": "JMP r/m64",
+          "opcode": "REX.W FF /4",
+          "length": "可変"
+        }
+      ],
       "notes": "間接ジャンプ（jmp rax など）はジャンプテーブルや状態マシンに使う。\n64bit モードで 16bit 相対分岐は存在しない。",
       "src": "book"
     },
@@ -619,10 +2068,37 @@
       "operands": "label",
       "category": "分岐",
       "summary": "条件付きジャンプ。フラグの状態をテストして成立時のみ rel8/rel32 のターゲットへ分岐する（16 種類の条件）。",
-      "addressing": ["相対分岐(short/near)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "分岐予測成功", "cycles": "1〜2"}, {"cond": "分岐予測ミス", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "Jcc rel8", "opcode": "70+cc cb", "bytes": 2}, {"syntax": "Jcc rel32", "opcode": "0F 80+cc cd", "bytes": 6}],
+      "addressing": [
+        "相対分岐(short/near)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "Jcc rel8",
+          "opcode": "70+cc cb",
+          "bytes": 2
+        },
+        {
+          "syntax": "Jcc rel32",
+          "opcode": "0F 80+cc cd",
+          "bytes": 6
+        }
+      ],
       "notes": "cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。\n主な別名: je=jz / jne=jnz / jb=jc=jnae / jae=jnc=jnb / jbe=jna / ja=jnbe / jl=jnge / jge=jnl / jle=jng / jg=jnle / jp=jpe / jnp=jpo。\n符号付きは SF と O、符号なしは C と Z で判定。",
       "src": "book"
     },
@@ -631,47 +2107,169 @@
       "operands": "label",
       "category": "分岐",
       "summary": "RCX が 0 のときだけ rel8 へ分岐する（64ビットモード専用）。",
-      "addressing": ["相対分岐(short)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "1〜3"}],
-      "encodings": [],
-      "notes": "アドレスサイズ 32 では JECXZ（67 プレフィックス）。分岐先は short のみ。\\n",
+      "addressing": [
+        "相対分岐(short)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "JRCXZ rel8",
+          "opcode": "E3 cb",
+          "bytes": 2
+        }
+      ],
+      "notes": "アドレスサイズ 32 では JECXZ（67 プレフィックス）。分岐先は short のみ。\n",
+      "src": "book"
+    },
+    {
+      "mnemonic": "JECXZ",
+      "operands": "label",
+      "category": "分岐",
+      "summary": "ECX が 0 のときだけ rel8 へ分岐する。",
+      "addressing": [
+        "相対分岐(short)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "JECXZ rel8（64bit モード）",
+          "opcode": "67 E3 cb",
+          "bytes": 3
+        }
+      ],
+      "notes": "64 ビットモードでアドレスサイズを 32 ビットに変更する。JRCXZ は E3 cb。分岐先は short のみ。",
       "src": "book"
     },
     {
       "mnemonic": "LOOP",
       "operands": "label",
       "category": "分岐",
-      "summary": "RCX を 1 減算し、0 でなければ rel8 へ分岐する（減算と JNZ の合一）。アドレスサイズ 16/32 では CX/ECX を使う。",
-      "addressing": ["相対分岐(short)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "5〜8"}],
-      "encodings": [{"syntax": "LOOP rel8", "opcode": "E2 cb", "bytes": 2}],
-      "notes": "RCX の減算はフラグに影響しない。dec/jnz の 2 命令でも同じ動作になる。",
+      "summary": "RCX を 1 減算し、0 でなければ rel8 へ分岐する（減算と JNZ の合一）。64 ビットモードのアドレスサイズ 32 では ECX を使う。",
+      "addressing": [
+        "相対分岐(short)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOOP rel8",
+          "opcode": "E2 cb",
+          "bytes": 2
+        }
+      ],
+      "notes": "RCX の減算はフラグに影響しない。dec/jnz でも同じカウント分岐を作れるが、DEC はフラグを更新する。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book"
     },
     {
       "mnemonic": "LOOPE",
       "operands": "label",
       "category": "分岐",
-      "summary": "RCX を 1 減算し、0 以外かつ ZF=1 のとき rel8 へ分岐する。LOOPZ と同じ。アドレスサイズ 16/32 では CX/ECX を使う。",
-      "addressing": ["相対分岐(short)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "5〜8"}],
-      "encodings": [{"syntax": "LOOPE rel8", "opcode": "E1 cb", "bytes": 2}],
-      "notes": "cmps/scas と組み合わせて一致の連なりをたどる。",
+      "summary": "RCX を 1 減算し、0 以外かつ ZF=1 のとき rel8 へ分岐する。LOOPZ と同じ。64 ビットモードのアドレスサイズ 32 では ECX を使う。",
+      "addressing": [
+        "相対分岐(short)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOOPE rel8",
+          "opcode": "E1 cb",
+          "bytes": 2
+        }
+      ],
+      "notes": "cmps/scas と組み合わせて一致の連なりをたどる。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book"
     },
     {
       "mnemonic": "LOOPNE",
       "operands": "label",
       "category": "分岐",
-      "summary": "RCX を 1 減算し、0 以外かつ ZF=0 のとき rel8 へ分岐する。LOOPNZ と同じ。アドレスサイズ 16/32 では CX/ECX を使う。",
-      "addressing": ["相対分岐(short)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "5〜8"}],
-      "encodings": [{"syntax": "LOOPNE rel8", "opcode": "E0 cb", "bytes": 2}],
-      "notes": "cmps/scas と組み合わせて不一致を見つけたら抜ける。",
+      "summary": "RCX を 1 減算し、0 以外かつ ZF=0 のとき rel8 へ分岐する。LOOPNZ と同じ。64 ビットモードのアドレスサイズ 32 では ECX を使う。",
+      "addressing": [
+        "相対分岐(short)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOOPNE rel8",
+          "opcode": "E0 cb",
+          "bytes": 2
+        }
+      ],
+      "notes": "CMPS/SCAS と組み合わせると ZF=0 の不一致中は継続し、一致（ZF=1）またはカウンタ 0 で終了する。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book"
     },
     {
@@ -679,10 +2277,38 @@
       "operands": "label / reg / mem",
       "category": "サブルーチン",
       "summary": "戻りアドレス（次の命令の RIP）をスタックに積んでからプロシージャへジャンプする。",
-      "addressing": ["相対分岐(short/near)", "間接(reg/mem)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "予測成功", "cycles": "1〜3"}, {"cond": "予測ミス", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "CALL rel32", "opcode": "E8 cd", "bytes": 5}, {"syntax": "CALL r/m64", "opcode": "REX.W FF /2", "bytes": 3}],
+      "addressing": [
+        "相対分岐(short/near)",
+        "間接(reg/mem)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CALL rel32",
+          "opcode": "E8 cd",
+          "bytes": 5
+        },
+        {
+          "syntax": "CALL r/m64",
+          "opcode": "REX.W FF /2",
+          "length": "可変"
+        }
+      ],
       "notes": "近呼び出しでは 8 バイトの戻りアドレスを積む。\nプロシージャポインタ（関数テーブル）は間接呼び出しで実現。",
       "src": "book"
     },
@@ -691,11 +2317,38 @@
       "operands": "imm16（省略可）",
       "category": "サブルーチン",
       "summary": "スタックから戻りアドレスを取り出して復帰する。imm16 指定時は復帰後に RSP に加算する。",
-      "addressing": ["スタック"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "予測成功", "cycles": "1〜3"}, {"cond": "予測ミス", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "RET", "opcode": "C3", "bytes": 1}, {"syntax": "RET imm16", "opcode": "C2 iw", "bytes": 3}],
-      "notes": "RET imm16 は呼び出し側スタック整理（stdcall 系）用。64bit の Windows ABI では使用しない。",
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RET",
+          "opcode": "C3",
+          "bytes": 1
+        },
+        {
+          "syntax": "RET imm16",
+          "opcode": "C2 iw",
+          "bytes": 3
+        }
+      ],
+      "notes": "RET imm16 は呼び出された側でスタック引数を整理する規約（stdcall 系など）に使われる。64bit の Windows ABI では使用しない。",
       "src": "book"
     },
     {
@@ -703,11 +2356,33 @@
       "operands": "",
       "category": "サブルーチン",
       "summary": "RSP を RBP に戻したうえで RBP をポップする（フレームポインタ破棄）。",
-      "addressing": ["スタック"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "1〜3"}],
-      "encodings": [{"syntax": "LEAVE", "opcode": "C9", "bytes": 1}],
-      "notes": "標準エピローグ（mov rsp, rbp / pop rbp）を 1 命令にしたもの。\\n",
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LEAVE",
+          "opcode": "C9",
+          "bytes": 1
+        }
+      ],
+      "notes": "標準エピローグ（mov rsp, rbp / pop rbp）を 1 命令にしたもの。\n",
       "src": "book"
     },
     {
@@ -715,22 +2390,70 @@
       "operands": "n",
       "category": "サブルーチン",
       "summary": "ソフトウェア割り込みを発生させる。IDT の n 番ゲートへ制御を移す。INT3（CC）は 1 バイトのブレークポイント。",
-      "addressing": ["即値"],
-      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "実装依存（ゲート処理込み）", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "INT imm8", "opcode": "CD ib", "bytes": 2}, {"syntax": "INT3", "opcode": "CC", "bytes": 1}],
-      "notes": "ゲート通過時に RFLAGS/CS/RIP（必要に応じ SS/RSP）がスタックに積まれ、TF と IF がクリアされる。\n旧 32bit Linux は int 0x80 でシステムコールを行っていた（64bit では SYSCALL）。",
+      "addressing": [
+        "即値"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "‡",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INT imm8",
+          "opcode": "CD ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "INT3",
+          "opcode": "CC",
+          "bytes": 1
+        }
+      ],
+      "notes": "64 ビットモードのゲート通過時は SS/RSP と RFLAGS/CS/RIP がスタックに積まれる。TF はクリアされ、IF は割り込みゲートではクリア、トラップゲートでは保持される。\n旧 32bit Linux は int 0x80 でシステムコールを行っていた（64bit では SYSCALL）。",
       "src": "note"
     },
     {
       "mnemonic": "IRETQ",
       "operands": "",
       "category": "サブルーチン",
-      "summary": "割り込み／例外ハンドラから 64bit で復帰する。スタックから 8 バイトのリターンアドレスを RIP へ、フラグを RFLAGS へ復帰する。",
-      "addressing": ["スタック"],
-      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "実装依存（特権レベル切替込み）", "cycles": "実装依存"}],
-      "encodings": [],
+      "summary": "割り込み／例外ハンドラから 64bit で復帰する。スタックフレームから RIP、CS、RFLAGS、RSP、SS を復帰する。",
+      "addressing": [
+        "スタック"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IRETQ",
+          "opcode": "48 CF"
+        }
+      ],
       "notes": "64bit モードの割り込みからの復帰は本命令を使う（16/32bit 幅の IRET/IRETD とは別ニーモニック）。",
       "src": "book"
     },
@@ -739,11 +2462,58 @@
       "operands": "AL/AX/EAX, imm8 / DX",
       "category": "I/O",
       "summary": "I/O ポート（0000〜FFFF）から AL/AX/EAX へデータを入力する。ポート番号は imm8（固定）または DX（可変）。64bit モードでも 32bit 幅が最大。",
-      "addressing": ["I/O（ポート番号は imm8 または DX）"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "7〜14"}],
-      "encodings": [{"syntax": "IN AL, imm8", "opcode": "E4 ib", "bytes": 2}, {"syntax": "IN AX, imm8", "opcode": "E5 ib", "bytes": 2}, {"syntax": "IN EAX, imm8", "opcode": "E5 ib", "bytes": 2}, {"syntax": "IN AL, DX", "opcode": "EC", "bytes": 1}, {"syntax": "IN AX, DX", "opcode": "ED", "bytes": 1}, {"syntax": "IN EAX, DX", "opcode": "ED", "bytes": 1}],
-      "notes": "特権命令。メモリ空間と分離された 64KB の I/O 空間を扱う。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。",
+      "addressing": [
+        "I/O（ポート番号は imm8 または DX）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "IN AL, imm8",
+          "opcode": "E4 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "IN AX, imm8",
+          "opcode": "66 E5 ib",
+          "bytes": 3
+        },
+        {
+          "syntax": "IN EAX, imm8",
+          "opcode": "E5 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "IN AL, DX",
+          "opcode": "EC",
+          "bytes": 1
+        },
+        {
+          "syntax": "IN AX, DX",
+          "opcode": "66 ED",
+          "bytes": 2
+        },
+        {
+          "syntax": "IN EAX, DX",
+          "opcode": "ED",
+          "bytes": 1
+        }
+      ],
+      "notes": "I/O の許可は CPL/IOPL と TSS の I/O 許可ビットマップに依存する。メモリ空間と分離された 64KB の I/O 空間を扱う。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。",
       "src": "book"
     },
     {
@@ -751,35 +2521,126 @@
       "operands": "imm8 / DX, AL/AX/EAX",
       "category": "I/O",
       "summary": "AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ出力する。ポート番号は imm8（固定）または DX（可変）。64bit モードでも 32bit 幅が最大。",
-      "addressing": ["I/O（ポート番号は imm8 または DX）"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": "3〜26"}],
-      "encodings": [{"syntax": "OUT imm8, AL", "opcode": "E6 ib", "bytes": 2}, {"syntax": "OUT imm8, AX", "opcode": "E7 ib", "bytes": 2}, {"syntax": "OUT imm8, EAX", "opcode": "E7 ib", "bytes": 2}, {"syntax": "OUT DX, AL", "opcode": "EE", "bytes": 1}, {"syntax": "OUT DX, AX", "opcode": "EF", "bytes": 1}, {"syntax": "OUT DX, EAX", "opcode": "EF", "bytes": 1}],
-      "notes": "特権命令。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。連続転送は OUTS 文字列命令。",
+      "addressing": [
+        "I/O（ポート番号は imm8 または DX）"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "OUT imm8, AL",
+          "opcode": "E6 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "OUT imm8, AX",
+          "opcode": "66 E7 ib",
+          "bytes": 3
+        },
+        {
+          "syntax": "OUT imm8, EAX",
+          "opcode": "E7 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "OUT DX, AL",
+          "opcode": "EE",
+          "bytes": 1
+        },
+        {
+          "syntax": "OUT DX, AX",
+          "opcode": "66 EF",
+          "bytes": 2
+        },
+        {
+          "syntax": "OUT DX, EAX",
+          "opcode": "EF",
+          "bytes": 1
+        }
+      ],
+      "notes": "I/O の許可は CPL/IOPL と TSS の I/O 許可ビットマップに依存する。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。連続転送は OUTS 文字列命令。",
       "src": "book"
     },
     {
       "mnemonic": "SYSCALL",
       "operands": "",
       "category": "サブルーチン",
-      "summary": "高速システムコール。RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。",
-      "addressing": ["暗黙"],
-      "flags": ["U", "U", "0", "U", "U", "U", "U", "U"],
-      "cycles": [{"cond": "実装依存（数十クロック規模）", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "SYSCALL", "opcode": "0F 05", "bytes": 2}],
-      "notes": "RFLAGS は IA32_FMASK のマスクで AND される（通常 IF/TF 等がクリアされる）。\nSYSRET が対の復帰命令。32bit の sysenter/int 0x80 に代わる現代の標準。",
+      "summary": "高速システムコール。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SYSCALL",
+          "opcode": "0F 05",
+          "bytes": 2
+        }
+      ],
+      "notes": "RFLAGS は IA32_FMASK のビットが 1 の位置をクリアする（RFLAGS AND NOT IA32_FMASK）。IF を含む各フラグの変更は MSR 設定に依存する。\nRSP は保存・切り替えられないため、必要なスタック切り替えは OS が行う。SYSRET が対の復帰命令。",
       "src": "note"
     },
     {
       "mnemonic": "SYSRET",
       "operands": "",
       "category": "サブルーチン",
-      "summary": "システムコールからユーザーへ復帰する。RIP←RCX、RFLAGS←R11。",
-      "addressing": ["暗黙"],
-      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "実装依存", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "SYSRET", "opcode": "0F 07", "bytes": 2}],
-      "notes": "特権命令（Ring 0 のみ）。RCX はカノニカルアドレスでなければならない。",
+      "summary": "システムコールからユーザーへ復帰する。64 ビット形式は RIP を RCX から復帰し、R11 を基に RFLAGS を復帰する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SYSRET",
+          "opcode": "0F 07",
+          "bytes": 2
+        }
+      ],
+      "notes": "特権命令（Ring 0 のみ）。64 ビット形式では RCX はカノニカルアドレスでなければならない。RSP は変更されないため、必要な復帰は OS が行う。",
       "src": "note"
     },
     {
@@ -787,11 +2648,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI を ±1 する。",
-      "addressing": ["レジスタ間接(RSI/RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "MOVSB", "opcode": "A4", "bytes": 1}],
-      "notes": "転送方向は DF（cld=増加、std=減少）。Microsoft ABI はプロシージャ入口で DF=0 を要求する。\nソースは DS:RSI、転送先は ES:RDI（64bit では両ベース 0）。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVSB",
+          "opcode": "A4",
+          "bytes": 1
+        }
+      ],
+      "notes": "転送方向は DF（cld=増加、std=減少）。Microsoft ABI はプロシージャ入口で DF=0 を要求する。\n既定のソースは DS:RSI、転送先は ES:RDI（64 ビットモードでは DS/ES ベースは 0）。ソースは FS/GS に上書きできる。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -799,11 +2682,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すワードを RDI へ転送し、DF に応じて RSI/RDI を ±2 する。",
-      "addressing": ["レジスタ間接(RSI/RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "MOVSW", "opcode": "66 A5", "bytes": 2}],
-      "notes": "rep movsw の RCX はワード数（要素数）で、バイト数ではない。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVSW",
+          "opcode": "66 A5",
+          "bytes": 2
+        }
+      ],
+      "notes": "rep movsw の RCX はワード数（要素数）で、バイト数ではない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -811,11 +2716,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すダブルワードを RDI へ転送し、DF に応じて RSI/RDI を ±4 する。",
-      "addressing": ["レジスタ間接(RSI/RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "MOVSD", "opcode": "A5", "bytes": 1}],
-      "notes": "MASM は MOVSD を多重定義（オーバーロード）する: オペランドなしは文字列転送の本命令、オペランド付きは SSE のスカラ倍精度 movsd。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVSD",
+          "opcode": "A5",
+          "bytes": 1
+        }
+      ],
+      "notes": "MASM は MOVSD を多重定義（オーバーロード）する: オペランドなしは文字列転送の本命令、オペランド付きは SSE のスカラ倍精度 movsd。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -823,11 +2750,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すクアッドワードを RDI へ転送し、DF に応じて RSI/RDI を ±8 する。",
-      "addressing": ["レジスタ間接(RSI/RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "MOVSQ", "opcode": "REX.W A5", "bytes": 2}],
-      "notes": "rep movsq は 8 バイト単位のブロックコピー（memcpy 的用途）に適し、大量コピーでは movsq がほぼ最速とされる。RCX はクアッドワード数。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "MOVSQ",
+          "opcode": "REX.W A5",
+          "bytes": 2
+        }
+      ],
+      "notes": "rep movsq は 8 バイト単位のブロックコピーに使う。性能は CPU とサイズに依存する。RCX はクアッドワード数。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -835,11 +2784,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "STOSB", "opcode": "AA", "bytes": 1}],
-      "notes": "rep stosb でメモリ領域を一括フィル（memset 的用途）。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STOSB",
+          "opcode": "AA",
+          "bytes": 1
+        }
+      ],
+      "notes": "rep stosb でメモリ領域を一括フィル（memset 的用途）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -847,10 +2818,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "AX の値を RDI の指すワードへ格納し、DF に応じて RDI を ±2 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "STOSW", "opcode": "66 AB", "bytes": 2}],
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STOSW",
+          "opcode": "66 AB",
+          "bytes": 2
+        }
+      ],
+      "notes": "64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -858,10 +2852,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "EAX の値を RDI の指すダブルワードへ格納し、DF に応じて RDI を ±4 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "STOSD", "opcode": "AB", "bytes": 1}],
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STOSD",
+          "opcode": "AB",
+          "bytes": 1
+        }
+      ],
+      "notes": "64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -869,11 +2886,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RAX の値を RDI の指すクアッドワードへ格納し、DF に応じて RDI を ±8 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存（ERMSB 等で最適化）"}],
-      "encodings": [{"syntax": "STOSQ", "opcode": "REX.W AB", "bytes": 2}],
-      "notes": "rep stosq は 8 バイト単位の一括フィルに対応。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STOSQ",
+          "opcode": "REX.W AB",
+          "bytes": 2
+        }
+      ],
+      "notes": "rep stosq は 8 バイト単位の一括フィルに対応。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -881,11 +2920,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指す 1 バイトを AL に読み込み、DF に応じて RSI を ±1 する。",
-      "addressing": ["レジスタ間接(RSI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}],
-      "encodings": [{"syntax": "LODSB", "opcode": "AC", "bytes": 1}],
-      "notes": "rep を付けても最後の 1 要素しか残らないため通常は単独使用。lods/stos の組合せで変換ループを構築。",
+      "addressing": [
+        "レジスタ間接(RSI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LODSB",
+          "opcode": "AC",
+          "bytes": 1
+        }
+      ],
+      "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。lods/stos の組合せで変換ループを構築。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -893,11 +2954,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すワードを AX に読み込み、DF に応じて RSI を ±2 する。",
-      "addressing": ["レジスタ間接(RSI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}],
-      "encodings": [{"syntax": "LODSW", "opcode": "66 AD", "bytes": 2}],
-      "notes": "rep を付けても最後の 1 要素しか残らないため通常は単独使用。",
+      "addressing": [
+        "レジスタ間接(RSI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LODSW",
+          "opcode": "66 AD",
+          "bytes": 2
+        }
+      ],
+      "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -905,11 +2988,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すダブルワードを EAX に読み込み、DF に応じて RSI を ±4 する。",
-      "addressing": ["レジスタ間接(RSI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}],
-      "encodings": [{"syntax": "LODSD", "opcode": "AD", "bytes": 1}],
-      "notes": "rep を付けても最後の 1 要素しか残らないため通常は単独使用。",
+      "addressing": [
+        "レジスタ間接(RSI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LODSD",
+          "opcode": "AD",
+          "bytes": 1
+        }
+      ],
+      "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -917,11 +3022,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すクアッドワードを RAX に読み込み、DF に応じて RSI を ±8 する。",
-      "addressing": ["レジスタ間接(RSI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}],
-      "encodings": [{"syntax": "LODSQ", "opcode": "REX.W AD", "bytes": 2}],
-      "notes": "rep を付けても最後の 1 要素しか残らないため通常は単独使用。",
+      "addressing": [
+        "レジスタ間接(RSI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LODSQ",
+          "opcode": "REX.W AD",
+          "bytes": 2
+        }
+      ],
+      "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -929,11 +3056,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "DX の指す I/O ポートから 1 バイトを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±1 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "INSB", "opcode": "6C", "bytes": 1}],
-      "notes": "特権命令。rep insb で DX 指定ポートからメモリへのブロック入力（RCX は要素数）。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INSB",
+          "opcode": "6C",
+          "bytes": 1
+        }
+      ],
+      "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep insb で DX 指定ポートからメモリへのブロック入力（RCX は要素数）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -941,11 +3090,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "DX の指す I/O ポートから 1 ワードを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±2 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "INSW", "opcode": "66 6D", "bytes": 2}],
-      "notes": "特権命令。rep でブロック入力可。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INSW",
+          "opcode": "66 6D",
+          "bytes": 2
+        }
+      ],
+      "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック入力可。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -953,11 +3124,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "DX の指す I/O ポートから 1 ダブルワードを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±4 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "INSD", "opcode": "6D", "bytes": 1}],
-      "notes": "特権命令。rep でブロック入力可。64bit 幅（REX.W 形）は存在しない。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "INSD",
+          "opcode": "6D",
+          "bytes": 1
+        }
+      ],
+      "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック入力可。64bit 幅（REX.W 形）は存在しない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -965,11 +3158,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すメモリから 1 バイトを読み込み DX の指す I/O ポートへ出力し、DF に応じて RSI を ±1 する。",
-      "addressing": ["レジスタ間接(RSI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "OUTSB", "opcode": "6E", "bytes": 1}],
-      "notes": "特権命令。rep outsb でメモリから DX 指定ポートへのブロック出力（RCX は要素数）。",
+      "addressing": [
+        "レジスタ間接(RSI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "OUTSB",
+          "opcode": "6E",
+          "bytes": 1
+        }
+      ],
+      "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep outsb でメモリから DX 指定ポートへのブロック出力（RCX は要素数）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -977,11 +3192,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すメモリから 1 ワードを読み込み DX の指す I/O ポートへ出力し、DF に応じて RSI を ±2 する。",
-      "addressing": ["レジスタ間接(RSI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "OUTSW", "opcode": "66 6F", "bytes": 2}],
-      "notes": "特権命令。rep でブロック出力可。",
+      "addressing": [
+        "レジスタ間接(RSI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "OUTSW",
+          "opcode": "66 6F",
+          "bytes": 2
+        }
+      ],
+      "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック出力可。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -989,11 +3226,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すメモリから 1 ダブルワードを読み込み DX の指す I/O ポートへ出力し、DF に応じて RSI を ±4 する。",
-      "addressing": ["レジスタ間接(RSI)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REP 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "OUTSD", "opcode": "6F", "bytes": 1}],
-      "notes": "特権命令。rep でブロック出力可。64bit 幅（REX.W 形）は存在しない。",
+      "addressing": [
+        "レジスタ間接(RSI)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "OUTSD",
+          "opcode": "6F",
+          "bytes": 1
+        }
+      ],
+      "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック出力可。64bit 幅（REX.W 形）は存在しない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -1001,11 +3260,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "AL と RDI の指す 1 バイトを比較（フラグのみ更新）し、DF に応じて RDI を ±1 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REPNE 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "SCASB", "opcode": "AE", "bytes": 1}, {"syntax": "SCASQ", "opcode": "REX.W AF", "bytes": 2}],
-      "notes": "repne scasb は「指定バイト（例: 0 終端）を探す」定番。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SCASB",
+          "opcode": "AE",
+          "bytes": 1
+        }
+      ],
+      "notes": "repne scasb は「指定バイト（例: 0 終端）を探す」定番。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -1013,11 +3294,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "AX と RDI の指すワードを比較（フラグのみ更新）し、DF に応じて RDI を ±2 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REPNE 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "SCASW", "opcode": "66 AF", "bytes": 2}],
-      "notes": "repne scasw でワード列の検索。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SCASW",
+          "opcode": "66 AF",
+          "bytes": 2
+        }
+      ],
+      "notes": "repne scasw でワード列の検索。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -1025,11 +3328,67 @@
       "operands": "",
       "category": "文字列",
       "summary": "EAX と RDI の指すダブルワードを比較（フラグのみ更新）し、DF に応じて RDI を ±4 する。",
-      "addressing": ["レジスタ間接(RDI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REPNE 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "SCASD", "opcode": "AF", "bytes": 1}],
-      "notes": "repne scasd でダブルワード列の検索。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SCASD",
+          "opcode": "AF",
+          "bytes": 1
+        }
+      ],
+      "notes": "repne scasd でダブルワード列の検索。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "SCASQ",
+      "operands": "",
+      "category": "文字列",
+      "summary": "RAX と RDI の指すクアッドワードを比較し、フラグを更新して DF に応じ RDI を ±8 する。",
+      "addressing": [
+        "レジスタ間接(RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SCASQ",
+          "opcode": "REX.W AF",
+          "bytes": 2
+        }
+      ],
+      "notes": "REPNE と組み合わせる場合、RCX は 8 バイト要素の数。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -1037,11 +3396,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI と RDI の指す 1 バイトを比較（フラグのみ更新）し、両インデックスを進める。",
-      "addressing": ["レジスタ間接(RSI/RDI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REPE 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "CMPSB", "opcode": "A6", "bytes": 1}, {"syntax": "CMPSQ", "opcode": "REX.W A7", "bytes": 2}],
-      "notes": "repe cmpsb で文字列一致判定（strcmp 的用途）。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMPSB",
+          "opcode": "A6",
+          "bytes": 1
+        }
+      ],
+      "notes": "repe cmpsb は指定要素数までの比較に使う。NUL を検出して自動停止する機能はない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -1049,11 +3430,33 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI と RDI の指すワードを比較（フラグのみ更新）し、両インデックスを ±2 進める。",
-      "addressing": ["レジスタ間接(RSI/RDI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REPE 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "CMPSW", "opcode": "66 A7", "bytes": 2}],
-      "notes": "repe cmpsw でワード単位の一致判定。RCX はワード数（要素数）。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMPSW",
+          "opcode": "66 A7",
+          "bytes": 2
+        }
+      ],
+      "notes": "repe cmpsw でワード単位の一致判定。RCX はワード数（要素数）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -1061,11 +3464,67 @@
       "operands": "",
       "category": "文字列",
       "summary": "RSI と RDI の指すダブルワードを比較（フラグのみ更新）し、両インデックスを ±4 進める。",
-      "addressing": ["レジスタ間接(RSI/RDI)"],
-      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
-      "cycles": [{"cond": "1 要素", "cycles": "1〜3"}, {"cond": "REPE 1 要素ごと", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "CMPSD", "opcode": "A7", "bytes": 1}],
-      "notes": "repe cmpsd でダブルワード単位の一致判定。RCX はダブルワード数。MASM は movsd と同様に cmpsd を SSE のスカラ倍精度比較と多重定義する（オペランドの有無で区別）。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMPSD",
+          "opcode": "A7",
+          "bytes": 1
+        }
+      ],
+      "notes": "repe cmpsd でダブルワード単位の一致判定。RCX はダブルワード数。MASM は movsd と同様に cmpsd を SSE のスカラ倍精度比較と多重定義する（オペランドの有無で区別）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
+      "src": "book"
+    },
+    {
+      "mnemonic": "CMPSQ",
+      "operands": "",
+      "category": "文字列",
+      "summary": "RSI と RDI の指すクアッドワードを比較し、フラグを更新して DF に応じ両インデックスを ±8 する。",
+      "addressing": [
+        "レジスタ間接(RSI/RDI)"
+      ],
+      "flags": [
+        "‡",
+        "-",
+        "-",
+        "‡",
+        "‡",
+        "‡",
+        "‡",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMPSQ",
+          "opcode": "REX.W A7",
+          "bytes": 2
+        }
+      ],
+      "notes": "REPE と組み合わせる場合、RCX は 8 バイト要素の数。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book"
     },
     {
@@ -1073,35 +3532,101 @@
       "operands": "",
       "category": "文字列",
       "summary": "後続の文字列命令を RCX 回（最大）繰り返すプレフィックス。movs/stos と組み合わせる。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 反復ごと", "cycles": "実装依存（下位の文字列命令に依存）"}],
-      "encodings": [{"syntax": "REP", "opcode": "F3", "bytes": 1}],
-      "notes": "RCX は要素数（movsq なら 8 バイト単位）。反復ごとに RCX が減る。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "REP",
+          "opcode": "F3",
+          "bytes": 1
+        }
+      ],
+      "notes": "RCX は要素数（movsq なら 8 バイト単位）。反復ごとに RCX が減る。64 ビットモードのアドレスサイズ上書き（67h）ではカウンタに ECX を使う。",
       "src": "book"
     },
     {
       "mnemonic": "REPE",
       "operands": "",
       "category": "文字列",
-      "summary": "RCX>0 かつ ZF=1 の間、後続の文字列命令を繰り返すプレフィックス。REPZ と同じ。cmps/scas 用。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 反復ごと", "cycles": "実装依存（下位の文字列命令に依存）"}],
-      "encodings": [{"syntax": "REPE", "opcode": "F3", "bytes": 1}],
-      "notes": "終了条件は RCX=0 または ZF=0（不一致検出）。終了後の ZF で成否判定できる。",
+      "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=1 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "REPE",
+          "opcode": "F3",
+          "bytes": 1
+        }
+      ],
+      "notes": "各反復後に RCX=0 または ZF=0 で終了する。初期 RCX=0 なら比較せず ZF も変わらない。64 ビットモードのアドレスサイズ上書き（67h）ではカウンタに ECX を使う。",
       "src": "book"
     },
     {
       "mnemonic": "REPNE",
       "operands": "",
       "category": "文字列",
-      "summary": "RCX>0 かつ ZF=0 の間、後続の文字列命令を繰り返すプレフィックス。REPNZ と同じ。scas での検索に定番。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "1 反復ごと", "cycles": "実装依存（下位の文字列命令に依存）"}],
-      "encodings": [{"syntax": "REPNE", "opcode": "F2", "bytes": 1}],
-      "notes": "repne scasb で検索成功（ZF=1）/バイト枯渇（RCX=0）を区別できる。",
+      "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=0 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "REPNE",
+          "opcode": "F2",
+          "bytes": 1
+        }
+      ],
+      "notes": "初期 RCX が非ゼロなら反復後の ZF で検索成否を判定できる。RCX=0 は最終要素での一致と不一致の両方で起こりうる。64 ビットモードのアドレスサイズ上書き（67h）ではカウンタに ECX を使う。",
       "src": "book"
     },
     {
@@ -1109,10 +3634,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "次の命令のリード・モディファイ・ライトをアトミックにするプレフィックス（マルチコア同期用）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "付加した命令の実行", "cycles": "実装依存（ロックで大幅に増加）"}],
-      "encodings": [{"syntax": "LOCK", "opcode": "F0", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "LOCK",
+          "opcode": "F0",
+          "bytes": 1
+        }
+      ],
       "notes": "メモリをデスティネーションに持つ add/adc/sub/sbb/and/or/xor/not/neg/inc/dec/bts/btr/btc/cmpxchg 系/xchg 等にのみ付けられる。対応外の命令への適用は例外。xchg は lock なしでもメモリ操作時に暗黙にロックされる。",
       "src": "book"
     },
@@ -1121,10 +3668,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグ C を 0 にクリアする。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "0"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CLC", "opcode": "F8", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "0"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CLC",
+          "opcode": "F8",
+          "bytes": 1
+        }
+      ],
       "notes": "adc/sbb/rcl/rcr の前の初期化。",
       "src": "book"
     },
@@ -1133,10 +3702,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグ C を 1 にセットする。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "1"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "STC", "opcode": "F9", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "1"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STC",
+          "opcode": "F9",
+          "bytes": 1
+        }
+      ],
       "src": "book"
     },
     {
@@ -1144,10 +3735,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグ C を反転する。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CMC", "opcode": "F5", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "‡"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMC",
+          "opcode": "F5",
+          "bytes": 1
+        }
+      ],
       "src": "book"
     },
     {
@@ -1155,10 +3768,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "ディレクションフラグ D を 0 にクリアする（文字列操作を増加方向にする）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "0", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "CLD", "opcode": "FC", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "0",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CLD",
+          "opcode": "FC",
+          "bytes": 1
+        }
+      ],
       "notes": "文字列命令を使う手続きは入口で cld 済みであることが ABI の前提。",
       "src": "book"
     },
@@ -1167,10 +3802,32 @@
       "operands": "",
       "category": "フラグ操作",
       "summary": "ディレクションフラグ D を 1 にセットする（文字列操作を減少方向にする）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "1", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "STD", "opcode": "FD", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "1",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STD",
+          "opcode": "FD",
+          "bytes": 1
+        }
+      ],
       "notes": "使い終わったら必ず cld で戻す。",
       "src": "book"
     },
@@ -1179,10 +3836,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "割り込み許可フラグ IF を 0 にする（マスク可能割り込みを禁止）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "実装依存", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "CLI", "opcode": "FA", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "0",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CLI",
+          "opcode": "FA",
+          "bytes": 1
+        }
+      ],
       "notes": "CPL>IOPL で実行すると #GP。NMI は禁止できない。",
       "src": "book"
     },
@@ -1191,10 +3870,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "割り込み許可フラグ IF を 1 にする（マスク可能割り込みを許可）。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "1", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "実装依存", "cycles": "実装依存"}],
-      "encodings": [{"syntax": "STI", "opcode": "FB", "bytes": 1}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "1",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "STI",
+          "opcode": "FB",
+          "bytes": 1
+        }
+      ],
       "notes": "sti の次の 1 命令は割り込みが抑止される（ret 前の sti で安全に戻れる）。",
       "src": "book"
     },
@@ -1203,11 +3904,32 @@
       "operands": "",
       "category": "システム制御",
       "summary": "CPU を停止状態にする。割り込み・NMI・RESET で再開する。特権命令。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時（再開まで待機）", "cycles": "実装依存"}],
-      "encodings": [],
-      "notes": "Ring 0 用。ユーザーモードで実行すると #GP。\\n",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "HLT",
+          "opcode": "F4"
+        }
+      ],
+      "notes": "Ring 0 用。ユーザーモードで実行すると #GP。\n",
       "src": "book"
     },
     {
@@ -1215,11 +3937,33 @@
       "operands": "",
       "category": "システム制御",
       "summary": "何もしない（90 = XCHG AX, AX）。命令パッチやアライン調整のプレースホルダ。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 1}],
-      "encodings": [{"syntax": "NOP", "opcode": "90", "bytes": 1}],
-      "notes": "可変長命令の x86 ではコードパッチの潤しや 16 バイトアライン調整に使われる。\\n",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "NOP",
+          "opcode": "90",
+          "bytes": 1
+        }
+      ],
+      "notes": "可変長命令の x86 ではコードパッチの潤しや 16 バイトアライン調整に使われる。\n",
       "src": "book"
     },
     {
@@ -1227,23 +3971,198 @@
       "operands": "",
       "category": "システム制御",
       "summary": "EAX で機能リーフを指定し、CPU の対応情報を EAX/EBX/ECX/EDX に返す。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "実装依存", "cycles": "20〜100"}],
-      "encodings": [{"syntax": "CPUID", "opcode": "0F A2", "bytes": 2}],
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CPUID",
+          "opcode": "0F A2",
+          "bytes": 2
+        }
+      ],
       "notes": "EBX を破壊するため呼び出し前の退避が必要（push rbx による退避が定番）。命令セット判別に使用。",
       "src": "book"
+    },
+    {
+      "mnemonic": "RDMSR",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "ECX で指定したモデル固有レジスタを読み、値を EDX:EAX に返す。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RDMSR",
+          "opcode": "0F 32",
+          "bytes": 2
+        }
+      ],
+      "notes": "特権命令（CPL=0）。未対応 MSR や予約値へのアクセスは #GP を発生させる。"
+    },
+    {
+      "mnemonic": "WRMSR",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "ECX で指定したモデル固有レジスタへ EDX:EAX の値を書く。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "WRMSR",
+          "opcode": "0F 30",
+          "bytes": 2
+        }
+      ],
+      "notes": "特権命令（CPL=0）。未対応 MSR や予約値へのアクセスは #GP を発生させる。"
+    },
+    {
+      "mnemonic": "SYSENTER",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "0",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SYSENTER",
+          "opcode": "0F 34",
+          "bytes": 2
+        }
+      ],
+      "notes": "リアルアドレスモード以外で実行可能。CPL 3 のユーザーコードからも呼び出せ、IA32_SYSENTER_CS/ESP/EIP MSR で設定したCPL 0 の入口へ移行する。EFLAGS.VM と IF をクリアする。戻り先やユーザー状態は保存しないため、復帰情報は呼出側・OS間の規約で扱う。"
+    },
+    {
+      "mnemonic": "SYSEXIT",
+      "operands": "",
+      "category": "システム制御",
+      "summary": "SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SYSEXIT",
+          "opcode": "0F 35",
+          "bytes": 2
+        }
+      ],
+      "notes": "リアルアドレス／仮想8086モード以外で実行可能だが、CPL 0 が必要。OSがレジスタに用意した命令ポインタ・スタックポインタと IA32_SYSENTER_CS MSR から計算したセグメントでCPL 3へ移行する。SYSENTERが保存した戻り先から復帰する命令ではない。EFLAGS/RFLAGSは変更しない。"
     },
     {
       "mnemonic": "RDTSC",
       "operands": "",
       "category": "システム制御",
       "summary": "タイムスタンプカウンタ（TSC）を読み EDX:EAX に返す。直列化されない。",
-      "addressing": ["暗黙"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "実装依存", "cycles": "6〜30"}],
-      "encodings": [],
-      "notes": "実行順序が保障されないため、精密測定は CPUID/LFENCE 併用や RDTSCP が定番。\\n",
+      "addressing": [
+        "暗黙"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "RDTSC",
+          "opcode": "0F 31"
+        }
+      ],
+      "notes": "CR4.TSD=0 なら全CPLで実行可能。CR4.TSD=1 の保護モードではCPL 0のみ実行でき、それ以外は #GP。直列化命令ではないため、精密な順序測定には要件に応じてLFENCE等を併用する。",
       "src": "book"
     },
     {
@@ -1251,10 +4170,33 @@
       "operands": "dst8",
       "category": "データ転送",
       "summary": "条件が成立していれば dst（8ビットレジスタ/メモリ）に 1、不成立なら 0 を格納する。",
-      "addressing": ["レジスタ(8bit)", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg", "cycles": 1}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "SETcc r/m8", "opcode": "0F 90+cc /0", "bytes": 3}],
+      "addressing": [
+        "レジスタ(8bit)",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "SETcc r/m8",
+          "opcode": "0F 90+cc /0",
+          "length": "可変"
+        }
+      ],
       "notes": "cc の種類と別名は Jcc の備考と同じ。（sete/setne/seta/setb/setg/setl 等）。\n条件を値（0/1）として扱いたい（比較結果の bool 化）ときに使う。",
       "src": "book"
     },
@@ -1262,12 +4204,35 @@
       "mnemonic": "CMOVcc",
       "operands": "dst, src",
       "category": "データ転送",
-      "summary": "条件が成立したときだけ src を dst に転送する。不成立なら dst は不変（分岐なしの条件選択）。",
-      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
-      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "reg-reg", "cycles": 1}, {"cond": "メモリオペランド", "cycles": "3〜5"}],
-      "encodings": [{"syntax": "CMOVcc r64, r/m64", "opcode": "REX.W 0F 40+cc /r", "bytes": 3}],
-      "notes": "分岐予測ミスを避ける分岐レス実装に有効。cc の種類は Jcc と同じ。",
+      "summary": "条件成立時に src を dst に転送する。32 ビット形式は条件不成立でも対応する 64 ビットレジスタの上位 32 ビットをクリアする。",
+      "addressing": [
+        "レジスタ",
+        "間接(base+index×scale+disp)"
+      ],
+      "flags": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "cycles": [
+        {
+          "cond": "CPU・実行条件に依存",
+          "cycles": "実装依存"
+        }
+      ],
+      "encodings": [
+        {
+          "syntax": "CMOVcc r64, r/m64",
+          "opcode": "REX.W 0F 40+cc /r",
+          "length": "可変"
+        }
+      ],
+      "notes": "cc の種類は Jcc と同じ。メモリをソースにすると条件不成立でも読み出しが行われ、アクセス例外が起こりうる。",
       "src": "book"
     },
     {

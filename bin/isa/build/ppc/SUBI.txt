@@ -1,6 +1,6 @@
 subi（拡張ニーモニック）→ ADDI rT, rA, s16 — PowerPC（算術）
 
-rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。
+即値減算（Subtract Immediate）
 
 アドレッシング: 即値（D-Form）
 フラグ: LT-  GT-  EQ-  SO-
@@ -12,6 +12,7 @@ rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。
   即値減算（Subtract Immediate）
 
 元命令: isa ppc ADDI
+rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。
 
 消費クロック:
   440 コア: 1

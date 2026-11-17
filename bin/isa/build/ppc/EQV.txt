@@ -10,4 +10,7 @@ EQV rA, rS, rB — PowerPC（論理）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  eqv[.] rA,rS,rB: 011111 rS rA rB 0100011100 Rc  (4 バイト)
+
 （根拠: book）

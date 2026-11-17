@@ -1,6 +1,6 @@
 RRC r — Z80（シフト/ビット）
 
-レジスタ/メモリを右へ 1 ビットローテート（bit0 → C → bit7）。
+レジスタ/メモリを右へ 1 ビットローテートし、元の bit0 を C と bit7 に入れる。
 
 アドレッシング: レジスタ、レジスタ間接、インデックス(IX/IY+d)
 フラグ: S‡  Z‡  H0  P/V‡  N0  C‡
@@ -10,10 +10,12 @@ RRC r — Z80（シフト/ビット）
 消費クロック:
   RRC r: 8
   RRC (HL): 15
-  RRC (IX+d): 23
+  RRC (IX/IY+d): 23
 
 オペコード:
-  RRC r: CB 00DDD001  (2 バイト)
+  RRC r: CB 00001DDD  (2 バイト)
   RRC (HL): CB 0E  (2 バイト)
+  RRC (IX+d): DD CB d 0E  (4 バイト)
+  RRC (IY+d): FD CB d 0E  (4 バイト)
 
 （根拠: book）

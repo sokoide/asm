@@ -3,7 +3,7 @@ LD dst, src — Z80（データ転送）
 ロード。レジスタ・メモリ・即値の間でデータを転送する。組合せは多数あり。
 
 アドレッシング: 即値、レジスタ、レジスタ間接、インデックス(IX/IY+d)
-フラグ: S-  Z-  H-  P/V-  N-  C-
+フラグ: S‡  Z‡  H‡  P/V‡  N‡  C-
 
 ────────────── 詳細 ──────────────
 
@@ -17,18 +17,56 @@ LD dst, src — Z80（データ転送）
   LD A,(BC/DE): 7
   LD A,(nn): 13
   LD SP,HL: 6
+  LD (HL),r: 7
+  LD (IX/IY+d),r: 19
+  LD (IX/IY+d),n: 19
+  LD (BC/DE),A: 7
+  LD (nn),A: 13
+  LD A,I/R または LD I/R,A: 9
+  LD IX/IY,nn: 14
+  LD HL,(nn) または LD (nn),HL: 16
+  LD BC/DE/SP,(nn) または LD (nn),BC/DE/SP: 20
+  LD IX/IY,(nn) または LD (nn),IX/IY: 20
+  LD SP,IX/IY: 10
 
 オペコード:
   LD r,r': 01DDDSSS  (1 バイト)
   LD r,n: 00DDD110 n  (2 バイト)
   LD (HL),n: 36 n  (2 バイト)
   LD (IX+d),n: DD 36 d n  (4 バイト)
-  LD dd,nn: 01ss0011 nn nn  (3 バイト)
+  LD dd,nn: 00ss0001 nn nn  (3 バイト)
   LD A,(BC): 0A  (1 バイト)
   LD A,(DE): 1A  (1 バイト)
   LD A,(nn): 3A nn nn  (3 バイト)
+  LD r,(IX+d): DD 01DDD110 d  (3 バイト)
+  LD r,(IY+d): FD 01DDD110 d  (3 バイト)
+  LD (IX+d),r: DD 01110SSS d  (3 バイト)
+  LD (IY+d),r: FD 01110SSS d  (3 バイト)
+  LD (IY+d),n: FD 36 d n  (4 バイト)
+  LD (BC),A: 02  (1 バイト)
+  LD (DE),A: 12  (1 バイト)
+  LD (nn),A: 32 nn nn  (3 バイト)
+  LD A,I: ED 57  (2 バイト)
+  LD A,R: ED 5F  (2 バイト)
+  LD I,A: ED 47  (2 バイト)
+  LD R,A: ED 4F  (2 バイト)
+  LD IX,nn: DD 21 nn nn  (4 バイト)
+  LD IY,nn: FD 21 nn nn  (4 バイト)
+  LD HL,(nn): 2A nn nn  (3 バイト)
+  LD (nn),HL: 22 nn nn  (3 バイト)
+  LD dd,(nn): ED 01ss1011 nn nn  (4 バイト)
+  LD (nn),dd: ED 01ss0011 nn nn  (4 バイト)
+  LD IX,(nn): DD 2A nn nn  (4 バイト)
+  LD IY,(nn): FD 2A nn nn  (4 バイト)
+  LD (nn),IX: DD 22 nn nn  (4 バイト)
+  LD (nn),IY: FD 22 nn nn  (4 バイト)
+  LD SP,HL: F9  (1 バイト)
+  LD SP,IX: DD F9  (2 バイト)
+  LD SP,IY: FD F9  (2 バイト)
 
 備考:
-  r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。\nLD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。\n
+  r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。
+  一般の LD はフラグ不変。LD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。
+  インデックス形式の r は B/C/D/E/H/L/A であり、コード 110 は使えない。LD dd,(nn) と LD (nn),dd の ED 形式の dd は BC/DE/SP。HL は通常 2A/22 を使用する。d は符号付き 8 ビット変位、nn は下位バイトから格納する。
 
 （根拠: book）

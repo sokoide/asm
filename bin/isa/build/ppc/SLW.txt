@@ -10,6 +10,9 @@ SLW rA, rS, rB — PowerPC（回転/シフト）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  slw rA,rS,rB: 011111 rS rA rB 0000011000 0  (4 バイト)
+
 備考:
   即値版は拡張形式 slwi（rlwinm 展開）。
 

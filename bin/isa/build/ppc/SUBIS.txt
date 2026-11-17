@@ -1,6 +1,6 @@
 subis（拡張ニーモニック）→ ADDIS rT, rA, s16 — PowerPC（算術）
 
-rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。
+シフト付き即値減算（Subtract Immediate Shifted）
 
 アドレッシング: 即値（D-Form）
 フラグ: LT-  GT-  EQ-  SO-
@@ -12,9 +12,13 @@ rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。
   シフト付き即値減算（Subtract Immediate Shifted）
 
 元命令: isa ppc ADDIS
+rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  addis rT,rA,s16: 001111 rT rA s16  (4 バイト)
 
 備考:
   lis + ori で 32 ビット即値を 2 命令で組み立てるのが定番。

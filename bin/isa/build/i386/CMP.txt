@@ -8,13 +8,18 @@ dst - src を計算してフラグのみ更新する（dst は不変）。分岐
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, reg / mem, 即値: 5
+  reg, mem: 6
 
 オペコード:
-  CMP r/m, r: 39 /r（8bit は 38 /r）  (2 バイト)
-  CMP r/m, imm: 81 /7 iv  (4 バイト)
-  CMP r/m, imm8: 83 /7 ib  (3 バイト)
+  CMP r/m, r: 39 /r（8bit は 38 /r）  (長さ可変)
+  CMP r, r/m: 3B /r（8bit は 3A /r）  (長さ可変)
+  CMP r/m8, imm8: 80 /7 ib  (長さ可変)
+  CMP r/m16/32, imm16/32: 81 /7 iw/id  (長さ可変)
+  CMP r/m16/32, imm8（符号拡張）: 83 /7 ib  (長さ可変)
+  CMP AL, imm8: 3C ib  (長さ可変)
+  CMP AX/EAX, imm16/32: 3D iw/id  (長さ可変)
 
 備考:
   符号付きは jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。

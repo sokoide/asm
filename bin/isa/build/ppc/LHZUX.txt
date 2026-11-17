@@ -10,4 +10,10 @@ LHZUX rT, rA, rB — PowerPC（ロード）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  lhzux rT,rA,rB: 011111 rT rA rB 0100110111 0  (4 バイト)
+
+備考:
+  rA=0 または rA=rT は無効な命令形式。
+
 （根拠: book）

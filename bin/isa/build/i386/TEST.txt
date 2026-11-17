@@ -8,12 +8,15 @@ dst AND src を計算してフラグのみ更新する（dst は不変）。ビ�
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  レジスタ同士 / reg, 即値: 2
+  mem, reg / mem, 即値: 5
 
 オペコード:
-  TEST r/m, r: 85 /r（8bit は 84 /r）  (2 バイト)
-  TEST AX/eAX, imm: A9 iv  (3 バイト)
+  TEST r/m, r: 85 /r（8bit は 84 /r）  (長さ可変)
+  TEST r/m8, imm8: F6 /0 ib  (長さ可変)
+  TEST r/m16/32, imm16/32: F7 /0 iw/id  (長さ可変)
+  TEST AL, imm8: A8 ib  (長さ可変)
+  TEST AX/EAX, imm16/32: A9 iw/id  (長さ可変)
 
 備考:
   test reg, reg はゼロ判定のイディオム。

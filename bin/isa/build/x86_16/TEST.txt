@@ -12,7 +12,7 @@ AND のフラグのみ反映（dst は不変）。ビットテスト用。
   mem,reg: 9+EA
 
 オペコード:
-  TEST r/m,r: 1000010w /r  (2 バイト)
+  TEST r/m,r: 1000010w /r  (長さ可変)
   TEST AL,imm: A8 ib  (2 バイト)
 
 備考:

@@ -11,9 +11,9 @@ rS から r31 までの連続 GPR の下位ワードをメモリへ一括スト�
   601（ワードアライン時、レジスタ 1 本につき IE で 1 サイクル）: 1n
 
 オペコード:
-  stmw rS,d(rA): 0x2F D rA rS  (4 バイト)
+  stmw rS,d(rA): 0x2F rS rA D  (4 バイト)
 
 備考:
-  Book E（PPC440）では非サポート。POWER 旧ニーモニックは stm。
+  PPC440 でもサポートする。POWER 旧ニーモニックは stm。
 
 （根拠: book）

@@ -10,4 +10,7 @@ CNTLZW rA, rS — PowerPC（算術）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  cntlzw rA,rS: 011111 rS rA 00000 0000011010 0  (4 バイト)
+
 （根拠: book）

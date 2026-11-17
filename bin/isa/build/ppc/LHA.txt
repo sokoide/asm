@@ -11,7 +11,7 @@ LHA rT, d(rA) — PowerPC（ロード）
   440 コア: 1
 
 オペコード:
-  lha rT,d(rA): 0x2A D rA rT  (4 バイト)
+  lha rT,d(rA): 0x2A rT rA D  (4 バイト)
 
 備考:
   更新形式は lhau/lhaux。

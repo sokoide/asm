@@ -11,7 +11,7 @@ LBZ rT, d(rA) — PowerPC（ロード）
   440 コア（キャッシュヒット）: 1
 
 オペコード:
-  lbz rT,d(rA): 0x22 D rA rT  (4 バイト)
+  lbz rT,d(rA): 0x22 rT rA D  (4 バイト)
 
 備考:
   インデックス形式は lbzx（X-Form）、更新形式は lbzu/lbzux。

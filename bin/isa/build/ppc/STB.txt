@@ -11,6 +11,6 @@ STB rS, d(rA) — PowerPC（ストア）
   440 コア: 1
 
 オペコード:
-  stb rS,d(rA): 0x38 D rA rT  (4 バイト)
+  stb rS,d(rA): 0x26 rS rA D  (4 バイト)
 
 （根拠: book）

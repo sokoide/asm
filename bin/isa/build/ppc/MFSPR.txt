@@ -1,6 +1,6 @@
 MFSPR rT, SPR — PowerPC（レジスタ管理）
 
-特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式 mflr/mtctr/mfxer。
+特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
 
 アドレッシング: レジスタ
 フラグ: LT-  GT-  EQ-  SO-
@@ -9,6 +9,9 @@ MFSPR rT, SPR — PowerPC（レジスタ管理）
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  mfspr rT,SPR: 011111 rT SPR[0:4] SPR[5:9] 0101010011 0  (4 バイト)
 
 備考:
   LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。

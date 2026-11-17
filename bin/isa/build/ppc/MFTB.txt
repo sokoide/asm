@@ -1,0 +1,27 @@
+mftb（拡張ニーモニック）→ MFSPR rT, SPR — PowerPC（レジスタ管理）
+
+Time Base 下位ワードからの移動（Move from Time Base）
+
+アドレッシング: レジスタ
+フラグ: LT-  GT-  EQ-  SO-
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  mftb rT ⇔ mfspr rT, 268
+  Time Base 下位ワードからの移動（Move from Time Base）
+  SPR 268 を読む。
+
+元命令: isa ppc MFSPR
+特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
+
+消費クロック:
+  440 コア: 1
+
+オペコード:
+  mfspr rT,SPR: 011111 rT SPR[0:4] SPR[5:9] 0101010011 0  (4 バイト)
+
+備考:
+  LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。
+
+（根拠: book）

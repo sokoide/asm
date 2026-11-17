@@ -8,6 +8,9 @@ UMULL dst64, src1w, src2w — ARM64（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 2〜5
+  ISA では規定されない: 実装依存
+
+オペコード:
+  UMULL Xd,Wn,Wm: UMADDL Xd,Wn,Wm,XZR のエイリアス
 
 （根拠: book）

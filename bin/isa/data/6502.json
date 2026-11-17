@@ -9,9 +9,9 @@
       "summary": "メモリ/即値から A に 1 バイトロードし、N/Z を更新する。",
       "addressing": ["即値", "ゼロページ", "ゼロページ,X", "絶対", "絶対,X", "絶対,Y", "(ゼロページ,X)", "(ゼロページ),Y"],
       "flags": ["‡", "-", "-", "-", "‡", "-"],
-      "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp / zp,x", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
+      "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "LDA #n", "opcode": "A9", "bytes": 2}, {"syntax": "LDA zp", "opcode": "A5", "bytes": 2}, {"syntax": "LDA zp,x", "opcode": "B5", "bytes": 2}, {"syntax": "LDA abs", "opcode": "AD", "bytes": 3}, {"syntax": "LDA abs,x", "opcode": "BD", "bytes": 3}, {"syntax": "LDA abs,y", "opcode": "B9", "bytes": 3}, {"syntax": "LDA (zp,x)", "opcode": "A1", "bytes": 2}, {"syntax": "LDA (zp),y", "opcode": "B1", "bytes": 2}],
-      "notes": "B/ポインタ系のページ境界ペナルティは読み出しアドレス計算時のみ（書き込み命令 STA は常に固定）。",
+      "notes": "abs,x / abs,y / (zp),y の読み出しはページ境界を越えると 1 サイクル追加される。ゼロページ内のインデックス計算と間接ポインタの上位バイト参照は $FF から $00 に折り返す。",
       "src": "book"
     },
     {
@@ -46,7 +46,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x", "cycles": 5}, {"cond": "abs,y", "cycles": 5}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y", "cycles": 6}],
       "encodings": [{"syntax": "STA zp", "opcode": "85", "bytes": 2}, {"syntax": "STA zp,x", "opcode": "95", "bytes": 2}, {"syntax": "STA abs", "opcode": "8D", "bytes": 3}, {"syntax": "STA abs,x", "opcode": "9D", "bytes": 3}, {"syntax": "STA abs,y", "opcode": "99", "bytes": 3}, {"syntax": "STA (zp,x)", "opcode": "81", "bytes": 2}, {"syntax": "STA (zp),y", "opcode": "91", "bytes": 2}],
-      "notes": "即値アドレッシングは存在しない。abs,x / abs,y / (zp),y でもページ境界ペナルティはない（書込みは固定サイクル）。",
+      "notes": "即値アドレッシングは存在しない。abs,x / abs,y / (zp),y はページ境界を越えても固定サイクル。ゼロページ内のインデックス計算と間接ポインタの上位バイト参照は $FF から $00 に折り返す。",
       "src": "book"
     },
     {
@@ -135,7 +135,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "TXS", "opcode": "9A", "bytes": 1}],
-      "notes": "SP 更新命令で唯一フラグを変えない。スタックはページ 1（0x0100-0x01FF）固定。",
+      "notes": "TXS はフラグを変えない。スタックはページ 1（0x0100-0x01FF）固定。",
       "src": "book"
     },
     {
@@ -158,7 +158,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "PHP", "opcode": "08", "bytes": 1}],
-      "notes": "実機では B フラグ（bit4）と bit5 が 1 で積まれる。復帰時は PLP/RTI で B を無視して復帰。（bit5 は未使用・値は任意）",
+      "notes": "PHP が積む P の bit4 と bit5 は 1。B は独立した物理フラグではなく、PLP/RTI では bit4・bit5 をフラグとして復帰しない。",
       "src": "book"
     },
     {
@@ -181,31 +181,31 @@
       "flags": ["‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "PLP", "opcode": "28", "bytes": 1}],
-      "notes": "全フラグがスタックの内容で上書きされる。",
+      "notes": "スタック上の N/V/D/I/Z/C を復元する。bit4・bit5 は独立したフラグとして復元しない。",
       "src": "book"
     },
     {
       "mnemonic": "ADC",
       "operands": "src",
       "category": "算術",
-      "summary": "A = A + src + C。全フラグ更新。D フラグが 1 のとき BCD 演算になる。",
+      "summary": "A = A + src + C。N/V/Z/C を更新。D フラグが 1 のとき BCD 演算になる。",
       "addressing": ["即値", "ゼロページ", "ゼロページ,X", "絶対", "絶対,X", "絶対,Y", "(ゼロページ,X)", "(ゼロページ),Y"],
-      "flags": ["‡", "‡", "-", "-", "-", "‡"],
+      "flags": ["‡", "‡", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "ADC #n", "opcode": "69", "bytes": 2}, {"syntax": "ADC zp", "opcode": "65", "bytes": 2}, {"syntax": "ADC zp,x", "opcode": "75", "bytes": 2}, {"syntax": "ADC abs", "opcode": "6D", "bytes": 3}, {"syntax": "ADC abs,x", "opcode": "7D", "bytes": 3}, {"syntax": "ADC abs,y", "opcode": "79", "bytes": 3}, {"syntax": "ADC (zp,x)", "opcode": "61", "bytes": 2}, {"syntax": "ADC (zp),y", "opcode": "71", "bytes": 2}],
-      "notes": "V は符号付きオーバーフロー。Z80 と異なり Z は演算結果そのもの。ただし10進 (BCD) モードでは Z フラグは無効。",
+      "notes": "V は符号付きオーバーフロー。Z は2進演算結果が 0 ならセット。NMOS 6502 の10進 (BCD) モードでは N/V/Z を10進演算結果の判定に使えない。",
       "src": "book"
     },
     {
       "mnemonic": "SBC",
       "operands": "src",
       "category": "算術",
-      "summary": "A = A - src - (1 - C)。全フラグ更新。",
+      "summary": "A = A - src - (1 - C)。N/V/Z/C を更新。",
       "addressing": ["即値", "ゼロページ", "ゼロページ,X", "絶対", "絶対,X", "絶対,Y", "(ゼロページ,X)", "(ゼロページ),Y"],
-      "flags": ["‡", "‡", "-", "-", "-", "‡"],
+      "flags": ["‡", "‡", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "SBC #n", "opcode": "E9", "bytes": 2}, {"syntax": "SBC zp", "opcode": "E5", "bytes": 2}, {"syntax": "SBC zp,x", "opcode": "F5", "bytes": 2}, {"syntax": "SBC abs", "opcode": "ED", "bytes": 3}, {"syntax": "SBC abs,x", "opcode": "FD", "bytes": 3}, {"syntax": "SBC abs,y", "opcode": "F9", "bytes": 3}, {"syntax": "SBC (zp,x)", "opcode": "E1", "bytes": 2}, {"syntax": "SBC (zp),y", "opcode": "F1", "bytes": 2}],
-      "notes": "Borrow 概念は C の反転。SEC の後で SBC するのが多倍長減算の定番。",
+      "notes": "Borrow は C の反転。SEC の後で SBC するのが多倍長減算の定番。NMOS 6502 の BCD モードでは N/V/Z を10進演算結果の判定に使えない。",
       "src": "book"
     },
     {
@@ -246,19 +246,19 @@
       "mnemonic": "CMP",
       "operands": "src",
       "category": "比較",
-      "summary": "A と src を比較（A - src のフラグのみ反映、A は不変）。Z80 と違い C=1 が「A >= src」。",
+      "summary": "A と src を比較（A - src のフラグのみ反映、A は不変）。Z80 と違い C=1 が符号なし比較で「A >= src」。",
       "addressing": ["即値", "ゼロページ", "ゼロページ,X", "絶対", "絶対,X", "絶対,Y", "(ゼロページ,X)", "(ゼロページ),Y"],
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "zp,x", "cycles": 4}, {"cond": "abs", "cycles": 4}, {"cond": "abs,x / abs,y（ページ境界 +1）", "cycles": 4}, {"cond": "(zp,x)", "cycles": 6}, {"cond": "(zp),y（ページ境界 +1）", "cycles": 5}],
       "encodings": [{"syntax": "CMP #n", "opcode": "C9", "bytes": 2}, {"syntax": "CMP zp", "opcode": "C5", "bytes": 2}, {"syntax": "CMP zp,x", "opcode": "D5", "bytes": 2}, {"syntax": "CMP abs", "opcode": "CD", "bytes": 3}, {"syntax": "CMP abs,x", "opcode": "DD", "bytes": 3}, {"syntax": "CMP abs,y", "opcode": "D9", "bytes": 3}, {"syntax": "CMP (zp,x)", "opcode": "C1", "bytes": 2}, {"syntax": "CMP (zp),y", "opcode": "D1", "bytes": 2}],
-      "notes": "C=1: A >= src、C=0: A < src。BCC/BCS と組み合わせる。影響フラグは S/Z/C のみ（V 不変）。",
+      "notes": "符号なし比較で C=1 は A >= src、C=0 は A < src。BCC/BCS と組み合わせる。N は 8 ビット減算結果の符号ビットであり、V は更新されないため N だけでは一般に符号付き大小を判定できない。",
       "src": "book"
     },
     {
       "mnemonic": "CPX",
       "operands": "src",
       "category": "比較",
-      "summary": "X と src を比較。C=1 が「X >= src」。",
+      "summary": "X と src を比較。C=1 が符号なし比較で「X >= src」。",
       "addressing": ["即値", "ゼロページ", "絶対"],
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "abs", "cycles": 4}],
@@ -269,7 +269,7 @@
       "mnemonic": "CPY",
       "operands": "src",
       "category": "比較",
-      "summary": "Y と src を比較。C=1 が「Y >= src」。",
+      "summary": "Y と src を比較。C=1 が符号なし比較で「Y >= src」。",
       "addressing": ["即値", "ゼロページ", "絶対"],
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "imm", "cycles": 2}, {"cond": "zp", "cycles": 3}, {"cond": "abs", "cycles": 4}],
@@ -292,12 +292,12 @@
       "mnemonic": "ASL",
       "operands": "dst",
       "category": "シフト",
-      "summary": "左 1 ビットシフト（bit0 ← 0、bit7 → C）。×2 相当。A またはメモリ。",
+      "summary": "左 1 ビットシフト（bit0 ← 0、bit7 → C）。結果は 8 ビットで、はみ出した bit7 は C に入る。A またはメモリ。",
       "addressing": ["アキュムレータ", "ゼロページ", "ゼロページ,X", "絶対", "絶対,X"],
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "ASL A", "opcode": "0A", "bytes": 1}, {"syntax": "ASL zp", "opcode": "06", "bytes": 2}, {"syntax": "ASL zp,x", "opcode": "16", "bytes": 2}, {"syntax": "ASL abs", "opcode": "0E", "bytes": 3}, {"syntax": "ASL abs,x", "opcode": "1E", "bytes": 3}],
-      "notes": "A 版のみニーモニックの後に A を書く（`ASL` 単独も可）。",
+      "notes": "A 版の記法はアセンブラに依存する。ca65 では `ASL A` または `ASL` と書ける。NMOS 6502 のメモリ形式は読み出し 1 回と書き込み 2 回を行うため、書き込みに副作用がある I/O では注意する。",
       "src": "book"
     },
     {
@@ -309,6 +309,7 @@
       "flags": ["0", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "LSR A", "opcode": "4A", "bytes": 1}, {"syntax": "LSR zp", "opcode": "46", "bytes": 2}, {"syntax": "LSR zp,x", "opcode": "56", "bytes": 2}, {"syntax": "LSR abs", "opcode": "4E", "bytes": 3}, {"syntax": "LSR abs,x", "opcode": "5E", "bytes": 3}],
+      "notes": "NMOS 6502 のメモリ形式は読み出し 1 回と書き込み 2 回を行うため、書き込みに副作用がある I/O では注意する。",
       "src": "book"
     },
     {
@@ -320,7 +321,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "ROL A", "opcode": "2A", "bytes": 1}, {"syntax": "ROL zp", "opcode": "26", "bytes": 2}, {"syntax": "ROL zp,x", "opcode": "36", "bytes": 2}, {"syntax": "ROL abs", "opcode": "2E", "bytes": 3}, {"syntax": "ROL abs,x", "opcode": "3E", "bytes": 3}],
-      "notes": "多倍長左シフトは下位バイトから ROL を連結する。",
+      "notes": "多倍長左シフトは下位バイトから ROL を連結する。NMOS 6502 のメモリ形式は読み出し 1 回と書き込み 2 回を行うため、書き込みに副作用がある I/O では注意する。",
       "src": "book"
     },
     {
@@ -332,7 +333,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "‡"],
       "cycles": [{"cond": "A", "cycles": 2}, {"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "ROR A", "opcode": "6A", "bytes": 1}, {"syntax": "ROR zp", "opcode": "66", "bytes": 2}, {"syntax": "ROR zp,x", "opcode": "76", "bytes": 2}, {"syntax": "ROR abs", "opcode": "6E", "bytes": 3}, {"syntax": "ROR abs,x", "opcode": "7E", "bytes": 3}],
-      "notes": "ROR はオリジナル 6502 の初期ロットでは実装されていなかった（6502A 以降で使用可）。",
+      "notes": "初期の NMOS 6502 には ROR が正しく動かない版がある。6502A はクロック速度による型番であり、修正版かどうかは製造時期・版を確認する。NMOS 6502 のメモリ形式は読み出し 1 回と書き込み 2 回を行うため、書き込みに副作用がある I/O では注意する。",
       "src": "book"
     },
     {
@@ -344,7 +345,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "INC zp", "opcode": "E6", "bytes": 2}, {"syntax": "INC zp,x", "opcode": "F6", "bytes": 2}, {"syntax": "INC abs", "opcode": "EE", "bytes": 3}, {"syntax": "INC abs,x", "opcode": "FE", "bytes": 3}],
-      "notes": "A への INC は存在しない（INX を使う）。",
+      "notes": "NMOS 6502 に A を直接インクリメントする INC はない。2 進モード（D=0）では CLC / ADC #1 で A を加算できるが、ADC は INC と異なり C/V も更新する。NMOS 6502 のメモリ形式は読み出し 1 回と書き込み 2 回を行うため、書き込みに副作用がある I/O では注意する。",
       "src": "book"
     },
     {
@@ -378,6 +379,7 @@
       "flags": ["‡", "-", "-", "-", "‡", "-"],
       "cycles": [{"cond": "zp", "cycles": 5}, {"cond": "zp,x", "cycles": 6}, {"cond": "abs", "cycles": 6}, {"cond": "abs,x", "cycles": 7}],
       "encodings": [{"syntax": "DEC zp", "opcode": "C6", "bytes": 2}, {"syntax": "DEC zp,x", "opcode": "D6", "bytes": 2}, {"syntax": "DEC abs", "opcode": "CE", "bytes": 3}, {"syntax": "DEC abs,x", "opcode": "DE", "bytes": 3}],
+      "notes": "NMOS 6502 のメモリ形式は読み出し 1 回と書き込み 2 回を行うため、書き込みに副作用がある I/O では注意する。",
       "src": "book"
     },
     {
@@ -441,47 +443,48 @@
       "mnemonic": "RTI",
       "operands": "",
       "category": "サブルーチン",
-      "summary": "割り込みから復帰。P と PC をスタックから復帰する（PLP + RTS の動作）。",
+      "summary": "割り込みから復帰。P と PC をスタックから復帰する。RTS と違い PC に 1 を加算しない。",
       "addressing": ["スタック"],
       "flags": ["‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 6}],
       "encodings": [{"syntax": "RTI", "opcode": "40", "bytes": 1}],
-      "notes": "復帰順は P が先（低アドレス）、PC が後。",
+      "notes": "復帰順は P、PC 下位、PC 上位。P の bit4・bit5 は独立したフラグとして復元しない。",
       "src": "book"
     },
     {
       "mnemonic": "BRK",
       "operands": "",
       "category": "サブルーチン",
-      "summary": "ソフトウェア割り込み。PC+2（2回インクリメントした値）と P をスタックに退避し、IRQ ベクタ（$FFFE/$FFFF）へジャンプ。",
+      "summary": "ソフトウェア割り込み。BRK オペコードのアドレス + 2 と P をスタックに退避し、IRQ ベクタ（$FFFE/$FFFF）へジャンプ。",
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "1", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 7}],
       "encodings": [{"syntax": "BRK", "opcode": "00", "bytes": 1}],
-      "notes": "退避する P は B フラグが 1。モニタへのブレークトラップに使われる。",
+      "notes": "退避する P の bit4（B）と bit5 は 1。BRK の次のバイトは戻り先には含まれない。",
       "src": "book"
     },
     {
       "mnemonic": "BCC",
       "operands": "d",
       "category": "分岐",
-      "summary": "C = 0（A < src、CMP 後はボローあり）なら相対分岐する。",
+      "summary": "C = 0 なら相対分岐する。CMP 後は符号なし A < src を示す。",
       "addressing": ["相対分岐"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BCC d", "opcode": "90", "bytes": 2}],
-      "notes": "d は次の命令からの相対オフセット（-128〜+127）。CMP の後の「未満」分岐。",
+      "notes": "d は次の命令からの相対オフセット（-128〜+127）。CMP の後の「未満」分岐。変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
       "mnemonic": "BCS",
       "operands": "d",
       "category": "分岐",
-      "summary": "C = 1（A >= src）なら相対分岐する。",
+      "summary": "C = 1 なら相対分岐する。CMP 後は符号なし A >= src を示す。",
       "addressing": ["相対分岐"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BCS d", "opcode": "B0", "bytes": 2}],
+      "notes": "変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
@@ -493,7 +496,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BEQ d", "opcode": "F0", "bytes": 2}],
-      "notes": "INC/DEC の結果判定にも使える。",
+      "notes": "INC/DEC の結果判定にも使える。変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
@@ -505,6 +508,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BNE d", "opcode": "D0", "bytes": 2}],
+      "notes": "変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
@@ -516,6 +520,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BMI d", "opcode": "30", "bytes": 2}],
+      "notes": "変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
@@ -527,6 +532,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BPL d", "opcode": "10", "bytes": 2}],
+      "notes": "変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
@@ -538,7 +544,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BVC d", "opcode": "50", "bytes": 2}],
-      "notes": "BIT 命令と組み合わせて I/O ステータス監視によく使う。",
+      "notes": "BIT 命令と組み合わせて I/O ステータス監視によく使う。変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
@@ -550,6 +556,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "不成立", "cycles": 2}, {"cond": "成立（同ページ）", "cycles": 3}, {"cond": "成立（ページ境界）", "cycles": 4}],
       "encodings": [{"syntax": "BVS d", "opcode": "70", "bytes": 2}],
+      "notes": "変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。",
       "src": "book"
     },
     {
@@ -596,7 +603,7 @@
       "flags": ["-", "-", "1", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "SED", "opcode": "F8", "bytes": 1}],
-      "notes": "ADC/SBC が BCD で動作する。使い終わったら必ず CLD。",
+      "notes": "ADC/SBC が BCD で動作する。以降のコードが 2 進演算を前提とする場合は CLD で D をクリアする。",
       "src": "book"
     },
     {
@@ -631,7 +638,7 @@
       "flags": ["-", "0", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CLV", "opcode": "B8", "bytes": 1}],
-      "notes": "V を 1 にする命令は存在しない（BIT や演算のみ）。",
+      "notes": "V を直接 1 にする専用命令はない。BIT・算術演算や PLP/RTI によって設定できる。",
       "src": "book"
     },
     {

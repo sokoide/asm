@@ -13,7 +13,7 @@ CMP dst, src — 8086（比較）
   reg,mem: 9+EA
 
 オペコード:
-  CMP r/m,r: 0011100w /r  (2 バイト)
+  CMP r/m,r: 0011100w /r  (長さ可変)
   CMP AL,imm: 3C ib  (2 バイト)
 
 備考:

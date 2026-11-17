@@ -14,5 +14,7 @@ I/O ポートへ出力。
 オペコード:
   OUT imm8,AL: E6 ib  (2 バイト)
   OUT DX,AL: EE  (1 バイト)
+  OUT imm8,AX: E7 ib  (2 バイト)
+  OUT DX,AX: EF  (1 バイト)
 
 （根拠: book）

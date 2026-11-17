@@ -8,11 +8,17 @@ SBB dst, src — 80386（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, 即値: 7
+  レジスタとメモリ: 6〜7
 
 オペコード:
-  SBB r/m, r: 19 /r（8bit は 18 /r）  (2 バイト)
-  SBB r/m, imm: 81 /3 iv  (4 バイト)
+  SBB r/m, r: 19 /r（8bit は 18 /r）  (長さ可変)
+  SBB r, r/m: 1B /r（8bit は 1A /r）  (長さ可変)
+  SBB r/m8, imm8: 80 /3 ib  (長さ可変)
+  SBB r/m16/32, imm16/32: 81 /3 iw/id  (長さ可変)
+  SBB r/m16/32, imm8（符号拡張）: 83 /3 ib  (長さ可変)
+  SBB AL, imm8: 1C ib  (長さ可変)
+  SBB AX/EAX, imm16/32: 1D iw/id  (長さ可変)
 
 （根拠: book）

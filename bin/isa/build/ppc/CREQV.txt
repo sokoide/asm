@@ -3,14 +3,17 @@ CREQV crbT, crbA, crbB — PowerPC（CR操作）
 CR ビット同士の同値（XNOR）。両ビットが等しいとき 1。
 
 アドレッシング: CR ビット
-フラグ: LT-  GT-  EQ-  SO-
+フラグ: LT‡  GT‡  EQ‡  SO‡
 
 ────────────── 詳細 ──────────────
 
 消費クロック:
   440 コア: 1
 
+オペコード:
+  creqv BT,BA,BB: 010011 BT BA BB 0100100001 0  (4 バイト)
+
 備考:
-  crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。
+  crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。
 
 （根拠: book）

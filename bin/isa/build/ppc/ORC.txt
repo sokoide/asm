@@ -10,4 +10,7 @@ rA = rS OR NOT rB。
 消費クロック:
   440 コア: 1
 
+オペコード:
+  orc[.] rA,rS,rB: 011111 rS rA rB 0110011100 Rc  (4 バイト)
+
 （根拠: book）

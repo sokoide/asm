@@ -1,0 +1,17 @@
+SBFX dst, src, #lsb, #width — ARM64（シフト/ビット）
+
+src の lsb から width ビットを抽出し、上位を符号拡張して dst に格納する。
+
+アドレッシング: レジスタ、即値
+フラグ: N-  Z-  C-  V-
+
+────────────── 詳細 ──────────────
+
+消費クロック:
+  ISA では規定されない: 実装依存
+
+オペコード:
+  SBFX Xd,Xn,#lsb,#width: SBFM Xd,Xn,#lsb,#(lsb+width-1) と等価
+
+備考:
+  lsb は 0 以上、width は 1 以上で、lsb+width はレジスタ幅以下。

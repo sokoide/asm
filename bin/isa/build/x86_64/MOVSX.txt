@@ -8,12 +8,11 @@ MOVSX dst, src — x86-64（データ転送）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg: 1〜3
-  メモリオペランド: 3〜5
+  CPU・実行条件に依存: 実装依存
 
 オペコード:
-  MOVSX r64, r/m8: REX.W 0F BE /r  (4 バイト)
-  MOVSX r64, r/m16: REX.W 0F BF /r  (4 バイト)
+  MOVSX r64, r/m8: REX.W 0F BE /r  (長さ可変)
+  MOVSX r64, r/m16: REX.W 0F BF /r  (長さ可変)
 
 備考:
   32→64bit の符号拡張は専用命令 MOVSXD を使う。

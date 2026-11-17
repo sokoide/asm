@@ -1,6 +1,6 @@
 cmpw（拡張ニーモニック）→ CMP crfT, L, rA, rB — PowerPC（比較）
 
-符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
+ワード比較（Compare Word）
 
 アドレッシング: レジスタ
 フラグ: LT‡  GT‡  EQ‡  SO‡
@@ -13,6 +13,7 @@ cmpw（拡張ニーモニック）→ CMP crfT, L, rA, rB — PowerPC（比較�
   比較命令の第 2 オペランド L で幅を選ぶ。cmpw は L=0（ワード）を明示する形式。
 
 元命令: isa ppc CMP
+符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
 
 消費クロック:
   440 コア: 1

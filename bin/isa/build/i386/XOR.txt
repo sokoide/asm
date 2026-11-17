@@ -8,12 +8,18 @@ XOR dst, src — 80386（論理）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, 即値: 7
+  レジスタとメモリ: 6〜7
 
 オペコード:
-  XOR r/m, r: 31 /r（8bit は 30 /r）  (2 バイト)
-  XOR r/m, imm: 81 /6 iv  (4 バイト)
+  XOR r/m, r: 31 /r（8bit は 30 /r）  (長さ可変)
+  XOR r, r/m: 33 /r（8bit は 32 /r）  (長さ可変)
+  XOR r/m8, imm8: 80 /6 ib  (長さ可変)
+  XOR r/m16/32, imm16/32: 81 /6 iw/id  (長さ可変)
+  XOR r/m16/32, imm8（符号拡張）: 83 /6 ib  (長さ可変)
+  XOR AL, imm8: 34 ib  (長さ可変)
+  XOR AX/EAX, imm16/32: 35 iw/id  (長さ可変)
 
 備考:
   xor eax, eax はゼロ化の 1 命令イディオム。

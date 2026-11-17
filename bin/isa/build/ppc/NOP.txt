@@ -1,6 +1,6 @@
 nop（拡張ニーモニック）→ ORI rA, rS, u16 — PowerPC（論理）
 
-ゼロ拡張即値との論理和。ori r0,r0,0 が nop の実体。
+ノーオペレーション（No Operation）
 
 アドレッシング: 即値（D-Form）
 フラグ: LT-  GT-  EQ-  SO-
@@ -13,9 +13,13 @@ nop（拡張ニーモニック）→ ORI rA, rS, u16 — PowerPC（論理）
   r0 への書き込みは破棄されるため何も起きない。
 
 元命令: isa ppc ORI
+ゼロ拡張即値との論理和。ori r0,r0,0 が nop の実体。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  ori rA,rS,u16: 011000 rS rA u16  (4 バイト)
 
 備考:
   lis + ori で 32 ビット即値ロード。ORI は CR を更新しない（CR0 更新が必要なら or. を使う）。

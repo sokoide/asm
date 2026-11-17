@@ -1,6 +1,6 @@
 TW TO, rA, rB — PowerPC（システム制御）
 
-条件付きトラップ。TO のビットパターン（lt/gt/eq の否定・肯定）でプログラム割り込みを発生。
+TO で指定した比較条件に一致するとプログラム割り込みを発生させる。
 
 アドレッシング: レジスタ
 フラグ: LT-  GT-  EQ-  SO-
@@ -11,7 +11,10 @@ TW TO, rA, rB — PowerPC（システム制御）
   不成立: 1
   トラップ: 例外
 
+オペコード:
+  tw TO,rA,rB: 011111 TO rA rB 0000000100 0  (4 バイト)
+
 備考:
-  拡張形式 trap（tw 31,r0,r0 = 無条件トラップ）、tweq/twne 等。即値版は twi。
+  TO は符号付き less/greater、equal、符号なし less/greater の 5 条件を組み合わせる。trap は tw 31,r0,r0 の拡張形式。即値版は twi。
 
 （根拠: book）

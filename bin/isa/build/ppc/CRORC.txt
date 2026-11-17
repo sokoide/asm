@@ -3,14 +3,17 @@ CRORC crbT, crbA, crbB — PowerPC（CR操作）
 CR ビット同士の論理和で crB の補数を取る（crA OR NOT crB）。
 
 アドレッシング: CR ビット
-フラグ: LT-  GT-  EQ-  SO-
+フラグ: LT‡  GT‡  EQ‡  SO‡
 
 ────────────── 詳細 ──────────────
 
 消費クロック:
   440 コア: 1
 
+オペコード:
+  crorc BT,BA,BB: 010011 BT BA BB 0110100001 0  (4 バイト)
+
 備考:
-  crandc の OR 版。
+  crandc の OR 版。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。
 
 （根拠: book）

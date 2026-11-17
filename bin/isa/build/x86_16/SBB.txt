@@ -12,6 +12,6 @@ SBB dst, src — 8086（算術）
   mem,reg: 16+EA
 
 オペコード:
-  SBB r/m,r: 0001100w /r  (2 バイト)
+  SBB r/m,r: 0001100w /r  (長さ可変)
 
 （根拠: book）

@@ -14,6 +14,6 @@ CCR（SR の下位 8 ビット）へのワード転送。ソースのビット 4
   MOVE.W d16(A0),CCR: 20
 
 オペコード:
-  MOVE.W src,CCR: 0100010011 MMM RRR  (2 バイト)
+  MOVE.W src,CCR: 0100010011 MMM RRR  (長さ可変)
 
 （根拠: book）

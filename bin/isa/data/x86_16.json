@@ -15,7 +15,7 @@
       "mnemonic": "MOV",
       "operands": "dst, src",
       "category": "データ転送",
-      "summary": "データ転送。レジスタ/メモリ/即値間で 8/16 ビットを転送する。フラグは一切変化しない。",
+      "summary": "データ転送。レジスタ/メモリ/即値間で 8/16 ビットを転送する。メモリ同士の直接転送はできない。フラグは一切変化しない。",
       "addressing": [
         "即値",
         "レジスタ",
@@ -57,16 +57,22 @@
       "encodings": [
         {
           "syntax": "MOV reg,reg/mem",
-          "opcode": "1000100w /r",
-          "bytes": 2
+          "opcode": "1000101w /r",
+          "length": "可変"
         },
         {
           "syntax": "MOV reg,imm",
-          "opcode": "1011wrrr",
-          "bytes": 2
-        }
+          "opcode": "1011wrrr ib/iw",
+          "length": "可変"
+        },
+        {"syntax": "MOV reg/mem,reg", "opcode": "1000100w /r", "length": "可変"},
+        {"syntax": "MOV reg/mem,imm", "opcode": "1100011w /0 ib/iw", "length": "可変"},
+        {"syntax": "MOV reg/mem16,Sreg", "opcode": "8C /r", "length": "可変"},
+        {"syntax": "MOV Sreg,reg/mem16", "opcode": "8E /r", "length": "可変"},
+        {"syntax": "MOV AL/AX,[moffs16]", "opcode": "A0/A1 off16", "bytes": 3},
+        {"syntax": "MOV [moffs16],AL/AX", "opcode": "A2/A3 off16", "bytes": 3}
       ],
-      "notes": "メモリオペランドは +5〜12 クロックの実効アドレス計算（EA）が加算される。セグメントオーバーライドプレフィックス（26/2E/36/3E）で 2 クロック加算。",
+      "notes": "メモリ形式の多くは実効アドレス計算時間 EA が加算される。AL/AX と直接アドレス間の専用形式は 10 クロック。セグメントレジスタへ即値を直接転送できず、CS は MOV の転送先に指定できない。セグメントオーバーライドプレフィックス（26/2E/36/3E）で 2 クロック加算。",
       "src": "book"
     },
     {
@@ -103,7 +109,8 @@
           "syntax": "XCHG AX,r",
           "opcode": "90+r",
           "bytes": 1
-        }
+        },
+        {"syntax": "XCHG reg/mem,reg", "opcode": "1000011w /r", "length": "可変"}
       ],
       "notes": "XCHG AX,reg（オペコード 90〜97）は 1 バイト。",
       "src": "book"
@@ -136,7 +143,7 @@
         {
           "syntax": "LEA r16,m",
           "opcode": "8D /r",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "notes": "[BX+SI+disp] のような計算を 1 命令で済ませる技巧にも使われる。8086 のクロック表では 2+EA と数える。",
@@ -170,7 +177,7 @@
         {
           "syntax": "LDS r16,m32",
           "opcode": "C5 /r",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "notes": "LES は ES 版（C4 /r）。",
@@ -204,7 +211,7 @@
         {
           "syntax": "LES r16,m32",
           "opcode": "C4 /r",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "notes": "LDS（C5 /r）は DS 版。",
@@ -287,7 +294,7 @@
         {
           "syntax": "PUSH mem16",
           "opcode": "FF /6",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "PUSH sreg",
@@ -337,7 +344,7 @@
         {
           "syntax": "POP mem16",
           "opcode": "8F /0",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "POP sreg",
@@ -345,7 +352,7 @@
           "bytes": 1
         }
       ],
-      "notes": "POP CS は存在しない（8086 固有の非公式挙動を除く）。",
+      "notes": "POP CS は公式命令として存在しない（8086 固有の非公式挙動を除く）。POP SP では最終的な SP はスタックから読み出した値になる。",
       "src": "book"
     },
     {
@@ -523,7 +530,7 @@
         {
           "syntax": "ADD r/m,r",
           "opcode": "0000000w /r",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "ADD AL,imm",
@@ -577,7 +584,7 @@
         {
           "syntax": "ADC r/m,r",
           "opcode": "0001000w /r",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "src": "book"
@@ -616,7 +623,7 @@
         {
           "syntax": "SUB r/m,r",
           "opcode": "0010100w /r",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "src": "book"
@@ -655,7 +662,7 @@
         {
           "syntax": "SBB r/m,r",
           "opcode": "0001100w /r",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "src": "book"
@@ -702,7 +709,7 @@
         {
           "syntax": "INC r/m8",
           "opcode": "FE /0",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "notes": "CF が変わらないためループカウンタに使える。",
@@ -750,7 +757,7 @@
         {
           "syntax": "DEC r/m8",
           "opcode": "FE /1",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "src": "book"
@@ -788,7 +795,7 @@
         {
           "syntax": "NEG r/m",
           "opcode": "F6 /3, F7 /3",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "notes": "0x8000 の NEG はオーバーフロー（OF=1）で値は 0x8000 のまま。",
@@ -832,7 +839,7 @@
         {
           "syntax": "CMP r/m,r",
           "opcode": "0011100w /r",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "CMP AL,imm",
@@ -870,18 +877,20 @@
         {
           "cond": "16ビット reg",
           "cycles": "118〜133"
-        }
+        },
+        {"cond": "8ビット mem", "cycles": "76〜83+EA"},
+        {"cond": "16ビット mem", "cycles": "124〜139+EA"}
       ],
       "encodings": [
         {
           "syntax": "MUL r/m8",
           "opcode": "F6 /4",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "MUL r/m16",
           "opcode": "F7 /4",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "notes": "CF=OF=1 は上位半分が非 0（結果がオーバーフロー）を示す。S/Z/A/P は未定義。",
@@ -914,21 +923,23 @@
         {
           "cond": "16ビット reg",
           "cycles": "128〜154"
-        }
+        },
+        {"cond": "8ビット mem", "cycles": "86〜104+EA"},
+        {"cond": "16ビット mem", "cycles": "134〜160+EA"}
       ],
       "encodings": [
         {
           "syntax": "IMUL r/m8",
           "opcode": "F6 /5",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "IMUL r/m16",
           "opcode": "F7 /5",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "CF=OF=1 は DX:AX の符号拡張として上位半分が有効（桁あふれ）。",
+      "notes": "CF=OF=1 は下位半分を符号拡張した値が積全体と一致しない（桁あふれ）ことを示す。",
       "src": "book"
     },
     {
@@ -958,18 +969,20 @@
         {
           "cond": "16ビット reg",
           "cycles": "144〜162"
-        }
+        },
+        {"cond": "8ビット mem", "cycles": "86〜96+EA"},
+        {"cond": "16ビット mem", "cycles": "150〜168+EA"}
       ],
       "encodings": [
         {
           "syntax": "DIV r/m8",
           "opcode": "F6 /6",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "DIV r/m16",
           "opcode": "F7 /6",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "notes": "商がオーバーフローまたは除算零のときは INT 0（例外ベクタ 0）が発生。",
@@ -1002,21 +1015,23 @@
         {
           "cond": "16ビット reg",
           "cycles": "165〜184"
-        }
+        },
+        {"cond": "8ビット mem", "cycles": "107〜118+EA"},
+        {"cond": "16ビット mem", "cycles": "171〜190+EA"}
       ],
       "encodings": [
         {
           "syntax": "IDIV r/m8",
           "opcode": "F6 /7",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "IDIV r/m16",
           "opcode": "F7 /7",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "割算零・オーバーフローは INT 0。",
+      "notes": "割算零・商の範囲外は INT 0。8086/8088 の許容商は 8 ビット版が -127〜127、16 ビット版が -32767〜32767。-128 / -32768 は後世代と異なり範囲外。",
       "src": "book"
     },
     {
@@ -1050,7 +1065,7 @@
           "bytes": 1
         }
       ],
-      "notes": "IMUL/IDIV の前の符号拡張に必須。",
+      "notes": "符号付き 8 ビット値を AX に拡張する。IMUL/IDIV の準備で使うことがある。",
       "src": "book"
     },
     {
@@ -1321,7 +1336,7 @@
         {
           "syntax": "AND r/m,r",
           "opcode": "0010000w /r",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "AND AL,imm",
@@ -1365,7 +1380,7 @@
         {
           "syntax": "OR r/m,r",
           "opcode": "0000100w /r",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "OR AL,imm",
@@ -1410,7 +1425,7 @@
         {
           "syntax": "XOR r/m,r",
           "opcode": "0011000w /r",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "XOR AL,imm",
@@ -1418,7 +1433,7 @@
           "bytes": 2
         }
       ],
-      "notes": "XOR AX,AX は AX=0 + フラグクリアの 1 バイト定番。",
+      "notes": "XOR AX,AX は AX を 0 にし、演算結果に応じてフラグを更新する。命令長は 2 バイト。",
       "src": "book"
     },
     {
@@ -1454,7 +1469,7 @@
         {
           "syntax": "NOT r/m",
           "opcode": "F6 /2, F7 /2",
-          "bytes": 2
+          "length": "可変"
         }
       ],
       "src": "book"
@@ -1493,7 +1508,7 @@
         {
           "syntax": "TEST r/m,r",
           "opcode": "1000010w /r",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "TEST AL,imm",
@@ -1508,7 +1523,7 @@
       "mnemonic": "SHL",
       "operands": "dst, 1/CL",
       "category": "シフト",
-      "summary": "左論理シフト（SAL と同一）。bit7 → CF、下位に 0。×2 相当。",
+      "summary": "左論理シフト（SAL と同一）。最上位ビットを CF に送り、下位に 0 を詰める。",
       "addressing": [
         "レジスタ",
         "メモリ",
@@ -1547,15 +1562,15 @@
         {
           "syntax": "SHL r/m,1",
           "opcode": "D0/D1 /4",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "SHL r/m,CL",
           "opcode": "D2/D3 /4",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "CL シフトではシフト後の値に対してフラグ評価（8086 特有）。",
+      "notes": "回数 0 ではフラグ不変。1 回の OF は定義され、複数回では未定義。8086 は CL を 5 ビットにマスクしない。",
       "src": "book"
     },
     {
@@ -1601,14 +1616,15 @@
         {
           "syntax": "SHR r/m,1",
           "opcode": "D0/D1 /5",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "SHR r/m,CL",
           "opcode": "D2/D3 /5",
-          "bytes": 2
+          "length": "可変"
         }
       ],
+      "notes": "回数 0 ではフラグ不変。1 回の OF は定義され、複数回では未定義。8086 は CL を 5 ビットにマスクしない。",
       "src": "book"
     },
     {
@@ -1654,22 +1670,22 @@
         {
           "syntax": "SAR r/m,1",
           "opcode": "D0/D1 /7",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "SAR r/m,CL",
           "opcode": "D2/D3 /7",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "8086 では OF も結果に応じて変化する（186 以降は常に 0）。",
+      "notes": "1 ビットシフトでは OF=0。複数ビット時の OF は未定義。回数 0 ではフラグ不変。8086 は CL を 5 ビットにマスクしない。負の奇数は負の無限大方向に丸めるため、0 方向へ丸める IDIV とは異なる。",
       "src": "book"
     },
     {
       "mnemonic": "ROL",
       "operands": "dst, 1/CL",
       "category": "シフト",
-      "summary": "左ローテート（bit7 → CF → bit0、8/16 ビット内循環）。",
+      "summary": "左ローテート。元の最上位ビットが最下位ビットと CF に入る（8/16 ビット内循環）。",
       "addressing": [
         "レジスタ",
         "メモリ",
@@ -1708,22 +1724,22 @@
         {
           "syntax": "ROL r/m,1",
           "opcode": "D0/D1 /0",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "ROL r/m,CL",
           "opcode": "D2/D3 /0",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "CL 指定（複数ビット回転）時の OF は未定義。",
+      "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book"
     },
     {
       "mnemonic": "ROR",
       "operands": "dst, 1/CL",
       "category": "シフト",
-      "summary": "右ローテート（bit0 → CF → bit7）。",
+      "summary": "右ローテート。元の最下位ビットが最上位ビットと CF に入る（8/16 ビット内循環）。",
       "addressing": [
         "レジスタ",
         "メモリ",
@@ -1762,15 +1778,15 @@
         {
           "syntax": "ROR r/m,1",
           "opcode": "D0/D1 /1",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "ROR r/m,CL",
           "opcode": "D2/D3 /1",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "CL 指定（複数ビット回転）時の OF は未定義。",
+      "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book"
     },
     {
@@ -1816,15 +1832,15 @@
         {
           "syntax": "RCL r/m,1",
           "opcode": "D0/D1 /2",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "RCL r/m,CL",
           "opcode": "D2/D3 /2",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "CL 指定（複数ビット回転）時の OF は未定義。",
+      "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book"
     },
     {
@@ -1870,15 +1886,15 @@
         {
           "syntax": "RCR r/m,1",
           "opcode": "D0/D1 /3",
-          "bytes": 2
+          "length": "可変"
         },
         {
           "syntax": "RCR r/m,CL",
           "opcode": "D2/D3 /3",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "CL 指定（複数ビット回転）時の OF は未定義。",
+      "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book"
     },
     {
@@ -1934,16 +1950,18 @@
           "syntax": "JMP far",
           "opcode": "EA off seg",
           "bytes": 5
-        }
+        },
+        {"syntax": "JMP r/m16（near 間接）", "opcode": "FF /4", "length": "可変"},
+        {"syntax": "JMP m16:16（far 間接）", "opcode": "FF /5", "length": "可変"}
       ],
-      "notes": "far は CS:EIP を書き換える（リアルモード）。",
+      "notes": "far は CS:IP を書き換える。",
       "src": "book"
     },
     {
       "mnemonic": "Jcc",
       "operands": "short",
       "category": "分岐",
-      "summary": "条件付き相対分岐（±127 バイト）。条件コード一式（JA/JB/JE/JG/JL/JS/JZ と否定形 16 種）。",
+      "summary": "条件付き相対分岐（次の命令から -128〜+127 バイト）。条件コード一式（JA/JB/JE/JG/JL/JS/JZ と否定形 16 種）。",
       "addressing": [
         "相対分岐"
       ],
@@ -1970,7 +1988,7 @@
       "encodings": [
         {
           "syntax": "Jcc rel8",
-          "opcode": "70〜7F",
+          "opcode": "70〜7F rel8",
           "bytes": 2
         }
       ],
@@ -2012,7 +2030,7 @@
           "bytes": 2
         }
       ],
-      "notes": "CX 減算はフラグに影響しない。",
+      "notes": "CX 減算はフラグに影響しない。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book"
     },
     {
@@ -2050,7 +2068,7 @@
           "bytes": 2
         }
       ],
-      "notes": "cmps/scas と組み合わせ、一致が続く間ループする。",
+      "notes": "cmps/scas と組み合わせ、一致が続く間ループする。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book"
     },
     {
@@ -2088,7 +2106,7 @@
           "bytes": 2
         }
       ],
-      "notes": "cmps/scas と組み合わせ、不一致を見つけたら抜ける。",
+      "notes": "cmps/scas と組み合わせ、不一致を見つけたら抜ける。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book"
     },
     {
@@ -2176,7 +2194,9 @@
           "syntax": "CALL far",
           "opcode": "9A off seg",
           "bytes": 5
-        }
+        },
+        {"syntax": "CALL r/m16（near 間接）", "opcode": "FF /2", "length": "可変"},
+        {"syntax": "CALL m16:16（far 間接）", "opcode": "FF /3", "length": "可変"}
       ],
       "notes": "far call は CS と IP の両方を退避。",
       "src": "book"
@@ -2265,7 +2285,7 @@
           "cycles": 18
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+17n"
         }
       ],
@@ -2303,7 +2323,7 @@
           "cycles": 18
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+17n"
         }
       ],
@@ -2341,7 +2361,7 @@
           "cycles": 12
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+13n"
         }
       ],
@@ -2379,7 +2399,7 @@
           "cycles": 12
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+13n"
         }
       ],
@@ -2417,7 +2437,7 @@
           "cycles": 11
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+10n"
         }
       ],
@@ -2455,7 +2475,7 @@
           "cycles": 11
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+10n"
         }
       ],
@@ -2493,7 +2513,7 @@
           "cycles": 22
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+22n"
         }
       ],
@@ -2531,7 +2551,7 @@
           "cycles": 22
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+22n"
         }
       ],
@@ -2569,7 +2589,7 @@
           "cycles": 15
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+15n"
         }
       ],
@@ -2607,7 +2627,7 @@
           "cycles": 15
         },
         {
-          "cond": "REP 時 1回ごと",
+          "cond": "REP 時（合計 n 回）",
           "cycles": "9+15n"
         }
       ],
@@ -2659,7 +2679,7 @@
       "mnemonic": "REPE",
       "operands": "",
       "category": "文字列",
-      "summary": "CX≠0 かつ ZF=1 の間、後続の文字列命令を繰り返すプレフィックス。REPZ と同じ。cmps/scas 用。",
+      "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=1 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
       "addressing": [
         "暗黙"
       ],
@@ -2686,14 +2706,14 @@
           "bytes": 1
         }
       ],
-      "notes": "終了条件は CX=0 または ZF=0（不一致検出）。",
+      "notes": "各反復後に CX=0 または ZF=0 で終了する。初期 CX=0 なら比較せず ZF も変わらない。",
       "src": "book"
     },
     {
       "mnemonic": "REPNE",
       "operands": "",
       "category": "文字列",
-      "summary": "CX≠0 かつ ZF=0 の間、後続の文字列命令を繰り返すプレフィックス。REPNZ と同じ。scas での検索用。",
+      "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=0 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
       "addressing": [
         "暗黙"
       ],
@@ -2720,7 +2740,7 @@
           "bytes": 1
         }
       ],
-      "notes": "終了条件は CX=0 または ZF=1（一致検出）。",
+      "notes": "各反復後に CX=0 または ZF=1 で終了する。初期 CX=0 なら比較せず ZF も変わらない。",
       "src": "book"
     },
     {
@@ -2761,9 +2781,11 @@
           "syntax": "IN AL,DX",
           "opcode": "EC",
           "bytes": 1
-        }
+        },
+        {"syntax": "IN AX,imm8", "opcode": "E5 ib", "bytes": 2},
+        {"syntax": "IN AX,DX", "opcode": "ED", "bytes": 1}
       ],
-      "notes": "IO ポートは 64K 個（16 ビットアドレス）。DX 間接が推奨。",
+      "notes": "I/O ポート番号は 16 ビット。即値形式はポート番号 0〜255 に限られる。",
       "src": "book"
     },
     {
@@ -2804,7 +2826,9 @@
           "syntax": "OUT DX,AL",
           "opcode": "EE",
           "bytes": 1
-        }
+        },
+        {"syntax": "OUT imm8,AX", "opcode": "E7 ib", "bytes": 2},
+        {"syntax": "OUT DX,AX", "opcode": "EF", "bytes": 1}
       ],
       "src": "book"
     },
@@ -2977,7 +3001,7 @@
       "mnemonic": "CLI",
       "operands": "",
       "category": "フラグ操作",
-      "summary": "割り込みフラグ IF を 0（マスク可能割り込み禁止）。特権レベル依存。",
+      "summary": "割り込みフラグ IF を 0 にしてマスク可能割り込みを禁止する。8086 には特権レベルはない。",
       "addressing": [
         "暗黙"
       ],
@@ -3224,7 +3248,7 @@
       "mnemonic": "WAIT",
       "operands": "",
       "category": "システム制御",
-      "summary": "8087（FPU）がビジネスの間待機する。",
+      "summary": "TEST 入力が所定の状態になるまで待機する。8087 の処理完了との同期に使う。",
       "addressing": [
         "暗黙"
       ],
@@ -3251,7 +3275,7 @@
           "bytes": 1
         }
       ],
-      "notes": "8086 では常時 NOP 同様に通過する（WAIT は FPU 有り環境で意味を持つ）。クロックはテスト待ち回数 n で 3+5n。",
+      "notes": "待機の有無は外部 TEST 入力に依存する。クロックはテスト待ち回数 n で 3+5n。",
       "src": "book"
     },
     {
@@ -3292,7 +3316,7 @@
       "mnemonic": "ESC",
       "operands": "exop, reg/mem",
       "category": "システム制御",
-      "summary": "コプロセッサへのエスケープ。上位 5 ビットが 11011 のオペコードを FPU 命令として解釈させ、メモリオペランドは実効アドレス計算だけを行ってバスに載せる。",
+      "summary": "コプロセッサへのエスケープ。上位 5 ビットが 11011 のオペコードを FPU 命令として解釈させ、メモリオペランドを読み出して破棄し、外部プロセッサがバス上の値を取得できる。",
       "addressing": [
         "即値（exop 0〜63）",
         "レジスタ",
@@ -3322,10 +3346,10 @@
         {
           "syntax": "ESC exop,reg/mem",
           "opcode": "11011XXX mod YYY r/m",
-          "bytes": 2
+          "length": "可変"
         }
       ],
-      "notes": "8087 用のエスケープ枠。8087 なしの環境では実質 NOP（アドレス計算のみ）。exop はコプロセッサ命令内にエンコードされる 0〜63 の数値。",
+      "notes": "8087 用のエスケープ枠。8087 がなくてもメモリ形式は読み出しバスサイクルを発生させるため、メモリマップド I/O には副作用がありうる。exop はコプロセッサ命令内にエンコードされる 0〜63 の数値。",
       "src": "book"
     },
     {

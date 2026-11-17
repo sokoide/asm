@@ -8,6 +8,10 @@ MUL dst, src1, src2 — ARM64（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存（2〜5 サイクル目安）: 2〜5
+  ISA では規定されない: 実装依存
+
+オペコード:
+  MUL Wd,Wn,Wm: MADD Wd,Wn,Wm,WZR のエイリアス
+  MUL Xd,Xn,Xm: MADD Xd,Xn,Xm,XZR のエイリアス
 
 （根拠: book）

@@ -10,6 +10,9 @@ AND rA, rS, rB — PowerPC（論理）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  and[.] rA,rS,rB: 011111 rS rA rB 0000011100 Rc  (4 バイト)
+
 備考:
   andc（補数 AND）、nand、eqv、nor、orc、xor も同系。
 

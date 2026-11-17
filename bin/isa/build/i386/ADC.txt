@@ -8,11 +8,17 @@ ADC dst, src — 80386（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, reg / mem, 即値: 7
+  reg, mem: 6
 
 オペコード:
-  ADC r/m, r: 11 /r（8bit は 10 /r）  (2 バイト)
-  ADC r/m, imm: 81 /2 iv  (4 バイト)
+  ADC r/m, r: 11 /r（8bit は 10 /r）  (長さ可変)
+  ADC r, r/m: 13 /r（8bit は 12 /r）  (長さ可変)
+  ADC r/m8, imm8: 80 /2 ib  (長さ可変)
+  ADC r/m16/32, imm16/32: 81 /2 iw/id  (長さ可変)
+  ADC r/m16/32, imm8（符号拡張）: 83 /2 ib  (長さ可変)
+  ADC AL, imm8: 14 ib  (長さ可変)
+  ADC AX/EAX, imm16/32: 15 iw/id  (長さ可変)
 
 （根拠: book）

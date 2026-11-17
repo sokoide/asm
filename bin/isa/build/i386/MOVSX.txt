@@ -12,8 +12,8 @@ MOVSX dst, src — 80386（データ転送）
   reg-mem: 6
 
 オペコード:
-  MOVSX r16/32, r/m8: 0F BE /r  (3 バイト)
-  MOVSX r32, r/m16: 0F BF /r  (3 バイト)
+  MOVSX r16/32, r/m8: 0F BE /r  (長さ可変)
+  MOVSX r32, r/m16: 0F BF /r  (長さ可変)
 
 備考:
   80386 で導入。

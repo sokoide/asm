@@ -10,10 +10,12 @@ SLA r — Z80（シフト/ビット）
 消費クロック:
   SLA r: 8
   SLA (HL): 15
-  SLA (IX+d): 23
+  SLA (IX/IY+d): 23
 
 オペコード:
-  SLA r: CB 00DDD100  (2 バイト)
+  SLA r: CB 00100DDD  (2 バイト)
   SLA (HL): CB 26  (2 バイト)
+  SLA (IX+d): DD CB d 26  (4 バイト)
+  SLA (IY+d): FD CB d 26  (4 バイト)
 
 （根拠: book）

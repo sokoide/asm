@@ -1,6 +1,6 @@
 SUBFC rT, rA, rB — PowerPC（算術）
 
-rT = rB - rA で XER[CA] 更新（borrow 方向）。
+rT = rB - rA を計算し XER[CA] を更新する。符号なし減算で借りがなければ CA=1。
 
 アドレッシング: レジスタ
 フラグ: LT-  GT-  EQ-  SO-
@@ -9,5 +9,11 @@ rT = rB - rA で XER[CA] 更新（borrow 方向）。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  subfc[o][.] rT,rA,rB: 011111 rT rA rB OE 000001000 Rc  (4 バイト)
+
+備考:
+  内部的には rB + NOT rA + 1 を計算する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。
 
 （根拠: book）

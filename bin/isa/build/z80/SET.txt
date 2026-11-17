@@ -10,14 +10,15 @@ SET b, r — Z80（シフト/ビット）
 消費クロック:
   SET b,r: 8
   SET b,(HL): 15
-  SET b,(IX+d): 23
+  SET b,(IX/IY+d): 23
 
 オペコード:
   SET b,r: CB 11BBBSSS  (2 バイト)
   SET b,(HL): CB 11BBB110  (2 バイト)
   SET b,(IX+d): DD CB d 11BBB110  (4 バイト)
+  SET b,(IY+d): FD CB d 11BBB110  (4 バイト)
 
 備考:
-  フラグは一切変化しない。\n
+  フラグは一切変化しない。
 
 （根拠: book）

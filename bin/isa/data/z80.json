@@ -11,31 +11,31 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "NOP", "opcode": "00", "bytes": 1}],
-      "notes": "ループ待ちやタイミング調整に使われる。\\n",
+      "notes": "ループ待ちやタイミング調整に使われる。\n",
       "src": "book"
     },
     {
       "mnemonic": "HALT",
       "operands": "",
       "category": "システム制御",
-      "summary": "CPU を停止状態にする。割り込みまたはリセットで再開。",
+      "summary": "命令実行を停止状態にする。受け付け可能な割り込みまたはリセットで解除する。",
       "addressing": ["暗黙"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "HALT", "opcode": "76", "bytes": 1}],
-      "notes": "PC は HALT 命令の次を指したまま停止。割り込み受付で再開する。\\n",
+      "notes": "PC は HALT 命令の次を指す。停止中もリフレッシュのための動作を続け、割り込みの受け付けまたはリセットで停止状態を解除する。\n",
       "src": "book"
     },
     {
       "mnemonic": "DI",
       "operands": "",
       "category": "システム制御",
-      "summary": "割り込みを禁止する（IFF1 = 0）。",
+      "summary": "割り込みを禁止する（IFF1 = IFF2 = 0）。",
       "addressing": ["暗黙"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "DI", "opcode": "F3", "bytes": 1}],
-      "notes": "NMI は禁止されない。\\n",
+      "notes": "NMI は禁止されない。\n",
       "src": "book"
     },
     {
@@ -47,7 +47,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "EI", "opcode": "FB", "bytes": 1}],
-      "notes": "EI の直後の 1 命令は実行を保証される（EI / RET の割り込み遅延バグ対策）。\\n",
+      "notes": "マスク可能割り込みの受け付けは EI の次の命令が完了するまで遅延する。NMI はマスク可能割り込みとは別に扱われる。\n",
       "src": "book"
     },
     {
@@ -59,7 +59,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 8}],
       "encodings": [{"syntax": "IM 0", "opcode": "ED 46", "bytes": 2}, {"syntax": "IM 1", "opcode": "ED 56", "bytes": 2}, {"syntax": "IM 2", "opcode": "ED 5E", "bytes": 2}],
-      "notes": "モード 2: I レジスタ×256 + デバイス提供ベクタの 2 バイトで割り込みハンドラアドレスを参照。\\n",
+      "notes": "モード 2: I を上位バイト、デバイス提供ベクタを下位バイトとするテーブルアドレスから、2 バイトの割り込みハンドラアドレスを読み出す。\n",
       "src": "book"
     },
     {
@@ -68,10 +68,10 @@
       "category": "データ転送",
       "summary": "ロード。レジスタ・メモリ・即値の間でデータを転送する。組合せは多数あり。",
       "addressing": ["即値", "レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
-      "flags": ["-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "LD r,r'", "cycles": 4}, {"cond": "LD r,n", "cycles": 7}, {"cond": "LD r,(HL)", "cycles": 7}, {"cond": "LD (HL),n", "cycles": 10}, {"cond": "LD r,(IX+d)", "cycles": 19}, {"cond": "LD dd,nn (16bit)", "cycles": 10}, {"cond": "LD A,(BC/DE)", "cycles": 7}, {"cond": "LD A,(nn)", "cycles": 13}, {"cond": "LD SP,HL", "cycles": 6}],
-      "encodings": [{"syntax": "LD r,r'", "opcode": "01DDDSSS", "bytes": 1}, {"syntax": "LD r,n", "opcode": "00DDD110 n", "bytes": 2}, {"syntax": "LD (HL),n", "opcode": "36 n", "bytes": 2}, {"syntax": "LD (IX+d),n", "opcode": "DD 36 d n", "bytes": 4}, {"syntax": "LD dd,nn", "opcode": "01ss0011 nn nn", "bytes": 3}, {"syntax": "LD A,(BC)", "opcode": "0A", "bytes": 1}, {"syntax": "LD A,(DE)", "opcode": "1A", "bytes": 1}, {"syntax": "LD A,(nn)", "opcode": "3A nn nn", "bytes": 3}],
-      "notes": "r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。\\nLD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。\\n",
+      "flags": ["‡", "‡", "‡", "‡", "‡", "-"],
+      "cycles": [{"cond": "LD r,r'", "cycles": 4}, {"cond": "LD r,n", "cycles": 7}, {"cond": "LD r,(HL)", "cycles": 7}, {"cond": "LD (HL),n", "cycles": 10}, {"cond": "LD r,(IX+d)", "cycles": 19}, {"cond": "LD dd,nn (16bit)", "cycles": 10}, {"cond": "LD A,(BC/DE)", "cycles": 7}, {"cond": "LD A,(nn)", "cycles": 13}, {"cond": "LD SP,HL", "cycles": 6}, {"cond": "LD (HL),r", "cycles": 7}, {"cond": "LD (IX/IY+d),r", "cycles": 19}, {"cond": "LD (IX/IY+d),n", "cycles": 19}, {"cond": "LD (BC/DE),A", "cycles": 7}, {"cond": "LD (nn),A", "cycles": 13}, {"cond": "LD A,I/R または LD I/R,A", "cycles": 9}, {"cond": "LD IX/IY,nn", "cycles": 14}, {"cond": "LD HL,(nn) または LD (nn),HL", "cycles": 16}, {"cond": "LD BC/DE/SP,(nn) または LD (nn),BC/DE/SP", "cycles": 20}, {"cond": "LD IX/IY,(nn) または LD (nn),IX/IY", "cycles": 20}, {"cond": "LD SP,IX/IY", "cycles": 10}],
+      "encodings": [{"syntax": "LD r,r'", "opcode": "01DDDSSS", "bytes": 1}, {"syntax": "LD r,n", "opcode": "00DDD110 n", "bytes": 2}, {"syntax": "LD (HL),n", "opcode": "36 n", "bytes": 2}, {"syntax": "LD (IX+d),n", "opcode": "DD 36 d n", "bytes": 4}, {"syntax": "LD dd,nn", "opcode": "00ss0001 nn nn", "bytes": 3}, {"syntax": "LD A,(BC)", "opcode": "0A", "bytes": 1}, {"syntax": "LD A,(DE)", "opcode": "1A", "bytes": 1}, {"syntax": "LD A,(nn)", "opcode": "3A nn nn", "bytes": 3}, {"syntax": "LD r,(IX+d)", "opcode": "DD 01DDD110 d", "bytes": 3}, {"syntax": "LD r,(IY+d)", "opcode": "FD 01DDD110 d", "bytes": 3}, {"syntax": "LD (IX+d),r", "opcode": "DD 01110SSS d", "bytes": 3}, {"syntax": "LD (IY+d),r", "opcode": "FD 01110SSS d", "bytes": 3}, {"syntax": "LD (IY+d),n", "opcode": "FD 36 d n", "bytes": 4}, {"syntax": "LD (BC),A", "opcode": "02", "bytes": 1}, {"syntax": "LD (DE),A", "opcode": "12", "bytes": 1}, {"syntax": "LD (nn),A", "opcode": "32 nn nn", "bytes": 3}, {"syntax": "LD A,I", "opcode": "ED 57", "bytes": 2}, {"syntax": "LD A,R", "opcode": "ED 5F", "bytes": 2}, {"syntax": "LD I,A", "opcode": "ED 47", "bytes": 2}, {"syntax": "LD R,A", "opcode": "ED 4F", "bytes": 2}, {"syntax": "LD IX,nn", "opcode": "DD 21 nn nn", "bytes": 4}, {"syntax": "LD IY,nn", "opcode": "FD 21 nn nn", "bytes": 4}, {"syntax": "LD HL,(nn)", "opcode": "2A nn nn", "bytes": 3}, {"syntax": "LD (nn),HL", "opcode": "22 nn nn", "bytes": 3}, {"syntax": "LD dd,(nn)", "opcode": "ED 01ss1011 nn nn", "bytes": 4}, {"syntax": "LD (nn),dd", "opcode": "ED 01ss0011 nn nn", "bytes": 4}, {"syntax": "LD IX,(nn)", "opcode": "DD 2A nn nn", "bytes": 4}, {"syntax": "LD IY,(nn)", "opcode": "FD 2A nn nn", "bytes": 4}, {"syntax": "LD (nn),IX", "opcode": "DD 22 nn nn", "bytes": 4}, {"syntax": "LD (nn),IY", "opcode": "FD 22 nn nn", "bytes": 4}, {"syntax": "LD SP,HL", "opcode": "F9", "bytes": 1}, {"syntax": "LD SP,IX", "opcode": "DD F9", "bytes": 2}, {"syntax": "LD SP,IY", "opcode": "FD F9", "bytes": 2}],
+      "notes": "r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。\n一般の LD はフラグ不変。LD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。\nインデックス形式の r は B/C/D/E/H/L/A であり、コード 110 は使えない。LD dd,(nn) と LD (nn),dd の ED 形式の dd は BC/DE/SP。HL は通常 2A/22 を使用する。d は符号付き 8 ビット変位、nn は下位バイトから格納する。\n",
       "src": "book"
     },
     {
@@ -80,10 +80,10 @@
       "category": "データ転送",
       "summary": "EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP),HL/IX/IY（スタック内容と交換）。",
       "addressing": ["レジスタ", "スタック"],
-      "flags": ["-", "-", "-", "-", "-", "-"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "EX DE,HL", "cycles": 4}, {"cond": "EX AF,AF'", "cycles": 4}, {"cond": "EX (SP),HL", "cycles": 19}, {"cond": "EX (SP),IX/IY", "cycles": 23}],
-      "encodings": [{"syntax": "EX DE,HL", "opcode": "EB", "bytes": 1}, {"syntax": "EX AF,AF'", "opcode": "08", "bytes": 1}, {"syntax": "EX (SP),HL", "opcode": "E3", "bytes": 1}, {"syntax": "EX (SP),IX", "opcode": "DD E3", "bytes": 2}],
-      "notes": "EXX は BC/DE/HL と裏レジスタを一括切替する別命令（D9）。\\n",
+      "encodings": [{"syntax": "EX DE,HL", "opcode": "EB", "bytes": 1}, {"syntax": "EX AF,AF'", "opcode": "08", "bytes": 1}, {"syntax": "EX (SP),HL", "opcode": "E3", "bytes": 1}, {"syntax": "EX (SP),IX", "opcode": "DD E3", "bytes": 2}, {"syntax": "EX (SP),IY", "opcode": "FD E3", "bytes": 2}],
+      "notes": "EX AF,AF' は F と F' も交換するため全フラグが入れ替わる。他の EX 形式はフラグ不変。EXX は BC/DE/HL の切替。\n",
       "src": "book"
     },
     {
@@ -95,7 +95,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "EXX", "opcode": "D9", "bytes": 1}],
-      "notes": "AF は含まれない（EX AF,AF' が別途必要）。割り込みハンドラでの退避に使われる。\\n",
+      "notes": "AF は含まれない（EX AF,AF' が別途必要）。割り込みハンドラでの退避に使われる。\n",
       "src": "book"
     },
     {
@@ -106,8 +106,8 @@
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "PUSH qq", "cycles": 11}, {"cond": "PUSH IX/IY", "cycles": 15}],
-      "encodings": [{"syntax": "PUSH qq", "opcode": "C5/D5/E5/F5", "bytes": 1}, {"syntax": "PUSH IX", "opcode": "DD E5", "bytes": 2}],
-      "notes": "上位バイトが先に書き込まれる。SP は 2 減算する。\\n",
+      "encodings": [{"syntax": "PUSH qq", "opcode": "C5/D5/E5/F5", "bytes": 1}, {"syntax": "PUSH IX", "opcode": "DD E5", "bytes": 2}, {"syntax": "PUSH IY", "opcode": "FD E5", "bytes": 2}],
+      "notes": "上位バイトが先に書き込まれる。SP は 2 減算する。\n",
       "src": "book"
     },
     {
@@ -116,22 +116,22 @@
       "category": "スタック",
       "summary": "スタックから 16ビット値を qq（BC/DE/HL/AF/IX/IY）に復帰する。",
       "addressing": ["スタック"],
-      "flags": ["-", "-", "-", "-", "-", "-"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "POP qq", "cycles": 10}, {"cond": "POP IX/IY", "cycles": 14}],
-      "encodings": [{"syntax": "POP qq", "opcode": "C1/D1/E1/F1", "bytes": 1}, {"syntax": "POP IX", "opcode": "DD E1", "bytes": 2}],
-      "notes": "低いアドレスが下位バイトに対応。POP AF でフラグ一括復帰が可能。\\n",
+      "encodings": [{"syntax": "POP qq", "opcode": "C1/D1/E1/F1", "bytes": 1}, {"syntax": "POP IX", "opcode": "DD E1", "bytes": 2}, {"syntax": "POP IY", "opcode": "FD E1", "bytes": 2}],
+      "notes": "低いアドレスが下位バイトに対応。POP AF で F がスタックの値に変わるため全フラグを復帰する。他の POP はフラグ不変。\n",
       "src": "book"
     },
     {
       "mnemonic": "ADD",
       "operands": "A, r",
       "category": "算術",
-      "summary": "A に r（または (HL)、即値）を加算し結果を A に入れる。16ビット版は ADD HL,ss / ADD IX,ss。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "summary": "A に r（または (HL)、即値）を加算し結果を A に入れる。16 ビット版は ADD HL,ss / ADD IX,pp / ADD IY,rr。",
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "‡", "‡", "0", "‡"],
-      "cycles": [{"cond": "ADD A,r", "cycles": 4}, {"cond": "ADD A,(HL)", "cycles": 7}, {"cond": "ADD A,n", "cycles": 7}, {"cond": "ADD A,(IX+d)", "cycles": 19}, {"cond": "ADD HL,ss", "cycles": 11}, {"cond": "ADD IX,ss", "cycles": 15}],
-      "encodings": [{"syntax": "ADD A,r", "opcode": "10000SSS", "bytes": 1}, {"syntax": "ADD A,n", "opcode": "C6 n", "bytes": 2}, {"syntax": "ADD HL,ss", "opcode": "09/19/29/39", "bytes": 1}, {"syntax": "ADD IX,pp", "opcode": "DD 29 など", "bytes": 2}],
-      "notes": "ss は BC/DE/HL/SP。算術演算時の P/V はオーバーフローとして機能する。\\n",
+      "cycles": [{"cond": "ADD A,r", "cycles": 4}, {"cond": "ADD A,(HL)", "cycles": 7}, {"cond": "ADD A,n", "cycles": 7}, {"cond": "ADD (IX/IY+d)", "cycles": 19}, {"cond": "ADD HL,ss", "cycles": 11}, {"cond": "ADD IX/IY,pp", "cycles": 15}],
+      "encodings": [{"syntax": "ADD A,r", "opcode": "10000SSS", "bytes": 1}, {"syntax": "ADD A,n", "opcode": "C6 n", "bytes": 2}, {"syntax": "ADD HL,ss", "opcode": "09/19/29/39", "bytes": 1}, {"syntax": "ADD A,(HL)", "opcode": "86", "bytes": 1}, {"syntax": "ADD A,(IX+d)", "opcode": "DD 86 d", "bytes": 3}, {"syntax": "ADD A,(IY+d)", "opcode": "FD 86 d", "bytes": 3}, {"syntax": "ADD IX,pp", "opcode": "DD 00pp1001", "bytes": 2}, {"syntax": "ADD IY,rr", "opcode": "FD 00rr1001", "bytes": 2}],
+      "notes": "ss は BC/DE/HL/SP。IX 版は BC/DE/IX/SP、IY 版は BC/DE/IY/SP を使う。上のフラグ欄は 8 ビット形式で、16 ビット形式は S/Z/P-V を保持し、H/C を更新し N=0 とする。8 ビット算術演算時の P/V はオーバーフローとして機能する。\n",
       "src": "book"
     },
     {
@@ -139,11 +139,11 @@
       "operands": "A, r",
       "category": "算術",
       "summary": "キャリー込みの加算。ADC A,r と 16ビットの ADC HL,ss がある。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "‡", "‡", "0", "‡"],
-      "cycles": [{"cond": "ADC A,r", "cycles": 4}, {"cond": "ADC A,(HL)", "cycles": 7}, {"cond": "ADC A,n", "cycles": 7}, {"cond": "ADC HL,ss", "cycles": 15}],
-      "encodings": [{"syntax": "ADC A,r", "opcode": "10001SSS", "bytes": 1}, {"syntax": "ADC A,n", "opcode": "CE n", "bytes": 2}, {"syntax": "ADC HL,ss", "opcode": "ED 4A/5A/6A/7A", "bytes": 2}],
-      "notes": "ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。\\n",
+      "cycles": [{"cond": "ADC A,r", "cycles": 4}, {"cond": "ADC A,(HL)", "cycles": 7}, {"cond": "ADC A,n", "cycles": 7}, {"cond": "ADC A,(IX/IY+d)", "cycles": 19}, {"cond": "ADC HL,ss", "cycles": 15}],
+      "encodings": [{"syntax": "ADC A,r", "opcode": "10001SSS", "bytes": 1}, {"syntax": "ADC A,n", "opcode": "CE n", "bytes": 2}, {"syntax": "ADC HL,ss", "opcode": "ED 4A/5A/6A/7A", "bytes": 2}, {"syntax": "ADC A,(HL)", "opcode": "8E", "bytes": 1}, {"syntax": "ADC A,(IX+d)", "opcode": "DD 8E d", "bytes": 3}, {"syntax": "ADC A,(IY+d)", "opcode": "FD 8E d", "bytes": 3}],
+      "notes": "ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。\n",
       "src": "book"
     },
     {
@@ -151,11 +151,11 @@
       "operands": "r",
       "category": "算術",
       "summary": "A から r（または (HL)、即値）を減算し結果を A に入れる。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "‡", "‡", "1", "‡"],
-      "cycles": [{"cond": "SUB A,r", "cycles": 4}, {"cond": "SUB A,(HL)", "cycles": 7}, {"cond": "SUB A,n", "cycles": 7}, {"cond": "SUB A,(IX+d)", "cycles": 19}],
-      "encodings": [{"syntax": "SUB A,r", "opcode": "10010SSS", "bytes": 1}, {"syntax": "SUB A,n", "opcode": "D6 n", "bytes": 2}],
-      "notes": "減算なので N=1。\\n",
+      "cycles": [{"cond": "SUB A,r", "cycles": 4}, {"cond": "SUB A,(HL)", "cycles": 7}, {"cond": "SUB A,n", "cycles": 7}, {"cond": "SUB (IX/IY+d)", "cycles": 19}],
+      "encodings": [{"syntax": "SUB A,r", "opcode": "10010SSS", "bytes": 1}, {"syntax": "SUB A,n", "opcode": "D6 n", "bytes": 2}, {"syntax": "SUB (HL)", "opcode": "96", "bytes": 1}, {"syntax": "SUB (IX+d)", "opcode": "DD 96 d", "bytes": 3}, {"syntax": "SUB (IY+d)", "opcode": "FD 96 d", "bytes": 3}],
+      "notes": "減算なので N=1。\n",
       "src": "book"
     },
     {
@@ -163,11 +163,11 @@
       "operands": "A, r",
       "category": "算術",
       "summary": "キャリー込みの減算。SBC A,r と 16ビットの SBC HL,ss がある。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "‡", "‡", "1", "‡"],
-      "cycles": [{"cond": "SBC A,r", "cycles": 4}, {"cond": "SBC A,(HL)", "cycles": 7}, {"cond": "SBC A,n", "cycles": 7}, {"cond": "SBC HL,ss", "cycles": 15}],
-      "encodings": [{"syntax": "SBC A,r", "opcode": "10011SSS", "bytes": 1}, {"syntax": "SBC A,n", "opcode": "DE n", "bytes": 2}, {"syntax": "SBC HL,ss", "opcode": "ED 42/52/62/72", "bytes": 2}],
-      "notes": "SBC HL,ss は 32 ビット演算や多倍長減算で使う。\\n",
+      "cycles": [{"cond": "SBC A,r", "cycles": 4}, {"cond": "SBC A,(HL)", "cycles": 7}, {"cond": "SBC A,n", "cycles": 7}, {"cond": "SBC A,(IX/IY+d)", "cycles": 19}, {"cond": "SBC HL,ss", "cycles": 15}],
+      "encodings": [{"syntax": "SBC A,r", "opcode": "10011SSS", "bytes": 1}, {"syntax": "SBC A,n", "opcode": "DE n", "bytes": 2}, {"syntax": "SBC HL,ss", "opcode": "ED 42/52/62/72", "bytes": 2}, {"syntax": "SBC A,(HL)", "opcode": "9E", "bytes": 1}, {"syntax": "SBC A,(IX+d)", "opcode": "DD 9E d", "bytes": 3}, {"syntax": "SBC A,(IY+d)", "opcode": "FD 9E d", "bytes": 3}],
+      "notes": "SBC HL,ss は 32 ビット演算や多倍長減算で使う。\n",
       "src": "book"
     },
     {
@@ -175,11 +175,11 @@
       "operands": "r",
       "category": "論理",
       "summary": "A と r（または (HL)、即値）の論理積を A に入れる。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "1", "‡", "0", "0"],
-      "cycles": [{"cond": "AND A,r", "cycles": 4}, {"cond": "AND A,(HL)", "cycles": 7}, {"cond": "AND A,n", "cycles": 7}, {"cond": "AND A,(IX+d)", "cycles": 19}],
-      "encodings": [{"syntax": "AND A,r", "opcode": "10100SSS", "bytes": 1}, {"syntax": "AND A,n", "opcode": "E6 n", "bytes": 2}],
-      "notes": "P/V はパリティ（1のビット数が偶数なら 1）。\\n",
+      "cycles": [{"cond": "AND A,r", "cycles": 4}, {"cond": "AND A,(HL)", "cycles": 7}, {"cond": "AND A,n", "cycles": 7}, {"cond": "AND (IX/IY+d)", "cycles": 19}],
+      "encodings": [{"syntax": "AND A,r", "opcode": "10100SSS", "bytes": 1}, {"syntax": "AND A,n", "opcode": "E6 n", "bytes": 2}, {"syntax": "AND (HL)", "opcode": "A6", "bytes": 1}, {"syntax": "AND (IX+d)", "opcode": "DD A6 d", "bytes": 3}, {"syntax": "AND (IY+d)", "opcode": "FD A6 d", "bytes": 3}],
+      "notes": "P/V はパリティ（1のビット数が偶数なら 1）。\n",
       "src": "book"
     },
     {
@@ -187,11 +187,11 @@
       "operands": "r",
       "category": "論理",
       "summary": "A と r（または (HL)、即値）の論理和を A に入れる。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "0", "‡", "0", "0"],
-      "cycles": [{"cond": "OR A,r", "cycles": 4}, {"cond": "OR A,(HL)", "cycles": 7}, {"cond": "OR A,n", "cycles": 7}, {"cond": "OR A,(IX+d)", "cycles": 19}],
-      "encodings": [{"syntax": "OR A,r", "opcode": "10110SSS", "bytes": 1}, {"syntax": "OR A,n", "opcode": "F6 n", "bytes": 2}],
-      "notes": "OR A で A の値を保ったままフラグ（S/Z/P）を更新できる。\\n",
+      "cycles": [{"cond": "OR A,r", "cycles": 4}, {"cond": "OR A,(HL)", "cycles": 7}, {"cond": "OR A,n", "cycles": 7}, {"cond": "OR (IX/IY+d)", "cycles": 19}],
+      "encodings": [{"syntax": "OR A,r", "opcode": "10110SSS", "bytes": 1}, {"syntax": "OR A,n", "opcode": "F6 n", "bytes": 2}, {"syntax": "OR (HL)", "opcode": "B6", "bytes": 1}, {"syntax": "OR (IX+d)", "opcode": "DD B6 d", "bytes": 3}, {"syntax": "OR (IY+d)", "opcode": "FD B6 d", "bytes": 3}],
+      "notes": "OR A で A の値を保ったままフラグ（S/Z/P）を更新できる。\n",
       "src": "book"
     },
     {
@@ -199,11 +199,11 @@
       "operands": "r",
       "category": "論理",
       "summary": "A と r（または (HL)、即値）の排他的論理和を A に入れる。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "0", "‡", "0", "0"],
-      "cycles": [{"cond": "XOR A,r", "cycles": 4}, {"cond": "XOR A,(HL)", "cycles": 7}, {"cond": "XOR A,n", "cycles": 7}, {"cond": "XOR A,(IX+d)", "cycles": 19}],
-      "encodings": [{"syntax": "XOR A,r", "opcode": "10101SSS", "bytes": 1}, {"syntax": "XOR A,n", "opcode": "EE n", "bytes": 2}],
-      "notes": "XOR A は A=0 + キャリークリアの 1 バイト定番。\\n",
+      "cycles": [{"cond": "XOR A,r", "cycles": 4}, {"cond": "XOR A,(HL)", "cycles": 7}, {"cond": "XOR A,n", "cycles": 7}, {"cond": "XOR (IX/IY+d)", "cycles": 19}],
+      "encodings": [{"syntax": "XOR A,r", "opcode": "10101SSS", "bytes": 1}, {"syntax": "XOR A,n", "opcode": "EE n", "bytes": 2}, {"syntax": "XOR (HL)", "opcode": "AE", "bytes": 1}, {"syntax": "XOR (IX+d)", "opcode": "DD AE d", "bytes": 3}, {"syntax": "XOR (IY+d)", "opcode": "FD AE d", "bytes": 3}],
+      "notes": "XOR A は A=0 + キャリークリアの 1 バイト定番。\n",
       "src": "book"
     },
     {
@@ -211,11 +211,11 @@
       "operands": "r",
       "category": "比較",
       "summary": "A と r を比較（減算してフラグのみ更新、A は変わらない）。",
-      "addressing": ["レジスタ", "レジスタ間接", "即値"],
+      "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)", "即値"],
       "flags": ["‡", "‡", "‡", "‡", "1", "‡"],
-      "cycles": [{"cond": "CP A,r", "cycles": 4}, {"cond": "CP A,(HL)", "cycles": 7}, {"cond": "CP A,n", "cycles": 7}, {"cond": "CP A,(IX+d)", "cycles": 19}],
-      "encodings": [{"syntax": "CP A,r", "opcode": "10111SSS", "bytes": 1}, {"syntax": "CP A,n", "opcode": "FE n", "bytes": 2}],
-      "notes": "減算フラグ N が 1 に立つ点が SUB との違い（結果は捨てられる）。\\n",
+      "cycles": [{"cond": "CP A,r", "cycles": 4}, {"cond": "CP A,(HL)", "cycles": 7}, {"cond": "CP A,n", "cycles": 7}, {"cond": "CP (IX/IY+d)", "cycles": 19}],
+      "encodings": [{"syntax": "CP A,r", "opcode": "10111SSS", "bytes": 1}, {"syntax": "CP A,n", "opcode": "FE n", "bytes": 2}, {"syntax": "CP (HL)", "opcode": "BE", "bytes": 1}, {"syntax": "CP (IX+d)", "opcode": "DD BE d", "bytes": 3}, {"syntax": "CP (IY+d)", "opcode": "FD BE d", "bytes": 3}],
+      "notes": "SUB と同様に N=1。SUB と異なり減算結果を A に格納しない。\n",
       "src": "book"
     },
     {
@@ -225,9 +225,9 @@
       "summary": "レジスタまたはメモリを 1 加算。8ビット版と 16ビット版（INC ss）がある。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "‡", "‡", "0", "-"],
-      "cycles": [{"cond": "INC r", "cycles": 4}, {"cond": "INC (HL)", "cycles": 11}, {"cond": "INC (IX+d)", "cycles": 23}, {"cond": "INC ss (16bit)", "cycles": 6}, {"cond": "INC IX/IY", "cycles": 10}],
-      "encodings": [{"syntax": "INC r", "opcode": "00DDD100", "bytes": 1}, {"syntax": "INC (HL)", "opcode": "34", "bytes": 1}, {"syntax": "INC (IX+d)", "opcode": "DD 34 d", "bytes": 3}, {"syntax": "INC ss", "opcode": "03/13/23/33", "bytes": 1}],
-      "notes": "8ビット版はキャリーを変えない（P/V はオーバーフロー）。16ビット版はフラグを一切変えない。\\n",
+      "cycles": [{"cond": "INC r", "cycles": 4}, {"cond": "INC (HL)", "cycles": 11}, {"cond": "INC (IX/IY+d)", "cycles": 23}, {"cond": "INC ss (16bit)", "cycles": 6}, {"cond": "INC IX/IY", "cycles": 10}],
+      "encodings": [{"syntax": "INC r", "opcode": "00DDD100", "bytes": 1}, {"syntax": "INC (HL)", "opcode": "34", "bytes": 1}, {"syntax": "INC (IX+d)", "opcode": "DD 34 d", "bytes": 3}, {"syntax": "INC ss", "opcode": "03/13/23/33", "bytes": 1}, {"syntax": "INC (IY+d)", "opcode": "FD 34 d", "bytes": 3}, {"syntax": "INC IX", "opcode": "DD 23", "bytes": 2}, {"syntax": "INC IY", "opcode": "FD 23", "bytes": 2}],
+      "notes": "8ビット版はキャリーを変えない（P/V はオーバーフロー）。16ビット版はフラグを一切変えない。\n",
       "src": "book"
     },
     {
@@ -237,9 +237,9 @@
       "summary": "レジスタまたはメモリを 1 減算。8ビット版と 16ビット版（DEC ss）がある。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "‡", "‡", "1", "-"],
-      "cycles": [{"cond": "DEC r", "cycles": 4}, {"cond": "DEC (HL)", "cycles": 11}, {"cond": "DEC (IX+d)", "cycles": 23}, {"cond": "DEC ss (16bit)", "cycles": 6}, {"cond": "DEC IX/IY", "cycles": 10}],
-      "encodings": [{"syntax": "DEC r", "opcode": "00DDD101", "bytes": 1}, {"syntax": "DEC (HL)", "opcode": "35", "bytes": 1}, {"syntax": "DEC (IX+d)", "opcode": "DD 35 d", "bytes": 3}, {"syntax": "DEC ss", "opcode": "0B/1B/2B/3B", "bytes": 1}],
-      "notes": "8ビット版はキャリーを変えない。BC のカウンタループは 16ビット DEC がフラグを変えないため DJNZ や DEC B と併用する設計になる。\\n",
+      "cycles": [{"cond": "DEC r", "cycles": 4}, {"cond": "DEC (HL)", "cycles": 11}, {"cond": "DEC (IX/IY+d)", "cycles": 23}, {"cond": "DEC ss (16bit)", "cycles": 6}, {"cond": "DEC IX/IY", "cycles": 10}],
+      "encodings": [{"syntax": "DEC r", "opcode": "00DDD101", "bytes": 1}, {"syntax": "DEC (HL)", "opcode": "35", "bytes": 1}, {"syntax": "DEC (IX+d)", "opcode": "DD 35 d", "bytes": 3}, {"syntax": "DEC ss", "opcode": "0B/1B/2B/3B", "bytes": 1}, {"syntax": "DEC (IY+d)", "opcode": "FD 35 d", "bytes": 3}, {"syntax": "DEC IX", "opcode": "DD 2B", "bytes": 2}, {"syntax": "DEC IY", "opcode": "FD 2B", "bytes": 2}],
+      "notes": "8ビット版はキャリーを変えない。16 ビット版はフラグを一切変えないため、BC 全体のゼロ判定には別の処理が必要。DJNZ は B のみをカウンタとして使う。\n",
       "src": "book"
     },
     {
@@ -251,7 +251,7 @@
       "flags": ["‡", "‡", "‡", "‡", "-", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "DAA", "opcode": "27", "bytes": 1}],
-      "notes": "N フラグ（直前が加算か減算か）と H/C を見て補正量を決める。P/V はパリティ。\\n",
+      "notes": "N フラグ（直前が加算か減算か）と H/C を見て補正量を決める。P/V はパリティ。\n",
       "src": "book"
     },
     {
@@ -263,7 +263,7 @@
       "flags": ["-", "-", "1", "-", "1", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "CPL", "opcode": "2F", "bytes": 1}],
-      "notes": "H と N が常に 1 になる。\\n",
+      "notes": "H と N が常に 1 になる。\n",
       "src": "book"
     },
     {
@@ -275,7 +275,7 @@
       "flags": ["‡", "‡", "‡", "‡", "1", "‡"],
       "cycles": [{"cond": "常時", "cycles": 8}],
       "encodings": [{"syntax": "NEG", "opcode": "ED 44", "bytes": 2}],
-      "notes": "A=0 のとき C=0、A=0x80 のとき P/V=1。\\n",
+      "notes": "A=0 のとき C=0、A=0x80 のとき P/V=1。\n",
       "src": "book"
     },
     {
@@ -284,10 +284,10 @@
       "category": "システム制御",
       "summary": "キャリーフラグを反転する。",
       "addressing": ["暗黙"],
-      "flags": ["-", "-", "U", "-", "0", "‡"],
+      "flags": ["-", "-", "‡", "-", "0", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "CCF", "opcode": "3F", "bytes": 1}],
-      "notes": "H は直前のキャリー値を引き継ぐ（実装依存の挙動として知られる）。\\n",
+      "notes": "H は実行前のキャリー値を引き継ぐ。\n",
       "src": "book"
     },
     {
@@ -305,12 +305,12 @@
       "mnemonic": "RLCA",
       "operands": "",
       "category": "シフト/ビット",
-      "summary": "A を左へ 1 ビットローテート。bit7 がキャリーに入り、キャリーが bit0 へ。",
+      "summary": "A を左へ 1 ビットローテート。元の bit7 が C と bit0 の両方に入る。",
       "addressing": ["暗黙"],
       "flags": ["-", "-", "0", "-", "0", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "RLCA", "opcode": "07", "bytes": 1}],
-      "notes": "S/Z/P-V は変化しない。9 ビットローテート（キャリーを含む）ではない点に注意。\\n",
+      "notes": "S/Z/P-V は変化しない。9 ビットローテート（キャリーを含む）ではない点に注意。\n",
       "src": "book"
     },
     {
@@ -322,14 +322,14 @@
       "flags": ["-", "-", "0", "-", "0", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "RLA", "opcode": "17", "bytes": 1}],
-      "notes": "bit7 → C、C → bit0。多倍長シフトの連結に使う。\\n",
+      "notes": "bit7 → C、C → bit0。多倍長シフトの連結に使う。\n",
       "src": "book"
     },
     {
       "mnemonic": "RRCA",
       "operands": "",
       "category": "シフト/ビット",
-      "summary": "A を右へ 1 ビットローテート。bit0 がキャリーに入り、キャリーが bit7 へ。",
+      "summary": "A を右へ 1 ビットローテート。元の bit0 が C と bit7 の両方に入る。",
       "addressing": ["暗黙"],
       "flags": ["-", "-", "0", "-", "0", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
@@ -351,12 +351,12 @@
       "mnemonic": "RLC",
       "operands": "r",
       "category": "シフト/ビット",
-      "summary": "レジスタ/メモリを左へ 1 ビットローテート（bit7 → C → bit0）。全フラグ更新あり。",
+      "summary": "レジスタ/メモリを左へ 1 ビットローテートし、元の bit7 を C と bit0 に入れる。S/Z/P-V を更新する。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "0", "‡", "0", "‡"],
-      "cycles": [{"cond": "RLC r", "cycles": 8}, {"cond": "RLC (HL)", "cycles": 15}, {"cond": "RLC (IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "RLC r", "opcode": "CB 00DDD000", "bytes": 2}, {"syntax": "RLC (HL)", "opcode": "CB 06", "bytes": 2}, {"syntax": "RLC (IX+d)", "opcode": "DD CB d 06", "bytes": 4}],
-      "notes": "P/V はパリティ。RLCA との違いは全フラグ更新とメモリ操作対応。\\n",
+      "cycles": [{"cond": "RLC r", "cycles": 8}, {"cond": "RLC (HL)", "cycles": 15}, {"cond": "RLC (IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "RLC r", "opcode": "CB 00000DDD", "bytes": 2}, {"syntax": "RLC (HL)", "opcode": "CB 06", "bytes": 2}, {"syntax": "RLC (IX+d)", "opcode": "DD CB d 06", "bytes": 4}, {"syntax": "RLC (IY+d)", "opcode": "FD CB d 06", "bytes": 4}],
+      "notes": "P/V はパリティ。RLCA との違いは全フラグ更新とメモリ操作対応。\n",
       "src": "book"
     },
     {
@@ -366,19 +366,19 @@
       "summary": "キャリー込み左ローテート（C → bit0、bit7 → C）。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "0", "‡", "0", "‡"],
-      "cycles": [{"cond": "RL r", "cycles": 8}, {"cond": "RL (HL)", "cycles": 15}, {"cond": "RL (IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "RL r", "opcode": "CB 00DDD010", "bytes": 2}, {"syntax": "RL (HL)", "opcode": "CB 16", "bytes": 2}],
+      "cycles": [{"cond": "RL r", "cycles": 8}, {"cond": "RL (HL)", "cycles": 15}, {"cond": "RL (IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "RL r", "opcode": "CB 00010DDD", "bytes": 2}, {"syntax": "RL (HL)", "opcode": "CB 16", "bytes": 2}, {"syntax": "RL (IX+d)", "opcode": "DD CB d 16", "bytes": 4}, {"syntax": "RL (IY+d)", "opcode": "FD CB d 16", "bytes": 4}],
       "src": "book"
     },
     {
       "mnemonic": "RRC",
       "operands": "r",
       "category": "シフト/ビット",
-      "summary": "レジスタ/メモリを右へ 1 ビットローテート（bit0 → C → bit7）。",
+      "summary": "レジスタ/メモリを右へ 1 ビットローテートし、元の bit0 を C と bit7 に入れる。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "0", "‡", "0", "‡"],
-      "cycles": [{"cond": "RRC r", "cycles": 8}, {"cond": "RRC (HL)", "cycles": 15}, {"cond": "RRC (IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "RRC r", "opcode": "CB 00DDD001", "bytes": 2}, {"syntax": "RRC (HL)", "opcode": "CB 0E", "bytes": 2}],
+      "cycles": [{"cond": "RRC r", "cycles": 8}, {"cond": "RRC (HL)", "cycles": 15}, {"cond": "RRC (IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "RRC r", "opcode": "CB 00001DDD", "bytes": 2}, {"syntax": "RRC (HL)", "opcode": "CB 0E", "bytes": 2}, {"syntax": "RRC (IX+d)", "opcode": "DD CB d 0E", "bytes": 4}, {"syntax": "RRC (IY+d)", "opcode": "FD CB d 0E", "bytes": 4}],
       "src": "book"
     },
     {
@@ -388,8 +388,8 @@
       "summary": "キャリー込み右ローテート（C → bit7、bit0 → C）。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "0", "‡", "0", "‡"],
-      "cycles": [{"cond": "RR r", "cycles": 8}, {"cond": "RR (HL)", "cycles": 15}, {"cond": "RR (IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "RR r", "opcode": "CB 00DDD011", "bytes": 2}, {"syntax": "RR (HL)", "opcode": "CB 1E", "bytes": 2}],
+      "cycles": [{"cond": "RR r", "cycles": 8}, {"cond": "RR (HL)", "cycles": 15}, {"cond": "RR (IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "RR r", "opcode": "CB 00011DDD", "bytes": 2}, {"syntax": "RR (HL)", "opcode": "CB 1E", "bytes": 2}, {"syntax": "RR (IX+d)", "opcode": "DD CB d 1E", "bytes": 4}, {"syntax": "RR (IY+d)", "opcode": "FD CB d 1E", "bytes": 4}],
       "src": "book"
     },
     {
@@ -399,19 +399,19 @@
       "summary": "算術左シフト（bit7 → C、bit0 ← 0）。×2 相当。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "0", "‡", "0", "‡"],
-      "cycles": [{"cond": "SLA r", "cycles": 8}, {"cond": "SLA (HL)", "cycles": 15}, {"cond": "SLA (IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "SLA r", "opcode": "CB 00DDD100", "bytes": 2}, {"syntax": "SLA (HL)", "opcode": "CB 26", "bytes": 2}],
+      "cycles": [{"cond": "SLA r", "cycles": 8}, {"cond": "SLA (HL)", "cycles": 15}, {"cond": "SLA (IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "SLA r", "opcode": "CB 00100DDD", "bytes": 2}, {"syntax": "SLA (HL)", "opcode": "CB 26", "bytes": 2}, {"syntax": "SLA (IX+d)", "opcode": "DD CB d 26", "bytes": 4}, {"syntax": "SLA (IY+d)", "opcode": "FD CB d 26", "bytes": 4}],
       "src": "book"
     },
     {
       "mnemonic": "SRA",
       "operands": "r",
       "category": "シフト/ビット",
-      "summary": "算術右シフト（符号ビット保持。bit7 → bit7 かつ bit0 → C）。÷2 相当。",
+      "summary": "算術右シフト（符号ビット保持。bit7 → bit7 かつ bit0 → C）。符号付き値の 2 除算で負の奇数は負の無限大方向に丸める。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "0", "‡", "0", "‡"],
-      "cycles": [{"cond": "SRA r", "cycles": 8}, {"cond": "SRA (HL)", "cycles": 15}, {"cond": "SRA (IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "SRA r", "opcode": "CB 00DDD101", "bytes": 2}, {"syntax": "SRA (HL)", "opcode": "CB 2E", "bytes": 2}],
+      "cycles": [{"cond": "SRA r", "cycles": 8}, {"cond": "SRA (HL)", "cycles": 15}, {"cond": "SRA (IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "SRA r", "opcode": "CB 00101DDD", "bytes": 2}, {"syntax": "SRA (HL)", "opcode": "CB 2E", "bytes": 2}, {"syntax": "SRA (IX+d)", "opcode": "DD CB d 2E", "bytes": 4}, {"syntax": "SRA (IY+d)", "opcode": "FD CB d 2E", "bytes": 4}],
       "src": "book"
     },
     {
@@ -421,32 +421,33 @@
       "summary": "論理右シフト（bit7 ← 0、bit0 → C）。符号なし ÷2 相当。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["‡", "‡", "0", "‡", "0", "‡"],
-      "cycles": [{"cond": "SRL r", "cycles": 8}, {"cond": "SRL (HL)", "cycles": 15}, {"cond": "SRL (IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "SRL r", "opcode": "CB 00DDD110", "bytes": 2}, {"syntax": "SRL (HL)", "opcode": "CB 3E", "bytes": 2}],
-      "notes": "CB 37（SLL、bit0←1）は非公式命令。機種によっては動作しない。\\n",
+      "cycles": [{"cond": "SRL r", "cycles": 8}, {"cond": "SRL (HL)", "cycles": 15}, {"cond": "SRL (IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "SRL r", "opcode": "CB 00111DDD", "bytes": 2}, {"syntax": "SRL (HL)", "opcode": "CB 3E", "bytes": 2}, {"syntax": "SRL (IX+d)", "opcode": "DD CB d 3E", "bytes": 4}, {"syntax": "SRL (IY+d)", "opcode": "FD CB d 3E", "bytes": 4}],
+      "notes": "CB 37（SLL、bit0←1）は非公式命令。機種によっては動作しない。\n",
       "src": "book"
     },
     {
       "mnemonic": "RLD",
       "operands": "",
       "category": "シフト/ビット",
-      "summary": "(HL) の下位 4 ビットと A の下位 4 ビットを BCD ニブル単位で左回転。",
+      "summary": "A の下位 4 ビットと (HL) の上位・下位各 4 ビットを結合して左へ 4 ビット回転。",
       "addressing": ["レジスタ間接"],
       "flags": ["‡", "‡", "0", "‡", "0", "-"],
       "cycles": [{"cond": "常時", "cycles": 18}],
       "encodings": [{"syntax": "RLD", "opcode": "ED 6F", "bytes": 2}],
-      "notes": "BCD 文字列の左シフトに便利。\\n",
+      "notes": "A の上位 4 ビットは保持される。S/Z/P-V は操作後の A に基づき、C は保持される。\n",
       "src": "book"
     },
     {
       "mnemonic": "RRD",
       "operands": "",
       "category": "シフト/ビット",
-      "summary": "(HL) の下位 4 ビットと A の下位 4 ビットを BCD ニブル単位で右回転。",
+      "summary": "A の下位 4 ビットと (HL) の上位・下位各 4 ビットを結合して右へ 4 ビット回転。",
       "addressing": ["レジスタ間接"],
       "flags": ["‡", "‡", "0", "‡", "0", "-"],
       "cycles": [{"cond": "常時", "cycles": 18}],
       "encodings": [{"syntax": "RRD", "opcode": "ED 67", "bytes": 2}],
+      "notes": "A の上位 4 ビットは保持される。S/Z/P-V は操作後の A に基づき、C は保持される。",
       "src": "book"
     },
     {
@@ -456,9 +457,9 @@
       "summary": "レジスタ/メモリのビット b をテストし、0 なら Z フラグを立てる。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["U", "‡", "1", "U", "0", "-"],
-      "cycles": [{"cond": "BIT b,r", "cycles": 8}, {"cond": "BIT b,(HL)", "cycles": 12}, {"cond": "BIT b,(IX+d)", "cycles": 20}],
-      "encodings": [{"syntax": "BIT b,r", "opcode": "CB 01BBBSSS", "bytes": 2}, {"syntax": "BIT b,(HL)", "opcode": "CB 01BBB110", "bytes": 2}, {"syntax": "BIT b,(IX+d)", "opcode": "DD CB d 01BBB110", "bytes": 4}],
-      "notes": "b=0〜7。(HL)/(IX+d) 版は S フラグが実装依存で変わることがある（非公式）。\\n",
+      "cycles": [{"cond": "BIT b,r", "cycles": 8}, {"cond": "BIT b,(HL)", "cycles": 12}, {"cond": "BIT b,(IX/IY+d)", "cycles": 20}],
+      "encodings": [{"syntax": "BIT b,r", "opcode": "CB 01BBBSSS", "bytes": 2}, {"syntax": "BIT b,(HL)", "opcode": "CB 01BBB110", "bytes": 2}, {"syntax": "BIT b,(IX+d)", "opcode": "DD CB d 01BBB110", "bytes": 4}, {"syntax": "BIT b,(IY+d)", "opcode": "FD CB d 01BBB110", "bytes": 4}],
+      "notes": "b=0〜7。参照命令表では S と P/V の値は未規定として扱う。H=1、N=0、C は保持される。\n",
       "src": "book"
     },
     {
@@ -468,9 +469,9 @@
       "summary": "レジスタ/メモリのビット b を 1 にする。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "SET b,r", "cycles": 8}, {"cond": "SET b,(HL)", "cycles": 15}, {"cond": "SET b,(IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "SET b,r", "opcode": "CB 11BBBSSS", "bytes": 2}, {"syntax": "SET b,(HL)", "opcode": "CB 11BBB110", "bytes": 2}, {"syntax": "SET b,(IX+d)", "opcode": "DD CB d 11BBB110", "bytes": 4}],
-      "notes": "フラグは一切変化しない。\\n",
+      "cycles": [{"cond": "SET b,r", "cycles": 8}, {"cond": "SET b,(HL)", "cycles": 15}, {"cond": "SET b,(IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "SET b,r", "opcode": "CB 11BBBSSS", "bytes": 2}, {"syntax": "SET b,(HL)", "opcode": "CB 11BBB110", "bytes": 2}, {"syntax": "SET b,(IX+d)", "opcode": "DD CB d 11BBB110", "bytes": 4}, {"syntax": "SET b,(IY+d)", "opcode": "FD CB d 11BBB110", "bytes": 4}],
+      "notes": "フラグは一切変化しない。\n",
       "src": "book"
     },
     {
@@ -480,9 +481,9 @@
       "summary": "レジスタ/メモリのビット b を 0 にする。",
       "addressing": ["レジスタ", "レジスタ間接", "インデックス(IX/IY+d)"],
       "flags": ["-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "RES b,r", "cycles": 8}, {"cond": "RES b,(HL)", "cycles": 15}, {"cond": "RES b,(IX+d)", "cycles": 23}],
-      "encodings": [{"syntax": "RES b,r", "opcode": "CB 10BBBSSS", "bytes": 2}, {"syntax": "RES b,(HL)", "opcode": "CB 10BBB110", "bytes": 2}, {"syntax": "RES b,(IX+d)", "opcode": "DD CB d 10BBB110", "bytes": 4}],
-      "notes": "フラグは一切変化しない。\\n",
+      "cycles": [{"cond": "RES b,r", "cycles": 8}, {"cond": "RES b,(HL)", "cycles": 15}, {"cond": "RES b,(IX/IY+d)", "cycles": 23}],
+      "encodings": [{"syntax": "RES b,r", "opcode": "CB 10BBBSSS", "bytes": 2}, {"syntax": "RES b,(HL)", "opcode": "CB 10BBB110", "bytes": 2}, {"syntax": "RES b,(IX+d)", "opcode": "DD CB d 10BBB110", "bytes": 4}, {"syntax": "RES b,(IY+d)", "opcode": "FD CB d 10BBB110", "bytes": 4}],
+      "notes": "フラグは一切変化しない。\n",
       "src": "book"
     },
     {
@@ -494,7 +495,7 @@
       "flags": ["-", "-", "0", "‡", "0", "-"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "LDI", "opcode": "ED A0", "bytes": 2}],
-      "notes": "P/V は BC=0 で 0、それ以外 1。ループを自前で組む 1 回分の転送。\\n",
+      "notes": "P/V は BC=0 で 0、それ以外 1。ループを自前で組む 1 回分の転送。\n",
       "src": "book"
     },
     {
@@ -506,7 +507,7 @@
       "flags": ["-", "-", "0", "0", "0", "-"],
       "cycles": [{"cond": "1回ごと（BC≠0）", "cycles": 21}, {"cond": "最終回（BC=0）", "cycles": 16}],
       "encodings": [{"syntax": "LDIR", "opcode": "ED B0", "bytes": 2}],
-      "notes": "HL と DE の範囲が重なり DE > HL の場合は破壊的にコピーする（memmove の dst>src 相当）。中断された割り込み処理では ED B0 がスタックに積まれる。\\n",
+      "notes": "HL と DE の範囲が重なり DE > HL の場合は破壊的にコピーする（memmove の dst>src 相当）。反復途中で割り込みを受けると、再開する LDIR 命令のアドレスがスタックに積まれる。実行前の BC=0 は 65536 バイト転送を意味する。\n",
       "src": "book"
     },
     {
@@ -518,6 +519,7 @@
       "flags": ["-", "-", "0", "‡", "0", "-"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "LDD", "opcode": "ED A8", "bytes": 2}],
+      "notes": "P/V は減算後の BC=0 で 0、それ以外は 1。",
       "src": "book"
     },
     {
@@ -529,7 +531,7 @@
       "flags": ["-", "-", "0", "0", "0", "-"],
       "cycles": [{"cond": "1回ごと（BC≠0）", "cycles": 21}, {"cond": "最終回（BC=0）", "cycles": 16}],
       "encodings": [{"syntax": "LDDR", "opcode": "ED B8", "bytes": 2}],
-      "notes": "DE > HL で範囲が重なる場合の安全なコピー（memmove の dst>src 相当）はこちら。\\n",
+      "notes": "終端から降順にコピーする。実行前の BC=0 は 65536 バイト転送を意味する。\n",
       "src": "book"
     },
     {
@@ -541,7 +543,7 @@
       "flags": ["‡", "‡", "‡", "‡", "1", "-"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "CPI", "opcode": "ED A1", "bytes": 2}],
-      "notes": "P/V は BC=0 で 0、それ以外 1。\\n",
+      "notes": "P/V は BC=0 で 0、それ以外 1。\n",
       "src": "book"
     },
     {
@@ -553,7 +555,7 @@
       "flags": ["‡", "‡", "‡", "‡", "1", "-"],
       "cycles": [{"cond": "1回ごと（不一致・BC≠0）", "cycles": 21}, {"cond": "最終回（一致またはBC=0）", "cycles": 16}],
       "encodings": [{"syntax": "CPIR", "opcode": "ED B1", "bytes": 2}],
-      "notes": "終了時 Z=1 なら一致、P/V=0 なら BC 枯渇で不一致終了。\\n",
+      "notes": "終了時 Z=1 は一致、P/V=0 は BC=0 を示す。最後の要素が一致した場合は両方成立する。初期 BC=0 は最大 65536 バイトを検索する。\n",
       "src": "book"
     },
     {
@@ -565,6 +567,7 @@
       "flags": ["‡", "‡", "‡", "‡", "1", "-"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "CPD", "opcode": "ED A9", "bytes": 2}],
+      "notes": "P/V は減算後の BC=0 で 0、それ以外は 1。C は比較結果にかかわらず保持される。",
       "src": "book"
     },
     {
@@ -576,18 +579,19 @@
       "flags": ["‡", "‡", "‡", "‡", "1", "-"],
       "cycles": [{"cond": "1回ごと（不一致・BC≠0）", "cycles": 21}, {"cond": "最終回（一致またはBC=0）", "cycles": 16}],
       "encodings": [{"syntax": "CPDR", "opcode": "ED B9", "bytes": 2}],
+      "notes": "終了時 Z=1 は一致、P/V=0 は BC=0 を示す。最後の要素が一致した場合は両方成立する。初期 BC=0 は最大 65536 バイトを検索する。",
       "src": "book"
     },
     {
       "mnemonic": "JP",
-      "operands": "nn / (HL)",
+      "operands": "nn / cc,nn / (HL/IX/IY)",
       "category": "分岐",
       "summary": "絶対アドレス nn へ無条件ジャンプ。条件付き JP cc,nn、レジスタ間接の JP (HL)/(IX)/(IY) もある。",
       "addressing": ["絶対分岐", "レジスタ間接"],
       "flags": ["-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "JP nn", "cycles": 10}, {"cond": "JP (HL)", "cycles": 4}, {"cond": "JP (IX/IY)", "cycles": 8}],
-      "encodings": [{"syntax": "JP nn", "opcode": "C3 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP cc,nn", "opcode": "C2/CA/D2/DA/E2/EA/F2/FA nn nn", "bytes": 3}, {"syntax": "JP (HL)", "opcode": "E9", "bytes": 1}, {"syntax": "JP (IX)", "opcode": "DD E9", "bytes": 2}],
-      "notes": "cc: NZ=000 Z=001 NC=010 C=011 PO=100 PE=101 P=110 M=111。\\n",
+      "cycles": [{"cond": "JP nn / JP cc,nn（条件成立・不成立とも）", "cycles": 10}, {"cond": "JP (HL)", "cycles": 4}, {"cond": "JP (IX/IY)", "cycles": 8}],
+      "encodings": [{"syntax": "JP nn", "opcode": "C3 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP cc,nn", "opcode": "C2/CA/D2/DA/E2/EA/F2/FA nn nn", "bytes": 3}, {"syntax": "JP (HL)", "opcode": "E9", "bytes": 1}, {"syntax": "JP (IX)", "opcode": "DD E9", "bytes": 2}, {"syntax": "JP (IY)", "opcode": "FD E9", "bytes": 2}],
+      "notes": "cc: NZ=000 Z=001 NC=010 C=011 PO=100 PE=101 P=110 M=111。JP (HL)/(IX)/(IY) は各レジスタの値へ直接ジャンプし、メモリからアドレスを読み出さない。\n",
       "src": "book"
     },
     {
@@ -599,7 +603,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "JR d 常時", "cycles": 12}, {"cond": "JR cc,d 成立", "cycles": 12}, {"cond": "JR cc,d 不成立", "cycles": 7}],
       "encodings": [{"syntax": "JR d", "opcode": "18 dd", "bytes": 2}, {"syntax": "JR NZ,d", "opcode": "20 dd", "bytes": 2}, {"syntax": "JR Z,d", "opcode": "28 dd", "bytes": 2}, {"syntax": "JR NC,d", "opcode": "30 dd", "bytes": 2}, {"syntax": "JR C,d", "opcode": "38 dd", "bytes": 2}],
-      "notes": "dd は次の命令アドレスからの符号付きオフセット（dd=0 で次の命令）。\\n",
+      "notes": "dd は次の命令アドレスからの符号付きオフセット（dd=0 で次の命令）。\n",
       "src": "book"
     },
     {
@@ -611,7 +615,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "分岐成立", "cycles": 13}, {"cond": "不成立（B=0）", "cycles": 8}],
       "encodings": [{"syntax": "DJNZ d", "opcode": "10 dd", "bytes": 2}],
-      "notes": "d は次の命令アドレスからの相対オフセット（-128〜+127）。\\n等価コード: DEC B / JR NZ,d より 1バイト短く高速。\\n",
+      "notes": "d は次の命令アドレスからの相対オフセット（-128〜+127）。\nDEC B / JR NZ,d より 1 バイト短く高速だが、DJNZ はフラグを変更しないため完全には等価でない。\n",
       "src": "book"
     },
     {
@@ -621,9 +625,9 @@
       "summary": "戻りアドレスをスタックに退避して nn へサブルーチンコール。条件付き CALL cc,nn もある。",
       "addressing": ["絶対分岐", "スタック"],
       "flags": ["-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 17}, {"cond": "CALL cc,nn 成立", "cycles": 17}, {"cond": "CALL cc,nn 不成立", "cycles": 10}],
+      "cycles": [{"cond": "CALL nn（無条件）", "cycles": 17}, {"cond": "CALL cc,nn 成立", "cycles": 17}, {"cond": "CALL cc,nn 不成立", "cycles": 10}],
       "encodings": [{"syntax": "CALL nn", "opcode": "CD nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL cc,nn", "opcode": "C4/CC/D4/DC/E4/EC/F4/FC nn nn", "bytes": 3}],
-      "notes": "戻りアドレスは上位バイトから PUSH される（SP は 2 減算）。\\n",
+      "notes": "戻りアドレスは上位バイトから PUSH される（SP は 2 減算）。\n",
       "src": "book"
     },
     {
@@ -633,9 +637,9 @@
       "summary": "スタックから戻りアドレスを POP して復帰。条件付き RET cc もある。",
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "常時", "cycles": 10}, {"cond": "RET cc 成立", "cycles": 11}, {"cond": "RET cc 不成立", "cycles": 5}],
+      "cycles": [{"cond": "RET（無条件）", "cycles": 10}, {"cond": "RET cc 成立", "cycles": 11}, {"cond": "RET cc 不成立", "cycles": 5}],
       "encodings": [{"syntax": "RET", "opcode": "C9", "bytes": 1}, {"syntax": "RET cc", "opcode": "C0/C8/D0/D8/E0/E8/F0/F8", "bytes": 1}],
-      "notes": "RETI（ED 4D）/RETN（ED 45）は割り込みからの復帰用。\\n",
+      "notes": "RETI（ED 4D）/RETN（ED 45）は割り込みからの復帰用。\n",
       "src": "book"
     },
     {
@@ -647,7 +651,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 14}],
       "encodings": [{"syntax": "RETI", "opcode": "ED 4D", "bytes": 2}],
-      "notes": "Z80 系ペリフェラルは ED 4D のシーケンスを監視して割り込みチェーンを解放する。\\n",
+      "notes": "対応する Z80 系ペリフェラルは ED 4D の命令フェッチを監視して割り込みチェーンを解放する。マスク可能割り込みの再許可が必要な場合は通常 EI を RETI の前に実行する。\n",
       "src": "book"
     },
     {
@@ -670,7 +674,7 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 11}],
       "encodings": [{"syntax": "RST p", "opcode": "11PPP111", "bytes": 1}],
-      "notes": "p = 00h,08h,10h,18h,20h,28h,30h,38h。CP/M BDOS 呼び出しは RST や CALL 5 で行う。\\n",
+      "notes": "p = 00h,08h,10h,18h,20h,28h,30h,38h。標準 CP/M の BDOS 呼び出しは CALL 0005h。RST の用途はシステムごとに異なる。\n",
       "src": "book"
     },
     {
@@ -679,10 +683,10 @@
       "category": "I/O",
       "summary": "I/O ポートから 1 バイト入力。IN A,(n) はフラグ不変、IN r,(C) はフラグ更新あり。",
       "addressing": ["I/O"],
-      "flags": ["-", "-", "-", "-", "-", "-"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "-"],
       "cycles": [{"cond": "IN A,(n)", "cycles": 11}, {"cond": "IN r,(C)", "cycles": 12}],
       "encodings": [{"syntax": "IN A,(n)", "opcode": "DB n", "bytes": 2}, {"syntax": "IN r,(C)", "opcode": "ED 01DDD000", "bytes": 2}],
-      "notes": "IN A,(n) はポート番号の上位 8 ビットに A が複製される。IN r,(C) の S/Z/H は結果依存、P/V はパリティ、N=0 が更新され、C は不変。\\nIN (C)（ED 70、r=110）は値を捨ててフラグのみ更新する非公式だが広く使える形式。\\n",
+      "notes": "IN A,(n) はポート番号の上位 8 ビットに A が複製される。IN r,(C) は S/Z が入力値、P/V がパリティに依存し、H=0、N=0、C は不変。\nIN (C)（ED 70、r=110）は値を捨ててフラグのみ更新する非公式だが広く使える形式。\n",
       "src": "book"
     },
     {
@@ -694,19 +698,19 @@
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "OUT (n),A", "cycles": 11}, {"cond": "OUT (C),r", "cycles": 12}],
       "encodings": [{"syntax": "OUT (n),A", "opcode": "D3 n", "bytes": 2}, {"syntax": "OUT (C),r", "opcode": "ED 01SSS001", "bytes": 2}],
-      "notes": "OUT (n),A はポート番号の上位 8 ビットに A が複製される。フラグは変化しない。\\nOUT (C),0（r=110）は非公式の 0 出力（機種差あり）。\\n",
+      "notes": "OUT (n),A はポート番号の上位 8 ビットに A が複製される。フラグは変化しない。\nOUT (C),0（r=110）は非公式の 0 出力（機種差あり）。\n",
       "src": "book"
     },
     {
       "mnemonic": "INI",
       "operands": "",
       "category": "I/O",
-      "summary": "ポート C から (HL) に 1 バイト入力し、HL を +1、B を -1。",
+      "summary": "BC がアドレスバスに出る I/O ポートから (HL) に 1 バイト入力し、HL を +1、B を -1。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "‡", "U", "U", "1", "-"],
+      "flags": ["U", "‡", "U", "U", "U", "U"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "INI", "opcode": "ED A2", "bytes": 2}],
-      "notes": "Z は B=0 で 1。\\n",
+      "notes": "Z は B=0 で 1。Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book"
     },
     {
@@ -715,21 +719,22 @@
       "category": "I/O",
       "summary": "INI を B=0 まで繰り返す。ポートから B バイトのブロック入力。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "1", "U", "U", "1", "-"],
+      "flags": ["U", "1", "U", "U", "U", "U"],
       "cycles": [{"cond": "1回ごと（B≠0）", "cycles": 21}, {"cond": "最終回（B=0）", "cycles": 16}],
       "encodings": [{"syntax": "INIR", "opcode": "ED B2", "bytes": 2}],
-      "notes": "連続入力なので高速なデバイス向け。\\n",
+      "notes": "連続入力なので高速なデバイス向け。Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book"
     },
     {
       "mnemonic": "IND",
       "operands": "",
       "category": "I/O",
-      "summary": "ポート C から (HL) に 1 バイト入力し、HL を -1、B を -1。",
+      "summary": "BC がアドレスバスに出る I/O ポートから (HL) に 1 バイト入力し、HL を -1、B を -1。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "‡", "U", "U", "1", "-"],
+      "flags": ["U", "‡", "U", "U", "U", "U"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "IND", "opcode": "ED AA", "bytes": 2}],
+      "notes": "Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book"
     },
     {
@@ -738,20 +743,22 @@
       "category": "I/O",
       "summary": "IND を B=0 まで繰り返す。後方ブロック入力。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "1", "U", "U", "1", "-"],
+      "flags": ["U", "1", "U", "U", "U", "U"],
       "cycles": [{"cond": "1回ごと（B≠0）", "cycles": 21}, {"cond": "最終回（B=0）", "cycles": 16}],
       "encodings": [{"syntax": "INDR", "opcode": "ED BA", "bytes": 2}],
+      "notes": "Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book"
     },
     {
       "mnemonic": "OUTI",
       "operands": "",
       "category": "I/O",
-      "summary": "(HL) をポート C に出力し、HL を +1、B を -1。",
+      "summary": "B を -1 した値と C を I/O アドレスに使い、(HL) を出力して HL を +1。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "‡", "U", "U", "1", "-"],
+      "flags": ["U", "‡", "U", "U", "U", "U"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "OUTI", "opcode": "ED A3", "bytes": 2}],
+      "notes": "Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book"
     },
     {
@@ -760,20 +767,22 @@
       "category": "I/O",
       "summary": "OUTI を B=0 まで繰り返す。ブロック出力。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "1", "U", "U", "1", "-"],
+      "flags": ["U", "1", "U", "U", "U", "U"],
       "cycles": [{"cond": "1回ごと（B≠0）", "cycles": 21}, {"cond": "最終回（B=0）", "cycles": 16}],
       "encodings": [{"syntax": "OTIR", "opcode": "ED B3", "bytes": 2}],
+      "notes": "Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book"
     },
     {
       "mnemonic": "OUTD",
       "operands": "",
       "category": "I/O",
-      "summary": "(HL) をポート C に出力し、HL を -1、B を -1。",
+      "summary": "B を -1 した値と C を I/O アドレスに使い、(HL) を出力して HL を -1。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "‡", "U", "U", "1", "-"],
+      "flags": ["U", "‡", "U", "U", "U", "U"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "OUTD", "opcode": "ED AB", "bytes": 2}],
+      "notes": "Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book"
     },
     {
@@ -782,9 +791,10 @@
       "category": "I/O",
       "summary": "OUTD を B=0 まで繰り返す。後方ブロック出力。",
       "addressing": ["I/O", "レジスタ間接"],
-      "flags": ["U", "1", "U", "U", "1", "-"],
+      "flags": ["U", "1", "U", "U", "U", "U"],
       "cycles": [{"cond": "1回ごと（B≠0）", "cycles": 21}, {"cond": "最終回（B=0）", "cycles": 16}],
       "encodings": [{"syntax": "OTDR", "opcode": "ED BB", "bytes": 2}],
+      "notes": "Z は B の減算結果で決まる。N/C などは資料に固定値の記述があるが、実 Z80 では転送データ等に依存する非公式な挙動があり、ここでは未規定として扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book"
     }
   ]

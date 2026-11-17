@@ -8,12 +8,12 @@ NEGS dst, src — ARM64（算術）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
 
 オペコード:
-  NEGS Xd,Xn: SUBS Xd,WZR/XZR,Xn のエイリアス
+  NEGS Xd,Xn: SUBS Xd,XZR,Xn のエイリアス
 
 備考:
-  拡張精度の符号反転の専用形式は存在しない。SUBS + SBC で模倣する。
+  SUBS Wd,WZR,Wm または SUBS Xd,XZR,Xm の別名。多倍長の符号反転では下位語を NEGS、上位語を NGCS（または SBCS）で処理できる。
 
 （根拠: book）

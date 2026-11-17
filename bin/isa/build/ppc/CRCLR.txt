@@ -1,9 +1,9 @@
 crclr（拡張ニーモニック）→ CRXOR crbT, crbA, crbB — PowerPC（CR操作）
 
-CR ビット同士の排他的論理和。
+コンディションレジスタビットのクリア（Condition Register Clear）
 
 アドレッシング: CR ビット
-フラグ: LT-  GT-  EQ-  SO-
+フラグ: LT‡  GT‡  EQ‡  SO‡
 
 ────────────── 詳細 ──────────────
 
@@ -12,8 +12,15 @@ CR ビット同士の排他的論理和。
   コンディションレジスタビットのクリア（Condition Register Clear）
 
 元命令: isa ppc CRXOR
+CR ビット同士の排他的論理和。
 
 消費クロック:
   440 コア: 1
+
+オペコード:
+  crxor BT,BA,BB: 010011 BT BA BB 0011000001 0  (4 バイト)
+
+備考:
+  対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。
 
 （根拠: book）

@@ -8,12 +8,13 @@ LSL dst, src, count（即値またはレジスタ） — ARM64（シフト）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
 
 オペコード:
-  LSL Xd,Xn,#imm: UBFM と等価
+  LSL Wd,Wn,#amount / LSL Xd,Xn,#amount: UBFM と等価（immr=(-amount) mod width, imms=width-1-amount）  (4 バイト)
+  LSL Rd,Rn,Rm: LSLV と等価  (4 バイト)
 
 備考:
-  LSL #0 は MOV 相当に展開される。
+  即値回数は W 形式で 0〜31、X 形式で 0〜63。レジスタ回数はそれぞれ 32 または 64 で剰余を取る。
 
 （根拠: book）

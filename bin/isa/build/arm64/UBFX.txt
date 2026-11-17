@@ -8,7 +8,7 @@ UBFX dst, src, #lsb, #len — ARM64（シフト/ビット）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
 
 オペコード:
   UBFX Xd,Xn,#lsb,#width: UBFM Xd,Xn,#lsb,#lsb+width-1 と等価

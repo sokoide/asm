@@ -2,7 +2,7 @@ SBC A, r — Z80（算術）
 
 キャリー込みの減算。SBC A,r と 16ビットの SBC HL,ss がある。
 
-アドレッシング: レジスタ、レジスタ間接、即値
+アドレッシング: レジスタ、レジスタ間接、インデックス(IX/IY+d)、即値
 フラグ: S‡  Z‡  H‡  P/V‡  N1  C‡
 
 ────────────── 詳細 ──────────────
@@ -11,14 +11,18 @@ SBC A, r — Z80（算術）
   SBC A,r: 4
   SBC A,(HL): 7
   SBC A,n: 7
+  SBC A,(IX/IY+d): 19
   SBC HL,ss: 15
 
 オペコード:
   SBC A,r: 10011SSS  (1 バイト)
   SBC A,n: DE n  (2 バイト)
   SBC HL,ss: ED 42/52/62/72  (2 バイト)
+  SBC A,(HL): 9E  (1 バイト)
+  SBC A,(IX+d): DD 9E d  (3 バイト)
+  SBC A,(IY+d): FD 9E d  (3 バイト)
 
 備考:
-  SBC HL,ss は 32 ビット演算や多倍長減算で使う。\n
+  SBC HL,ss は 32 ビット演算や多倍長減算で使う。
 
 （根拠: book）

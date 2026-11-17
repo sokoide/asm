@@ -14,6 +14,6 @@ RST p — Z80（サブルーチン）
   RST p: 11PPP111  (1 バイト)
 
 備考:
-  p = 00h,08h,10h,18h,20h,28h,30h,38h。CP/M BDOS 呼び出しは RST や CALL 5 で行う。\n
+  p = 00h,08h,10h,18h,20h,28h,30h,38h。標準 CP/M の BDOS 呼び出しは CALL 0005h。RST の用途はシステムごとに異なる。
 
 （根拠: book）

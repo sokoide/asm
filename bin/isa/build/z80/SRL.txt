@@ -10,13 +10,15 @@ SRL r — Z80（シフト/ビット）
 消費クロック:
   SRL r: 8
   SRL (HL): 15
-  SRL (IX+d): 23
+  SRL (IX/IY+d): 23
 
 オペコード:
-  SRL r: CB 00DDD110  (2 バイト)
+  SRL r: CB 00111DDD  (2 バイト)
   SRL (HL): CB 3E  (2 バイト)
+  SRL (IX+d): DD CB d 3E  (4 バイト)
+  SRL (IY+d): FD CB d 3E  (4 バイト)
 
 備考:
-  CB 37（SLL、bit0←1）は非公式命令。機種によっては動作しない。\n
+  CB 37（SLL、bit0←1）は非公式命令。機種によっては動作しない。
 
 （根拠: book）

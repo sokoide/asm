@@ -17,8 +17,10 @@ JMP dst — 8086（分岐）
   JMP short: EB rel8  (2 バイト)
   JMP near: E9 rel16  (3 バイト)
   JMP far: EA off seg  (5 バイト)
+  JMP r/m16（near 間接）: FF /4  (長さ可変)
+  JMP m16:16（far 間接）: FF /5  (長さ可変)
 
 備考:
-  far は CS:EIP を書き換える（リアルモード）。
+  far は CS:IP を書き換える。
 
 （根拠: book）

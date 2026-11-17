@@ -8,17 +8,17 @@ AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ出力する。ポー
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  常時: 3〜26
+  CPU・実行条件に依存: 実装依存
 
 オペコード:
   OUT imm8, AL: E6 ib  (2 バイト)
-  OUT imm8, AX: E7 ib  (2 バイト)
+  OUT imm8, AX: 66 E7 ib  (3 バイト)
   OUT imm8, EAX: E7 ib  (2 バイト)
   OUT DX, AL: EE  (1 バイト)
-  OUT DX, AX: EF  (1 バイト)
+  OUT DX, AX: 66 EF  (2 バイト)
   OUT DX, EAX: EF  (1 バイト)
 
 備考:
-  特権命令。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。連続転送は OUTS 文字列命令。
+  I/O の許可は CPL/IOPL と TSS の I/O 許可ビットマップに依存する。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。連続転送は OUTS 文字列命令。
 
 （根拠: book）

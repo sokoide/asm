@@ -3,14 +3,17 @@ CRNOR crbT, crbA, crbB — PowerPC（CR操作）
 CR ビット同士の NOR。
 
 アドレッシング: CR ビット
-フラグ: LT-  GT-  EQ-  SO-
+フラグ: LT‡  GT‡  EQ‡  SO‡
 
 ────────────── 詳細 ──────────────
 
 消費クロック:
   440 コア: 1
 
+オペコード:
+  crnor BT,BA,BB: 010011 BT BA BB 0000100001 0  (4 バイト)
+
 備考:
-  crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。
+  crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。
 
 （根拠: book）

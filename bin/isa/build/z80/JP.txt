@@ -1,4 +1,4 @@
-JP nn / (HL) — Z80（分岐）
+JP nn / cc,nn / (HL/IX/IY) — Z80（分岐）
 
 絶対アドレス nn へ無条件ジャンプ。条件付き JP cc,nn、レジスタ間接の JP (HL)/(IX)/(IY) もある。
 
@@ -8,7 +8,7 @@ JP nn / (HL) — Z80（分岐）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  JP nn: 10
+  JP nn / JP cc,nn（条件成立・不成立とも）: 10
   JP (HL): 4
   JP (IX/IY): 8
 
@@ -17,8 +17,9 @@ JP nn / (HL) — Z80（分岐）
   JP cc,nn: C2/CA/D2/DA/E2/EA/F2/FA nn nn  (3 バイト)
   JP (HL): E9  (1 バイト)
   JP (IX): DD E9  (2 バイト)
+  JP (IY): FD E9  (2 バイト)
 
 備考:
-  cc: NZ=000 Z=001 NC=010 C=011 PO=100 PE=101 P=110 M=111。\n
+  cc: NZ=000 Z=001 NC=010 C=011 PO=100 PE=101 P=110 M=111。JP (HL)/(IX)/(IY) は各レジスタの値へ直接ジャンプし、メモリからアドレスを読み出さない。
 
 （根拠: book）

@@ -1,0 +1,27 @@
+mtcr（拡張ニーモニック）→ MTCRF mask, rS — PowerPC（レジスタ管理）
+
+条件レジスタ全体への移動（Move to Condition Register）
+
+アドレッシング: CR フィールド
+フラグ: LT‡  GT‡  EQ‡  SO‡
+
+────────────── 詳細 ──────────────
+
+拡張形式:
+  mtcr rS ⇔ mtcrf 255, rS
+  条件レジスタ全体への移動（Move to Condition Register）
+  全8フィールドを更新する mtcrf の拡張形式。
+
+元命令: isa ppc MTCRF
+GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0xFF の全フィールド版。
+
+消費クロック:
+  440 コア: 1
+
+オペコード:
+  mtcrf FM,rS: 011111 rS 0 FM 0 0010010000 0  (4 バイト)
+
+備考:
+  マスクで指定した CR フィールドだけを更新する。
+
+（根拠: book）

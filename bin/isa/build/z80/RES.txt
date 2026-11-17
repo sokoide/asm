@@ -10,14 +10,15 @@ RES b, r — Z80（シフト/ビット）
 消費クロック:
   RES b,r: 8
   RES b,(HL): 15
-  RES b,(IX+d): 23
+  RES b,(IX/IY+d): 23
 
 オペコード:
   RES b,r: CB 10BBBSSS  (2 バイト)
   RES b,(HL): CB 10BBB110  (2 バイト)
   RES b,(IX+d): DD CB d 10BBB110  (4 バイト)
+  RES b,(IY+d): FD CB d 10BBB110  (4 バイト)
 
 備考:
-  フラグは一切変化しない。\n
+  フラグは一切変化しない。
 
 （根拠: book）

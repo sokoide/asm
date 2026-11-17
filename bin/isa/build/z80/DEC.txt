@@ -10,7 +10,7 @@ DEC r — Z80（算術）
 消費クロック:
   DEC r: 4
   DEC (HL): 11
-  DEC (IX+d): 23
+  DEC (IX/IY+d): 23
   DEC ss (16bit): 6
   DEC IX/IY: 10
 
@@ -19,8 +19,11 @@ DEC r — Z80（算術）
   DEC (HL): 35  (1 バイト)
   DEC (IX+d): DD 35 d  (3 バイト)
   DEC ss: 0B/1B/2B/3B  (1 バイト)
+  DEC (IY+d): FD 35 d  (3 バイト)
+  DEC IX: DD 2B  (2 バイト)
+  DEC IY: FD 2B  (2 バイト)
 
 備考:
-  8ビット版はキャリーを変えない。BC のカウンタループは 16ビット DEC がフラグを変えないため DJNZ や DEC B と併用する設計になる。\n
+  8ビット版はキャリーを変えない。16 ビット版はフラグを一切変えないため、BC 全体のゼロ判定には別の処理が必要。DJNZ は B のみをカウンタとして使う。
 
 （根拠: book）

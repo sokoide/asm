@@ -1,6 +1,6 @@
 LHAU rT, d(rA) — PowerPC（ロード）
 
-2 バイトを符号拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。rA=rT は禁止。
+2 バイトを符号拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。
 
 アドレッシング: D-Form + アドレス更新
 フラグ: LT-  GT-  EQ-  SO-
@@ -10,7 +10,10 @@ LHAU rT, d(rA) — PowerPC（ロード）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  lhau rT,d(rA): 101011 rT rA D  (4 バイト)
+
 備考:
-  インデックス + 更新は lhaux。
+  インデックス + 更新は lhaux。 rA=0 または rA=rT は無効な命令形式。
 
 （根拠: book）

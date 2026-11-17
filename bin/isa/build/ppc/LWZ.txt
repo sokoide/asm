@@ -11,9 +11,9 @@ LWZ rT, d(rA) — PowerPC（ロード）
   440 コア: 1
 
 オペコード:
-  lwz rT,d(rA): 0x20 D rA rT  (4 バイト)
+  lwz rT,d(rA): 0x20 rT rA D  (4 バイト)
 
 備考:
-  ゼロ拡張という名前だがワードは 32 ビット全体。更新形式は lwzu/lwzx/lwzux。
+  32 ビット PPC440 ではワード全体をロードする。更新形式は lwzu/lwzux、インデックス形式は lwzx。
 
 （根拠: book）

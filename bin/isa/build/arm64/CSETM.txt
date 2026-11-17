@@ -1,6 +1,6 @@
 CSETM dst, cond — ARM64（分岐）
 
-条件成立なら全ビット 1（-1）、不成立なら 0 をセット（Gas 組込みマクロ）。
+条件成立なら全ビット 1、不成立なら 0 をセットする。
 
 アドレッシング: レジスタ
 フラグ: N-  Z-  C-  V-
@@ -8,9 +8,12 @@ CSETM dst, cond — ARM64（分岐）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
 
 オペコード:
-  CSETM Xd,cond: CSINV Xd,WZR,WZR,inv(cond) と等価
+  CSETM Xd,cond: CSINV Xd,XZR,XZR,inv(cond) のエイリアス
+
+備考:
+  CSINV の両ソースをゼロレジスタとし、条件を反転した別名。W 形式もある。
 
 （根拠: book）

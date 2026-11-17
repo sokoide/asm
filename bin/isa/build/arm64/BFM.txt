@@ -1,6 +1,6 @@
 BFM dst, src, #rotate, #bitposn — ARM64（シフト/ビット）
 
-ビットフィールド移動。src の下位 bitposn ビット（のコピー）を rotate ビット右ローテートし、dst の対応する既存ビットと置き換える。
+ビットフィールド移動。src を即値で右回転し、即値から生成したマスクに対応するビットを dst に挿入する。マスク外の dst ビットは保持する。
 
 アドレッシング: レジスタ、即値（rotate/bitposn）
 フラグ: N-  Z-  C-  V-
@@ -8,9 +8,12 @@ BFM dst, src, #rotate, #bitposn — ARM64（シフト/ビット）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
+
+オペコード:
+  BFM Rd,Rn,#immr,#imms: sf 01 100110 N immr imms Rn Rd  (4 バイト)
 
 備考:
-  BFI/BFC/BFXIL はすべてこの命令の別名。通常は別名を使う。
+  BFI/BFC/BFXIL はすべてこの命令の別名。通常は別名を使う。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。
 
 （根拠: book）

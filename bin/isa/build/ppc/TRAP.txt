@@ -1,6 +1,6 @@
 trap（拡張ニーモニック）→ TW TO, rA, rB — PowerPC（システム制御）
 
-条件付きトラップ。TO のビットパターン（lt/gt/eq の否定・肯定）でプログラム割り込みを発生。
+無条件トラップ（Trap Unconditionally）
 
 アドレッシング: レジスタ
 フラグ: LT-  GT-  EQ-  SO-
@@ -13,12 +13,16 @@ trap（拡張ニーモニック）→ TW TO, rA, rB — PowerPC（システム�
   trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。
 
 元命令: isa ppc TW
+TO で指定した比較条件に一致するとプログラム割り込みを発生させる。
 
 消費クロック:
   不成立: 1
   トラップ: 例外
 
+オペコード:
+  tw TO,rA,rB: 011111 TO rA rB 0000000100 0  (4 バイト)
+
 備考:
-  拡張形式 trap（tw 31,r0,r0 = 無条件トラップ）、tweq/twne 等。即値版は twi。
+  TO は符号付き less/greater、equal、符号なし less/greater の 5 条件を組み合わせる。trap は tw 31,r0,r0 の拡張形式。即値版は twi。
 
 （根拠: book）

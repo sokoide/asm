@@ -1,6 +1,6 @@
 STSWI rS, rA, NB — PowerPC（ストア）
 
-連続レジスタから指定バイト数をメモリへストア（Store String Word Immediate）。
+NB が 1〜31 ならそのバイト数、0 なら 32 バイトを連続レジスタからメモリへストアする。
 
 アドレッシング: X-Form（NB 即値）
 フラグ: LT-  GT-  EQ-  SO-
@@ -9,5 +9,11 @@ STSWI rS, rA, NB — PowerPC（ストア）
 
 消費クロック:
   440 コア: 1n
+
+オペコード:
+  stswi rS,rA,NB: 011111 rS rA NB 1011010101 0  (4 バイト)
+
+備考:
+  rS の上位バイトから順に取り出し、r31 の次は r0 に折り返す。
 
 （根拠: book）

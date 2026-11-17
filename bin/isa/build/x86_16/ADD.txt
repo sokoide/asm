@@ -14,7 +14,7 @@ ADD dst, src — 8086（算術）
   reg,mem: 9+EA
 
 オペコード:
-  ADD r/m,r: 0000000w /r  (2 バイト)
+  ADD r/m,r: 0000000w /r  (長さ可変)
   ADD AL,imm: 04 ib  (2 バイト)
   ADD AX,imm: 05 iw  (3 バイト)
 

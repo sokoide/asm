@@ -14,6 +14,6 @@ AL を imm8 で除算し、商を AH、剰余を AL に置く（2 進→非パ�
   AAM imm8: D4 ib  (2 バイト)
 
 備考:
-  imm8=0 で #DE。S/Z/P は結果の AL から設定。64bit モードでは廃止（#UD）。\n
+  imm8=0 で #DE。S/Z/P は結果の AL から設定。64bit モードでは廃止（#UD）。
 
 （根拠: book）

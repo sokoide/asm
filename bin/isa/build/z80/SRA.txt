@@ -1,6 +1,6 @@
 SRA r — Z80（シフト/ビット）
 
-算術右シフト（符号ビット保持。bit7 → bit7 かつ bit0 → C）。÷2 相当。
+算術右シフト（符号ビット保持。bit7 → bit7 かつ bit0 → C）。符号付き値の 2 除算で負の奇数は負の無限大方向に丸める。
 
 アドレッシング: レジスタ、レジスタ間接、インデックス(IX/IY+d)
 フラグ: S‡  Z‡  H0  P/V‡  N0  C‡
@@ -10,10 +10,12 @@ SRA r — Z80（シフト/ビット）
 消費クロック:
   SRA r: 8
   SRA (HL): 15
-  SRA (IX+d): 23
+  SRA (IX/IY+d): 23
 
 オペコード:
-  SRA r: CB 00DDD101  (2 バイト)
+  SRA r: CB 00101DDD  (2 バイト)
   SRA (HL): CB 2E  (2 バイト)
+  SRA (IX+d): DD CB d 2E  (4 バイト)
+  SRA (IY+d): FD CB d 2E  (4 バイト)
 
 （根拠: book）

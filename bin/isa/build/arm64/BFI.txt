@@ -8,9 +8,9 @@ BFI dst, src, #posn, #len — ARM64（シフト/ビット）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  実装依存: 1
+  ISA では規定されない: 実装依存
 
 オペコード:
-  BFI Xd,Xn,#posn,#len: BFM Xd,Xn,#(-posn%64),#len-1 と等価
+  BFI Xd,Xn,#posn,#len: BFM Xd,Xn,#((64-posn)%64),#(len-1) と等価
 
 （根拠: book）

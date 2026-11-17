@@ -10,4 +10,7 @@ LHBRX rT, rA, rB — PowerPC（ロード）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  lhbrx rT,rA,rB: 011111 rT rA rB 1100010110 0  (4 バイト)
+
 （根拠: book）

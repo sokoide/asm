@@ -8,12 +8,11 @@ MOVZX dst, src — x86-64（データ転送）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg: 1〜3
-  メモリオペランド: 3〜5
+  CPU・実行条件に依存: 実装依存
 
 オペコード:
-  MOVZX r64, r/m8: REX.W 0F B6 /r  (4 バイト)
-  MOVZX r64, r/m16: REX.W 0F B7 /r  (4 バイト)
+  MOVZX r64, r/m8: REX.W 0F B6 /r  (長さ可変)
+  MOVZX r64, r/m16: REX.W 0F B7 /r  (長さ可変)
 
 備考:
   imm は取れない。32ビットレジスタへの転送は上位32bitが自動クリアされるため movzx edx, al と同義になる。

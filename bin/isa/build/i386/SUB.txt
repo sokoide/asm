@@ -8,13 +8,18 @@ dst から src を減算する。桁借りは C、符号付きオーバーフロ
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, 即値: 7
+  レジスタとメモリ: 6〜7
 
 オペコード:
-  SUB r/m, r: 29 /r（8bit は 28 /r）  (2 バイト)
-  SUB r/m, imm: 81 /5 iv  (4 バイト)
-  SUB r/m, imm8: 83 /5 ib  (3 バイト)
+  SUB r/m, r: 29 /r（8bit は 28 /r）  (長さ可変)
+  SUB r, r/m: 2B /r（8bit は 2A /r）  (長さ可変)
+  SUB r/m8, imm8: 80 /5 ib  (長さ可変)
+  SUB r/m16/32, imm16/32: 81 /5 iw/id  (長さ可変)
+  SUB r/m16/32, imm8（符号拡張）: 83 /5 ib  (長さ可変)
+  SUB AL, imm8: 2C ib  (長さ可変)
+  SUB AX/EAX, imm16/32: 2D iw/id  (長さ可変)
 
 備考:
   C=1 が「dst < src」（符号なし）。分岐・setcc と組み合わせる。

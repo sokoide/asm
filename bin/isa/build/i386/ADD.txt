@@ -8,13 +8,18 @@ dst に src を加算する。符号なし桁上がりは C、符号付きオー
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, reg / mem, 即値: 7
+  reg, mem: 6
 
 オペコード:
-  ADD r/m, r: 01 /r（8bit は 00 /r）  (2 バイト)
-  ADD r/m, imm: 81 /0 iv  (4 バイト)
-  ADD r/m, imm8（符号拡張）: 83 /0 ib  (3 バイト)
+  ADD r/m, r: 01 /r（8bit は 00 /r）  (長さ可変)
+  ADD r, r/m: 03 /r（8bit は 02 /r）  (長さ可変)
+  ADD r/m8, imm8: 80 /0 ib  (長さ可変)
+  ADD r/m16/32, imm16/32: 81 /0 iw/id  (長さ可変)
+  ADD r/m16/32, imm8（符号拡張）: 83 /0 ib  (長さ可変)
+  ADD AL, imm8: 04 ib  (長さ可変)
+  ADD AX/EAX, imm16/32: 05 iw/id  (長さ可変)
 
 備考:
   多倍長加算は下位ワードから ADC を連結する。8086 に近い挙動でフラグのみ 32bit 幅に拡張されている。

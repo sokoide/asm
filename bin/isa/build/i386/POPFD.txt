@@ -14,6 +14,6 @@ POPFD — 80386（スタック）
   POPFD: 9D（32bit モード既定）  (1 バイト)
 
 備考:
-  IF/IOPL の変更には CPL≤IOPL が必要。VM/RF ビットは書き換えられない。\n
+  IF の変更には CPL≤IOPL、IOPL の変更には CPL=0 が必要。VM/RF ビットは書き換えられない。仮想 8086 モードでは IOPL<3 のとき #GP。
 
 （根拠: book）

@@ -8,12 +8,18 @@ AND dst, src — 80386（論理）
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg / 即値→reg: 2
-  mem を含む: 6〜7
+  reg, reg / reg, 即値: 2
+  mem, reg / mem, 即値: 7
+  reg, mem: 6
 
 オペコード:
-  AND r/m, r: 21 /r（8bit は 20 /r）  (2 バイト)
-  AND r/m, imm: 81 /4 iv  (4 バイト)
+  AND r/m, r: 21 /r（8bit は 20 /r）  (長さ可変)
+  AND r, r/m: 23 /r（8bit は 22 /r）  (長さ可変)
+  AND r/m8, imm8: 80 /4 ib  (長さ可変)
+  AND r/m16/32, imm16/32: 81 /4 iw/id  (長さ可変)
+  AND r/m16/32, imm8（符号拡張）: 83 /4 ib  (長さ可変)
+  AND AL, imm8: 24 ib  (長さ可変)
+  AND AX/EAX, imm16/32: 25 iw/id  (長さ可変)
 
 備考:
   O と C は必ず 0、A は未定義。

@@ -10,14 +10,15 @@ BIT b, r — Z80（シフト/ビット）
 消費クロック:
   BIT b,r: 8
   BIT b,(HL): 12
-  BIT b,(IX+d): 20
+  BIT b,(IX/IY+d): 20
 
 オペコード:
   BIT b,r: CB 01BBBSSS  (2 バイト)
   BIT b,(HL): CB 01BBB110  (2 バイト)
   BIT b,(IX+d): DD CB d 01BBB110  (4 バイト)
+  BIT b,(IY+d): FD CB d 01BBB110  (4 バイト)
 
 備考:
-  b=0〜7。(HL)/(IX+d) 版は S フラグが実装依存で変わることがある（非公式）。\n
+  b=0〜7。参照命令表では S と P/V の値は未規定として扱う。H=1、N=0、C は保持される。
 
 （根拠: book）

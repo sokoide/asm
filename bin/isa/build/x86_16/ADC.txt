@@ -13,6 +13,6 @@ ADC dst, src — 8086（算術）
   mem,reg: 16+EA
 
 オペコード:
-  ADC r/m,r: 0001000w /r  (2 バイト)
+  ADC r/m,r: 0001000w /r  (長さ可変)
 
 （根拠: book）

@@ -10,4 +10,10 @@ CMPLI crfT, L, rA, u16 — PowerPC（比較）
 消費クロック:
   440 コア: 1
 
+オペコード:
+  cmpli crfT,L,rA,u16: 001010 BF L 0 rA u16  (4 バイト)
+
+備考:
+  16 ビット即値はゼロ拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。
+
 （根拠: book）

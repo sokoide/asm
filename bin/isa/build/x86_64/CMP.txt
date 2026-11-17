@@ -8,13 +8,12 @@ dst - src を計算してフラグのみ更新する（dst は不変）。分岐
 ────────────── 詳細 ──────────────
 
 消費クロック:
-  reg-reg: 1〜3
-  メモリオペランド: 3〜5
+  CPU・実行条件に依存: 実装依存
 
 オペコード:
-  CMP r/m64, r64: REX.W 39 /r  (3 バイト)
-  CMP r/m64, imm32: REX.W 81 /7 id  (6 バイト)
-  CMP r/m64, imm8: REX.W 83 /7 ib  (4 バイト)
+  CMP r/m64, r64: REX.W 39 /r  (長さ可変)
+  CMP r/m64, imm32: REX.W 81 /7 id  (長さ可変)
+  CMP r/m64, imm8: REX.W 83 /7 ib  (長さ可変)
 
 備考:
   符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。

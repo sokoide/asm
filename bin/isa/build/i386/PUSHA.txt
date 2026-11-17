@@ -1,6 +1,6 @@
 PUSHA — 80386（スタック）
 
-AX/CX/DX/BX/命令前の SP/BP/SI/DI の順に 8 個の 16bit レジスタを一括退避する（80286 で導入）。
+オペランドサイズに応じ、汎用レジスタ 8 個を一括退避する。保存する SP/ESP は命令実行前の値。
 
 アドレッシング: スタック
 フラグ: O-  D-  I-  S-  Z-  A-  P-  C-
@@ -15,6 +15,6 @@ AX/CX/DX/BX/命令前の SP/BP/SI/DI の順に 8 個の 16bit レジスタを一
   PUSHA（66 プレフィックス）: 66 60  (2 バイト)
 
 備考:
-  32bit モードでは EAX/ECX/EDX/EBX/ESP/EBP/ESI/EDI を積む（PUSHAD、80386 から）。8086 にない命令で、80286 から導入。\n
+  16 ビット形は AX/CX/DX/BX/SP/BP/SI/DI、32 ビット形は EAX/ECX/EDX/EBX/ESP/EBP/ESI/EDI の順。32 ビット形は PUSHAD とも表記する。
 
 （根拠: book）
