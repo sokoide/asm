@@ -13,5 +13,11 @@ SBFM dst, src, #immr, #imms — ARM64（シフト/ビット）
 オペコード:
   SBFM Rd,Rn,#immr,#imms: sf 00 100110 N immr imms Rn Rd  (4 バイト)
 
+使用例:
+  sbfm x0,[x1],#1,#7
+
+解説:
+  この例では 符号付きビットフィールド移動。指定されたビット列を抽出または配置し、上位を符号拡張する。
+
 備考:
   ASR 即値、SBFX、SBFIZ、SXTB/SXTH/SXTW の基本命令。imms と immr の大小関係で抽出または左詰めの形式になる。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。

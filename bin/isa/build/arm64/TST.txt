@@ -13,4 +13,10 @@ TST src1, src2 — ARM64（比較）
 オペコード:
   TST Xn,Xm: ANDS XZR,Xn,Xm のエイリアス
 
+使用例:
+  tst x1,x2
+
+解説:
+  この例では ビットテスト（ands の WZR/XZR デスティネーション形のエイリアス。N/Z を更新し C/V をクリア）。Z が「共通ビットがすべて 0」を示す。
+
 （根拠: book）

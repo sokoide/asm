@@ -20,6 +20,12 @@ EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP
   EX (SP),IX: DD E3  (2 バイト)
   EX (SP),IY: FD E3  (2 バイト)
 
+使用例:
+  ex de,hl
+
+解説:
+  この例では EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP),HL/IX/IY（スタック内容と交換）。
+
 備考:
   EX AF,AF' は F と F' も交換するため全フラグが入れ替わる。他の EX 形式はフラグ不変。EXX は BC/DE/HL の切替。
 

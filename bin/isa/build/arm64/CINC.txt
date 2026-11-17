@@ -13,6 +13,12 @@ CINC dst, src, cond — ARM64（分岐）
 オペコード:
   CINC Xd,Xn,cond: CSINC Xd,Xn,Xn,inv(cond) のエイリアス
 
+使用例:
+  cinc x0,[x1],eq
+
+解説:
+  この例では 条件成立なら src+1、不成立なら src をセットする。
+
 備考:
   CSINC の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。
 

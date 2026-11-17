@@ -11,6 +11,12 @@ crnot（拡張ニーモニック）→ CRNOR crbT, crbA, crbB — PowerPC（CR�
   crnot crbT,crbA ⇔ crnor crbT, crbA, crbA
   コンディションレジスタビットの反転（Condition Register Not）
 
+使用例:
+  crnot 2,crbA
+
+解説:
+  この例では コンディションレジスタビットの反転（Condition Register Not）
+
 元命令: isa ppc CRNOR
 CR ビット同士の NOR。
 
@@ -19,6 +25,12 @@ CR ビット同士の NOR。
 
 オペコード:
   crnor BT,BA,BB: 010011 BT BA BB 0000100001 0  (4 バイト)
+
+使用例:
+  crnor 2,3,4
+
+解説:
+  この例では CR ビット同士の NOR。
 
 備考:
   crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。

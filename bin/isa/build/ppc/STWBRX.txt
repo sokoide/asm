@@ -13,4 +13,10 @@ STWBRX rS, rA, rB — PowerPC（ストア）
 オペコード:
   stwbrx rS,rA,rB: 011111 rS rA rB 1010010110 0  (4 バイト)
 
+使用例:
+  stwbrx %r4,%r5,%r6
+
+解説:
+  この例では ワードをバイトリバースしてストアする。
+
 （根拠: book）

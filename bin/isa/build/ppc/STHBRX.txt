@@ -13,4 +13,10 @@ STHBRX rS, rA, rB — PowerPC（ストア）
 オペコード:
   sthbrx rS,rA,rB: 011111 rS rA rB 1110010110 0  (4 バイト)
 
+使用例:
+  sthbrx %r4,%r5,%r6
+
+解説:
+  この例では ハーフワードをバイトリバースしてストアする。
+
 （根拠: book）

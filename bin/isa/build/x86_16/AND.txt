@@ -15,4 +15,10 @@ AND dst, src — 8086（論理）
   AND r/m,r: 0010000w /r  (長さ可変)
   AND AL,imm: 24 ib  (2 バイト)
 
+使用例:
+  and ax, bx
+
+解説:
+  この例では 論理積。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。
+
 （根拠: book）

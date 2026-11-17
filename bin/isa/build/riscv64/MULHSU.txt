@@ -12,6 +12,12 @@ MULHSU rd, rs1, rs2 — RISC-V 64（算術）
 オペコード:
   MULHSU rd, rs1, rs2: funct7=0000001 rs2 rs1 funct3=010 rd op=0110011  (4 バイト)
 
+使用例:
+  mulhsu t0, t1, t2
+
+解説:
+  この例では 符号付き × 符号なしの 128 ビット積のうち、上位 64 ビットを rd に入れる。
+
 備考:
   rs1 が符号付き、rs2 が符号なし。
 

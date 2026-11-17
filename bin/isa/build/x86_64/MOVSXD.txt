@@ -13,6 +13,12 @@ MOVSXD dst, src — x86-64（データ転送）
 オペコード:
   MOVSXD r64, r/m32: REX.W 63 /r  (長さ可変)
 
+使用例:
+  movsxd rax, dword [rdi]
+
+解説:
+  この例では 32ビットの src を符号拡張して 64ビットの dst に転送する（64ビットモード専用）。
+
 備考:
   NASM では movsxd、MASM では MOVSXD。src がレジスタのときは MOV と同結果になる。
 

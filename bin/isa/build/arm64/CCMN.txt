@@ -14,6 +14,12 @@ CCMN src1, src2, #nzcv, cond — ARM64（比較）
   CCMN Rn,Rm,#nzcv,cond: sf 0 1 11010010 Rm cond 00 Rn 0 nzcv  (4 バイト)
   CCMN Rn,#imm5,#nzcv,cond: sf 0 1 11010010 imm5 cond 10 Rn 0 nzcv  (4 バイト)
 
+使用例:
+  ccmn x1,x2,#3,eq
+
+解説:
+  この例では 条件付き比較（加算比較）。cond 成立なら src1 + src2 の比較としてフラグ更新、不成立なら #nzcv を NZCV へ直接書込む。
+
 備考:
   第 2 オペランドはレジスタまたは 0〜31 の即値。条件不成立時は #nzcv の bit3〜0 を N/Z/C/V に書き込む。
 

@@ -13,6 +13,12 @@ rT = rB - rA（Subtract From — オペランド順に注意）。
 オペコード:
   subf[o][.] rT,rA,rB: 011111 rT rA rB OE 000101000 Rc  (4 バイト)
 
+使用例:
+  subf %r3,%r5,%r6
+
+解説:
+  この例では rT = rB - rA（Subtract From — オペランド順に注意）。
+
 備考:
   拡張形式 sub rT,rA,rB は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。
 

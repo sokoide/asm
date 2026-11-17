@@ -11,6 +11,12 @@ subic（拡張ニーモニック）→ ADDIC rT, rA, s16 — PowerPC（算術）
   subic rT,rA,s16 ⇔ addic rT, rA, -s16
   キャリー付き即値減算（Subtract Immediate Carrying）
 
+使用例:
+  subic 3,4,s16
+
+解説:
+  この例では キャリー付き即値減算（Subtract Immediate Carrying）
+
 元命令: isa ppc ADDIC
 即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。
 
@@ -19,6 +25,12 @@ subic（拡張ニーモニック）→ ADDIC rT, rA, s16 — PowerPC（算術）
 
 オペコード:
   addic rT,rA,s16: 001100 rT rA s16  (4 バイト)
+
+使用例:
+  addic %r3,%r5,1
+
+解説:
+  この例では 即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。
 
 備考:
   addic. は CR0 更新あり。addi とは違い r0 を 0 に置換しない（rA 必須）。

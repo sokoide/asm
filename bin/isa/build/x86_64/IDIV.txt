@@ -14,6 +14,12 @@ IDIV src — x86-64（算術）
   IDIV r/m64: REX.W F7 /7  (長さ可変)
   IDIV r/m32: F7 /7  (長さ可変)
 
+使用例:
+  idiv rbx
+
+解説:
+  この例では 符号付き除算。RDX:RAX ÷ src で RAX=商、RDX=剰余（64bit）。商は 0 方向へ丸め、剰余は被除数と同符号。
+
 備考:
   符号拡張準備: 64bit は CQO、32bit は CDQ。
   0 除算・商あふれ（RAX=-2^63 ÷ -1 など）で #DE。

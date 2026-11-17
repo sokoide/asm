@@ -11,6 +11,12 @@ crmove（拡張ニーモニック）→ CROR crbT, crbA, crbB — PowerPC（CR�
   crmove crbT,crbA ⇔ cror crbT, crbA, crbA
   コンディションレジスタビットの移動（Condition Register Move）
 
+使用例:
+  crmove 2,crbA
+
+解説:
+  この例では コンディションレジスタビットの移動（Condition Register Move）
+
 元命令: isa ppc CROR
 CR ビット同士の論理和。
 
@@ -19,6 +25,12 @@ CR ビット同士の論理和。
 
 オペコード:
   cror BT,BA,BB: 010011 BT BA BB 0111000001 0  (4 バイト)
+
+使用例:
+  cror 2,3,4
+
+解説:
+  この例では CR ビット同士の論理和。
 
 備考:
   対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。

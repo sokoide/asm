@@ -21,6 +21,12 @@ dst から src を減算する。桁借りは C、符号付きオーバーフロ
   SUB AL, imm8: 2C ib  (長さ可変)
   SUB AX/EAX, imm16/32: 2D iw/id  (長さ可変)
 
+使用例:
+  sub eax, ebx
+
+解説:
+  この例では dst から src を減算する。桁借りは C、符号付きオーバーフローは O で検出。
+
 備考:
   C=1 が「dst < src」（符号なし）。分岐・setcc と組み合わせる。
 

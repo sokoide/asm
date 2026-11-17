@@ -13,6 +13,12 @@ CMPI crfT, L, rA, s16 — PowerPC（比較）
 オペコード:
   cmpi crfT,L,rA,s16: 001011 BF L 0 rA s16  (4 バイト)
 
+使用例:
+  cmpi cr0,l,%r5,1
+
+解説:
+  この例では 符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。
+
 備考:
   16 ビット即値は符号拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。
 

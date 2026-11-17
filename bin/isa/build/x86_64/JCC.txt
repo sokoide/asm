@@ -14,6 +14,13 @@ Jcc label — x86-64（分岐）
   Jcc rel8: 70+cc cb  (2 バイト)
   Jcc rel32: 0F 80+cc cd  (6 バイト)
 
+使用例:
+  jz target
+  target:
+
+解説:
+  この例では 条件付きジャンプ。フラグの状態をテストして成立時のみ rel8/rel32 のターゲットへ分岐する（16 種類の条件）。
+
 備考:
   cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。
   主な別名: je=jz / jne=jnz / jb=jc=jnae / jae=jnc=jnb / jbe=jna / ja=jnbe / jl=jnge / jge=jnl / jle=jng / jg=jnle / jp=jpe / jnp=jpo。

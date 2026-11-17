@@ -12,6 +12,12 @@ bsolr（拡張ニーモニック）→ BCLR BO, BI — PowerPC（分岐）
   サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）
   [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。
 
+使用例:
+  bsolr
+
+解説:
+  この例では サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）
+
 元命令: isa ppc BCLR
 LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。
 
@@ -20,6 +26,12 @@ LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準�
 
 オペコード:
   bclr BO,BI: 010011 BO BI 00000 0000010000 LK  (4 バイト)
+
+使用例:
+  bclr 12,2
+
+解説:
+  この例では LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。
 
 備考:
   btlr/bflr などの拡張形式がある。bclrl は分岐先として更新前の LR を使い、分岐の成否にかかわらず次の命令のアドレスを LR に設定する。

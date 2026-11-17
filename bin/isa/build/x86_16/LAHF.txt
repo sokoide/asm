@@ -13,6 +13,12 @@ FLAGS の下位バイト（SF ZF AF PF CF）を AH にコピー。
 オペコード:
   LAHF: 9F  (1 バイト)
 
+使用例:
+  lahf
+
+解説:
+  この例では FLAGS の下位バイト（SF ZF AF PF CF）を AH にコピー。
+
 備考:
   8080 互換の命令。OF DF IF TF は含まれない。
 

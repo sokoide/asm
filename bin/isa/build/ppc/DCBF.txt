@@ -15,6 +15,12 @@ DCBF rA, rB — PowerPC（キャッシュ）
 オペコード:
   dcbf rA,rB: 011111 00000 rA rB 0001010110 0  (4 バイト)
 
+使用例:
+  dcbf %r5,%r6
+
+解説:
+  この例では データキャッシュブロックを記憶域へ書き戻し、無効化する（Data Cache Block Flush）。
+
 備考:
   dcbst は書き戻しのみ、dcbi は無効化のみ。
 

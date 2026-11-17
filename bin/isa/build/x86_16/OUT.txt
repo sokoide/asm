@@ -17,4 +17,10 @@ I/O ポートへ出力。
   OUT imm8,AX: E7 ib  (2 バイト)
   OUT DX,AX: EF  (1 バイト)
 
+使用例:
+  out dx, al
+
+解説:
+  この例では I/O ポートへ出力。
+
 （根拠: book）

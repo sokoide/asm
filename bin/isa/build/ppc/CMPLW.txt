@@ -12,6 +12,12 @@ cmplw（拡張ニーモニック）→ CMPL crfT, L, rA, rB — PowerPC（比較
   論理ワード比較（Compare Logical Word）
   比較命令の第 2 オペランド L で幅を選ぶ。cmplw は L=0（ワード）を明示する形式。
 
+使用例:
+  cmplw crT,4,5
+
+解説:
+  この例では 論理ワード比較（Compare Logical Word）
+
 元命令: isa ppc CMPL
 符号なし（logical）比較。拡張形式 cmplw。
 
@@ -20,6 +26,12 @@ cmplw（拡張ニーモニック）→ CMPL crfT, L, rA, rB — PowerPC（比較
 
 オペコード:
   cmpl crfT,L,rA,rB: 011111 BF L 0 rA rB 0000100000 0  (4 バイト)
+
+使用例:
+  cmpl cr0,l,%r5,%r6
+
+解説:
+  この例では 符号なし（logical）比較。拡張形式 cmplw。
 
 備考:
   比較した CR フィールドの LT/GT/EQ を更新し、SO には XER[SO] をコピーする。

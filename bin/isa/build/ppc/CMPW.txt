@@ -12,6 +12,12 @@ cmpw（拡張ニーモニック）→ CMP crfT, L, rA, rB — PowerPC（比較�
   ワード比較（Compare Word）
   比較命令の第 2 オペランド L で幅を選ぶ。cmpw は L=0（ワード）を明示する形式。
 
+使用例:
+  cmpw crT,4,5
+
+解説:
+  この例では ワード比較（Compare Word）
+
 元命令: isa ppc CMP
 符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
 
@@ -20,6 +26,12 @@ cmpw（拡張ニーモニック）→ CMP crfT, L, rA, rB — PowerPC（比較�
 
 オペコード:
   cmp crfT,L,rA,rB: 0x1F 0  (4 バイト)
+
+使用例:
+  cmp cr0,l,%r5,%r6
+
+解説:
+  この例では 符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
 
 備考:
   拡張形式 cmpw（L=0 暗黙）。分岐は後続の bc 系や bne/beq など条件分岐で使う。

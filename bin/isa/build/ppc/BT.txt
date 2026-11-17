@@ -12,6 +12,13 @@ bt（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
   条件が真のとき分岐（Branch if Condition True）
   [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。crT を省略すると CR0。
 
+使用例:
+  bt 2,target
+  target:
+
+解説:
+  この例では 条件が真のとき分岐（Branch if Condition True）
+
 元命令: isa ppc BC
 条件付き分岐（B-Form）。BO/BI の組合せで CTR 減算・CR ビットテストを制御する。
 
@@ -20,6 +27,13 @@ bt（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
 
 オペコード:
   bc BO,BI,BD: 010000 BO BI BD AA LK  (4 バイト)
+
+使用例:
+  bc 12,2,target
+  target:
+
+解説:
+  この例では 条件付き分岐（B-Form）。BO/BI の組合せで CTR 減算・CR ビットテストを制御する。
 
 備考:
   相対分岐の範囲は命令アドレスから -32,768〜+32,764 バイト。BO=16 は CTR 減算後に非ゼロなら分岐、12 は CR 真、4 は CR 偽、20 は CTR 減算も CR 判定もしない無条件分岐。bdnz/bdz などは拡張形式。LK=1 の形式は、分岐の成否にかかわらず次命令のアドレスを LR に設定する。

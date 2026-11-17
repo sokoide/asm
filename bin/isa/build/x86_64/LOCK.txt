@@ -13,6 +13,12 @@ LOCK — x86-64（システム制御）
 オペコード:
   LOCK: F0  (1 バイト)
 
+使用例:
+  lock add qword [rdi], 1
+
+解説:
+  この例では 次の命令のリード・モディファイ・ライトをアトミックにするプレフィックス（マルチコア同期用）。
+
 備考:
   メモリをデスティネーションに持つ add/adc/sub/sbb/and/or/xor/not/neg/inc/dec/bts/btr/btc/cmpxchg 系/xchg 等にのみ付けられる。対応外の命令への適用は例外。xchg は lock なしでもメモリ操作時に暗黙にロックされる。
 

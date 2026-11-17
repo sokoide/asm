@@ -16,6 +16,12 @@ CALL nn — Z80（サブルーチン）
   CALL nn: CD nn(下位) nn(上位)  (3 バイト)
   CALL cc,nn: C4/CC/D4/DC/E4/EC/F4/FC nn nn  (3 バイト)
 
+使用例:
+  call 0x4000
+
+解説:
+  この例では 戻りアドレスをスタックに退避して nn へサブルーチンコール。条件付き CALL cc,nn もある。
+
 備考:
   戻りアドレスは上位バイトから PUSH される（SP は 2 減算）。
 

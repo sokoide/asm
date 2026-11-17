@@ -13,4 +13,10 @@ MVN dst, src{, shift} — ARM64（論理）
 オペコード:
   MVN Xd,Xm: ORN Xd,XZR,Xm のエイリアス
 
+使用例:
+  mvn x0,x2
+
+解説:
+  この例では ソースをビット反転してデスティネーションに転送する（dst = NOT src）。
+
 （根拠: book）

@@ -13,6 +13,12 @@ DCBTST rA, rB — PowerPC（キャッシュ）
 オペコード:
   dcbtst rA,rB: 011111 00000 rA rB 0011110110 0  (4 バイト)
 
+使用例:
+  dcbtst %r5,%r6
+
+解説:
+  この例では ストア用のデータキャッシュブロックタッチ（Data Cache Block Touch for Store）。将来のストアに備えてブロックを先読みする。
+
 備考:
   dcbt のストア向け版。
 

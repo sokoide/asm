@@ -12,6 +12,12 @@ CSR を rd に読み出し、5 ビット即値（ゼロ拡張）を CSR に書�
 オペコード:
   CSRRWI rd, csr, zimm: csr zimm[4:0] funct3=101 rd op=1110011  (4 バイト)
 
+使用例:
+  csrrwi t0, mstatus, 1
+
+解説:
+  この例では CSR を rd に読み出し、5 ビット即値（ゼロ拡張）を CSR に書き込む。
+
 備考:
   5 ビット即値を XLEN ビットにゼロ拡張して書き込む。rd=x0 なら CSR の読み出し自体を行わない。
 

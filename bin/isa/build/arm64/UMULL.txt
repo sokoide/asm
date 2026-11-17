@@ -13,4 +13,10 @@ UMULL dst64, src1w, src2w — ARM64（算術）
 オペコード:
   UMULL Xd,Wn,Wm: UMADDL Xd,Wn,Wm,XZR のエイリアス
 
+使用例:
+  umull x0,w1,w2
+
+解説:
+  この例では 符号なし 32×32 → 64 ビット乗算（全積）。
+
 （根拠: book）

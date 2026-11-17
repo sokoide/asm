@@ -12,6 +12,12 @@ mfctr（拡張ニーモニック）→ MFSPR rT, SPR — PowerPC（レジスタ�
   カウントレジスタからの移動（Move from Count Register）
   SPR 9 = CTR。
 
+使用例:
+  mfctr 3
+
+解説:
+  この例では カウントレジスタからの移動（Move from Count Register）
+
 元命令: isa ppc MFSPR
 特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
 
@@ -20,6 +26,12 @@ mfctr（拡張ニーモニック）→ MFSPR rT, SPR — PowerPC（レジスタ�
 
 オペコード:
   mfspr rT,SPR: 011111 rT SPR[0:4] SPR[5:9] 0101010011 0  (4 バイト)
+
+使用例:
+  mfspr %r3,8
+
+解説:
+  この例では 特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
 
 備考:
   LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。

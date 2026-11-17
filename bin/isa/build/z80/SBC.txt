@@ -22,6 +22,12 @@ SBC A, r — Z80（算術）
   SBC A,(IX+d): DD 9E d  (3 バイト)
   SBC A,(IY+d): FD 9E d  (3 バイト)
 
+使用例:
+  sbc a,b
+
+解説:
+  この例では キャリー込みの減算。SBC A,r と 16ビットの SBC HL,ss がある。
+
 備考:
   SBC HL,ss は 32 ビット演算や多倍長減算で使う。
 

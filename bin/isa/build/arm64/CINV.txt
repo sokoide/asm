@@ -13,6 +13,12 @@ CINV dst, src, cond — ARM64（分岐）
 オペコード:
   CINV Xd,Xn,cond: CSINV Xd,Xn,Xn,inv(cond) のエイリアス
 
+使用例:
+  cinv x0,[x1],eq
+
+解説:
+  この例では 条件成立なら NOT src、不成立なら src をセットする。
+
 備考:
   CSINV の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。
 

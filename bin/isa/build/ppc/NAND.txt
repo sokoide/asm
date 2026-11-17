@@ -13,4 +13,10 @@ NAND。
 オペコード:
   nand[.] rA,rS,rB: 011111 rS rA rB 0111011100 Rc  (4 バイト)
 
+使用例:
+  nand %r5,%r4,%r6
+
+解説:
+  この例では NAND。
+
 （根拠: book）

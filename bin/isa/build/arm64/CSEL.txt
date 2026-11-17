@@ -13,6 +13,12 @@ cond が成立なら src1、不成立なら src2 を dst にコピーする。�
 オペコード:
   CSEL Rd,Rn,Rm,cond: sf 0 0 11010100 Rm cond 0 0 Rn Rd  (4 バイト)
 
+使用例:
+  csel x0,[x1],x2,eq
+
+解説:
+  この例では cond が成立なら src1、不成立なら src2 を dst にコピーする。フラグは変更しない。
+
 備考:
   CSINC・CSINV・CSNEG は条件不成立時に第 2 ソースを変換する別命令。CSET などはそれらの別名。 sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。
 

@@ -12,6 +12,12 @@ twllei（拡張ニーモニック）→ TWI TO, rA, s16 — PowerPC（システ�
   論理的に小さいまたは等しい場合のワード即値トラップ（Trap Word if Logically Less Than or Equal Immediate）
   trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。
 
+使用例:
+  twllei 4,s16
+
+解説:
+  この例では 論理的に小さいまたは等しい場合のワード即値トラップ（Trap Word if Logically Less Than or Equal Immediate）
+
 元命令: isa ppc TWI
 即値比較付き条件トラップ。範囲チェック（配列境界）の実装に使う。
 
@@ -21,6 +27,12 @@ twllei（拡張ニーモニック）→ TWI TO, rA, s16 — PowerPC（システ�
 
 オペコード:
   twi TO,rA,s16: 000011 TO rA s16  (4 バイト)
+
+使用例:
+  twi 31,%r5,1
+
+解説:
+  この例では 即値比較付き条件トラップ。範囲チェック（配列境界）の実装に使う。
 
 備考:
   16 ビット即値を符号拡張して比較する。TO の 5 ビットは符号付き less/greater、equal、符号なし less/greater を指定する。

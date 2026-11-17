@@ -19,6 +19,13 @@ CALL dst — 8086（サブルーチン）
   CALL r/m16（near 間接）: FF /2  (長さ可変)
   CALL m16:16（far 間接）: FF /3  (長さ可変)
 
+使用例:
+  call target
+  target:
+
+解説:
+  この例では サブルーチンコール（near/far、間接）。戻りアドレスをスタックに退避。
+
 備考:
   far call は CS と IP の両方を退避。
 

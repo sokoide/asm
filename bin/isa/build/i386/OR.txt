@@ -21,4 +21,10 @@ OR dst, src — 80386（論理）
   OR AL, imm8: 0C ib  (長さ可変)
   OR AX/EAX, imm16/32: 0D iw/id  (長さ可変)
 
+使用例:
+  or eax, ebx
+
+解説:
+  この例では ビット単位の論理和を dst に格納する。ビットセットに使う。
+
 （根拠: book）

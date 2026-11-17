@@ -13,4 +13,10 @@ XORIS rA, rS, u16 — PowerPC（論理）
 オペコード:
   xoris rA,rS,u16: 011011 rS rA u16  (4 バイト)
 
+使用例:
+  xoris %r5,%r4,1
+
+解説:
+  この例では 16 ビット左シフト即値との排他的論理和。
+
 （根拠: book）

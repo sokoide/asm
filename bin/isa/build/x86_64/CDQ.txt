@@ -13,6 +13,12 @@ EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満
 オペコード:
   CDQ: 99  (1 バイト)
 
+使用例:
+  cdq
+
+解説:
+  この例では EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。
+
 備考:
   64bit 除算では EDX:RAX ではなく RDX:RAX を使うため CQO を使う。
 

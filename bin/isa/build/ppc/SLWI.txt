@@ -11,6 +11,12 @@ slwi（拡張ニーモニック）→ RLWINM rA, rS, n, mB, mE — PowerPC（回
   slwi rA,rS,nBits ⇔ rlwinm rA, rS, nBits, 0, 31-nBits
   ワード左シフト（即値）（Shift Left Word Immediate）
 
+使用例:
+  slwi 4,4,nBits
+
+解説:
+  この例では ワード左シフト（即値）（Shift Left Word Immediate）
+
 元命令: isa ppc RLWINM
 左回転 n ビット後、マスク mB..mE で AND（Rotate Left Word Immediate then AND with Mask）。ビットフィールド抽出の万能命令。
 
@@ -19,6 +25,12 @@ slwi（拡張ニーモニック）→ RLWINM rA, rS, n, mB, mE — PowerPC（回
 
 オペコード:
   rlwinm[.] rA,rS,n,mB,mE: 0x15  (4 バイト)
+
+使用例:
+  rlwinm %r5,%r4,1,0,31
+
+解説:
+  この例では 左回転 n ビット後、マスク mB..mE で AND（Rotate Left Word Immediate then AND with Mask）。ビットフィールド抽出の万能命令。
 
 備考:
   拡張形式には rotlwi/rotrwi、slwi/srwi、extrwi がある。ビット番号は最上位が 0。MB≤ME ならその範囲を、MB>ME なら末尾と先頭にまたがる範囲を残す。. 形式の CR0[LT] は結果の符号ビットであり、抽出したビットが常に LT に入るわけではない。

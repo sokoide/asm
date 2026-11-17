@@ -14,6 +14,12 @@ ORR dst, src1, src2 — ARM64（論理）
   ORR Rd,Rn,Rm{,shift #amount}: sf 01 01010 shift 0 Rm imm6 Rn Rd  (4 バイト)
   ORR Rd,Rn,#bitmask: sf 01 100100 N immr imms Rn Rd  (4 バイト)
 
+使用例:
+  orr x0,[x1],x2,lsl #2
+
+解説:
+  この例では 論理和。ビットのセットとビット列の挿入に使う。
+
 備考:
   sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。
 

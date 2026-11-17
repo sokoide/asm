@@ -13,6 +13,12 @@ LSWX rT, rA, rB — PowerPC（ロード）
 オペコード:
   lswx rT,rA,rB: 011111 rT rA rB 1000010101 0  (4 バイト)
 
+使用例:
+  lswx %r3,%r5,%r6
+
+解説:
+  この例では 転送バイト数を XER[25:31] から取得して連続レジスタへロードする（Load String Word Indexed、0〜127 バイト）。
+
 備考:
   rT から順に詰め、r31 の次は r0 に折り返す。ロード対象範囲に rA/rB が含まれる形式は無効。転送数 0 でも rT=rA または rT=rB なら無効、それ以外では rT は未定義。即値版は LSWI。
 

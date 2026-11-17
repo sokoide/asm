@@ -12,6 +12,12 @@ FENCE pred, succ — RISC-V 64（システム制御）
 オペコード:
   FENCE pred, succ: fm[3:0] pred[3:0] succ[3:0] rs1=0 funct3=000 rd=0 op=0001111  (4 バイト)
 
+使用例:
+  fence rw, rw
+
+解説:
+  この例では メモリ・I/O アクセスの順序付けを保証する。pred（先行）と succ（後続）のアクセス種別の間に順序を強制する。
+
 備考:
   pred/succ の I/O/R/W はデバイス入力・出力・メモリ読み出し・書き込みを表す。通常の FENCE は fm=0000。FENCE.TSO は fm=1000、pred=succ=RW で、一部のストア→ロード順序を保証しない。命令フェッチの同期は Zifencei の FENCE.I。
 

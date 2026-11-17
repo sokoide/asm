@@ -13,6 +13,12 @@ RFLAGS の下位 8 ビット（SF ZF - AF - PF 1 CF）を AH に読み込む。
 オペコード:
   LAHF: 9F  (1 バイト)
 
+使用例:
+  lahf
+
+解説:
+  この例では RFLAGS の下位 8 ビット（SF ZF - AF - PF 1 CF）を AH に読み込む。
+
 備考:
   初期の x86-64 CPU の一部は本命令をサポートしない。
 

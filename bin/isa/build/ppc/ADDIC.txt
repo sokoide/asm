@@ -13,6 +13,12 @@ ADDIC rT, rA, s16 — PowerPC（算術）
 オペコード:
   addic rT,rA,s16: 001100 rT rA s16  (4 バイト)
 
+使用例:
+  addic %r3,%r5,1
+
+解説:
+  この例では 即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。
+
 備考:
   addic. は CR0 更新あり。addi とは違い r0 を 0 に置換しない（rA 必須）。
 

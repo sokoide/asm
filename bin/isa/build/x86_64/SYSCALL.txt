@@ -13,6 +13,12 @@ SYSCALL — x86-64（サブルーチン）
 オペコード:
   SYSCALL: 0F 05  (2 バイト)
 
+使用例:
+  syscall
+
+解説:
+  この例では 高速システムコール。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。
+
 備考:
   RFLAGS は IA32_FMASK のビットが 1 の位置をクリアする（RFLAGS AND NOT IA32_FMASK）。IF を含む各フラグの変更は MSR 設定に依存する。
   RSP は保存・切り替えられないため、必要なスタック切り替えは OS が行う。SYSRET が対の復帰命令。

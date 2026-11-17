@@ -13,4 +13,10 @@ MULHWU rT, rA, rB — PowerPC（算術）
 オペコード:
   mulhwu[o][.] rT,rA,rB: 011111 rT rA rB OE 000001011 Rc  (4 バイト)
 
+使用例:
+  mulhwu %r3,%r5,%r6
+
+解説:
+  この例では 符号なし 32×32 乗算の上位ワードを rT へ。
+
 （根拠: book）

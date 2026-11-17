@@ -14,6 +14,12 @@ ADC dst, src — x86-64（算術）
   ADC r/m64, r64: REX.W 11 /r  (長さ可変)
   ADC r/m64, imm32: REX.W 81 /2 id  (長さ可変)
 
+使用例:
+  adc rax, rbx
+
+解説:
+  この例では キャリー込み加算。dst = dst + src + C。多倍長加算の上位ワード処理に使う。
+
 備考:
   多倍長加算の定形: add 下位 → adc 上位。
 

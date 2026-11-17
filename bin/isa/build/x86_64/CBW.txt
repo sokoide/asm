@@ -13,6 +13,12 @@ AL の符号拡張（8→16bit）で AX に転送する。
 オペコード:
   CBW: 66 98  (2 バイト)
 
+使用例:
+  cbw
+
+解説:
+  この例では AL の符号拡張（8→16bit）で AX に転送する。
+
 備考:
   AX→EAX は CWDE、EAX→RAX は CDQE。AX→DX:AX の CWD は 16bit コード向け。
 

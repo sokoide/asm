@@ -13,6 +13,12 @@ NEGS dst, src — ARM64（算術）
 オペコード:
   NEGS Xd,Xn: SUBS Xd,XZR,Xn のエイリアス
 
+使用例:
+  negs x0,[x1]
+
+解説:
+  この例では 符号反転してフラグ更新。最小の負の値の符号反転は V をセットする。
+
 備考:
   SUBS Wd,WZR,Wm または SUBS Xd,XZR,Xm の別名。多倍長の符号反転では下位語を NEGS、上位語を NGCS（または SBCS）で処理できる。
 

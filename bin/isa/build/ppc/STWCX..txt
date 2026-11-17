@@ -14,6 +14,12 @@ STWCX. rS, rA, rB — PowerPC（ストア）
 オペコード:
   stwcx. rS,rA,rB: 011111 rS rA rB 0010010110 1  (4 バイト)
 
+使用例:
+  stwcx. %r4,%r5,%r6
+
+解説:
+  この例では 予約が有効なときだけワードをストアし、成否を CR0[EQ] で報告する（Store Word Conditional Indexed）。
+
 備考:
   lwarx と対で使う。ストア成立時は CR0[EQ]=1、不成立時は EQ=0。SO は XER[SO] のコピー。予約はストアの成否にかかわらず解除される。実効アドレスを 4 バイト境界に揃え、対応する lwarx と同じ対象を使用する。
 

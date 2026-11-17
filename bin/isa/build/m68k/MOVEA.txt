@@ -14,3 +14,9 @@ MOVEA src, An — 68000（データ転送）
 オペコード:
   MOVEA.W ea,An: 0011 AAA 001 MMM RRR  (長さ可変)
   MOVEA.L ea,An: 0010 AAA 001 MMM RRR  (長さ可変)
+
+使用例:
+  movea.w (a0),a0
+
+解説:
+  この例では アドレスレジスタへの転送。.W は符号拡張して 32 ビットに。フラグは一切変化しない。

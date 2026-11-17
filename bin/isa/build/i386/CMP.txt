@@ -21,6 +21,12 @@ dst - src を計算してフラグのみ更新する（dst は不変）。分岐
   CMP AL, imm8: 3C ib  (長さ可変)
   CMP AX/EAX, imm16/32: 3D iw/id  (長さ可変)
 
+使用例:
+  cmp eax, ebx
+
+解説:
+  この例では dst - src を計算してフラグのみ更新する（dst は不変）。分岐・setcc の判定に使う。
+
 備考:
   符号付きは jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。
 

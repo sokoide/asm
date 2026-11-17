@@ -13,4 +13,10 @@ SMSUBL dst64, src1w, src2w, src3 — ARM64（算術）
 オペコード:
   SMSUBL Xd,Wn,Wm,Xa: 10011011001 Rm 1 Ra Rn Rd  (4 バイト)
 
+使用例:
+  smsubl x0,w1,w2,x3
+
+解説:
+  この例では 64 ビット値から符号付き 32×32 ビット積を減算（dst = src3 - (src1w * src2w)）。
+
 （根拠: book）

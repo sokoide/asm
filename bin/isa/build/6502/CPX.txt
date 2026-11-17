@@ -17,4 +17,13 @@ X と src を比較。C=1 が符号なし比較で「X >= src」。
   CPX zp: E4  (2 バイト)
   CPX abs: EC  (3 バイト)
 
+使用例:
+  ldx $20
+  cpx #$10
+  bcs at_least
+  at_least: nop
+
+解説:
+  X と $10 を符号なし比較し、X>=$10 なら at_least へ分岐する。
+
 （根拠: book）

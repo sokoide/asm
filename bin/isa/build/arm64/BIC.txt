@@ -13,6 +13,12 @@ BIC dst, src1, src2 — ARM64（論理）
 オペコード:
   BIC Rd,Rn,Rm{,shift #amount}: sf 00 01010 shift 1 Rm imm6 Rn Rd  (4 バイト)
 
+使用例:
+  bic x0,[x1],x2,lsl #2
+
+解説:
+  この例では ビットクリア（dst = src1 AND NOT src2）。ソースに 1 がある位置のデスティネーションビットをクリアする。S 付きは BICS。
+
 備考:
   sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。
 

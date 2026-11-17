@@ -13,6 +13,12 @@ rS から r31 までの連続 GPR の下位ワードをメモリへ一括スト�
 オペコード:
   stmw rS,d(rA): 0x2F rS rA D  (4 バイト)
 
+使用例:
+  stmw %r4,4(%r5)
+
+解説:
+  この例では rS から r31 までの連続 GPR の下位ワードをメモリへ一括ストア（Store Multiple Word）。
+
 備考:
   PPC440 でもサポートする。POWER 旧ニーモニックは stm。
 

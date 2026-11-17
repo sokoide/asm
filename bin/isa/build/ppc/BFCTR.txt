@@ -12,6 +12,12 @@ bfctr（拡張ニーモニック）→ BCCTR BO, BI — PowerPC（分岐）
   条件が偽のときCTRへ分岐（Branch if Condition False to CTR）
   [l] 接尾でリンク（LR 更新）。crT を省略すると CR0。
 
+使用例:
+  bfctr 2
+
+解説:
+  この例では 条件が偽のときCTRへ分岐（Branch if Condition False to CTR）
+
 元命令: isa ppc BCCTR
 CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する間接呼び出しに使う。
 
@@ -20,6 +26,12 @@ CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する�
 
 オペコード:
   bcctr BO,BI: 010011 BO BI 00000 1000010000 LK  (4 バイト)
+
+使用例:
+  bcctr 12,2
+
+解説:
+  この例では CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する間接呼び出しに使う。
 
 備考:
   CTR を分岐先に使うため CTR を減算する BO 形式は無効。bcctrl では分岐の成否にかかわらず次の命令のアドレスを LR に設定する。

@@ -13,4 +13,10 @@ STB rS, d(rA) — PowerPC（ストア）
 オペコード:
   stb rS,d(rA): 0x26 rS rA D  (4 バイト)
 
+使用例:
+  stb %r4,4(%r5)
+
+解説:
+  この例では 下位 1 バイトをストアする（Store Byte）。フラグは一切変化しない。
+
 （根拠: book）

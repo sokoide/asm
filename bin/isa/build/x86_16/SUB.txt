@@ -14,4 +14,10 @@ SUB dst, src — 8086（算術）
 オペコード:
   SUB r/m,r: 0010100w /r  (長さ可変)
 
+使用例:
+  sub ax, bx
+
+解説:
+  この例では 減算。dst = dst - src。全フラグ更新。
+
 （根拠: book）

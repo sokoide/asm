@@ -9,5 +9,11 @@ CSRSI csr, uimm — RISC-V 32（システム制御）
 消費クロック:
   ISA では規定されない: 実装依存
 
+使用例:
+  csrsi mstatus, 1
+
+解説:
+  この例では 5 ビット即値で指定した CSR ビットをセットする疑似命令。
+
 備考:
   CSRRSI x0,csr,uimm に展開する。uimm=0 の場合は書込みを行わない。

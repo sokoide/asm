@@ -13,6 +13,12 @@ ISEL rT, rA, rB, CRb — PowerPC（データ転送）
 オペコード:
   ISEL rT, rA, rB, CRb: 011111 rT rA rB CRb 01111  (4 バイト)
 
+使用例:
+  isel %r3, %r5, %r6, 2
+
+解説:
+  この例では 指定した CR ビットが 1 なら rA の値、0 なら rB の値を rT に入れる。
+
 備考:
   CR ビットが 1 かつ rA=0 の場合は GPR0 ではなく 0 を選ぶ。CR は変更しない。PPC440x5 など対象 CPU の対応を確認する。
 

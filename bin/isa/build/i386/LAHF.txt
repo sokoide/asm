@@ -13,6 +13,12 @@ EFLAGS の下位バイト（SF ZF - AF - PF 1 CF）を AH に読み込む。
 オペコード:
   LAHF: 9F  (1 バイト)
 
+使用例:
+  lahf
+
+解説:
+  この例では EFLAGS の下位バイト（SF ZF - AF - PF 1 CF）を AH に読み込む。
+
 備考:
   8080 互換のブリッジ命令。OF/DF/IF/TF は含まれない。
 

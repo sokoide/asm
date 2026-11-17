@@ -13,6 +13,12 @@ BICS dst, src1, src2 — ARM64（論理）
 オペコード:
   BICS Rd,Rn,Rm{,shift #amount}: sf 11 01010 shift 1 Rm imm6 Rn Rd  (4 バイト)
 
+使用例:
+  bics x0,[x1],x2,lsl #2
+
+解説:
+  この例では ビットクリア。残った値に基づいて N/Z をセットする。
+
 備考:
   sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。
 

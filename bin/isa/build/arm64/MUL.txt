@@ -14,4 +14,10 @@ MUL dst, src1, src2 — ARM64（算術）
   MUL Wd,Wn,Wm: MADD Wd,Wn,Wm,WZR のエイリアス
   MUL Xd,Xn,Xm: MADD Xd,Xn,Xm,XZR のエイリアス
 
+使用例:
+  mul w0,w1,w2
+
+解説:
+  この例では 乗算（下位 32/64 ビットのみ）。符号/符号なし共通（上位は捨てられるため）。
+
 （根拠: book）

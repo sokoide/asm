@@ -12,6 +12,12 @@ REMU rd, rs1, rs2 — RISC-V 32（算術）
 オペコード:
   REMU rd, rs1, rs2: funct7=0000001 rs2 rs1 funct3=111 rd op=0110011  (4 バイト)
 
+使用例:
+  remu t0, t1, t2
+
+解説:
+  この例では 符号なし除算 rs1 ÷ rs2 の剰余を rd に入れる。
+
 備考:
   0 除算では被除数をそのまま返す。
 

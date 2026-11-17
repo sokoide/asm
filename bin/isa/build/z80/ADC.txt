@@ -22,6 +22,12 @@ ADC A, r — Z80（算術）
   ADC A,(IX+d): DD 8E d  (3 バイト)
   ADC A,(IY+d): FD 8E d  (3 バイト)
 
+使用例:
+  adc a,b
+
+解説:
+  この例では キャリー込みの加算。ADC A,r と 16ビットの ADC HL,ss がある。
+
 備考:
   ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。
 

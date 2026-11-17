@@ -13,4 +13,10 @@ UMADDL dst64, src1w, src2w, src3 — ARM64（算術）
 オペコード:
   UMADDL Xd,Wn,Wm,Xa: 10011011101 Rm 0 Ra Rn Rd  (4 バイト)
 
+使用例:
+  umaddl x0,w1,w2,x3
+
+解説:
+  この例では 符号なし 32×32 → 64 ビット乗算に 64 ビット値を加算。
+
 （根拠: book）

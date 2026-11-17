@@ -13,6 +13,12 @@ rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。
 オペコード:
   addme rT,rA: 011111 rT rA 00000 OE 011101010 Rc  (4 バイト)
 
+使用例:
+  addme %r3,%r5
+
+解説:
+  この例では rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。
+
 備考:
   この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。
 

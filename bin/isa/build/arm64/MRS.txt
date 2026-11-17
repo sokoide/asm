@@ -13,6 +13,12 @@ MRS dst, sysreg — ARM64（システム制御）
 オペコード:
   MRS Xt,sysreg: 11010101001 op0 op1 CRn CRm op2 Xt  (4 バイト)
 
+使用例:
+  mrs x0,nzcv
+
+解説:
+  この例では システムレジスタからの読出し。NZCV も MRS Xd,NZCV で読める。
+
 備考:
   ユーザモードからは読めるレジスタが制限される。
 

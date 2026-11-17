@@ -13,6 +13,12 @@ SUB/SBB の直後に置き、AL の packed BCD 結果を補正する。
 オペコード:
   DAS: 2F  (1 バイト)
 
+使用例:
+  das
+
+解説:
+  この例では SUB/SBB の直後に置き、AL の packed BCD 結果を補正する。
+
 備考:
   64bit モードでは廃止（#UD）。
 

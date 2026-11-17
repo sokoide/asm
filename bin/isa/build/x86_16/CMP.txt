@@ -16,6 +16,12 @@ CMP dst, src — 8086（比較）
   CMP r/m,r: 0011100w /r  (長さ可変)
   CMP AL,imm: 3C ib  (2 バイト)
 
+使用例:
+  cmp ax, bx
+
+解説:
+  この例では 比較（dst - src のフラグのみ反映、dst は不変）。JA/JB/JG/JL 等の分岐の前提。
+
 備考:
   結果を書き戻さないため SUB より mem,reg が速い（9+EA）。
 

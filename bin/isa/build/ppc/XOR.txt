@@ -13,4 +13,10 @@ XOR rA, rS, rB — PowerPC（論理）
 オペコード:
   xor[.] rA,rS,rB: 011111 rS rA rB 0100111100 Rc  (4 バイト)
 
+使用例:
+  xor %r5,%r4,%r6
+
+解説:
+  この例では 排他的論理和。
+
 （根拠: book）

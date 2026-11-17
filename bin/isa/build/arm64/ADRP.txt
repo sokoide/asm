@@ -13,6 +13,13 @@ ADRP dst64, label — ARM64（アドレス計算）
 オペコード:
   ADRP Xd,label: 1 immlo 10000 immhi Rd  (4 バイト)
 
+使用例:
+  adrp x0,target
+  target:
+
+解説:
+  この例では 命令のある 4 KiB ページを基準とする PC 相対のページアドレスを X レジスタに作る。
+
 備考:
   基準ページから -4 GiB〜+4 GiB-4 KiB の 4 KiB 単位で指定する。下位 12 ビットは 0。ADRP と ADD などを組み合わせてページ内オフセットを加える。 immhi:immlo は符号付き 21 ビットのページ変位（4 KiB 単位）。
 

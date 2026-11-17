@@ -18,4 +18,10 @@ RR r — Z80（シフト/ビット）
   RR (IX+d): DD CB d 1E  (4 バイト)
   RR (IY+d): FD CB d 1E  (4 バイト)
 
+使用例:
+  rr b
+
+解説:
+  この例では キャリー込み右ローテート（C → bit7、bit0 → C）。
+
 （根拠: book）

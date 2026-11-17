@@ -15,4 +15,10 @@ DCBST rA, rB — PowerPC（キャッシュ）
 オペコード:
   dcbst rA,rB: 011111 00000 rA rB 0000110110 0  (4 バイト)
 
+使用例:
+  dcbst %r5,%r6
+
+解説:
+  この例では データキャッシュブロックを記憶域へ書き戻す（Data Cache Block Store）。無効化はしない。
+
 （根拠: book）

@@ -13,6 +13,12 @@ CR ビット同士の論理積（条件レジスタ論理）。
 オペコード:
   crand BT,BA,BB: 010011 BT BA BB 0100000001 0  (4 バイト)
 
+使用例:
+  crand 2,3,4
+
+解説:
+  この例では CR ビット同士の論理積（条件レジスタ論理）。
+
 備考:
   同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror crbT,crbA,crbA はビットのコピー（crmove）。セットは creqv crbT,crbT,crbT。 対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。
 

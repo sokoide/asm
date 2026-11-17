@@ -13,6 +13,12 @@ LHA rT, d(rA) — PowerPC（ロード）
 オペコード:
   lha rT,d(rA): 0x2A rT rA D  (4 バイト)
 
+使用例:
+  lha %r3,4(%r5)
+
+解説:
+  この例では 2 バイトを符号拡張してロードする（Load Halfword Algebraic）。
+
 備考:
   更新形式は lhau/lhaux。
 

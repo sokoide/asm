@@ -12,6 +12,12 @@ CSR を rd に読み出し、CSR と 5 ビット即値（ゼロ拡張）のビ�
 オペコード:
   CSRRSI rd, csr, zimm: csr zimm[4:0] funct3=110 rd op=1110011  (4 バイト)
 
+使用例:
+  csrrsi t0, mstatus, 1
+
+解説:
+  この例では CSR を rd に読み出し、CSR と 5 ビット即値（ゼロ拡張）のビットごとの OR を CSR に書き込む。
+
 備考:
   zimm に 0 を指定すると CSR の読み出し専用アクセスになる。rd=x0 でも CSR を読み出し、読み出しの副作用が生じうる。
 

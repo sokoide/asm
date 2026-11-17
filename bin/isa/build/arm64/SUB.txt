@@ -15,6 +15,12 @@ SUB dst, src1, src2{, shift} — ARM64（算術）
   SUB Rd,Rn,Rm{,shift #amount}: sf 1 0 01011 shift 0 Rm imm6 Rn Rd  (4 バイト)
   SUB Rd,Rn,Rm,extend{ #amount}: sf 1 0 01011 00 1 Rm option imm3 Rn Rd  (4 バイト)
 
+使用例:
+  sub x0,[x1],#1,lsl #12
+
+解説:
+  この例では 減算。フラグは変化しない。
+
 備考:
   即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。
 

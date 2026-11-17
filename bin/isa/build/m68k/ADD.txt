@@ -17,5 +17,11 @@ ADD src, dst — 68000（算術）
   ADD ea,Dn: 1101 DDD 0 ss MMM RRR  (長さ可変)
   ADD Dn,ea: 1101 DDD 1 ss MMM RRR  (長さ可変)
 
+使用例:
+  add.w (a0),d0
+
+解説:
+  この例では 加算（.B/.W/.L）。X/C はキャリー、V はオーバーフロー。
+
 備考:
   即値演算には ADDI/SUBI を使用できる。EA から Dn への形式は PC 相対も指定できる。 サイズフィールド ss は .B=00、.W=01、.L=10。

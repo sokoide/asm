@@ -116,6 +116,14 @@ def validate(path, doc):
         notes = inst.get("notes", "")
         if not isinstance(notes, str):
             raise ValidationError(f"{where}: notes は文字列で指定してください")
+        example = inst.get("example")
+        if example is not None:
+            if not isinstance(example, dict) or not isinstance(example.get("code"), list) or not example["code"]:
+                raise ValidationError(f"{where}: example は code 配列と explanation を持つ必要があります")
+            if any(not isinstance(line, str) or not line or "\t" in line for line in example["code"]):
+                raise ValidationError(f"{where}: example.code は空行・タブなしの文字列配列にしてください")
+            if not isinstance(example.get("explanation"), str) or not example["explanation"]:
+                raise ValidationError(f"{where}: example.explanation は非空の文字列で指定してください")
 
     # aliases: extended mnemonics (e.g. PowerPC blr -> bclr). Indexed alongside
     # base instructions and rendered as instruction reference pages.
@@ -148,6 +156,14 @@ def validate(path, doc):
         notes = alias.get("notes", "")
         if not isinstance(notes, str):
             raise ValidationError(f"{where}: notes は文字列で指定してください")
+        example = alias.get("example")
+        if example is not None:
+            if not isinstance(example, dict) or not isinstance(example.get("code"), list) or not example["code"]:
+                raise ValidationError(f"{where}: example は code 配列と explanation を持つ必要があります")
+            if any(not isinstance(line, str) or not line or "\t" in line for line in example["code"]):
+                raise ValidationError(f"{where}: example.code は空行・タブなしの文字列配列にしてください")
+            if not isinstance(example.get("explanation"), str) or not example["explanation"]:
+                raise ValidationError(f"{where}: example.explanation は非空の文字列で指定してください")
     return flag_names
 
 
@@ -170,6 +186,12 @@ def inst_detail(inst):
         for entry in encodings:
             bytes_part = f"  ({entry['bytes']} バイト)" if "bytes" in entry else "  (長さ可変)" if entry.get("length") == "可変" else ""
             detail.append(f"  {entry['syntax']}: {entry['opcode']}{bytes_part}")
+
+    example = inst.get("example")
+    if example:
+        detail += ["", "使用例:"]
+        detail += [f"  {line}" for line in example["code"]]
+        detail += ["", "解説:", f"  {example['explanation']}"]
 
     notes = inst.get("notes", "")
     src = inst.get("src", "")
@@ -223,6 +245,11 @@ def render_alias(alias, target, arch, flag_names):
     ]
     for line in alias.get("notes", "").splitlines():
         detail.append(f"  {line}")
+    example = alias.get("example")
+    if example:
+        detail += ["", "使用例:"]
+        detail += [f"  {line}" for line in example["code"]]
+        detail += ["", "解説:", f"  {example['explanation']}"]
     detail += ["", f"元命令: isa {arch} {target['mnemonic']}", target["summary"]]
     detail += [""] + inst_detail(target)
 

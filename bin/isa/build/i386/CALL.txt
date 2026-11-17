@@ -22,6 +22,13 @@ CALL label / reg / mem / seg:offset — 80386（サブルーチン）
   CALL ptr16:16/32: 9A cp  (長さ可変)
   CALL m16:16/32: FF /3  (長さ可変)
 
+使用例:
+  call target
+  target:
+
+解説:
+  この例では 戻りアドレス（EIP、far では CS:EIP）をスタックに積んでからプロシージャへジャンプする。
+
 備考:
   far CALL（9A / FF /3）は CS:EIP を退避し、プロテクトモードではコールゲート経由で特権切替が起こる。
 

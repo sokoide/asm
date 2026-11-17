@@ -20,6 +20,13 @@ JMP dst — 8086（分岐）
   JMP r/m16（near 間接）: FF /4  (長さ可変)
   JMP m16:16（far 間接）: FF /5  (長さ可変)
 
+使用例:
+  jmp target
+  target:
+
+解説:
+  この例では 無条件ジャンプ（short/near/far、レジスタ間接・メモリ間接）。
+
 備考:
   far は CS:IP を書き換える。
 

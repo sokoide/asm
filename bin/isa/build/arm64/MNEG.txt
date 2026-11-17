@@ -14,4 +14,10 @@ MNEG dst, src1, src2 — ARM64（算術）
   MNEG Wd,Wn,Wm: MSUB Wd,Wn,Wm,WZR のエイリアス
   MNEG Xd,Xn,Xm: MSUB Xd,Xn,Xm,XZR のエイリアス
 
+使用例:
+  mneg w0,w1,w2
+
+解説:
+  この例では 乗算して否定（dst = -src1*src2）。
+
 （根拠: book）

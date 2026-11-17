@@ -13,4 +13,10 @@ SMNEGL dst64, src1w, src2w — ARM64（算術）
 オペコード:
   SMNEGL Xd,Wn,Wm: SMSUBL Xd,Wn,Wm,XZR のエイリアス
 
+使用例:
+  smnegl x0,w1,w2
+
+解説:
+  この例では 符号付き 32×32 → 64 ビット乗算の否定（dst = -(src1w * src2w)）。
+
 （根拠: book）

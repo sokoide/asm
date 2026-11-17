@@ -12,6 +12,12 @@ CSR を rd に読み出し、CSR と 5 ビット即値のビット反転との�
 オペコード:
   CSRRCI rd, csr, zimm: csr zimm[4:0] funct3=111 rd op=1110011  (4 バイト)
 
+使用例:
+  csrrci t0, mstatus, 1
+
+解説:
+  この例では CSR を rd に読み出し、CSR と 5 ビット即値のビット反転との論理積を CSR に書き込む（zimm が 1 のビットをクリア）。
+
 備考:
   zimm に 0 を指定すると CSR の読み出し専用アクセスになる。rd=x0 でも CSR を読み出し、読み出しの副作用が生じうる。
 

@@ -13,6 +13,12 @@ EAX の符号拡張（32→64bit）で EDX:EAX を作る。32bit IDIV の前処�
 オペコード:
   CDQ: 99（32bit モード既定）  (1 バイト)
 
+使用例:
+  cdq
+
+解説:
+  この例では EAX の符号拡張（32→64bit）で EDX:EAX を作る。32bit IDIV の前処理。
+
 備考:
   EDX に EAX の符号ビット（MSB）を満たす。16bit モードでは CDQ=66 99。
 

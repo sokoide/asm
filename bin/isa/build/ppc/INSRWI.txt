@@ -12,6 +12,12 @@ insrwi（拡張ニーモニック）→ RLWIMI rA, rS, n, mB, mE — PowerPC（�
   ワード即値右側挿入（Insert from Right Word Immediate）
   end = start+nBits。rS の下位 nBits ビットを rA の bit start 以降に挿入する。
 
+使用例:
+  insrwi 4,4,nBits,start
+
+解説:
+  この例では ワード即値右側挿入（Insert from Right Word Immediate）
+
 元命令: isa ppc RLWIMI
 左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。
 
@@ -20,6 +26,12 @@ insrwi（拡張ニーモニック）→ RLWIMI rA, rS, n, mB, mE — PowerPC（�
 
 オペコード:
   rlwimi[.] rA,rS,SH,MB,ME: 010100 rS rA SH MB ME Rc  (4 バイト)
+
+使用例:
+  rlwimi %r5,%r4,1,0,31
+
+解説:
+  この例では 左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。
 
 備考:
   ビット番号は最上位が 0。マスク内を回転後の値に置換し、マスク外は元の rA を保持する。MB>ME ではマスクが末尾と先頭にまたがる。

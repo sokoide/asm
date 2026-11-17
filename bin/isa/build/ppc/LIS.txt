@@ -12,6 +12,12 @@ lis（拡張ニーモニック）→ ADDIS rT, rA, s16 — PowerPC（算術）
   即値ロード・シフト付き（Load Immediate Shifted）
   16 ビット即値を上位 16 ビットに置く。32 ビット定数は lis + ori の 2 命令で構成する。
 
+使用例:
+  lis 3,s16
+
+解説:
+  この例では 即値ロード・シフト付き（Load Immediate Shifted）
+
 元命令: isa ppc ADDIS
 rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。
 
@@ -20,6 +26,12 @@ rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。
 
 オペコード:
   addis rT,rA,s16: 001111 rT rA s16  (4 バイト)
+
+使用例:
+  addis %r3,%r5,1
+
+解説:
+  この例では rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。
 
 備考:
   lis + ori で 32 ビット即値を 2 命令で組み立てるのが定番。

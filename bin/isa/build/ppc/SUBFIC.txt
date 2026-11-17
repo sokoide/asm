@@ -13,4 +13,10 @@ rT = 符号拡張即値 - rA で XER[CA] 更新。
 オペコード:
   subfic rT,rA,s16: 001000 rT rA s16  (4 バイト)
 
+使用例:
+  subfic %r3,%r5,1
+
+解説:
+  この例では rT = 符号拡張即値 - rA で XER[CA] 更新。
+
 （根拠: book）

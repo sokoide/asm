@@ -13,6 +13,12 @@ SBCS dst, src1, src2 — ARM64（算術）
 オペコード:
   SBCS Rd,Rn,Rm: sf 1 1 11010000 Rm 000000 Rn Rd  (4 バイト)
 
+使用例:
+  sbcs x0,[x1],x2
+
+解説:
+  この例では キャリー込み減算（dst = src1 - src2 - (1 - C)、フラグ更新）。多倍長減算では LO を SUBS、上位を SBCS で処理する。
+
 備考:
   sf=0 は W レジスタ、sf=1 は X レジスタ。
 

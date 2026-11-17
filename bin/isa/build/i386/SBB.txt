@@ -21,4 +21,10 @@ SBB dst, src — 80386（算術）
   SBB AL, imm8: 1C ib  (長さ可変)
   SBB AX/EAX, imm16/32: 1D iw/id  (長さ可変)
 
+使用例:
+  sbb eax, ebx
+
+解説:
+  この例では キャリー込み減算。dst = dst - src - C。多倍長減算の上位ワード処理に使う。
+
 （根拠: book）

@@ -12,6 +12,12 @@ rs1 - rs2 を rd に代入する（32 ビット）。
 オペコード:
   SUB rd, rs1, rs2: funct7=0100000 rs2 rs1 funct3=000 rd op=0110011  (4 バイト)
 
+使用例:
+  sub t0, t1, t2
+
+解説:
+  この例では rs1 - rs2 を rd に代入する（32 ビット）。
+
 備考:
   ADD と同じ funct3=000 で funct7 だけが異なる。RV32 には w 接尾命令（addw/subw/addiw）は存在しない。
 

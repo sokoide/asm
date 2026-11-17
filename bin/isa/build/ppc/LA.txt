@@ -12,6 +12,12 @@ la（拡張ニーモニック）→ ADDI rT, rA, s16 — PowerPC（算術）
   アドレスロード（Load Address）
   実効アドレス rA+d を rT に入れる。メモリアクセスはしない。
 
+使用例:
+  la 3, 4(4)
+
+解説:
+  この例では アドレスロード（Load Address）
+
 元命令: isa ppc ADDI
 rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。
 
@@ -20,6 +26,12 @@ rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。
 
 オペコード:
   addi rT,rA,s16: 0x0E  (4 バイト)
+
+使用例:
+  addi %r3,%r5,1
+
+解説:
+  この例では rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。
 
 備考:
   拡張形式: li rT,s16（addi rT,0,s16）、la rT,d(rA)（アドレスロード）、subi rT,rA,s16（addi rT,rA,-s16）。

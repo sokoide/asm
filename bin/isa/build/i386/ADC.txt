@@ -21,4 +21,10 @@ ADC dst, src — 80386（算術）
   ADC AL, imm8: 14 ib  (長さ可変)
   ADC AX/EAX, imm16/32: 15 iw/id  (長さ可変)
 
+使用例:
+  adc eax, ebx
+
+解説:
+  この例では キャリー込み加算。dst = dst + src + C。多倍長加算の上位ワード処理に使う。
+
 （根拠: book）

@@ -14,3 +14,9 @@ EXG Rx, Ry — 68000（データ転送）
   EXG Dn,Dm: 1100 NNN 1 01000 MMM  (2 バイト)
   EXG An,Am: 1100 NNN 1 01001 MMM  (2 バイト)
   EXG Dn,Am: 1100 NNN 1 10001 MMM  (2 バイト)
+
+使用例:
+  exg d0,d1
+
+解説:
+  この例では レジスタ 32 ビット全体の交換（Dn/Dn、An/An、Dn/An）。

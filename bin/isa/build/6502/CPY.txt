@@ -17,4 +17,13 @@ Y と src を比較。C=1 が符号なし比較で「Y >= src」。
   CPY zp: C4  (2 バイト)
   CPY abs: CC  (3 バイト)
 
+使用例:
+  ldy $20
+  cpy #$10
+  bne different
+  different: nop
+
+解説:
+  Y と $10 を比較し、等しくなければ different へ分岐する。
+
 （根拠: book）

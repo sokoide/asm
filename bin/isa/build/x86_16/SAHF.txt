@@ -13,4 +13,10 @@ AH の内容で FLAGS の下位バイト（SF ZF AF PF CF）を設定。
 オペコード:
   SAHF: 9E  (1 バイト)
 
+使用例:
+  sahf
+
+解説:
+  この例では AH の内容で FLAGS の下位バイト（SF ZF AF PF CF）を設定。
+
 （根拠: book）

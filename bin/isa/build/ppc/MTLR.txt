@@ -12,6 +12,12 @@ mtlr（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ�
   リンクレジスタへの移動（Move to Link Register）
   SPR 8 = LR。bl の戻り先保存先。
 
+使用例:
+  mtlr 4
+
+解説:
+  この例では リンクレジスタへの移動（Move to Link Register）
+
 元命令: isa ppc MTSPR
 特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
 
@@ -20,5 +26,11 @@ mtlr（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ�
 
 オペコード:
   mtspr SPR,rS: 011111 rS SPR[0:4] SPR[5:9] 0111010011 0  (4 バイト)
+
+使用例:
+  mtspr 8,%r4
+
+解説:
+  この例では 特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
 
 （根拠: book）

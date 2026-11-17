@@ -18,6 +18,12 @@ dst AND src を計算してフラグのみ更新する（dst は不変）。ビ�
   TEST AL, imm8: A8 ib  (長さ可変)
   TEST AX/EAX, imm16/32: A9 iw/id  (長さ可変)
 
+使用例:
+  test eax, ebx
+
+解説:
+  この例では dst AND src を計算してフラグのみ更新する（dst は不変）。ビットの有無やゼロ判定に使う。
+
 備考:
   test reg, reg はゼロ判定のイディオム。
 

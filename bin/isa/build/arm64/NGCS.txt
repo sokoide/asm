@@ -14,6 +14,12 @@ NGCS dst, src — ARM64（算術）
   NGCS Wd,Wm: SBCS Wd,WZR,Wm のエイリアス
   NGCS Xd,Xm: SBCS Xd,XZR,Xm のエイリアス
 
+使用例:
+  ngcs w0,w2
+
+解説:
+  この例では キャリーを含む符号反転（dst = 0 - src - (1 - C)）。N/Z/C/V を更新する。
+
 備考:
   多倍長符号反転の上位語に使用できる。
 

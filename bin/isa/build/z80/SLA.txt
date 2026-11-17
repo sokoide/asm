@@ -18,4 +18,10 @@ SLA r — Z80（シフト/ビット）
   SLA (IX+d): DD CB d 26  (4 バイト)
   SLA (IY+d): FD CB d 26  (4 バイト)
 
+使用例:
+  sla b
+
+解説:
+  この例では 算術左シフト（bit7 → C、bit0 ← 0）。×2 相当。
+
 （根拠: book）

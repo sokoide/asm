@@ -15,5 +15,11 @@ AND src, dst — 68000（論理）
   AND ea,Dn: 1100 DDD 0 ss MMM RRR  (長さ可変)
   AND Dn,ea: 1100 DDD 1 ss MMM RRR  (長さ可変)
 
+使用例:
+  and.w (a0),d0
+
+解説:
+  この例では 論理積（.B/.W/.L）。V/C は常に 0、X は不変。
+
 備考:
   アドレスレジスタ直接は指定できない。即値の論理演算には ANDI/ORI を使う。 サイズフィールド ss は .B=00、.W=01、.L=10。

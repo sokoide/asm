@@ -12,6 +12,12 @@ cmpwi（拡張ニーモニック）→ CMPI crfT, L, rA, s16 — PowerPC（比�
   ワード即値比較（Compare Word Immediate）
   比較命令の第 2 オペランド L で幅を選ぶ。cmpwi は L=0（ワード）を明示する形式。
 
+使用例:
+  cmpwi crT,4,s16
+
+解説:
+  この例では ワード即値比較（Compare Word Immediate）
+
 元命令: isa ppc CMPI
 符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。
 
@@ -20,6 +26,12 @@ cmpwi（拡張ニーモニック）→ CMPI crfT, L, rA, s16 — PowerPC（比�
 
 オペコード:
   cmpi crfT,L,rA,s16: 001011 BF L 0 rA s16  (4 バイト)
+
+使用例:
+  cmpi cr0,l,%r5,1
+
+解説:
+  この例では 符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。
 
 備考:
   16 ビット即値は符号拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。

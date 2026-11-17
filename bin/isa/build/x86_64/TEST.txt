@@ -14,6 +14,12 @@ dst AND src を計算してフラグのみ更新する（dst は不変）。ビ�
   TEST r/m64, r64: REX.W 85 /r  (長さ可変)
   TEST r/m64, imm32: REX.W F7 /0 id  (長さ可変)
 
+使用例:
+  test rax, rbx
+
+解説:
+  この例では dst AND src を計算してフラグのみ更新する（dst は不変）。ビットの有無やゼロ判定に使う。
+
 備考:
   test reg, reg は「レジスタが 0 か」の判定イディオム。
 

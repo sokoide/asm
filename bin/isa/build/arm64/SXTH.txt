@@ -13,4 +13,10 @@ SXTH dst, srcw — ARM64（データ転送）
 オペコード:
   SXTH Wd,Wn / SXTH Xd,Wn: SBFM Wd,Wn,#0,#15 / SBFM Xd,Xn,#0,#15 と等価  (4 バイト)
 
+使用例:
+  sxth w0,w1
+
+解説:
+  この例では 符号拡張（16 ビット → 32/64）。ソースは常に 32 ビット（Wn）レジスタ。
+
 （根拠: book）

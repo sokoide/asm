@@ -13,6 +13,12 @@ STW rS, d(rA) — PowerPC（ストア）
 オペコード:
   stw rS,d(rA): 0x24 rS rA D  (4 バイト)
 
+使用例:
+  stw %r4,4(%r5)
+
+解説:
+  この例では ワードストア。スタック退避（stwu r1,-N(r1)）の基本形。
+
 備考:
   主オペコードは stw=0x24、stb=0x26、sth=0x2C。D-Form の配置は主オペコード/rS/rA/16 ビット変位。
 

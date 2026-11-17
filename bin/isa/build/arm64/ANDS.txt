@@ -14,6 +14,12 @@ ANDS dst, src1, src2 — ARM64（論理）
   ANDS Rd,Rn,Rm{,shift #amount}: sf 11 01010 shift 0 Rm imm6 Rn Rd  (4 バイト)
   ANDS Rd,Rn,#bitmask: sf 11 100100 N immr imms Rn Rd  (4 バイト)
 
+使用例:
+  ands x0,[x1],x2,lsl #2
+
+解説:
+  この例では 論理積を計算し N/Z を更新、C/V をクリアする。宛先が WZR または XZR の形は TST。
+
 備考:
   TST Xn,Xm は ANDS XZR,Xn,Xm の別名。 sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。
 

@@ -15,5 +15,11 @@ SUB src, dst — 68000（算術）
   SUB ea,Dn: 1001 DDD 0 ss MMM RRR  (長さ可変)
   SUB Dn,ea: 1001 DDD 1 ss MMM RRR  (長さ可変)
 
+使用例:
+  sub.w (a0),d0
+
+解説:
+  この例では 減算（.B/.W/.L）。dst = dst - src。
+
 備考:
   即値演算には ADDI/SUBI を使用できる。EA から Dn への形式は PC 相対も指定できる。 サイズフィールド ss は .B=00、.W=01、.L=10。

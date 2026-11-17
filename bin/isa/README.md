@@ -70,6 +70,7 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
       "target": "BC",
       "equivalent": "bc 0x10, 0, addr",
       "summary": "減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）",
+      "example": {"code": ["bdnz loop", "loop:"], "explanation": "CTRを減算し、0でなければloopへ戻る"},
       "notes": "補足（省略可）"
     }
   ],
@@ -83,6 +84,7 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "分岐成立", "cycles": 13}, {"cond": "不成立", "cycles": 8}],
       "encodings": [{"syntax": "DJNZ d", "opcode": "10 dd", "bytes": 2}],
+      "example": {"code": ["djnz loop"], "explanation": "B を 1 減らしてから分岐する例"},
       "notes": "補足（複数行可）",
       "src": "book"
     }
@@ -91,10 +93,11 @@ alias isa='~/repo/sokoide/asm/bin/isa/isa'
 ```
 
 - `mnemonic` は 1 ファイル内でユニーク。先頭は大文字で英数字可 (`REV16` 等)、条件接尾 `cc`（m68k）や `.cond`（arm64）のみ小文字を許可、記録接尾 `.`（ppc `STWCX.`）と副接尾 `.I`（`FENCE.I`）も可。バリエーションは 1 エントリに統合し `operands`/`encodings`/`notes` で説明する。ただし文字列命令のサイズ別ニーモニック（`LODSB`/`LODSW`/`LODSD` 等）はサイズごとに別エントリとする（全 x86 アーチで共通方針）
-- `aliases` は任意の拡張ニーモニック一覧（PowerPC の `blr`/`li`、ARM64 の `b.eq` 等）。小文字で、ドットを含む別名も指定できる。`mnemonic` は小文字で基本命令と重複不可、`target` は `instructions` の `mnemonic` を指す。一覧には通常エントリと同じく載り（riscv の疑似命令と同じ方針）、ページは元命令の内容 + 詳細欄に「拡張形式」（`equivalent` と等価）を出力する
+- `aliases` は任意の拡張ニーモニック一覧（PowerPC の `blr`/`li`、ARM64 の `b.eq` 等）。小文字で、ドットを含む別名も指定できる。`mnemonic` は小文字で基本命令と重複不可、`target` は `instructions` の `mnemonic` を指す。一覧には通常エントリと同じく載り（riscv の疑似命令と同じ方針）、ページは元命令の内容 + 詳細欄に「拡張形式」（`equivalent` と等価）と任意の `example` を出力する
 - `flagNames` / `flags` は同長の配列。RISC-V のようにフラグレジスタがないアーキは両方 `[]`（`flags` 欄を省略して出力する）。PowerPC は対象 CR フィールドの LT/GT/EQ/SO を示す。CR ビット操作や複数フィールド指定では実際に更新されるビットはオペランドに依存する
 - `cycles` は非空。`cycles` の値は数値、範囲文字列、または `"実装依存"`。RISC-V/ARM64/x86-64 は ISA がクロック数を規定しないため、特定の CPU の測定値として表示しない
 - `encodings` は任意。不確実なオペコードは載せない
+- `example` は任意の使用例。`code` にソース行、`explanation` にその例の動作・意図を書く。詳細表示では使用例と解説を命令ページに含める
 - `encodings[].bytes` は記載した形式の固定長。メモリ指定・オペランド幅などで長さが変わる場合は `bytes` の代わりに `length: "可変"` とする。表示長は記載されていない任意のプレフィックスを含まない
 - `src` は任意の根拠タグ: `book`（参照書籍で確認）/ `note`（Knowledge ノートで確認）/ `knowledge`（未確認・AI 知識。現行 data では不使用）。根拠の書籍名・場所は公開リポジトリに書かず、非公開の参照記録で管理する
 

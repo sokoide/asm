@@ -11,6 +11,12 @@ crclr（拡張ニーモニック）→ CRXOR crbT, crbA, crbB — PowerPC（CR�
   crclr crbT ⇔ crxor crbT, crbT, crbT
   コンディションレジスタビットのクリア（Condition Register Clear）
 
+使用例:
+  crclr 2
+
+解説:
+  この例では コンディションレジスタビットのクリア（Condition Register Clear）
+
 元命令: isa ppc CRXOR
 CR ビット同士の排他的論理和。
 
@@ -19,6 +25,12 @@ CR ビット同士の排他的論理和。
 
 オペコード:
   crxor BT,BA,BB: 010011 BT BA BB 0011000001 0  (4 バイト)
+
+使用例:
+  crxor 2,3,4
+
+解説:
+  この例では CR ビット同士の排他的論理和。
 
 備考:
   対象 CR ビットを指定して更新する。指定先以外の CR ビットは変化しない。

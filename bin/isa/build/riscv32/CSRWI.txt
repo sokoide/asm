@@ -9,5 +9,11 @@ CSRWI csr, uimm — RISC-V 32（システム制御）
 消費クロック:
   ISA では規定されない: 実装依存
 
+使用例:
+  csrwi mstatus, 1
+
+解説:
+  この例では 5 ビット即値をゼロ拡張して CSR に書き込む疑似命令。
+
 備考:
   CSRRWI x0,csr,uimm に展開する。rd=x0 のため CSR の読み出しは行わない。

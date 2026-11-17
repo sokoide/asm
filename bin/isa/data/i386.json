@@ -12,7 +12,8 @@
       "cycles": [{"cond": "reg, reg / mem, reg / reg/mem, 即値", "cycles": 2}, {"cond": "reg, mem", "cycles": 4}, {"cond": "Sreg, reg、リアルモード", "cycles": 2}, {"cond": "Sreg, mem、リアルモード", "cycles": 5}, {"cond": "Sreg, reg、プロテクトモード", "cycles": 18}, {"cond": "Sreg, mem、プロテクトモード", "cycles": 19}],
       "encodings": [{"syntax": "MOV r/m, r", "opcode": "89 /r（8bit は 88 /r）", "length": "可変"}, {"syntax": "MOV r, r/m", "opcode": "8B /r（8bit は 8A /r）", "length": "可変"}, {"syntax": "MOV r, imm", "opcode": "B8+r iv（8bit は B0+r ib）", "length": "可変"}, {"syntax": "MOV r/m16, Sreg", "opcode": "8C /r", "length": "可変"}, {"syntax": "MOV Sreg, r/m16", "opcode": "8E /r", "length": "可変"}, {"syntax": "MOV r/m8, imm8", "opcode": "C6 /0 ib", "length": "可変"}, {"syntax": "MOV r/m16/32, imm16/32", "opcode": "C7 /0 iw/id", "length": "可変"}, {"syntax": "MOV AL, moffs", "opcode": "A0 offset", "length": "可変"}, {"syntax": "MOV AX/EAX, moffs", "opcode": "A1 offset", "length": "可変"}, {"syntax": "MOV moffs, AL", "opcode": "A2 offset", "length": "可変"}, {"syntax": "MOV moffs, AX/EAX", "opcode": "A3 offset", "length": "可変"}],
       "notes": "mem→mem は直接転送できない。moffs のオフセット幅はアドレスサイズで決まる。\nセグメントレジスタ転送（8C/8E）はプロテクトモードでは 16bit 選択子（TI ビットで GDT/LDT、下位 2bit は RPL）を扱い、CS への書き込みは不可。FS/GS は 80386 で追加。\nCR0/DR0 等のシステムレジスタへの転送は 0F 20〜23 の専用形（特権）。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["mov eax, ebx"],"explanation": "この例では 転送。src（レジスタ・メモリ・即値・セグメントレジスタ）の値を dst にコピーする。"}
     },
     {
       "mnemonic": "MOVZX",
@@ -24,7 +25,8 @@
       "cycles": [{"cond": "reg-reg", "cycles": 3}, {"cond": "reg-mem", "cycles": 6}],
       "encodings": [{"syntax": "MOVZX r16/32, r/m8", "opcode": "0F B6 /r", "length": "可変"}, {"syntax": "MOVZX r32, r/m16", "opcode": "0F B7 /r", "length": "可変"}],
       "notes": "80386 で導入。imm は取れない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["movzx eax, byte [esi]"],"explanation": "この例では ゼロ拡張転送。8/16ビットの src を上位ビット 0 埋めで 16/32ビットの dst に転送する（80386 で導入）。"}
     },
     {
       "mnemonic": "MOVSX",
@@ -36,7 +38,8 @@
       "cycles": [{"cond": "reg-reg", "cycles": 3}, {"cond": "reg-mem", "cycles": 6}],
       "encodings": [{"syntax": "MOVSX r16/32, r/m8", "opcode": "0F BE /r", "length": "可変"}, {"syntax": "MOVSX r32, r/m16", "opcode": "0F BF /r", "length": "可変"}],
       "notes": "80386 で導入。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["movsx eax, byte [esi]"],"explanation": "この例では 符号拡張転送。8/16ビットの src を符号拡張して 16/32ビットの dst に転送する（80386 で導入）。"}
     },
     {
       "mnemonic": "XCHG",
@@ -48,7 +51,8 @@
       "cycles": [{"cond": "reg-reg", "cycles": 3}, {"cond": "mem を含む", "cycles": 5}],
       "encodings": [{"syntax": "XCHG AX, r16（32bit モード）", "opcode": "66 90+r", "length": "可変"}, {"syntax": "XCHG r/m, r", "opcode": "87 /r（8bit は 86 /r）", "length": "可変"}],
       "notes": "32 ビット既定モードで 90 は XCHG EAX, EAX（NOP）、66 90 は XCHG AX, AX。メモリを含む場合は暗黙に LOCK される。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["xchg eax, ebx"],"explanation": "この例では 2つのオペランドの内容を交換する。レジスタ同士またはレジスタとメモリ。"}
     },
     {
       "mnemonic": "LEA",
@@ -60,7 +64,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "LEA r16/32, m", "opcode": "8D /r", "length": "可変"}],
       "notes": "実効アドレスのオフセットを計算し、セグメントベースは加えない。16 ビットアドレスを 32 ビットレジスタに格納する場合はゼロ拡張し、32 ビットアドレスを 16 ビットレジスタに格納する場合は下位 16 ビットを使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lea eax, [esi+4]"],"explanation": "この例では メモリ参照式の実効アドレスを計算してレジスタに入れる。メモリアクセスは行わない。"}
     },
     {
       "mnemonic": "XLAT",
@@ -72,7 +77,8 @@
       "cycles": [{"cond": "常時", "cycles": 5}],
       "encodings": [{"syntax": "XLAT", "opcode": "D7", "bytes": 1}],
       "notes": "BX または EBX にテーブル先頭、AL に符号なしインデックスを置く。アドレスサイズが基底レジスタを選択し、DS はセグメント上書き可能。XLATB は別名。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["xlat"],"explanation": "この例では テーブル変換。AL = DS:[BX+AL]（32bit アドレッシングでは EBX+AL）。256 バイトの変換テーブルを引く。"}
     },
     {
       "mnemonic": "LDS",
@@ -84,7 +90,8 @@
       "cycles": [{"cond": "リアルモード", "cycles": 7}, {"cond": "プロテクトモード", "cycles": 22}],
       "encodings": [{"syntax": "LDS r16, m32 / LDS r32, m48", "opcode": "C5 /r", "length": "可変"}],
       "notes": "mem32 は 16bit オフセット+16bit セグメント、mem48 は 32bit オフセット+16bit セグメント。レジスタ指定（MOD=11）は不可。 プロテクトモードではセレクタの検査と記述子の読み込みが行われる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lds eax, [esi]"],"explanation": "この例では メモリから far ポインタを一括ロードする。reg にオフセット、DS に続くワードのセグメントを格納する。"}
     },
     {
       "mnemonic": "LES",
@@ -96,7 +103,8 @@
       "cycles": [{"cond": "リアルモード", "cycles": 7}, {"cond": "プロテクトモード", "cycles": 22}],
       "encodings": [{"syntax": "LES r16, m32 / LES r32, m48", "opcode": "C4 /r", "length": "可変"}],
       "notes": "LDS の ES 版。 プロテクトモードではセレクタの検査と記述子の読み込みが行われる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["les eax, [esi]"],"explanation": "この例では メモリから far ポインタを一括ロードする。reg にオフセット、ES に続くワードのセグメントを格納する。"}
     },
     {
       "mnemonic": "LFS",
@@ -108,7 +116,8 @@
       "cycles": [{"cond": "リアルモード", "cycles": 7}, {"cond": "プロテクトモード", "cycles": 25}],
       "encodings": [{"syntax": "LFS r16, m32 / LFS r32, m48", "opcode": "0F B4 /r", "length": "可変"}],
       "notes": "80386 で追加（FS 版）。 プロテクトモードではセレクタの検査と記述子の読み込みが行われる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lfs eax, [esi]"],"explanation": "この例では メモリから far ポインタを一括ロードする。reg にオフセット、FS に続くワードのセグメントを格納する（80386 で導入）。"}
     },
     {
       "mnemonic": "LGS",
@@ -120,7 +129,8 @@
       "cycles": [{"cond": "リアルモード", "cycles": 7}, {"cond": "プロテクトモード", "cycles": 25}],
       "encodings": [{"syntax": "LGS r16, m32 / LGS r32, m48", "opcode": "0F B5 /r", "length": "可変"}],
       "notes": "80386 で追加（GS 版）。 プロテクトモードではセレクタの検査と記述子の読み込みが行われる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lgs eax, [esi]"],"explanation": "この例では メモリから far ポインタを一括ロードする。reg にオフセット、GS に続くワードのセグメントを格納する（80386 で導入）。"}
     },
     {
       "mnemonic": "LSS",
@@ -132,7 +142,8 @@
       "cycles": [{"cond": "リアルモード", "cycles": 7}, {"cond": "プロテクトモード", "cycles": 22}],
       "encodings": [{"syntax": "LSS r16, m32 / LSS r32, m48", "opcode": "0F B2 /r", "length": "可変"}],
       "notes": "80386 で追加（SS 版）。SS:SP/ESP を 1 命令で更新できるためスタック領域の切替に最も有用。 プロテクトモードではセレクタの検査と記述子の読み込みが行われる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lss eax, [esi]"],"explanation": "この例では メモリから far ポインタを一括ロードする。reg にオフセット、SS に続くワードのセグメントを格納する（80386 で導入）。"}
     },
     {
       "mnemonic": "CBW",
@@ -144,7 +155,8 @@
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "CBW", "opcode": "66 98（32bit モード）", "bytes": 2}],
       "notes": "32bit プロテクトモードでは既定オペランド 32bit のため CBW に 66 プレフィックス。16bit モードでは CBW=98 / CWDE=66 98。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cbw"],"explanation": "この例では AL の符号拡張（8→16bit）で AX に転送する。"}
     },
     {
       "mnemonic": "CWDE",
@@ -156,7 +168,8 @@
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "CWDE", "opcode": "98（32bit モード）", "bytes": 1}],
       "notes": "IDIV（32bit）の前処理には CDQ（99）で EDX:EAX を作る。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cwde"],"explanation": "この例では AX の符号拡張（16→32bit）で EAX に転送する（80386 で導入）。"}
     },
     {
       "mnemonic": "CWD",
@@ -168,7 +181,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CWD", "opcode": "66 99（32bit モード）", "bytes": 2}],
       "notes": "DX に AX の符号ビット（MSB）を満たす。32bit プロテクトモードでは既定オペランド 32bit のため CWD に 66 プレフィックス。16bit モードでは CWD=99 / CDQ=66 99。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cwd"],"explanation": "この例では AX の符号拡張（16→32bit）で DX:AX を作る。16bit IDIV の前処理。"}
     },
     {
       "mnemonic": "CDQ",
@@ -180,7 +194,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CDQ", "opcode": "99（32bit モード既定）", "bytes": 1}],
       "notes": "EDX に EAX の符号ビット（MSB）を満たす。16bit モードでは CDQ=66 99。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cdq"],"explanation": "この例では EAX の符号拡張（32→64bit）で EDX:EAX を作る。32bit IDIV の前処理。"}
     },
     {
       "mnemonic": "PUSH",
@@ -192,7 +207,8 @@
       "cycles": [{"cond": "reg / 即値 / セグメントレジスタ", "cycles": 2}, {"cond": "mem", "cycles": 5}],
       "encodings": [{"syntax": "PUSH r16/32", "opcode": "50+r", "length": "可変"}, {"syntax": "PUSH imm32 / imm16（32bit モード）", "opcode": "68 id / 66 68 iw", "length": "可変"}, {"syntax": "PUSH imm8", "opcode": "6A ib", "bytes": 2}, {"syntax": "PUSH Sreg", "opcode": "06/0E/16/1E（FS: 0F A0、GS: 0F A8）", "length": "可変"}, {"syntax": "PUSH r/m16/32", "opcode": "FF /6", "length": "可変"}],
       "notes": "80186 以降は即値 PUSH が可能。imm8 はオペランド幅へ符号拡張する。80386 の PUSH SP/ESP は命令実行前の値を積む。オペランドサイズで積む幅、スタックアドレスサイズで SP/ESP のどちらを使うかが決まる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["push eax"],"explanation": "この例では スタックポインタをオペランドサイズ分だけ減算し、レジスタ・メモリ・即値・セグメント値を格納する。"}
     },
     {
       "mnemonic": "POP",
@@ -204,7 +220,8 @@
       "cycles": [{"cond": "汎用 reg", "cycles": 4}, {"cond": "mem", "cycles": 5}, {"cond": "セグメントレジスタ、リアルモード", "cycles": 7}, {"cond": "セグメントレジスタ、プロテクトモード", "cycles": 21}],
       "encodings": [{"syntax": "POP r16/32", "opcode": "58+r", "length": "可変"}, {"syntax": "POP Sreg", "opcode": "07/17/1F（FS: 0F A1、GS: 0F A9）", "length": "可変"}, {"syntax": "POP r/m16/32", "opcode": "8F /0", "length": "可変"}],
       "notes": "POP CS は存在しない。POP SS 後は次の命令まで割り込みが抑止される。オペランドサイズで取り出す幅、スタックアドレスサイズで SP/ESP のどちらを使うかが決まる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["pop eax"],"explanation": "この例では スタック先頭の値を dst に読み込み、スタックポインタをオペランドサイズ分だけ加算する。"}
     },
     {
       "mnemonic": "PUSHA",
@@ -216,7 +233,8 @@
       "cycles": [{"cond": "常時", "cycles": 18}],
       "encodings": [{"syntax": "PUSHAD（32bit モード既定）", "opcode": "60", "bytes": 1}, {"syntax": "PUSHA（66 プレフィックス）", "opcode": "66 60", "bytes": 2}],
       "notes": "16 ビット形は AX/CX/DX/BX/SP/BP/SI/DI、32 ビット形は EAX/ECX/EDX/EBX/ESP/EBP/ESI/EDI の順。32 ビット形は PUSHAD とも表記する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["pusha"],"explanation": "この例では オペランドサイズに応じ、汎用レジスタ 8 個を一括退避する。保存する SP/ESP は命令実行前の値。"}
     },
     {
       "mnemonic": "POPA",
@@ -228,7 +246,8 @@
       "cycles": [{"cond": "常時", "cycles": 24}],
       "encodings": [{"syntax": "POPAD（32bit モード既定）", "opcode": "61", "bytes": 1}, {"syntax": "POPA（66 プレフィックス）", "opcode": "66 61", "bytes": 2}],
       "notes": "保存された SP/ESP の位置は読み飛ばし、その値をレジスタには復帰しない。32 ビット形は POPAD とも表記する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["popa"],"explanation": "この例では PUSHA で保存した汎用レジスタを逆順に一括復帰する。16 ビット形は 16 バイト、32 ビット形は 32 バイトを取り除く。"}
     },
     {
       "mnemonic": "PUSHFD",
@@ -240,7 +259,8 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "PUSHFD", "opcode": "9C（32bit モード既定）", "bytes": 1}],
       "notes": "16 ビット幅の退避は PUSHF。仮想 8086 モードでは IOPL<3 のとき #GP。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["pushfd"],"explanation": "この例では EFLAGS の 32 ビットイメージをスタックに退避する。保存される VM と RF のビットは 0。"}
     },
     {
       "mnemonic": "POPFD",
@@ -252,7 +272,8 @@
       "cycles": [{"cond": "常時", "cycles": 5}],
       "encodings": [{"syntax": "POPFD", "opcode": "9D（32bit モード既定）", "bytes": 1}],
       "notes": "IF の変更には CPL≤IOPL、IOPL の変更には CPL=0 が必要。VM/RF ビットは書き換えられない。仮想 8086 モードでは IOPL<3 のとき #GP。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["popfd"],"explanation": "この例では スタックから EFLAGS（32bit 全体）を復帰する。"}
     },
     {
       "mnemonic": "ADD",
@@ -264,7 +285,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, reg / mem, 即値", "cycles": 7}, {"cond": "reg, mem", "cycles": 6}],
       "encodings": [{"syntax": "ADD r/m, r", "opcode": "01 /r（8bit は 00 /r）", "length": "可変"}, {"syntax": "ADD r, r/m", "opcode": "03 /r（8bit は 02 /r）", "length": "可変"}, {"syntax": "ADD r/m8, imm8", "opcode": "80 /0 ib", "length": "可変"}, {"syntax": "ADD r/m16/32, imm16/32", "opcode": "81 /0 iw/id", "length": "可変"}, {"syntax": "ADD r/m16/32, imm8（符号拡張）", "opcode": "83 /0 ib", "length": "可変"}, {"syntax": "ADD AL, imm8", "opcode": "04 ib", "length": "可変"}, {"syntax": "ADD AX/EAX, imm16/32", "opcode": "05 iw/id", "length": "可変"}],
       "notes": "多倍長加算は下位ワードから ADC を連結する。8086 に近い挙動でフラグのみ 32bit 幅に拡張されている。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["add eax, ebx"],"explanation": "この例では dst に src を加算する。符号なし桁上がりは C、符号付きオーバーフローは O で検出。"}
     },
     {
       "mnemonic": "ADC",
@@ -276,7 +298,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, reg / mem, 即値", "cycles": 7}, {"cond": "reg, mem", "cycles": 6}],
       "encodings": [{"syntax": "ADC r/m, r", "opcode": "11 /r（8bit は 10 /r）", "length": "可変"}, {"syntax": "ADC r, r/m", "opcode": "13 /r（8bit は 12 /r）", "length": "可変"}, {"syntax": "ADC r/m8, imm8", "opcode": "80 /2 ib", "length": "可変"}, {"syntax": "ADC r/m16/32, imm16/32", "opcode": "81 /2 iw/id", "length": "可変"}, {"syntax": "ADC r/m16/32, imm8（符号拡張）", "opcode": "83 /2 ib", "length": "可変"}, {"syntax": "ADC AL, imm8", "opcode": "14 ib", "length": "可変"}, {"syntax": "ADC AX/EAX, imm16/32", "opcode": "15 iw/id", "length": "可変"}],
       "notes": "",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["adc eax, ebx"],"explanation": "この例では キャリー込み加算。dst = dst + src + C。多倍長加算の上位ワード処理に使う。"}
     },
     {
       "mnemonic": "SUB",
@@ -288,7 +311,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, 即値", "cycles": 7}, {"cond": "レジスタとメモリ", "cycles": "6〜7"}],
       "encodings": [{"syntax": "SUB r/m, r", "opcode": "29 /r（8bit は 28 /r）", "length": "可変"}, {"syntax": "SUB r, r/m", "opcode": "2B /r（8bit は 2A /r）", "length": "可変"}, {"syntax": "SUB r/m8, imm8", "opcode": "80 /5 ib", "length": "可変"}, {"syntax": "SUB r/m16/32, imm16/32", "opcode": "81 /5 iw/id", "length": "可変"}, {"syntax": "SUB r/m16/32, imm8（符号拡張）", "opcode": "83 /5 ib", "length": "可変"}, {"syntax": "SUB AL, imm8", "opcode": "2C ib", "length": "可変"}, {"syntax": "SUB AX/EAX, imm16/32", "opcode": "2D iw/id", "length": "可変"}],
       "notes": "C=1 が「dst < src」（符号なし）。分岐・setcc と組み合わせる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["sub eax, ebx"],"explanation": "この例では dst から src を減算する。桁借りは C、符号付きオーバーフローは O で検出。"}
     },
     {
       "mnemonic": "SBB",
@@ -300,7 +324,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, 即値", "cycles": 7}, {"cond": "レジスタとメモリ", "cycles": "6〜7"}],
       "encodings": [{"syntax": "SBB r/m, r", "opcode": "19 /r（8bit は 18 /r）", "length": "可変"}, {"syntax": "SBB r, r/m", "opcode": "1B /r（8bit は 1A /r）", "length": "可変"}, {"syntax": "SBB r/m8, imm8", "opcode": "80 /3 ib", "length": "可変"}, {"syntax": "SBB r/m16/32, imm16/32", "opcode": "81 /3 iw/id", "length": "可変"}, {"syntax": "SBB r/m16/32, imm8（符号拡張）", "opcode": "83 /3 ib", "length": "可変"}, {"syntax": "SBB AL, imm8", "opcode": "1C ib", "length": "可変"}, {"syntax": "SBB AX/EAX, imm16/32", "opcode": "1D iw/id", "length": "可変"}],
       "notes": "",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["sbb eax, ebx"],"explanation": "この例では キャリー込み減算。dst = dst - src - C。多倍長減算の上位ワード処理に使う。"}
     },
     {
       "mnemonic": "INC",
@@ -312,7 +337,8 @@
       "cycles": [{"cond": "reg", "cycles": 2}, {"cond": "mem", "cycles": 6}],
       "encodings": [{"syntax": "INC r16/32", "opcode": "40+r", "length": "可変"}, {"syntax": "INC r/m8", "opcode": "FE /0", "length": "可変"}, {"syntax": "INC r/m16/32", "opcode": "FF /0", "length": "可変"}],
       "notes": "C を保存するためキャリーを利用するループ内カウンタに安全。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["inc eax"],"explanation": "この例では dst を 1 加算する。C フラグは変化しない。"}
     },
     {
       "mnemonic": "DEC",
@@ -324,7 +350,8 @@
       "cycles": [{"cond": "reg", "cycles": 2}, {"cond": "mem", "cycles": 6}],
       "encodings": [{"syntax": "DEC r16/32", "opcode": "48+r", "length": "可変"}, {"syntax": "DEC r/m8", "opcode": "FE /1", "length": "可変"}, {"syntax": "DEC r/m16/32", "opcode": "FF /1", "length": "可変"}],
       "notes": "8086 と異なり 32bit レジスタを 1 命令で減算できる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["dec eax"],"explanation": "この例では dst を 1 減算する。C フラグは変化しない。"}
     },
     {
       "mnemonic": "NEG",
@@ -336,7 +363,8 @@
       "cycles": [{"cond": "reg", "cycles": 2}, {"cond": "mem", "cycles": 6}],
       "encodings": [{"syntax": "NEG r/m8", "opcode": "F6 /3", "length": "可変"}, {"syntax": "NEG r/m16/32", "opcode": "F7 /3", "length": "可変"}],
       "notes": "dst=0 のとき C=0・ZF=1、それ以外は C=1。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["neg eax"],"explanation": "この例では dst を符号反転する（dst = 0 - dst、2 の補数）。"}
     },
     {
       "mnemonic": "MUL",
@@ -348,7 +376,8 @@
       "cycles": [{"cond": "8bit、reg", "cycles": "9〜14"}, {"cond": "8bit、mem", "cycles": "12〜17"}, {"cond": "16bit、reg", "cycles": "9〜22"}, {"cond": "16bit、mem", "cycles": "12〜25"}, {"cond": "32bit、reg", "cycles": "9〜38"}, {"cond": "32bit、mem", "cycles": "12〜41"}],
       "encodings": [{"syntax": "MUL r/m8", "opcode": "F6 /4", "length": "可変"}, {"syntax": "MUL r/m16/32", "opcode": "F7 /4", "length": "可変"}],
       "notes": "上位半分が 0 なら C=O=0、0 でなければ C=O=1。8bit は AX=AL×src、16bit は DX:AX。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["mul ebx"],"explanation": "この例では 符号なし乗算。EDX:EAX = EAX × src（32bit）。結果の上位半分が EDX に入る。"}
     },
     {
       "mnemonic": "IMUL",
@@ -360,7 +389,8 @@
       "cycles": [{"cond": "8bit、reg", "cycles": "9〜14"}, {"cond": "8bit、mem", "cycles": "12〜17"}, {"cond": "16bit、reg", "cycles": "9〜22"}, {"cond": "16bit、mem", "cycles": "12〜25"}, {"cond": "32bit、reg", "cycles": "9〜38"}, {"cond": "32bit、mem", "cycles": "12〜41"}, {"cond": "符号拡張 imm8、reg", "cycles": "9〜14"}, {"cond": "符号拡張 imm8、mem", "cycles": "12〜17"}],
       "encodings": [{"syntax": "IMUL r/m8（1オペランド）", "opcode": "F6 /5", "length": "可変"}, {"syntax": "IMUL r/m16/32（1オペランド）", "opcode": "F7 /5", "length": "可変"}, {"syntax": "IMUL r16/32, r/m16/32", "opcode": "0F AF /r", "length": "可変"}, {"syntax": "IMUL r, r/m, imm8", "opcode": "6B /r ib", "length": "可変"}, {"syntax": "IMUL r, r/m, imm16/32", "opcode": "69 /r iv", "length": "可変"}],
       "notes": "即値を使う 3 オペランド形は 80186 以降、0F AF の 2 オペランド形は 80386 以降。2/3オペランド形は上位半分を切り捨てる。切り捨てで符号拡張と一致しなければ C=O=1 で検出。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["imul ebx"],"explanation": "この例では 符号付き乗算。1オペランド形は EDX:EAX = EAX × src。2/3オペランド形は下位半分のみ dst に格納。"}
     },
     {
       "mnemonic": "DIV",
@@ -372,7 +402,8 @@
       "cycles": [{"cond": "8bit、reg", "cycles": 14}, {"cond": "8bit、mem", "cycles": 17}, {"cond": "16bit、reg", "cycles": 22}, {"cond": "16bit、mem", "cycles": 25}, {"cond": "32bit、reg", "cycles": 38}, {"cond": "32bit、mem", "cycles": 41}],
       "encodings": [{"syntax": "DIV r/m8", "opcode": "F6 /6", "length": "可変"}, {"syntax": "DIV r/m16/32", "opcode": "F7 /6", "length": "可変"}],
       "notes": "0 除算や商あふれで #DE 例外。事前準備: 32bit は EDX=0（xor edx, edx）、8bit は AX=AL のゼロ拡張。\n8bit は AX÷src → AL=商/AH=剰余、16bit は DX:AX。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["div ebx"],"explanation": "この例では 符号なし除算。EDX:EAX ÷ src で EAX=商、EDX=剰余（32bit）。"}
     },
     {
       "mnemonic": "IDIV",
@@ -384,7 +415,8 @@
       "cycles": [{"cond": "8bit", "cycles": 19}, {"cond": "16bit", "cycles": 27}, {"cond": "32bit", "cycles": 43}],
       "encodings": [{"syntax": "IDIV r/m8", "opcode": "F6 /7", "length": "可変"}, {"syntax": "IDIV r/m16/32", "opcode": "F7 /7", "length": "可変"}],
       "notes": "符号拡張準備: 32bit は CDQ（99）、16bit は CWD（66 99）。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["idiv ebx"],"explanation": "この例では 符号付き除算。EDX:EAX ÷ src で EAX=商、EDX=剰余（32bit）。商は 0 方向へ丸め、剰余は被除数と同符号。"}
     },
     {
       "mnemonic": "CMP",
@@ -396,7 +428,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, reg / mem, 即値", "cycles": 5}, {"cond": "reg, mem", "cycles": 6}],
       "encodings": [{"syntax": "CMP r/m, r", "opcode": "39 /r（8bit は 38 /r）", "length": "可変"}, {"syntax": "CMP r, r/m", "opcode": "3B /r（8bit は 3A /r）", "length": "可変"}, {"syntax": "CMP r/m8, imm8", "opcode": "80 /7 ib", "length": "可変"}, {"syntax": "CMP r/m16/32, imm16/32", "opcode": "81 /7 iw/id", "length": "可変"}, {"syntax": "CMP r/m16/32, imm8（符号拡張）", "opcode": "83 /7 ib", "length": "可変"}, {"syntax": "CMP AL, imm8", "opcode": "3C ib", "length": "可変"}, {"syntax": "CMP AX/EAX, imm16/32", "opcode": "3D iw/id", "length": "可変"}],
       "notes": "符号付きは jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cmp eax, ebx"],"explanation": "この例では dst - src を計算してフラグのみ更新する（dst は不変）。分岐・setcc の判定に使う。"}
     },
     {
       "mnemonic": "TEST",
@@ -408,7 +441,8 @@
       "cycles": [{"cond": "レジスタ同士 / reg, 即値", "cycles": 2}, {"cond": "mem, reg / mem, 即値", "cycles": 5}],
       "encodings": [{"syntax": "TEST r/m, r", "opcode": "85 /r（8bit は 84 /r）", "length": "可変"}, {"syntax": "TEST r/m8, imm8", "opcode": "F6 /0 ib", "length": "可変"}, {"syntax": "TEST r/m16/32, imm16/32", "opcode": "F7 /0 iw/id", "length": "可変"}, {"syntax": "TEST AL, imm8", "opcode": "A8 ib", "length": "可変"}, {"syntax": "TEST AX/EAX, imm16/32", "opcode": "A9 iw/id", "length": "可変"}],
       "notes": "test reg, reg はゼロ判定のイディオム。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["test eax, ebx"],"explanation": "この例では dst AND src を計算してフラグのみ更新する（dst は不変）。ビットの有無やゼロ判定に使う。"}
     },
     {
       "mnemonic": "AND",
@@ -420,7 +454,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, reg / mem, 即値", "cycles": 7}, {"cond": "reg, mem", "cycles": 6}],
       "encodings": [{"syntax": "AND r/m, r", "opcode": "21 /r（8bit は 20 /r）", "length": "可変"}, {"syntax": "AND r, r/m", "opcode": "23 /r（8bit は 22 /r）", "length": "可変"}, {"syntax": "AND r/m8, imm8", "opcode": "80 /4 ib", "length": "可変"}, {"syntax": "AND r/m16/32, imm16/32", "opcode": "81 /4 iw/id", "length": "可変"}, {"syntax": "AND r/m16/32, imm8（符号拡張）", "opcode": "83 /4 ib", "length": "可変"}, {"syntax": "AND AL, imm8", "opcode": "24 ib", "length": "可変"}, {"syntax": "AND AX/EAX, imm16/32", "opcode": "25 iw/id", "length": "可変"}],
       "notes": "O と C は必ず 0、A は未定義。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["and eax, ebx"],"explanation": "この例では ビット単位の論理積を dst に格納する。マスク生成・ビットクリアに使う。"}
     },
     {
       "mnemonic": "OR",
@@ -432,7 +467,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, 即値", "cycles": 7}, {"cond": "レジスタとメモリ", "cycles": "6〜7"}],
       "encodings": [{"syntax": "OR r/m, r", "opcode": "09 /r（8bit は 08 /r）", "length": "可変"}, {"syntax": "OR r, r/m", "opcode": "0B /r（8bit は 0A /r）", "length": "可変"}, {"syntax": "OR r/m8, imm8", "opcode": "80 /1 ib", "length": "可変"}, {"syntax": "OR r/m16/32, imm16/32", "opcode": "81 /1 iw/id", "length": "可変"}, {"syntax": "OR r/m16/32, imm8（符号拡張）", "opcode": "83 /1 ib", "length": "可変"}, {"syntax": "OR AL, imm8", "opcode": "0C ib", "length": "可変"}, {"syntax": "OR AX/EAX, imm16/32", "opcode": "0D iw/id", "length": "可変"}],
       "notes": "",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["or eax, ebx"],"explanation": "この例では ビット単位の論理和を dst に格納する。ビットセットに使う。"}
     },
     {
       "mnemonic": "XOR",
@@ -444,7 +480,8 @@
       "cycles": [{"cond": "reg, reg / reg, 即値", "cycles": 2}, {"cond": "mem, 即値", "cycles": 7}, {"cond": "レジスタとメモリ", "cycles": "6〜7"}],
       "encodings": [{"syntax": "XOR r/m, r", "opcode": "31 /r（8bit は 30 /r）", "length": "可変"}, {"syntax": "XOR r, r/m", "opcode": "33 /r（8bit は 32 /r）", "length": "可変"}, {"syntax": "XOR r/m8, imm8", "opcode": "80 /6 ib", "length": "可変"}, {"syntax": "XOR r/m16/32, imm16/32", "opcode": "81 /6 iw/id", "length": "可変"}, {"syntax": "XOR r/m16/32, imm8（符号拡張）", "opcode": "83 /6 ib", "length": "可変"}, {"syntax": "XOR AL, imm8", "opcode": "34 ib", "length": "可変"}, {"syntax": "XOR AX/EAX, imm16/32", "opcode": "35 iw/id", "length": "可変"}],
       "notes": "xor eax, eax はゼロ化の 1 命令イディオム。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["xor eax, ebx"],"explanation": "この例では ビット単位の排他的論理和を dst に格納する。ビット反転や排他選択に使う。"}
     },
     {
       "mnemonic": "NOT",
@@ -456,7 +493,8 @@
       "cycles": [{"cond": "reg", "cycles": 2}, {"cond": "mem", "cycles": 6}],
       "encodings": [{"syntax": "NOT r/m8", "opcode": "F6 /2", "length": "可変"}, {"syntax": "NOT r/m16/32", "opcode": "F7 /2", "length": "可変"}],
       "notes": "",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["not eax"],"explanation": "この例では dst の全ビットを反転する（1 の補数）。フラグは一切変化しない。"}
     },
     {
       "mnemonic": "SHL",
@@ -468,7 +506,8 @@
       "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "mem", "cycles": 7}],
       "encodings": [{"syntax": "SHL r/m8, 1", "opcode": "D0 /4", "length": "可変"}, {"syntax": "SHL r/m16/32, 1", "opcode": "D1 /4", "length": "可変"}, {"syntax": "SHL r/m8, CL", "opcode": "D2 /4", "length": "可変"}, {"syntax": "SHL r/m16/32, CL", "opcode": "D3 /4", "length": "可変"}, {"syntax": "SHL r/m8, imm8", "opcode": "C0 /4 ib", "length": "可変"}, {"syntax": "SHL r/m16/32, imm8", "opcode": "C1 /4 ib", "length": "可変"}],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。 SAL は同一命令の別名。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["shl eax, 1"],"explanation": "この例では 左論理シフト。上位ビットを C に送り出し、下位に 0 を詰める。×2^count に相当。SAL と同一。"}
     },
     {
       "mnemonic": "SHR",
@@ -480,7 +519,8 @@
       "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "mem", "cycles": 7}],
       "encodings": [{"syntax": "SHR r/m8, 1", "opcode": "D0 /5", "length": "可変"}, {"syntax": "SHR r/m16/32, 1", "opcode": "D1 /5", "length": "可変"}, {"syntax": "SHR r/m8, CL", "opcode": "D2 /5", "length": "可変"}, {"syntax": "SHR r/m16/32, CL", "opcode": "D3 /5", "length": "可変"}, {"syntax": "SHR r/m8, imm8", "opcode": "C0 /5 ib", "length": "可変"}, {"syntax": "SHR r/m16/32, imm8", "opcode": "C1 /5 ib", "length": "可変"}],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。 1 回の OF は元の最上位ビット。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["shr eax, 1"],"explanation": "この例では 右論理シフト。下位ビットを C に送り出し、上位に 0 を詰める。符号なし ÷2^count に相当。"}
     },
     {
       "mnemonic": "SAR",
@@ -492,7 +532,8 @@
       "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "mem", "cycles": 7}],
       "encodings": [{"syntax": "SAR r/m8, 1", "opcode": "D0 /7", "length": "可変"}, {"syntax": "SAR r/m16/32, 1", "opcode": "D1 /7", "length": "可変"}, {"syntax": "SAR r/m8, CL", "opcode": "D2 /7", "length": "可変"}, {"syntax": "SAR r/m16/32, CL", "opcode": "D3 /7", "length": "可変"}, {"syntax": "SAR r/m8, imm8", "opcode": "C0 /7 ib", "length": "可変"}, {"syntax": "SAR r/m16/32, imm8", "opcode": "C1 /7 ib", "length": "可変"}],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。 1 回の OF は 0。負の値の除算は負の無限大方向に丸めるため、0 方向に丸める IDIV と異なる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["sar eax, 1"],"explanation": "この例では 右算術シフト。符号ビット（MSB）をコピーして詰める。符号付き ÷2^count に相当。"}
     },
     {
       "mnemonic": "ROL",
@@ -504,7 +545,8 @@
       "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "mem", "cycles": 7}],
       "encodings": [{"syntax": "ROL r/m8, 1", "opcode": "D0 /0", "length": "可変"}, {"syntax": "ROL r/m16/32, 1", "opcode": "D1 /0", "length": "可変"}, {"syntax": "ROL r/m8, CL", "opcode": "D2 /0", "length": "可変"}, {"syntax": "ROL r/m16/32, CL", "opcode": "D3 /0", "length": "可変"}, {"syntax": "ROL r/m8, imm8", "opcode": "C0 /0 ib", "length": "可変"}, {"syntax": "ROL r/m16/32, imm8", "opcode": "C1 /0 ib", "length": "可変"}],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["rol eax, 1"],"explanation": "この例では 左ローテート。送り出した上位ビットが下位に戻る（オペランド幅で循環）。"}
     },
     {
       "mnemonic": "ROR",
@@ -516,7 +558,8 @@
       "cycles": [{"cond": "reg", "cycles": 3}, {"cond": "mem", "cycles": 7}],
       "encodings": [{"syntax": "ROR r/m8, 1", "opcode": "D0 /1", "length": "可変"}, {"syntax": "ROR r/m16/32, 1", "opcode": "D1 /1", "length": "可変"}, {"syntax": "ROR r/m8, CL", "opcode": "D2 /1", "length": "可変"}, {"syntax": "ROR r/m16/32, CL", "opcode": "D3 /1", "length": "可変"}, {"syntax": "ROR r/m8, imm8", "opcode": "C0 /1 ib", "length": "可変"}, {"syntax": "ROR r/m16/32, imm8", "opcode": "C1 /1 ib", "length": "可変"}],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["ror eax, 1"],"explanation": "この例では 右ローテート。送り出した下位ビットが上位に戻る。"}
     },
     {
       "mnemonic": "RCL",
@@ -528,7 +571,8 @@
       "cycles": [{"cond": "reg", "cycles": 9}, {"cond": "mem", "cycles": 10}],
       "encodings": [{"syntax": "RCL r/m8, 1", "opcode": "D0 /2", "length": "可変"}, {"syntax": "RCL r/m16/32, 1", "opcode": "D1 /2", "length": "可変"}, {"syntax": "RCL r/m8, CL", "opcode": "D2 /2", "length": "可変"}, {"syntax": "RCL r/m16/32, CL", "opcode": "D3 /2", "length": "可変"}, {"syntax": "RCL r/m8, imm8", "opcode": "C0 /2 ib", "length": "可変"}, {"syntax": "RCL r/m16/32, imm8", "opcode": "C1 /2 ib", "length": "可変"}],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。 CF を含めた 9/17/33 ビットを循環させるが、32 ビット形式でも指定回数は下位 5 ビットに制限される。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["rcl eax, 1"],"explanation": "この例では キャリーを含む左ローテート（9/17/33 ビット循環）。多倍長シフトの連結に使う。"}
     },
     {
       "mnemonic": "RCR",
@@ -540,7 +584,8 @@
       "cycles": [{"cond": "reg", "cycles": 9}, {"cond": "mem", "cycles": 10}],
       "encodings": [{"syntax": "RCR r/m8, 1", "opcode": "D0 /3", "length": "可変"}, {"syntax": "RCR r/m16/32, 1", "opcode": "D1 /3", "length": "可変"}, {"syntax": "RCR r/m8, CL", "opcode": "D2 /3", "length": "可変"}, {"syntax": "RCR r/m16/32, CL", "opcode": "D3 /3", "length": "可変"}, {"syntax": "RCR r/m8, imm8", "opcode": "C0 /3 ib", "length": "可変"}, {"syntax": "RCR r/m16/32, imm8", "opcode": "C1 /3 ib", "length": "可変"}],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。 CF を含めた 9/17/33 ビットを循環させるが、32 ビット形式でも指定回数は下位 5 ビットに制限される。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["rcr eax, 1"],"explanation": "この例では キャリーを含む右ローテート（9/17/33 ビット循環）。"}
     },
     {
       "mnemonic": "SHLD",
@@ -552,7 +597,8 @@
       "cycles": [{"cond": "レジスタ間", "cycles": 3}, {"cond": "mem を含む", "cycles": 7}],
       "encodings": [{"syntax": "SHLD r/m16/32, r16/32, imm8", "opcode": "0F A4 /r ib", "length": "可変"}, {"syntax": "SHLD r/m16/32, r16/32, CL", "opcode": "0F A5 /r", "length": "可変"}],
       "notes": "80386 の指定では回数は下位 5 ビットを使用する。0 なら結果・フラグは不変。Intel 80386 の疑似コードでは、実効回数がオペランド幅以上の場合は結果と演算フラグが未定義。回数が 0 以外なら OF と AF は未定義。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["shld eax, ebx, 1"],"explanation": "この例では dst を左に count シフトし、空いたビットに src の上位ビットを詰める（src は不変）。多倍長左シフトに使う（80386 で導入）。"}
     },
     {
       "mnemonic": "SHRD",
@@ -564,7 +610,8 @@
       "cycles": [{"cond": "レジスタ間", "cycles": 3}, {"cond": "mem を含む", "cycles": 7}],
       "encodings": [{"syntax": "SHRD r/m16/32, r16/32, imm8", "opcode": "0F AC /r ib", "length": "可変"}, {"syntax": "SHRD r/m16/32, r16/32, CL", "opcode": "0F AD /r", "length": "可変"}],
       "notes": "80386 の指定では回数は下位 5 ビットを使用する。0 なら結果・フラグは不変。Intel 80386 の疑似コードでは、実効回数がオペランド幅以上の場合は結果と演算フラグが未定義。回数が 0 以外なら OF と AF は未定義。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["shrd eax, ebx, 1"],"explanation": "この例では dst を右に count シフトし、空いた上位ビットに src の下位ビットを詰める（src は不変。80386 で導入）。"}
     },
     {
       "mnemonic": "BSF",
@@ -576,7 +623,8 @@
       "cycles": [{"cond": "reg,reg", "cycles": "10+3n"}, {"cond": "reg,mem", "cycles": "10+3n"}],
       "encodings": [{"syntax": "BSF r16/32, r/m16/32", "opcode": "0F BC /r", "length": "可変"}],
       "notes": "src=0 の場合は ZF=1 で目的レジスタの値は未定義。src≠0 なら ZF=0。OF、SF、AF、PF、CF は未定義。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["bsf eax, ebx"],"explanation": "この例では 前方ビット走査。src を最下位側から走査し、最初に 1 になっているビットの位置を dst に入れる（80386 で導入）。"}
     },
     {
       "mnemonic": "BSR",
@@ -588,7 +636,8 @@
       "cycles": [{"cond": "reg,reg", "cycles": "10+3n"}, {"cond": "reg,mem", "cycles": "10+3n"}],
       "encodings": [{"syntax": "BSR r16/32, r/m16/32", "opcode": "0F BD /r", "length": "可変"}],
       "notes": "src=0 の場合は ZF=1 で目的レジスタの値は未定義。src≠0 なら ZF=0。OF、SF、AF、PF、CF は未定義。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["bsr eax, ebx"],"explanation": "この例では 後方ビット走査。src を最上位側から走査し、最初に 1 になっているビットの位置を dst に入れる（80386 で導入）。"}
     },
     {
       "mnemonic": "BT",
@@ -600,7 +649,8 @@
       "cycles": [{"cond": "reg, 即値", "cycles": 3}, {"cond": "mem, 即値", "cycles": 6}, {"cond": "reg, reg", "cycles": 3}, {"cond": "mem, reg", "cycles": 12}],
       "encodings": [{"syntax": "BT r/m16/32, imm8", "opcode": "0F BA /4 ib", "length": "可変"}, {"syntax": "BT r/m16/32, r16/32", "opcode": "0F A3 /r", "length": "可変"}],
       "notes": "80386 で導入。80386 の仕様では OF/SF/ZF/AF/PF は未定義。BTS/BTR/BTC はテスト後にビットを更新する版。 レジスタのビット位置はオペランド幅で循環する。メモリを対象にビット位置をレジスタ指定した場合、位置に応じて対象ワード／ダブルワードのアドレスも変わる。即値指定では CPU は下位ビットを使い、大きい位置はアセンブラが変位に反映する場合がある。プロセッサは 1 ビットのために 2 または 4 バイトをアクセスする場合がある。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["bt eax, 1"],"explanation": "この例では ビットテスト。src の bit 番目のビット値を C にコピーしてテストする（src は不変）。"}
     },
     {
       "mnemonic": "BTS",
@@ -612,7 +662,8 @@
       "cycles": [{"cond": "reg, 即値", "cycles": 6}, {"cond": "mem, 即値", "cycles": 8}, {"cond": "reg, reg", "cycles": 6}, {"cond": "mem, reg", "cycles": 13}],
       "encodings": [{"syntax": "BTS r/m16/32, imm8", "opcode": "0F BA /5 ib", "length": "可変"}, {"syntax": "BTS r/m16/32, r16/32", "opcode": "0F AB /r", "length": "可変"}],
       "notes": "80386 で導入。80386 の仕様では OF/SF/ZF/AF/PF は未定義。ビットセット（集合）表現の挿入に使える。 レジスタのビット位置はオペランド幅で循環する。メモリを対象にビット位置をレジスタ指定した場合、位置に応じて対象ワード／ダブルワードのアドレスも変わる。即値指定では CPU は下位ビットを使い、大きい位置はアセンブラが変位に反映する場合がある。プロセッサは 1 ビットのために 2 または 4 バイトをアクセスする場合がある。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["bts eax, 1"],"explanation": "この例では ビットテストとセット。指定ビットを C にコピーしたうえで 1 にセットする。"}
     },
     {
       "mnemonic": "BTR",
@@ -624,7 +675,8 @@
       "cycles": [{"cond": "reg, 即値", "cycles": 6}, {"cond": "mem, 即値", "cycles": 8}, {"cond": "reg, reg", "cycles": 6}, {"cond": "mem, reg", "cycles": 13}],
       "encodings": [{"syntax": "BTR r/m16/32, imm8", "opcode": "0F BA /6 ib", "length": "可変"}, {"syntax": "BTR r/m16/32, r16/32", "opcode": "0F B3 /r", "length": "可変"}],
       "notes": "80386 で導入。80386 の仕様では OF/SF/ZF/AF/PF は未定義。 レジスタのビット位置はオペランド幅で循環する。メモリを対象にビット位置をレジスタ指定した場合、位置に応じて対象ワード／ダブルワードのアドレスも変わる。即値指定では CPU は下位ビットを使い、大きい位置はアセンブラが変位に反映する場合がある。プロセッサは 1 ビットのために 2 または 4 バイトをアクセスする場合がある。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["btr eax, 1"],"explanation": "この例では ビットテストとリセット。指定ビットを C にコピーしたうえで 0 にリセットする。"}
     },
     {
       "mnemonic": "BTC",
@@ -636,7 +688,8 @@
       "cycles": [{"cond": "reg, 即値", "cycles": 6}, {"cond": "mem, 即値", "cycles": 8}, {"cond": "reg, reg", "cycles": 6}, {"cond": "mem, reg", "cycles": 13}],
       "encodings": [{"syntax": "BTC r/m16/32, imm8", "opcode": "0F BA /7 ib", "length": "可変"}, {"syntax": "BTC r/m16/32, r16/32", "opcode": "0F BB /r", "length": "可変"}],
       "notes": "80386 で導入。80386 の仕様では OF/SF/ZF/AF/PF は未定義。 レジスタのビット位置はオペランド幅で循環する。メモリを対象にビット位置をレジスタ指定した場合、位置に応じて対象ワード／ダブルワードのアドレスも変わる。即値指定では CPU は下位ビットを使い、大きい位置はアセンブラが変位に反映する場合がある。プロセッサは 1 ビットのために 2 または 4 バイトをアクセスする場合がある。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["btc eax, 1"],"explanation": "この例では ビットテストと補数。指定ビットを C にコピーしたうえで反転（補数化）する。"}
     },
     {
       "mnemonic": "DAA",
@@ -648,7 +701,8 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "DAA", "opcode": "27", "bytes": 1}],
       "notes": "AF/C を見て +6/+0x60 補正。64bit モードでは廃止（#UD）。\n",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["daa"],"explanation": "この例では ADD/ADC の直後に置き、AL の packed BCD（2 桁 10 進）結果を補正する。"}
     },
     {
       "mnemonic": "DAS",
@@ -660,7 +714,8 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "DAS", "opcode": "2F", "bytes": 1}],
       "notes": "64bit モードでは廃止（#UD）。\n",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["das"],"explanation": "この例では SUB/SBB の直後に置き、AL の packed BCD 結果を補正する。"}
     },
     {
       "mnemonic": "AAA",
@@ -672,7 +727,8 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "AAA", "opcode": "37", "bytes": 1}],
       "notes": "下位ニブルが A〜F または AF=1 で AL+6・AH+1。64bit モードでは廃止（#UD）。\n",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["aaa"],"explanation": "この例では ADD の直後に置き、AL の非パック BCD（ASCII 1 桁）加算結果を補正し AX に正規化する。"}
     },
     {
       "mnemonic": "AAS",
@@ -684,7 +740,8 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "AAS", "opcode": "3F", "bytes": 1}],
       "notes": "64bit モードでは廃止（#UD）。\n",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["aas"],"explanation": "この例では SUB の直後に置き、AL の非パック BCD 減算結果を補正する。"}
     },
     {
       "mnemonic": "AAM",
@@ -696,7 +753,8 @@
       "cycles": [{"cond": "常時", "cycles": 17}],
       "encodings": [{"syntax": "AAM imm8", "opcode": "D4 ib", "bytes": 2}],
       "notes": "imm8=0 で #DE。S/Z/P は結果の AL から設定。64bit モードでは廃止（#UD）。\n",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["aam eax"],"explanation": "この例では AL を imm8 で除算し、商を AH、剰余を AL に置く（2 進→非パック BCD 変換の補助）。"}
     },
     {
       "mnemonic": "AAD",
@@ -708,7 +766,8 @@
       "cycles": [{"cond": "常時", "cycles": 19}],
       "encodings": [{"syntax": "AAD imm8", "opcode": "D5 ib", "bytes": 2}],
       "notes": "64bit モードでは廃止（#UD）。\n",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["aad eax"],"explanation": "この例では AH×imm8 + AL の下位 8 ビットを AL に置き、AH を 0 にする（非パック BCD→2 進変換の補助）。"}
     },
     {
       "mnemonic": "JMP",
@@ -720,7 +779,8 @@
       "cycles": [{"cond": "short/near 相対またはレジスタ間接", "cycles": "7+m"}, {"cond": "near メモリ間接", "cycles": "10+m"}, {"cond": "far 即値、リアルモード", "cycles": "12+m"}, {"cond": "far メモリ間接、リアルモード", "cycles": "43+m"}, {"cond": "far 即値、プロテクトモード同一特権", "cycles": "27+m"}, {"cond": "far メモリ間接、プロテクトモード同一特権", "cycles": "31+m"}, {"cond": "ゲートまたはタスク切替", "cycles": "条件による"}],
       "encodings": [{"syntax": "JMP rel8", "opcode": "EB cb", "bytes": 2}, {"syntax": "JMP rel16/32", "opcode": "66 E9 cw（rel16） / E9 cd（rel32）"}, {"syntax": "JMP r/m16/32", "opcode": "FF /4", "length": "可変"}, {"syntax": "JMP ptr16:16/32", "opcode": "EA cp", "length": "可変"}, {"syntax": "JMP m16:16/32", "opcode": "FF /5", "length": "可変"}],
       "notes": "far ジャンプ（EA / FF /5）はプロテクトモードではセレクタを介し、コードセグメントやコールゲート、タスクゲート/TSS に制御を移す。コールゲートを通る JMP は CPL を変更しない。タスク切替では異なる CPL のタスクへ移りうる。リアルモードではセグメント:オフセットの直接書換。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["jmp target","target:"],"explanation": "この例では 無条件ジャンプ。相対分岐・間接分岐に加え、far ジャンプ（seg:offset、ゲート/TSS セレクタ）も可能。"}
     },
     {
       "mnemonic": "Jcc",
@@ -732,7 +792,8 @@
       "cycles": [{"cond": "不成立", "cycles": 3}, {"cond": "成立", "cycles": "7+m"}],
       "encodings": [{"syntax": "Jcc rel8", "opcode": "70+cc cb", "bytes": 2}, {"syntax": "Jcc rel16/32（32bit モード）", "opcode": "66 0F 80+cc cw / 0F 80+cc cd", "length": "可変"}],
       "notes": "cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。\n主な別名: je=jz / jne=jnz / jb=jc=jnae / jae=jnc=jnb / jbe=jna / ja=jnbe / jl=jnge / jge=jnl / jle=jng / jg=jnle / jp=jpe / jnp=jpo。\n80386 から near（rel16/32）の条件分岐が可能になった。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["jz target","target:"],"explanation": "この例では 条件付きジャンプ。フラグの状態をテストして成立時のみ rel8/rel16/32 のターゲットへ分岐する（16 種類の条件）。"}
     },
     {
       "mnemonic": "JCXZ",
@@ -744,7 +805,8 @@
       "cycles": [{"cond": "不成立", "cycles": 5}, {"cond": "成立", "cycles": "9+m"}],
       "encodings": [{"syntax": "JCXZ rel8（32bit アドレスサイズ既定）", "opcode": "67 E3 cb", "bytes": 3}],
       "notes": "32 ビットアドレスサイズでは E3 は JECXZ、67 E3 が JCXZ。16 ビットアドレスサイズでは逆になる。分岐先は short のみ。\n",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["jcxz target","target:"],"explanation": "この例では CX が 0 のときだけ rel8 へ分岐する。"}
     },
     {
       "mnemonic": "JECXZ",
@@ -756,7 +818,8 @@
       "cycles": [{"cond": "不成立", "cycles": 5}, {"cond": "成立", "cycles": "9+m"}],
       "encodings": [{"syntax": "JECXZ rel8（32bit アドレスサイズ既定）", "opcode": "E3 cb", "bytes": 2}],
       "notes": "32 ビットアドレスサイズでは E3、16 ビットアドレスサイズでは 67 E3。分岐先は short のみ。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["jecxz target","target:"],"explanation": "この例では ECX が 0 のときだけ rel8 へ分岐する。"}
     },
     {
       "mnemonic": "LOOP",
@@ -768,7 +831,8 @@
       "cycles": [{"cond": "常時", "cycles": "11+m"}],
       "encodings": [{"syntax": "LOOP rel8", "opcode": "E2 cb", "bytes": 2}],
       "notes": "アドレスサイズで CX または ECX を選び、フラグを変更しない。DEC と JNZ の組み合わせはフラグを変更する点が異なる。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["loop target","target:"],"explanation": "この例では CX（32bit アドレスサイズなら ECX）を 1 減算し、0 でなければ rel8 へ分岐する。"}
     },
     {
       "mnemonic": "LOOPE",
@@ -780,7 +844,8 @@
       "cycles": [{"cond": "常時", "cycles": "11+m"}],
       "encodings": [{"syntax": "LOOPE rel8", "opcode": "E1 cb", "bytes": 2}],
       "notes": "cmps/scas と組み合わせて一致の連なりをたどる。\nカウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["loope target","target:"],"explanation": "この例では CX/ECX を 1 減算し、0 以外かつ ZF=1 のとき rel8 へ分岐する。LOOPZ と同じ。"}
     },
     {
       "mnemonic": "LOOPNE",
@@ -792,7 +857,8 @@
       "cycles": [{"cond": "常時", "cycles": "11+m"}],
       "encodings": [{"syntax": "LOOPNE rel8", "opcode": "E0 cb", "bytes": 2}],
       "notes": "カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["loopne target","target:"],"explanation": "この例では CX/ECX を 1 減算し、0 以外かつ ZF=0 のとき rel8 へ分岐する。LOOPNZ と同じ。"}
     },
     {
       "mnemonic": "CALL",
@@ -804,7 +870,8 @@
       "cycles": [{"cond": "near 相対またはレジスタ間接", "cycles": "7+m"}, {"cond": "near メモリ間接", "cycles": "10+m"}, {"cond": "far 即値、リアルモード", "cycles": "17+m"}, {"cond": "far メモリ間接、リアルモード", "cycles": "22+m"}, {"cond": "far 即値、プロテクトモード同一特権", "cycles": "34+m"}, {"cond": "far メモリ間接、プロテクトモード同一特権", "cycles": "38+m"}, {"cond": "ゲートまたはタスク切替", "cycles": "条件による"}],
       "encodings": [{"syntax": "CALL rel16/32", "opcode": "66 E8 cw（rel16） / E8 cd（rel32）"}, {"syntax": "CALL r/m16/32", "opcode": "FF /2", "length": "可変"}, {"syntax": "CALL ptr16:16/32", "opcode": "9A cp", "length": "可変"}, {"syntax": "CALL m16:16/32", "opcode": "FF /3", "length": "可変"}],
       "notes": "far CALL（9A / FF /3）は CS:EIP を退避し、プロテクトモードではコールゲート経由で特権切替が起こる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["call target","target:"],"explanation": "この例では 戻りアドレス（EIP、far では CS:EIP）をスタックに積んでからプロシージャへジャンプする。"}
     },
     {
       "mnemonic": "RET",
@@ -816,7 +883,8 @@
       "cycles": [{"cond": "near", "cycles": "10+m"}, {"cond": "far、リアルモード", "cycles": "18+m"}, {"cond": "far、プロテクトモード同一特権", "cycles": "32+m"}, {"cond": "far、プロテクトモード外側の特権へ復帰", "cycles": 68}],
       "encodings": [{"syntax": "RET（near）", "opcode": "C3", "bytes": 1}, {"syntax": "RET imm16", "opcode": "C2 iw", "bytes": 3}, {"syntax": "RET far", "opcode": "CB", "bytes": 1}, {"syntax": "RET far imm16", "opcode": "CA iw", "bytes": 3}],
       "notes": "RET imm16 は復帰時に指定バイト数のスタック引数を呼び出された側で取り除く、stdcall 系などの規約に使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["ret"],"explanation": "この例では スタックから戻りアドレスを取り出して復帰する。far 形は CS も復帰する。imm16 は復帰後の ESP 調整。"}
     },
     {
       "mnemonic": "LEAVE",
@@ -828,7 +896,8 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "LEAVE", "opcode": "C9", "bytes": 1}],
       "notes": "80186 で導入。フレームポインタ方式のプロシージャ出口（mov esp,ebp / pop ebp に相当）を 1 命令にしたもの。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["leave"],"explanation": "この例では スタックフレームを破棄する。スタックアドレスサイズに応じ SP/ESP を BP/EBP の値に戻し、オペランドサイズに応じ BP/EBP をポップする。"}
     },
     {
       "mnemonic": "INT",
@@ -840,7 +909,8 @@
       "cycles": [{"cond": "INT 3、リアルモード", "cycles": 33}, {"cond": "INT imm8、リアルモード", "cycles": 37}, {"cond": "プロテクトモード同一特権", "cycles": 59}, {"cond": "プロテクトモード内側の特権へ移行", "cycles": 99}, {"cond": "仮想 8086 から特権レベル 0 へ移行", "cycles": 119}, {"cond": "タスクゲート経由", "cycles": "条件による"}],
       "encodings": [{"syntax": "INT imm8", "opcode": "CD ib", "bytes": 2}, {"syntax": "INT3", "opcode": "CC", "bytes": 1}],
       "notes": "ゲート通過で EFLAGS/CS/EIP（特権変化時は SS/ESP も）がスタックに積まれ、TF はクリアされ、IF は割り込みゲートではクリア、トラップゲートでは保持される。\nINTO は OF=1 のときだけベクタ 4 への割り込み（未成立なら 4 クロックで無視）。\nDOS や旧 Linux（int 0x80）のシステムコール入口。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["int 0x10"],"explanation": "この例では ソフトウェア割り込みを発生させる。IDT の n 番ゲートへ制御を移す。INT3（CC）は 1 バイトのブレークポイント。"}
     },
     {
       "mnemonic": "INTO",
@@ -852,7 +922,8 @@
       "cycles": [{"cond": "OF=0", "cycles": 3}, {"cond": "OF=1、リアルモード", "cycles": 35}, {"cond": "OF=1、プロテクトモード同一特権", "cycles": 59}, {"cond": "OF=1、プロテクトモード内側の特権へ移行", "cycles": 99}, {"cond": "OF=1、仮想 8086 から特権レベル 0 へ移行", "cycles": 119}, {"cond": "タスクゲート経由", "cycles": "条件による"}],
       "encodings": [{"syntax": "INTO", "opcode": "CE", "bytes": 1}],
       "notes": "割り込み発生時は INT と同じくフラグを退避し TF をクリア。IF は割り込みゲートならクリア、トラップゲートなら保持する。符号付き加減算のオーバーフロー検出に使い、JO と同等の判定ができる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["into"],"explanation": "この例では オーバーフロー割り込み。OF=1 のときだけベクタ 4 へのソフトウェア割り込みを発生させる。OF=0 なら何もしない。"}
     },
     {
       "mnemonic": "IRET",
@@ -864,7 +935,8 @@
       "cycles": [{"cond": "リアルモード", "cycles": 22}, {"cond": "プロテクトモード同一特権", "cycles": 38}, {"cond": "プロテクトモード外側の特権へ復帰", "cycles": 82}, {"cond": "IRETD で仮想 8086 モードへ復帰", "cycles": 60}, {"cond": "タスク切替", "cycles": "条件による"}],
       "encodings": [{"syntax": "IRET", "opcode": "CF", "bytes": 1}],
       "notes": "オペランドサイズに応じて 16 または 32 ビット幅で復帰する。NT=1 の場合はタスク切替で復帰する。IOPL の変更には CPL=0、IF の変更には CPL≤IOPL が必要。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["iret"],"explanation": "この例では 割り込み／例外ハンドラから復帰する。通常はスタックから IP/CS/FLAGS または EIP/CS/EFLAGS を復帰する。"}
     },
     {
       "mnemonic": "MOVSB",
@@ -876,7 +948,8 @@
       "cycles": [{"cond": "単独", "cycles": 7}, {"cond": "REP n 回、合計", "cycles": "5+4n"}],
       "encodings": [{"syntax": "MOVSB", "opcode": "A4", "bytes": 1}],
       "notes": "転送方向は DF（cld=増加、std=減少）。ソースは DS:(E)SI（セグメント上書き可）、転送先は常に ES:(E)DI。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["movsb"],"explanation": "この例では DS:(E)SI の指す要素を ES:(E)DI へ 1 バイト転送し、DF に応じて (E)SI/(E)DI を ±1 する。"}
     },
     {
       "mnemonic": "MOVSW",
@@ -888,7 +961,8 @@
       "cycles": [{"cond": "単独", "cycles": 7}, {"cond": "REP n 回、合計", "cycles": "5+4n"}],
       "encodings": [{"syntax": "MOVSW", "opcode": "66 A5（32bit モード）", "bytes": 2}],
       "notes": "転送方向は DF（cld=増加、std=減少）。rep movsw の (E)CX はワード数（要素数）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["movsw"],"explanation": "この例では DS:(E)SI の指すワードを ES:(E)DI へ転送し、DF に応じて (E)SI/(E)DI を ±2 する。"}
     },
     {
       "mnemonic": "MOVSD",
@@ -900,7 +974,8 @@
       "cycles": [{"cond": "単独", "cycles": 7}, {"cond": "REP n 回、合計", "cycles": "5+4n"}],
       "encodings": [{"syntax": "MOVSD", "opcode": "A5（32bit モード既定）", "bytes": 1}],
       "notes": "転送方向は DF（cld=増加、std=減少）。rep movsd がダブルワード単位ブロックコピーの定番。MASM では SSE のスカラ倍精度 movsd と多重定義される（文字列命令はオペランドなし形式）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["movsd"],"explanation": "この例では DS:(E)SI の指すダブルワードを ES:(E)DI へ転送し、DF に応じて (E)SI/(E)DI を ±4 する。"}
     },
     {
       "mnemonic": "STOSB",
@@ -912,7 +987,8 @@
       "cycles": [{"cond": "単独", "cycles": 4}, {"cond": "REP n 回、合計", "cycles": "5+5n"}],
       "encodings": [{"syntax": "STOSB", "opcode": "AA", "bytes": 1}],
       "notes": "rep stosb でメモリ領域を一括フィル（memset 的用途）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["stosb"],"explanation": "この例では AL の値を ES:(E)DI の指す 1 バイトへ格納し、DF に応じて (E)DI を ±1 する。"}
     },
     {
       "mnemonic": "STOSW",
@@ -924,7 +1000,8 @@
       "cycles": [{"cond": "単独", "cycles": 4}, {"cond": "REP n 回、合計", "cycles": "5+5n"}],
       "encodings": [{"syntax": "STOSW", "opcode": "66 AB（32bit モード）", "bytes": 2}],
       "notes": "rep stosw でワード単位の一括フィル。転送方向は DF。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["stosw"],"explanation": "この例では AX の値を ES:(E)DI の指すワードへ格納し、DF に応じて (E)DI を ±2 する。"}
     },
     {
       "mnemonic": "STOSD",
@@ -936,7 +1013,8 @@
       "cycles": [{"cond": "単独", "cycles": 4}, {"cond": "REP n 回、合計", "cycles": "5+5n"}],
       "encodings": [{"syntax": "STOSD", "opcode": "AB（32bit モード既定）", "bytes": 1}],
       "notes": "rep stosd でダブルワード単位の一括フィル。転送方向は DF。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["stosd"],"explanation": "この例では EAX の値を ES:(E)DI の指すダブルワードへ格納し、DF に応じて (E)DI を ±4 する。"}
     },
     {
       "mnemonic": "LODSB",
@@ -948,7 +1026,8 @@
       "cycles": [{"cond": "1 要素", "cycles": 5}],
       "encodings": [{"syntax": "LODSB", "opcode": "AC", "bytes": 1}],
       "notes": "rep を付けても最後の 1 要素しか残らないため単独使用が基本。lods/stos の組合せで変換ループを構築。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lodsb"],"explanation": "この例では DS:(E)SI の指す 1 バイトを AL に読み込み、DF に応じて (E)SI を ±1 する。"}
     },
     {
       "mnemonic": "LODSW",
@@ -960,7 +1039,8 @@
       "cycles": [{"cond": "1 要素", "cycles": 5}],
       "encodings": [{"syntax": "LODSW", "opcode": "66 AD（32bit モード）", "bytes": 2}],
       "notes": "rep を付けても最後の 1 要素しか残らないため単独使用が基本。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lodsw"],"explanation": "この例では DS:(E)SI の指すワードを AX に読み込み、DF に応じて (E)SI を ±2 する。"}
     },
     {
       "mnemonic": "LODSD",
@@ -972,7 +1052,8 @@
       "cycles": [{"cond": "1 要素", "cycles": 5}],
       "encodings": [{"syntax": "LODSD", "opcode": "AD（32bit モード既定）", "bytes": 1}],
       "notes": "rep を付けても最後の 1 要素しか残らないため単独使用が基本。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lodsd"],"explanation": "この例では DS:(E)SI の指すダブルワードを EAX に読み込み、DF に応じて (E)SI を ±4 する。"}
     },
     {
       "mnemonic": "SCASB",
@@ -984,7 +1065,8 @@
       "cycles": [{"cond": "単独", "cycles": 7}, {"cond": "REPE/REPNE n 回、合計", "cycles": "5+8n"}],
       "encodings": [{"syntax": "SCASB", "opcode": "AE", "bytes": 1}],
       "notes": "repne scasb は指定バイト（0 終端など）の検索定番。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["scasb"],"explanation": "この例では AL と ES:(E)DI の指す 1 バイトを比較（フラグのみ更新）し、DF に応じて (E)DI を ±1 する。"}
     },
     {
       "mnemonic": "SCASW",
@@ -996,7 +1078,8 @@
       "cycles": [{"cond": "単独", "cycles": 7}, {"cond": "REPE/REPNE n 回、合計", "cycles": "5+8n"}],
       "encodings": [{"syntax": "SCASW", "opcode": "66 AF（32bit モード）", "bytes": 2}],
       "notes": "repne scasw でワード列の検索。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["scasw"],"explanation": "この例では AX と ES:(E)DI の指すワードを比較（フラグのみ更新）し、DF に応じて (E)DI を ±2 する。"}
     },
     {
       "mnemonic": "SCASD",
@@ -1008,7 +1091,8 @@
       "cycles": [{"cond": "単独", "cycles": 7}, {"cond": "REPE/REPNE n 回、合計", "cycles": "5+8n"}],
       "encodings": [{"syntax": "SCASD", "opcode": "AF（32bit モード既定）", "bytes": 1}],
       "notes": "repne scasd でダブルワード列の検索。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["scasd"],"explanation": "この例では EAX と ES:(E)DI の指すダブルワードを比較（フラグのみ更新）し、DF に応じて (E)DI を ±4 する。"}
     },
     {
       "mnemonic": "CMPSB",
@@ -1020,7 +1104,8 @@
       "cycles": [{"cond": "単独", "cycles": 10}, {"cond": "REPE/REPNE n 回、合計", "cycles": "5+9n"}],
       "encodings": [{"syntax": "CMPSB", "opcode": "A6", "bytes": 1}],
       "notes": "repe cmpsb は指定要素数までの比較に使う。NUL を検出して自動停止する機能はない。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cmpsb"],"explanation": "この例では DS:(E)SI と ES:(E)DI の指す 1 バイトを比較（フラグのみ更新）し、両インデックスを進める。"}
     },
     {
       "mnemonic": "CMPSW",
@@ -1032,7 +1117,8 @@
       "cycles": [{"cond": "単独", "cycles": 10}, {"cond": "REPE/REPNE n 回、合計", "cycles": "5+9n"}],
       "encodings": [{"syntax": "CMPSW", "opcode": "66 A7（32bit モード）", "bytes": 2}],
       "notes": "repe cmpsw でワード列の一致判定。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cmpsw"],"explanation": "この例では DS:(E)SI と ES:(E)DI の指すワードを比較（フラグのみ更新）し、両インデックスを ±2 進める。"}
     },
     {
       "mnemonic": "CMPSD",
@@ -1044,7 +1130,8 @@
       "cycles": [{"cond": "単独", "cycles": 10}, {"cond": "REPE/REPNE n 回、合計", "cycles": "5+9n"}],
       "encodings": [{"syntax": "CMPSD", "opcode": "A7（32bit モード既定）", "bytes": 1}],
       "notes": "repe cmpsd でダブルワード列の一致判定。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cmpsd"],"explanation": "この例では DS:(E)SI と ES:(E)DI の指すダブルワードを比較（フラグのみ更新）し、両インデックスを ±4 進める。"}
     },
     {
       "mnemonic": "INSB",
@@ -1056,7 +1143,8 @@
       "cycles": [{"cond": "単独、リアルモード", "cycles": 15}, {"cond": "単独、プロテクトモード CPL≤IOPL", "cycles": 9}, {"cond": "単独、I/O ビットマップ検査あり", "cycles": 29}, {"cond": "REP n 回、リアルモード", "cycles": "13+6n"}, {"cond": "REP n 回、プロテクトモード CPL≤IOPL", "cycles": "7+6n"}, {"cond": "REP n 回、I/O ビットマップ検査あり", "cycles": "27+6n"}],
       "encodings": [{"syntax": "INSB", "opcode": "6C", "bytes": 1}],
       "notes": "ポート番号は DX 固定。rep insb で I/O からメモリへのブロック入力（80186 以降）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。 CPL>IOPL または仮想 8086 モードでは TSS の I/O 許可ビットマップを検査する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["; DX contains the I/O port","insb"],"explanation": "この例では DX で指定した I/O ポートから 1 バイトを読み込み ES:(E)DI に格納し、DF に応じて (E)DI を ±1 する。"}
     },
     {
       "mnemonic": "INSW",
@@ -1068,7 +1156,8 @@
       "cycles": [{"cond": "単独、リアルモード", "cycles": 15}, {"cond": "単独、プロテクトモード CPL≤IOPL", "cycles": 9}, {"cond": "単独、I/O ビットマップ検査あり", "cycles": 29}, {"cond": "REP n 回、リアルモード", "cycles": "13+6n"}, {"cond": "REP n 回、プロテクトモード CPL≤IOPL", "cycles": "7+6n"}, {"cond": "REP n 回、I/O ビットマップ検査あり", "cycles": "27+6n"}],
       "encodings": [{"syntax": "INSW", "opcode": "66 6D（32bit モード）", "bytes": 2}],
       "notes": "ポート番号は DX 固定（80186 以降）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。 CPL>IOPL または仮想 8086 モードでは TSS の I/O 許可ビットマップを検査する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["; DX contains the I/O port","insw"],"explanation": "この例では DX で指定した I/O ポートからワードを読み込み ES:(E)DI に格納し、DF に応じて (E)DI を ±2 する。"}
     },
     {
       "mnemonic": "INSD",
@@ -1080,7 +1169,8 @@
       "cycles": [{"cond": "単独、リアルモード", "cycles": 15}, {"cond": "単独、プロテクトモード CPL≤IOPL", "cycles": 9}, {"cond": "単独、I/O ビットマップ検査あり", "cycles": 29}, {"cond": "REP n 回、リアルモード", "cycles": "13+6n"}, {"cond": "REP n 回、プロテクトモード CPL≤IOPL", "cycles": "7+6n"}, {"cond": "REP n 回、I/O ビットマップ検査あり", "cycles": "27+6n"}],
       "encodings": [{"syntax": "INSD", "opcode": "6D（32bit モード既定）", "bytes": 1}],
       "notes": "ポート番号は DX 固定（80186 以降）。32bit 転送は 80386 以降。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。 CPL>IOPL または仮想 8086 モードでは TSS の I/O 許可ビットマップを検査する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["; DX contains the I/O port","insd"],"explanation": "この例では DX で指定した I/O ポートからダブルワードを読み込み ES:(E)DI に格納し、DF に応じて (E)DI を ±4 する。"}
     },
     {
       "mnemonic": "OUTSB",
@@ -1092,7 +1182,8 @@
       "cycles": [{"cond": "単独、リアルモード", "cycles": 14}, {"cond": "単独、プロテクトモード CPL≤IOPL", "cycles": 8}, {"cond": "単独、I/O ビットマップ検査あり", "cycles": 28}, {"cond": "REP n 回、リアルモード", "cycles": "5+12n"}, {"cond": "REP n 回、プロテクトモード CPL≤IOPL", "cycles": "6+5n"}, {"cond": "REP n 回、I/O ビットマップ検査あり", "cycles": "26+5n"}],
       "encodings": [{"syntax": "OUTSB", "opcode": "6E", "bytes": 1}],
       "notes": "ポート番号は DX 固定。rep outsb でメモリから I/O へのブロック出力（80186 以降）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。 CPL>IOPL または仮想 8086 モードでは TSS の I/O 許可ビットマップを検査する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["; DX contains the I/O port","outsb"],"explanation": "この例では DS:(E)SI の指す 1 バイトを DX で指定した I/O ポートへ書き込み、DF に応じて (E)SI を ±1 する。"}
     },
     {
       "mnemonic": "OUTSW",
@@ -1104,7 +1195,8 @@
       "cycles": [{"cond": "単独、リアルモード", "cycles": 14}, {"cond": "単独、プロテクトモード CPL≤IOPL", "cycles": 8}, {"cond": "単独、I/O ビットマップ検査あり", "cycles": 28}, {"cond": "REP n 回、リアルモード", "cycles": "5+12n"}, {"cond": "REP n 回、プロテクトモード CPL≤IOPL", "cycles": "6+5n"}, {"cond": "REP n 回、I/O ビットマップ検査あり", "cycles": "26+5n"}],
       "encodings": [{"syntax": "OUTSW", "opcode": "66 6F（32bit モード）", "bytes": 2}],
       "notes": "ポート番号は DX 固定（80186 以降）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。 CPL>IOPL または仮想 8086 モードでは TSS の I/O 許可ビットマップを検査する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["; DX contains the I/O port","outsw"],"explanation": "この例では DS:(E)SI の指すワードを DX で指定した I/O ポートへ書き込み、DF に応じて (E)SI を ±2 する。"}
     },
     {
       "mnemonic": "OUTSD",
@@ -1116,7 +1208,8 @@
       "cycles": [{"cond": "単独、リアルモード", "cycles": 14}, {"cond": "単独、プロテクトモード CPL≤IOPL", "cycles": 8}, {"cond": "単独、I/O ビットマップ検査あり", "cycles": 28}, {"cond": "REP n 回、リアルモード", "cycles": "5+12n"}, {"cond": "REP n 回、プロテクトモード CPL≤IOPL", "cycles": "6+5n"}, {"cond": "REP n 回、I/O ビットマップ検査あり", "cycles": "26+5n"}],
       "encodings": [{"syntax": "OUTSD", "opcode": "6F（32bit モード既定）", "bytes": 1}],
       "notes": "ポート番号は DX 固定（80186 以降）。32bit 転送は 80386 以降。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。 CPL>IOPL または仮想 8086 モードでは TSS の I/O 許可ビットマップを検査する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["; DX contains the I/O port","outsd"],"explanation": "この例では DS:(E)SI の指すダブルワードを DX で指定した I/O ポートへ書き込み、DF に応じて (E)SI を ±4 する。"}
     },
     {
       "mnemonic": "REP",
@@ -1128,7 +1221,8 @@
       "cycles": [{"cond": "MOVS n 回、合計", "cycles": "5+4n"}, {"cond": "STOS n 回、合計", "cycles": "5+5n"}, {"cond": "INS/OUTS", "cycles": "命令と実行モードによる"}],
       "encodings": [{"syntax": "REP", "opcode": "F3", "bytes": 1}],
       "notes": "16 ビットアドレスサイズでは CX、32 ビットでは ECX を使う。プレフィックス自体はフラグを変えないが、後続命令が変える場合がある。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["rep movsb"],"explanation": "この例では 後続の文字列命令をアドレスサイズに応じた CX または ECX の要素数だけ繰り返すプレフィックス。"}
     },
     {
       "mnemonic": "REPE",
@@ -1140,7 +1234,8 @@
       "cycles": [{"cond": "CMPS/SCAS の n 回反復、合計", "cycles": "CMPS 5+9n / SCAS 5+8n"}],
       "encodings": [{"syntax": "REPE", "opcode": "F3", "bytes": 1}],
       "notes": "各反復後に CX/ECX=0 または ZF=0 で終了する。初期カウンタが 0 なら比較せずフラグは変わらない。プレフィックス自体はフラグを変えないが、後続の CMPS/SCAS は演算フラグを更新する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["repe cmpsb"],"explanation": "この例では 文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=1 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。"}
     },
     {
       "mnemonic": "REPNE",
@@ -1152,7 +1247,8 @@
       "cycles": [{"cond": "CMPS/SCAS の n 回反復、合計", "cycles": "CMPS 5+9n / SCAS 5+8n"}],
       "encodings": [{"syntax": "REPNE", "opcode": "F2", "bytes": 1}],
       "notes": "カウンタはアドレスサイズにより CX または ECX。初期カウンタが非ゼロなら反復後の ZF で検索成否を判定できる。カウンタ=0 は最終要素での一致と不一致の両方で起こりうる。プレフィックス自体はフラグを変えないが、後続の CMPS/SCAS は演算フラグを更新する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["repne scasb"],"explanation": "この例では 文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=0 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。"}
     },
     {
       "mnemonic": "LAHF",
@@ -1164,7 +1260,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "LAHF", "opcode": "9F", "bytes": 1}],
       "notes": "8080 互換のブリッジ命令。OF/DF/IF/TF は含まれない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lahf"],"explanation": "この例では EFLAGS の下位バイト（SF ZF - AF - PF 1 CF）を AH に読み込む。"}
     },
     {
       "mnemonic": "SAHF",
@@ -1176,7 +1273,8 @@
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "SAHF", "opcode": "9E", "bytes": 1}],
       "notes": "数値コプロセッサの FSTSW AX 結果をフラグへ反映して条件分岐する用法がある。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["sahf"],"explanation": "この例では AH の内容を EFLAGS の下位バイト（SF/ZF/AF/PF/CF）へ書き込む。"}
     },
     {
       "mnemonic": "CLC",
@@ -1188,7 +1286,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CLC", "opcode": "F8", "bytes": 1}],
       "notes": "adc/sbb/rcl/rcr の前の初期化。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["clc"],"explanation": "この例では キャリーフラグ C を 0 にクリアする。"}
     },
     {
       "mnemonic": "STC",
@@ -1200,7 +1299,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "STC", "opcode": "F9", "bytes": 1}],
       "notes": "",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["stc"],"explanation": "この例では キャリーフラグ C を 1 にセットする。"}
     },
     {
       "mnemonic": "CMC",
@@ -1212,7 +1312,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CMC", "opcode": "F5", "bytes": 1}],
       "notes": "",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cmc"],"explanation": "この例では キャリーフラグ C を反転する。"}
     },
     {
       "mnemonic": "CLD",
@@ -1224,7 +1325,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "CLD", "opcode": "FC", "bytes": 1}],
       "notes": "文字列命令使用後は使い終わったら戻すのが作法。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cld"],"explanation": "この例では ディレクションフラグ D を 0 にクリアする（文字列操作を増加方向にする）。"}
     },
     {
       "mnemonic": "STD",
@@ -1236,7 +1338,8 @@
       "cycles": [{"cond": "常時", "cycles": 2}],
       "encodings": [{"syntax": "STD", "opcode": "FD", "bytes": 1}],
       "notes": "後方コピー（rep movsb を ESI/EDI 終端向けに実行）に使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["std"],"explanation": "この例では ディレクションフラグ D を 1 にセットする（文字列操作を減少方向にする）。"}
     },
     {
       "mnemonic": "CLI",
@@ -1248,7 +1351,8 @@
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "CLI", "opcode": "FA", "bytes": 1}],
       "notes": "プロテクトモードでは CPL>IOPL で #GP。仮想 8086 モードでは IOPL<3 のとき #GP。NMI は禁止しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["cli"],"explanation": "この例では 割り込み許可フラグ IF を 0 にする（マスク可能割り込みを禁止）。"}
     },
     {
       "mnemonic": "STI",
@@ -1260,7 +1364,8 @@
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "STI", "opcode": "FB", "bytes": 1}],
       "notes": "プロテクトモードでは CPL>IOPL で #GP。仮想 8086 モードでは IOPL<3 のとき #GP。IF=0 から有効にした場合、マスク可能割り込みの認識は次の命令の後まで遅延し、その命令が IF を維持している場合に許可される。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["sti"],"explanation": "この例では 割り込み許可フラグ IF を 1 にする（マスク可能割り込みを許可）。"}
     },
     {
       "mnemonic": "HLT",
@@ -1272,7 +1377,8 @@
       "cycles": [{"cond": "常時（停止状態への移行）", "cycles": 5}],
       "encodings": [{"syntax": "HLT", "opcode": "F4", "bytes": 1}],
       "notes": "プロテクトモードでは CPL=0 が必要。アイドルループなどに使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["hlt"],"explanation": "この例では CPU を停止状態にする。有効な割り込み、NMI またはリセットで停止状態を終了する。特権命令。"}
     },
     {
       "mnemonic": "WAIT",
@@ -1284,7 +1390,8 @@
       "cycles": [{"cond": "待機がない場合の最小値", "cycles": 6}],
       "encodings": [{"syntax": "WAIT / FWAIT", "opcode": "9B", "bytes": 1}],
       "notes": "BUSY# が Low の間は待機し、High になると進む。CR0 の MP と TS がともに 1 のとき #NM。コプロセッサの未処理例外も発生しうる。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["wait"],"explanation": "この例では コプロセッサ同期。BUSY ピン（80286/80386）を監視し、ビジー状態の間は待機してから次の命令へ進む。FWAIT と同じ。"}
     },
     {
       "mnemonic": "LOCK",
@@ -1296,7 +1403,8 @@
       "cycles": [{"cond": "プレフィックス", "cycles": 0}],
       "encodings": [{"syntax": "LOCK", "opcode": "F0", "bytes": 1}],
       "notes": "80386 の命令表では、BT/BTS/BTR/BTC、XCHG、ADD/OR/ADC/SBB/AND/SUB/XOR、NOT/NEG/INC/DEC の指定されたメモリ形式に使用できる。XCHG のメモリ形式は LOCK がなくてもバスロックされる。プロセッサ以外のバスマスタとの排他にはシステム側の対応も必要。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lock add dword [edi], 1"],"explanation": "この例では バスロックプレフィックス。後続の 1 命令の実行中 LOCK 信号をアサートし、他のバスマスタのバス使用を阻止する。"}
     },
     {
       "mnemonic": "NOP",
@@ -1307,7 +1415,8 @@
       "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 3}],
       "encodings": [{"syntax": "NOP", "opcode": "90", "bytes": 1}],
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["nop"],"explanation": "この例では 何もしない（32 ビット既定では 90 = XCHG EAX, EAX）。パッチ領域などに使用する。"}
     },
     {
       "mnemonic": "IN",
@@ -1319,7 +1428,8 @@
       "cycles": [{"cond": "imm8 ポート、リアルモード", "cycles": 12}, {"cond": "DX ポート、リアルモード", "cycles": 13}, {"cond": "imm8 ポート、プロテクトモード CPL≤IOPL", "cycles": 6}, {"cond": "DX ポート、プロテクトモード CPL≤IOPL", "cycles": 7}, {"cond": "imm8 ポート、I/O ビットマップ検査あり", "cycles": 26}, {"cond": "DX ポート、I/O ビットマップ検査あり", "cycles": 27}],
       "encodings": [{"syntax": "IN AL, imm8", "opcode": "E4 ib", "bytes": 2}, {"syntax": "IN AL, DX", "opcode": "EC", "bytes": 1}, {"syntax": "IN eAX, DX", "opcode": "ED", "bytes": 1}],
       "notes": "プロテクトモードの CPL>IOPL および仮想 8086 モードでは、TSS の I/O 許可ビットマップを検査する。アクセスする全バイトのポートが許可されなければ #GP。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["in al, dx"],"explanation": "この例では I/O ポート（0000〜FFFF）からデータを読み込み AL/AX/EAX に格納する。"}
     },
     {
       "mnemonic": "OUT",
@@ -1331,7 +1441,8 @@
       "cycles": [{"cond": "imm8 ポート、リアルモード", "cycles": 10}, {"cond": "DX ポート、リアルモード", "cycles": 11}, {"cond": "imm8 ポート、プロテクトモード CPL≤IOPL", "cycles": 4}, {"cond": "DX ポート、プロテクトモード CPL≤IOPL", "cycles": 5}, {"cond": "imm8 ポート、I/O ビットマップ検査あり", "cycles": 24}, {"cond": "DX ポート、I/O ビットマップ検査あり", "cycles": 25}],
       "encodings": [{"syntax": "OUT imm8, AL", "opcode": "E6 ib", "bytes": 2}, {"syntax": "OUT DX, AL", "opcode": "EE", "bytes": 1}, {"syntax": "OUT DX, eAX", "opcode": "EF", "bytes": 1}],
       "notes": "プロテクトモードの CPL>IOPL および仮想 8086 モードでは、TSS の I/O 許可ビットマップを検査する。アクセスする全バイトのポートが許可されなければ #GP。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["out dx, al"],"explanation": "この例では AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ書き込む。"}
     },
     {
       "mnemonic": "SETcc",
@@ -1343,7 +1454,8 @@
       "cycles": [{"cond": "reg", "cycles": 4}, {"cond": "mem", "cycles": 5}],
       "encodings": [{"syntax": "SETcc r/m8", "opcode": "0F 90+cc /0", "length": "可変"}],
       "notes": "cc の種類と別名は Jcc の備考と同じ。比較結果を bool 値として扱いたいときに使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["setz byte [edi]"],"explanation": "この例では 条件が成立していれば dst（8ビットレジスタ/メモリ）に 1、不成立なら 0 を格納する（80386 で導入）。"}
     },
     {
       "mnemonic": "ENTER",
@@ -1373,7 +1485,8 @@
         }
       ],
       "notes": "第 2 オペランドの下位 5 ビットが字句ネストレベル。レベル 1 以上では上位フレームを参照するディスプレイを構築する。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["enter 4, 0"],"explanation": "この例では スタックフレームを作成し、imm16 バイトのローカル領域を確保する。オペランドサイズに応じて BP または EBP を退避する（LEAVE と対）。"}
     },
     {
       "mnemonic": "BOUND",
@@ -1408,7 +1521,8 @@
         }
       ],
       "notes": "80186 で導入。違反時の INT 5 ハンドラへの遷移時間は含まれない。範囲内ならフラグも含め何も変化しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["bound eax, [esi]"],"explanation": "この例では 符号付きインデックスをメモリ上の下限・上限と比較し、範囲外なら境界範囲超過例外を発生させる。境界値はそれぞれ 16 または 32 ビット。"}
     },
     {
       "mnemonic": "ARPL",
@@ -1447,7 +1561,8 @@
         }
       ],
       "notes": "OS がセレクタに呼び出し側の特権を焼き込むための保護命令。 プロテクトモードで使用し、リアルモードおよび仮想 8086 モードでは #UD。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["arpl bx, ax"],"explanation": "この例では 要求特権レベル (RPL) を調整する。dest セレクタの RPL（下位 2 ビット）を src の RPL より数値の大きい（特権の低い）方へ合わせ、変化したら ZF=1。"}
     },
     {
       "mnemonic": "LAR",
@@ -1486,7 +1601,8 @@
         }
       ],
       "notes": "セレクタ、記述子の種類および可視性の検査に失敗すると ZF=0 で目的レジスタは変化しない。32 ビット形式ではアクセス権のほか粒度など記述子上位の情報も含む。 プロテクトモードで使用し、リアルモードおよび仮想 8086 モードでは #UD。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lar eax, bx"],"explanation": "この例では セレクタに対応するセグメント記述子のアクセス権情報を目的レジスタに読み込む。検査に合格すれば ZF=1。"}
     },
     {
       "mnemonic": "LSL",
@@ -1516,7 +1632,8 @@
         }
       ],
       "notes": "粒度ビット G=1 の場合、返す限界は (記述子の限界値 << 12) | 0xFFF。セレクタや記述子が検査に合格しなければ ZF=0 で目的レジスタは変化しない。 プロテクトモードで使用し、リアルモードおよび仮想 8086 モードでは #UD。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lsl eax, bx"],"explanation": "この例では セグメント限界をロードする。src セレクタのディスクリプタが可視ならその限界値を dest に入れ ZF=1。"}
     },
     {
       "mnemonic": "VERR",
@@ -1555,7 +1672,8 @@
         }
       ],
       "notes": "結果は ZF のみ。JZ/JNZ と組み合わせてアクセス可否を判定する。 プロテクトモードで使用し、リアルモードおよび仮想 8086 モードでは #UD。 記述子検査の失敗は ZF=0 で示す。読み出し可能なコンフォーミングコードセグメントは DPL 比較の例外。検査成功は後続のメモリアクセス全体の成功を保証しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["verr bx"],"explanation": "この例では セグメントが読み出し可能か検証する。src セレクタのディスクリプタが可視で読み出し可能なら ZF=1。"}
     },
     {
       "mnemonic": "VERW",
@@ -1594,7 +1712,8 @@
         }
       ],
       "notes": "結果は ZF のみ。対の読み出し検証は VERR。 プロテクトモードで使用し、リアルモードおよび仮想 8086 モードでは #UD。 記述子検査の失敗は ZF=0 で示す。書き込み可能なのはデータセグメントであり、コードセグメントは対象外。検査成功は後続のメモリアクセス全体の成功を保証しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["verw bx"],"explanation": "この例では セグメントが書き込み可能か検証する。src セレクタのディスクリプタが可視で書き込み可能なら ZF=1。"}
     },
     {
       "mnemonic": "LGDT",
@@ -1628,7 +1747,8 @@
         }
       ],
       "notes": "先頭 2 バイトは限界。16 ビットオペランドサイズでは次の 3 バイトから 24 ビットベースを読み、32 ビットサイズでは次の 4 バイトから 32 ビットベースを読む。リアルモードでも実行でき、プロテクトモードでは CPL=0 が必要。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["gdt:","lgdt [gdt]"],"explanation": "この例では 6 バイトのメモリイメージから限界とベースを GDTR にロードする。"}
     },
     {
       "mnemonic": "LIDT",
@@ -1662,7 +1782,8 @@
         }
       ],
       "notes": "先頭 2 バイトは限界。16 ビットオペランドサイズでは次の 3 バイトから 24 ビットベースを読み、32 ビットサイズでは次の 4 バイトから 32 ビットベースを読む。リアルモードでも実行でき、プロテクトモードでは CPL=0 が必要。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["gdt:","lidt [idt]"],"explanation": "この例では 6 バイトのメモリイメージから限界とベースを IDTR にロードする。"}
     },
     {
       "mnemonic": "LLDT",
@@ -1692,7 +1813,8 @@
         }
       ],
       "notes": "タスクごとの LDT 切替に使用（特権命令）。セレクタ 0 をロードすると LDT は無効化される。対の退避命令は SLDT。 プロテクトモードの CPL=0 で使用し、リアルモードおよび仮想 8086 モードでは #UD。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lldt bx"],"explanation": "この例では LDT を指すセレクタを LDTR にロードする。キャッシュされる限界とベースは GDT 内の LDT ディスクリプタから読まれる。"}
     },
     {
       "mnemonic": "LTR",
@@ -1731,7 +1853,8 @@
         }
       ],
       "notes": "タスク管理で使用する特権命令。対の退避命令は STR。 プロテクトモードの CPL=0 で使用し、リアルモードおよび仮想 8086 モードでは #UD。 タスク切替は発生しない。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["ltr bx"],"explanation": "この例では タスクレジスタ (TR) に TSS セレクタをロードする。指定した TSS はビジー (B=1) にマークされる。"}
     },
     {
       "mnemonic": "LMSW",
@@ -1770,7 +1893,8 @@
         }
       ],
       "notes": "80286 互換の命令。プロテクトモードでは CPL=0 が必要。CR0 全体の変更には MOV CR0 を使う。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["lmsw ax"],"explanation": "この例では ソースの下位 4 ビットを CR0 の PE・MP・EM・TS に反映する。ただし PE を 1 から 0 に戻すことはできない。"}
     },
     {
       "mnemonic": "SGDT",
@@ -1804,7 +1928,8 @@
         }
       ],
       "notes": "特権を要しない（ユーザモードでも実行可）。対のロード命令は LGDT。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["gdt:","sgdt [gdt]"],"explanation": "この例では GDTR の内容（GDT 限界とリニアベースアドレス）を 6 バイトのメモリに退避する。"}
     },
     {
       "mnemonic": "SIDT",
@@ -1838,7 +1963,8 @@
         }
       ],
       "notes": "特権を要しない（ユーザモードでも実行可）。対のロード命令は LIDT。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["gdt:","sidt [idt]"],"explanation": "この例では IDTR の内容（IDT 限界とリニアベースアドレス）を 6 バイトのメモリに退避する。"}
     },
     {
       "mnemonic": "SLDT",
@@ -1873,7 +1999,8 @@
         }
       ],
       "notes": "セレクタ 0 が読めた場合は LDT 無効状態。対のロード命令は LLDT。 プロテクトモードで使用し、リアルモードおよび仮想 8086 モードでは #UD。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["sldt ax"],"explanation": "この例では LDTR の内容（LDT セレクタ）を reg/mem に退避する。"}
     },
     {
       "mnemonic": "STR",
@@ -1908,7 +2035,8 @@
         }
       ],
       "notes": "対のロード命令は LTR。 プロテクトモードで使用し、リアルモードおよび仮想 8086 モードでは #UD。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["str ax"],"explanation": "この例では タスクレジスタ (TR) の内容（現在の TSS セレクタ）を reg/mem に退避する。"}
     },
     {
       "mnemonic": "SMSW",
@@ -1938,7 +2066,8 @@
         }
       ],
       "notes": "80286 で導入、80386 にも存在。現代では MOV CR0 の読み出しが推奨。対のロード命令は LMSW。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["smsw ax"],"explanation": "この例では CR0 の下位 16 ビット（MSW）を reg/mem に退避する。"}
     },
     {
       "mnemonic": "CLTS",
@@ -1972,7 +2101,8 @@
         }
       ],
       "notes": "タスク切替時にハードが TS=1 にする。OS は必要に応じて TS をクリアする。プロテクトモードでは CPL=0 が必要。",
-      "src": "book"
+      "src": "book",
+      "example": {"code": ["clts"],"explanation": "この例では CR0 の TS（タスクスイッチド）ビットをクリアする。"}
     },
     {
       "mnemonic": "PUSHAD",
@@ -2006,7 +2136,8 @@
         }
       ],
       "notes": "EAX/ECX/EDX/EBX/元の ESP/EBP/ESI/EDI の順に積む。16 ビット既定の場合は 66 60。PUSHA も参照。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["pushad"],"explanation": "この例では 32 ビット汎用レジスタ 8 個を一括退避する。"}
     },
     {
       "mnemonic": "POPAD",
@@ -2040,7 +2171,8 @@
         }
       ],
       "notes": "保存された ESP の位置は読み飛ばし、その値をレジスタには復帰しない。16 ビット既定の場合は 66 61。POPA も参照。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["popad"],"explanation": "この例では 32 ビット汎用レジスタを一括復帰し、スタックから 32 バイトを取り除く。"}
     },
     {
       "mnemonic": "PUSHF",
@@ -2074,7 +2206,8 @@
         }
       ],
       "notes": "32 ビットオペランドサイズ既定時の符号化。16 ビット既定の場合は 9C。仮想 8086 モードでは IOPL<3 のとき #GP。NASM では 16 ビット幅を明示するには W 接尾辞を使う。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["pushf"],"explanation": "この例では FLAGS の 16 ビットイメージをスタックに退避する。"}
     },
     {
       "mnemonic": "POPF",
@@ -2108,7 +2241,8 @@
         }
       ],
       "notes": "32 ビットオペランドサイズ既定時の符号化。16 ビット既定の場合は 9D。IOPL の変更には CPL=0、IF の変更には CPL≤IOPL が必要。仮想 8086 モードでは IOPL<3 のとき #GP。NASM では 16 ビット幅を明示するには W 接尾辞を使う。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["popf"],"explanation": "この例では スタックから FLAGS の 16 ビットイメージを復帰する。"}
     },
     {
       "mnemonic": "IRETD",
@@ -2158,7 +2292,8 @@
         }
       ],
       "notes": "32 ビットオペランドサイズ既定時の符号化。16 ビット既定の場合は 66 CF。特権レベル変更やタスク切替の場合は IRET を参照。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["iretd"],"explanation": "この例では 32 ビット幅の割り込み／例外復帰。通常は EIP/CS/EFLAGS をスタックから復帰する。"}
     },
     {
       "mnemonic": "SAL",
@@ -2224,7 +2359,8 @@
         }
       ],
       "notes": "80386 ではオペランド幅を問わず回数の下位 5 ビットを使う。回数が 0 ならフラグは変化しない。1 回のとき OF が定義され、複数回のとき OF は未定義。 SHL と同一命令の別名。",
-      "src": "note"
+      "src": "note",
+      "example": {"code": ["sal eax, 1"],"explanation": "この例では 左論理シフト。上位ビットを C に送り出し、下位に 0 を詰める。×2^count に相当。SAL と同一。"}
     }
   ]
 }

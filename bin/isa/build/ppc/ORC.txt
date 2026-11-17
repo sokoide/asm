@@ -13,4 +13,10 @@ rA = rS OR NOT rB。
 オペコード:
   orc[.] rA,rS,rB: 011111 rS rA rB 0110011100 Rc  (4 バイト)
 
+使用例:
+  orc %r5,%r4,%r6
+
+解説:
+  この例では rA = rS OR NOT rB。
+
 （根拠: book）

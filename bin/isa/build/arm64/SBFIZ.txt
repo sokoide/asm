@@ -13,5 +13,11 @@ src の下位 width ビットを lsb 位置へ配置し、その上位を符号�
 オペコード:
   SBFIZ Xd,Xn,#lsb,#width: SBFM Xd,Xn,#((64-lsb)%64),#(width-1) と等価
 
+使用例:
+  sbfiz x0,[x1],#0,#8
+
+解説:
+  この例では src の下位 width ビットを lsb 位置へ配置し、その上位を符号拡張、下位を 0 にする。
+
 備考:
   lsb は 0 以上、width は 1 以上で、lsb+width はレジスタ幅以下。32 ビット形式は 64 を 32 に置き換える。

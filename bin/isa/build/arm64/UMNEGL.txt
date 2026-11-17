@@ -13,4 +13,10 @@ UMNEGL dst64, src1w, src2w — ARM64（算術）
 オペコード:
   UMNEGL Xd,Wn,Wm: UMSUBL Xd,Wn,Wm,XZR のエイリアス
 
+使用例:
+  umnegl x0,w1,w2
+
+解説:
+  この例では 符号なし 32×32 → 64 ビット乗算の否定。
+
 （根拠: book）

@@ -11,6 +11,12 @@ NOT（ビット反転）（Logical NOT）
   not rA,rS ⇔ nor rA, rS, rS
   NOT（ビット反転）（Logical NOT）
 
+使用例:
+  not 4,4
+
+解説:
+  この例では NOT（ビット反転）（Logical NOT）
+
 元命令: isa ppc NOR
 NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
 
@@ -19,5 +25,11 @@ NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
 
 オペコード:
   nor[.] rA,rS,rB: 011111 rS rA rB 0001111100 Rc  (4 バイト)
+
+使用例:
+  nor %r5,%r4,%r6
+
+解説:
+  この例では NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
 
 （根拠: book）

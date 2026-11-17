@@ -21,6 +21,12 @@ XOR dst, src — 80386（論理）
   XOR AL, imm8: 34 ib  (長さ可変)
   XOR AX/EAX, imm16/32: 35 iw/id  (長さ可変)
 
+使用例:
+  xor eax, ebx
+
+解説:
+  この例では ビット単位の排他的論理和を dst に格納する。ビット反転や排他選択に使う。
+
 備考:
   xor eax, eax はゼロ化の 1 命令イディオム。
 

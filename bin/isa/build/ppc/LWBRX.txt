@@ -13,4 +13,10 @@ LWBRX rT, rA, rB — PowerPC（ロード）
 オペコード:
   lwbrx rT,rA,rB: 011111 rT rA rB 1000010110 0  (4 バイト)
 
+使用例:
+  lwbrx %r3,%r5,%r6
+
+解説:
+  この例では ワードをバイトリバースしてロードする。
+
 （根拠: book）

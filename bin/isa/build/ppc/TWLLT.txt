@@ -12,6 +12,12 @@ twllt（拡張ニーモニック）→ TW TO, rA, rB — PowerPC（システム�
   論理的に小さい場合のワードトラップ（Trap Word if Logically Less Than）
   trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。
 
+使用例:
+  twllt 4,5
+
+解説:
+  この例では 論理的に小さい場合のワードトラップ（Trap Word if Logically Less Than）
+
 元命令: isa ppc TW
 TO で指定した比較条件に一致するとプログラム割り込みを発生させる。
 
@@ -21,6 +27,12 @@ TO で指定した比較条件に一致するとプログラム割り込みを�
 
 オペコード:
   tw TO,rA,rB: 011111 TO rA rB 0000000100 0  (4 バイト)
+
+使用例:
+  tw 31,%r5,%r6
+
+解説:
+  この例では TO で指定した比較条件に一致するとプログラム割り込みを発生させる。
 
 備考:
   TO は符号付き less/greater、equal、符号なし less/greater の 5 条件を組み合わせる。trap は tw 31,r0,r0 の拡張形式。即値版は twi。

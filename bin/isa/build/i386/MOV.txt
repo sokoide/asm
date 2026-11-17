@@ -28,6 +28,12 @@ MOV dst, src — 80386（データ転送）
   MOV moffs, AL: A2 offset  (長さ可変)
   MOV moffs, AX/EAX: A3 offset  (長さ可変)
 
+使用例:
+  mov eax, ebx
+
+解説:
+  この例では 転送。src（レジスタ・メモリ・即値・セグメントレジスタ）の値を dst にコピーする。
+
 備考:
   mem→mem は直接転送できない。moffs のオフセット幅はアドレスサイズで決まる。
   セグメントレジスタ転送（8C/8E）はプロテクトモードでは 16bit 選択子（TI ビットで GDT/LDT、下位 2bit は RPL）を扱い、CS への書き込みは不可。FS/GS は 80386 で追加。

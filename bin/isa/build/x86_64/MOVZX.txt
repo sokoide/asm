@@ -14,6 +14,12 @@ MOVZX dst, src — x86-64（データ転送）
   MOVZX r64, r/m8: REX.W 0F B6 /r  (長さ可変)
   MOVZX r64, r/m16: REX.W 0F B7 /r  (長さ可変)
 
+使用例:
+  movzx rax, byte [rdi]
+
+解説:
+  この例では ゼロ拡張転送。8/16ビットの src を上位ビット 0 埋めで 16/32/64ビットの dst に転送する。
+
 備考:
   imm は取れない。32ビットレジスタへの転送は上位32bitが自動クリアされるため movzx edx, al と同義になる。
 

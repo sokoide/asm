@@ -19,6 +19,12 @@ MUL src — 80386（算術）
   MUL r/m8: F6 /4  (長さ可変)
   MUL r/m16/32: F7 /4  (長さ可変)
 
+使用例:
+  mul ebx
+
+解説:
+  この例では 符号なし乗算。EDX:EAX = EAX × src（32bit）。結果の上位半分が EDX に入る。
+
 備考:
   上位半分が 0 なら C=O=0、0 でなければ C=O=1。8bit は AX=AL×src、16bit は DX:AX。
 
