@@ -237,8 +237,15 @@ interactive() {
   # current sort). Preview pane scrolls with pgup/pgdn, ctrl-b/f, alt-k/j.
   # --no-mouse: fzf >= 0.48 grabs the mouse by default, which blocks terminal
   # drag-selection/copy of the list and preview panes.
-  fzf --no-mouse --prompt="ISA [ARCH]> " --delimiter='\t' --with-nth=1,2,3,4 \
-      --tiebreak=begin,length \
+  # tiebreak=begin only (no length): 'length' measures the whole row including
+  # the summary, which ranked short-summary extensions (LWZX) above the exact
+  # match (LWZ). Equal score+begin falls back to input order = mnemonic sort,
+  # so the exact match always precedes its extended forms.
+  # --layout=reverse: fzf's default layout anchors item 1 next to the prompt at
+  # the bottom, so a sorted list reads backwards on screen. reverse draws the
+  # prompt on top and the list top-down, matching the reload sort orders.
+  fzf --no-mouse --layout=reverse --prompt="ISA [ARCH]> " --delimiter='\t' --with-nth=1,2,3,4 \
+      --tiebreak=begin \
       --header=$'並び替え: alt-1 ARCH / alt-2 ニーモニック / alt-3 カテゴリ（既定 ARCH→ニーモニック）\n詳細欄: pgup/pgdn ページ / ctrl-b・ctrl-f 半ページ / alt-k・alt-j 行' \
       --bind="alt-1:reload($SELF -s arch)+change-prompt(ISA [ARCH]> ),alt-2:reload($SELF -s mnem)+change-prompt(ISA [MNEM]> ),alt-3:reload($SELF -s cat)+change-prompt(ISA [CAT]> )" \
       --bind="pgup:preview-page-up,pgdn:preview-page-down" \
