@@ -582,7 +582,7 @@
       "equivalent": "or rA, rS, rS",
       "summary": "レジスタ間移動（Move Register）",
       "notes": "",
-      "example": {"code": ["mr 4,4"],"explanation": "この例では レジスタ間移動（Move Register）"}
+      "example": {"code": ["mr 4,5"],"explanation": "r5 を r4 へコピー（or 4,5,5 の簡記）"}
     },
     {
       "mnemonic": "not",

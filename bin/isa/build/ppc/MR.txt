@@ -12,10 +12,10 @@ mr（拡張ニーモニック）→ OR rA, rS, rB — PowerPC（論理）
   レジスタ間移動（Move Register）
 
 使用例:
-  mr 4,4
+  mr 4,5
 
 解説:
-  この例では レジスタ間移動（Move Register）
+  r5 を r4 へコピー（or 4,5,5 の簡記）
 
 元命令: isa ppc OR
 論理和。or rA,rB,rB はレジスタ移動の推奨形（mr 拡張形式）。

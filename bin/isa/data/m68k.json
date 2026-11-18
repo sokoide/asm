@@ -18,12 +18,12 @@
       "mnemonic": "MOVEA",
       "operands": "src, An",
       "category": "データ転送",
-      "summary": "アドレスレジスタへの転送。.W は符号拡張して 32 ビットに。フラグは一切変化しない。",
+      "summary": "アドレスレジスタへの転送。.W ソースは bit15 を上位 16 ビットへ複製して 32 ビットに広げる（$8000 → $FFFF8000）。フラグは一切変化しない。",
       "addressing": ["全 EA（src、.W/.L のみ）"],
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "MOVEA.W (A0),A1", "cycles": 8}, {"cond": "MOVEA.L #n,A0", "cycles": 12}],
       "encodings": [{"syntax": "MOVEA.W ea,An", "opcode": "0011 AAA 001 MMM RRR", "length": "可変"}, {"syntax": "MOVEA.L ea,An", "opcode": "0010 AAA 001 MMM RRR", "length": "可変"}],
-      "example": {"code": ["movea.w (a0),a0"],"explanation": "この例では アドレスレジスタへの転送。.W は符号拡張して 32 ビットに。フラグは一切変化しない。"}
+      "example": {"code": ["movea.l (a1),a0"],"explanation": "メモリ (A1) に格納されたポインタを A0 へロード。An 宛の転送は MOVE では書けず MOVEA を使う。フラグは一切変化しないため直前の比較結果を壊さない。.W ソースは bit15 を上位 16 ビットへ複製して転送（$8000 は $00008000 でなく $FFFF8000 になる）。"}
     },
     {
       "mnemonic": "MOVETOCCR",
@@ -82,7 +82,7 @@
       "addressing": ["レジスタ→メモリ：制御可変モードまたは -(An)", "メモリ→レジスタ：制御モードまたは (An)+"],
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "MOVEM.L D0-D2/A4-A6,-(A7)（6 レジスタ）", "cycles": 56}],
-      "notes": "メモリからの .W 転送は各ワードを 32 ビットに符号拡張する。レジスタからの .W 転送は各レジスタの下位ワードを格納する。",
+      "notes": "メモリからの .W 転送は各ワードを bit15 を上位 16 ビットへ複製して 32 ビットに符号拡張する。レジスタからの .W 転送は各レジスタの下位ワードを格納する。",
       "encodings": [{"syntax": "MOVEM.L list,-(A7)", "opcode": "0100100011100111 mmmmmmmmmmmmmmmm（プリデクリメント時はレジスタマスクのビット順が逆）", "bytes": 4}],
       "example": {"code": ["movem.l d0-d2,-(a7)"],"explanation": "この例では 複数レジスタの一括退避/復帰（.W/.L）。レジスタリストは D0-D7/A0-A7 の指定。"}
     },
@@ -105,9 +105,9 @@
       "summary": "制御アドレッシングモードの実効アドレスを 32 ビットのアドレスレジスタへ転送する。",
       "addressing": ["(An)", "(d16,An)", "(d8,An,Xn.W/L)", "絶対 .W/.L", "(d16,PC)", "(d8,PC,Xn.W/L)"],
       "flags": ["-", "-", "-", "-", "-"],
-      "cycles": [{"cond": "LEA (d,An),A0", "cycles": 8}, {"cond": "LEA (d,An,Xn),A0", "cycles": 12}],
+      "cycles": [{"cond": "LEA (An),A0", "cycles": 4}, {"cond": "LEA (d,An),A0", "cycles": 8}, {"cond": "LEA (d,An,Xn),A0", "cycles": 12}],
       "encodings": [{"syntax": "LEA ea,An", "opcode": "0100 AAA 111 MMM RRR", "length": "可変"}],
-      "example": {"code": ["lea (a0),a0"],"explanation": "この例では 制御アドレッシングモードの実効アドレスを 32 ビットのアドレスレジスタへ転送する。"}
+      "example": {"code": ["lea 20(a0),a1"],"explanation": "A0+20 のアドレスを A1 へ計算。MOVE と ADD の 2 命令で書く処理を 1 命令で済ませるのが LEA の利点。d8(An,Xn.W/L) 形式ならインデックス加算（A0+D1*2 など）も同時にできるため、リスト走査や構造体フィールド参照のベース計算に使う。"}
     },
     {
       "mnemonic": "PEA",
@@ -216,12 +216,12 @@
       "mnemonic": "ADDA",
       "operands": "src, An",
       "category": "算術",
-      "summary": "アドレスレジスタへの加算（.W/.L のみ）。.W のソースは 32 ビットに符号拡張し、全 32 ビットを演算する。CCR は変化しない。",
+      "summary": "アドレスレジスタへの加算（.W/.L のみ）。.W ソースは bit15 を上位 16 ビットへ複製して 32 ビットに広げてから演算（$8000 は −32768 として加算）。CCR は変化しない。",
       "addressing": ["全 EA（src、.W/.L のみ）"],
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "ADDA.L D0,A0", "cycles": 8}],
       "encodings": [{"syntax": "ADDA.W ea,An", "opcode": "1101 AAA 011 MMM RRR", "length": "可変"}, {"syntax": "ADDA.L ea,An", "opcode": "1101 AAA 111 MMM RRR", "length": "可変"}],
-      "example": {"code": ["adda.w (a0),a0"],"explanation": "この例では アドレスレジスタへの加算（.W/.L のみ）。.W のソースは 32 ビットに符号拡張し、全 32 ビットを演算する。CCR は変化しない。"}
+      "example": {"code": ["adda.l d1,a0"],"explanation": "ポインタ A0 を要素サイズ D1 だけ進める（バッファ走査）。An への加算は ADD では書けず ADDA を使う。CCR は変化しない。"}
     },
     {
       "mnemonic": "ADDI",
@@ -276,12 +276,12 @@
       "mnemonic": "SUBA",
       "operands": "src, An",
       "category": "算術",
-      "summary": "アドレスレジスタからの減算（.W/.L のみ）。.W のソースは 32 ビットに符号拡張し、全 32 ビットを演算する。CCR は変化しない。",
+      "summary": "アドレスレジスタからの減算（.W/.L のみ）。.W ソースは bit15 を上位 16 ビットへ複製して 32 ビットに広げてから演算（$8000 は −32768 として減算）。CCR は変化しない。",
       "addressing": ["全 EA（src、.W/.L のみ）"],
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "SUBA.L D0,A0", "cycles": 8}],
       "encodings": [{"syntax": "SUBA.W ea,An", "opcode": "1001 AAA 011 MMM RRR", "length": "可変"}, {"syntax": "SUBA.L ea,An", "opcode": "1001 AAA 111 MMM RRR", "length": "可変"}],
-      "example": {"code": ["suba.w (a0),a0"],"explanation": "この例では アドレスレジスタからの減算（.W/.L のみ）。.W のソースは 32 ビットに符号拡張し、全 32 ビットを演算する。CCR は変化しない。"}
+      "example": {"code": ["suba.l d1,a0"],"explanation": "ポインタ A0 を D1 だけ戻す（走査の巻き戻し）。An への減算は SUB では書けず SUBA を使う。CCR は変化しない。"}
     },
     {
       "mnemonic": "SUBI",
@@ -635,12 +635,12 @@
       "mnemonic": "CMPA",
       "operands": "src, An",
       "category": "比較",
-      "summary": "アドレスレジスタからソースを減算して比較する（.W/.L）。.W のソースは 32 ビットに符号拡張され、An 全体と比較される。",
+      "summary": "アドレスレジスタからソースを減算して比較する（.W/.L）。.W ソースは bit15 を上位 16 ビットへ複製してから、An 全体（32 ビット）と比較される。",
       "addressing": ["全 EA（src、.W/.L のみ）"],
       "flags": ["‡", "‡", "‡", "‡", "-"],
       "cycles": [{"cond":"CMPA.L D0,A0","cycles":6}],
       "encodings": [{"syntax": "CMPA.W ea,An", "opcode": "1011 AAA 011 MMM RRR", "length": "可変"}, {"syntax": "CMPA.L ea,An", "opcode": "1011 AAA 111 MMM RRR", "length": "可変"}],
-      "example": {"code": ["cmpa.w (a0),a0"],"explanation": "この例では アドレスレジスタからソースを減算して比較する（.W/.L）。.W のソースは 32 ビットに符号拡張され、An 全体と比較される。"}
+      "example": {"code": ["cmpa.l #80,a1"],"explanation": "ポインタ A1 が上限 80 に達したかを比較（A1-80 でフラグ設定、A1 は不変）。直後の BHI/BLS などで境界判定に使う。.W ソースは bit15 を上位に複製してから比較（$8000 は $FFFF8000 として扱う）。"}
     },
     {
       "mnemonic": "CMPI",
@@ -948,7 +948,7 @@
       "encodings": [{"syntax": "CHK.W src,Dn", "opcode": "0100 RRR 110 MMM RRR", "length": "可変"}],
       "notes": "Dn<0 で N=1、Dn>src で N=0 にしてトラップ。範囲内なら実行を継続。N は範囲内では不定。Z/V/C は不定、X は不変。MC68000 では .W のみ。上限値は 2 の補数（符号付き）で比較。",
       "src": "book",
-      "example": {"code": ["chk.w d0,d0"],"explanation": "この例では データレジスタ（下位ワード）の範囲チェック。0 ≤ Dn ≤ src の範囲外なら例外（ベクタ番号 6、ベクタ表アドレス $18）を発生。"}
+      "example": {"code": ["chk.w #99,d1"],"explanation": "配列インデックス D1 が 0..99 の範囲外なら範囲チェック例外（ベクタ番号 6、ベクタ表アドレス $18）を発生し、範囲内なら実行継続。配列アクセス前の境界検証に使う。"}
     },
     {
       "mnemonic": "RTE",
