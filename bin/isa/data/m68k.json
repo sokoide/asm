@@ -35,7 +35,7 @@
       "cycles": [{"cond": "MOVE.W D0,CCR", "cycles": 12}, {"cond": "MOVE.W #n,CCR", "cycles": 16}, {"cond": "MOVE.W (A0),CCR", "cycles": 16}, {"cond": "MOVE.W d16(A0),CCR", "cycles": 20}],
       "encodings": [{"syntax": "MOVE.W src,CCR", "opcode": "0100010011 MMM RRR", "length": "可変"}],
       "src": "book",
-      "example": {"code": ["move.w #$0015,ccr"],"explanation": "即値 $0015 の下位 8 ビットを CCR へ転送。bit4-0 が X/N/Z/V/C に反映され $15 は Z=1・C=1、X/N/V は 0 になる。"}
+      "example": {"code": ["move.w #$0015,ccr"],"explanation": "即値 $0015 の下位 8 ビットを CCR へ転送。bit4-0 が X/N/Z/V/C に反映され $15 = %0001_0101 なので X=1・Z=1・C=1、N/V は 0 になる。"}
     },
     {
       "mnemonic": "MOVETOSR",
@@ -84,7 +84,7 @@
       "cycles": [{"cond": "MOVEM.L D0-D2/A4-A6,-(A7)（6 レジスタ）", "cycles": 56}],
       "notes": "メモリからの .W 転送は各ワードを bit15 を上位 16 ビットへ複製して 32 ビットに符号拡張する。レジスタからの .W 転送は各レジスタの下位ワードを格納する。",
       "encodings": [{"syntax": "MOVEM.L list,-(A7)", "opcode": "0100100011100111 mmmmmmmmmmmmmmmm（プリデクリメント時はレジスタマスクのビット順が逆）", "bytes": 4}],
-      "example": {"code": ["movem.l d0-d2,-(a7)"],"explanation": "D0〜D2 の 3 本のロングワードを A7 プリデクリメントでスタックへ退避し A7 は 12 減少。プリデクリメント形式では高番号レジスタほど低い番地へ格納され (A7) は D2 になる。"}
+      "example": {"code": ["movem.l d0-d2,-(a7)"],"explanation": "D0〜D2 の 3 本のロングワードを A7 プリデクリメントでスタックへ退避し A7 は 12 減少。格納は D2 → D1 → D0 の順に行われ、低番号レジスタほど低い番地へ並ぶ（最終的な (A7) は D0 を指す）。この並びにより movem.l (a7)+,d0-d2 と正しく対になる。"}
     },
     {
       "mnemonic": "MOVEP",
@@ -971,7 +971,7 @@
       "flags": ["‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "STOP #imm16", "opcode": "4E72 imm16", "bytes": 4}],
-      "example": {"code": ["stop #1"],"explanation": "SR に $0001 を書き込み（割り込みマスク 000）命令フェッチを停止。任意レベルの割り込みまたはリセットで再開する（スーパーバイザモード専用）。"}
+      "example": {"code": ["stop #1"],"explanation": "SR に $0001 を書き込み（割り込みマスク 000）命令フェッチを停止。割り込み、トレース例外、またはリセットで再開する（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "RESET",

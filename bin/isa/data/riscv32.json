@@ -585,7 +585,7 @@
       "encodings": [{"syntax": "BEQ rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=000 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "分岐オフセットの表現範囲は -4096〜+4094 バイト（2 バイト単位）。C 拡張がない IALIGN=32 の環境では、成立した分岐の行き先は 4 バイト境界に限られる。",
       "src": "book",
-      "example": {"code": ["beq t1, t2, 8"],"explanation": "t1 == t2 なら PC+8 へ分岐する（不成立なら次の命令へ）。"}
+      "example": {"code": ["beq t1, t2, 8"],"explanation": "t1 == t2 ならオフセット +8 バイト先へ分岐する（不成立なら次の命令へ。アセンブラでは通常ラベルを指定する）。"}
     },
     {
       "mnemonic": "BNE",
@@ -598,7 +598,7 @@
       "encodings": [{"syntax": "BNE rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=001 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "ループのカウンタ判定（BNEZ）の実体。",
       "src": "book",
-      "example": {"code": ["bne t1, t2, 8"],"explanation": "t1 != t2 なら PC+8 へ分岐する（不成立なら次の命令へ）。"}
+      "example": {"code": ["bne t1, t2, 8"],"explanation": "t1 != t2 ならオフセット +8 バイト先へ分岐する（不成立なら次の命令へ。アセンブラでは通常ラベルを指定する）。"}
     },
     {
       "mnemonic": "BLT",
@@ -611,7 +611,7 @@
       "encodings": [{"syntax": "BLT rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=100 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "「より大きい」はオペランドを入れ替えて BLT rs2, rs1 と書く（BGT 疑似命令）。",
       "src": "book",
-      "example": {"code": ["blt t1, t2, 8"],"explanation": "t1 < t2（符号付き）なら PC+8 へ分岐する。"}
+      "example": {"code": ["blt t1, t2, 8"],"explanation": "t1 < t2（符号付き）ならオフセット +8 バイト先へ分岐する（アセンブラでは通常ラベルを指定する）。"}
     },
     {
       "mnemonic": "BGE",
@@ -624,7 +624,7 @@
       "encodings": [{"syntax": "BGE rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=101 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["bge t1, t2, 8"],"explanation": "t1 >= t2（符号付き）なら PC+8 へ分岐する。"}
+      "example": {"code": ["bge t1, t2, 8"],"explanation": "t1 >= t2（符号付き）ならオフセット +8 バイト先へ分岐する（アセンブラでは通常ラベルを指定する）。"}
     },
     {
       "mnemonic": "BLTU",
@@ -637,7 +637,7 @@
       "encodings": [{"syntax": "BLTU rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=110 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "アドレス比較の分岐は符号なし版を使う。",
       "src": "book",
-      "example": {"code": ["bltu t1, t2, 8"],"explanation": "t1 < t2（符号なし）なら PC+8 へ分岐する。"}
+      "example": {"code": ["bltu t1, t2, 8"],"explanation": "t1 < t2（符号なし）ならオフセット +8 バイト先へ分岐する（アセンブラでは通常ラベルを指定する）。"}
     },
     {
       "mnemonic": "BGEU",
@@ -650,7 +650,7 @@
       "encodings": [{"syntax": "BGEU rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=111 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["bgeu t1, t2, 8"],"explanation": "t1 >= t2（符号なし）なら PC+8 へ分岐する。"}
+      "example": {"code": ["bgeu t1, t2, 8"],"explanation": "t1 >= t2（符号なし）ならオフセット +8 バイト先へ分岐する（アセンブラでは通常ラベルを指定する）。"}
     },
     {
       "mnemonic": "BEQZ",
@@ -689,7 +689,7 @@
       "encodings": [{"syntax": "JAL rd, offset", "opcode": "imm[20|10:1|11|19:12] rd op=1101111", "bytes": 4}],
       "notes": "rd = ra（x1）で関数呼び出し、rd = x0 で無条件ジャンプ（J 疑似命令）になる。IALIGN=32 の場合、分岐先が 4 バイト境界でなければ命令アドレス不整列例外となる。",
       "src": "book",
-      "example": {"code": ["jal t0, 8"],"explanation": "戻りアドレス PC+4 を t0 へ保存し、PC+8 へジャンプする。"}
+      "example": {"code": ["jal t0, 8"],"explanation": "戻りアドレス PC+4 を t0 へ保存し、オフセット +8 バイト先へジャンプする（アセンブラでは通常ラベルを指定する）。"}
     },
     {
       "mnemonic": "JALR",
