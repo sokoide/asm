@@ -13,7 +13,7 @@ rs を CSR に書き込む疑似命令。
   csrw mstatus, t1
 
 解説:
-  この例では rs を CSR に書き込む疑似命令。
+  t1 の値を mstatus へ書き込む。csrrw zero, mstatus, t1 と等価。
 
 備考:
   CSRRW x0,csr,rs に展開する。rd=x0 のため CSR の読み出しは行わない。

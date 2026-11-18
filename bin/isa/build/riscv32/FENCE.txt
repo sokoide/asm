@@ -16,7 +16,7 @@ FENCE pred, succ — RISC-V 32（システム制御）
   fence rw, rw
 
 解説:
-  この例では メモリ・I/O アクセスの順序付けを保証する。pred（先行）と succ（後続）のアクセス種別の間に順序を強制する。
+  この命令より前の読み書き（rw）を、後の読み書き（rw）より先に実行するよう順序付けを強制する。
 
 備考:
   pred/succ の I/O/R/W はデバイス入力・出力・メモリ読み出し・書き込みを表す。通常の FENCE は fm=0000。FENCE.TSO は fm=1000、pred=succ=RW で、一部のストア→ロード順序を保証しない。命令フェッチの同期は Zifencei の FENCE.I。

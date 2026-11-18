@@ -16,7 +16,7 @@ Time Base 下位ワードからの移動（Move from Time Base）
   mftb 3
 
 解説:
-  この例では Time Base 下位ワードからの移動（Move from Time Base）
+  Time Base の下位ワード（SPR 268）を r3 へ読み出す（mfspr r3,268 と等価・専用オペコードを持つ）。
 
 元命令: isa ppc MFSPR
 特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
@@ -31,7 +31,7 @@ Time Base 下位ワードからの移動（Move from Time Base）
   mfspr %r3,8
 
 解説:
-  この例では 特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
+  SPR 8（LR）の値を r3 へ読み出す（mflr r3 相当）。拡張形式は mflr/mfctr/mfxer。
 
 備考:
   LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。

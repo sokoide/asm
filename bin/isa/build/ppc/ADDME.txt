@@ -17,7 +17,7 @@ rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。
   addme %r3,%r5
 
 解説:
-  この例では rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。
+  r3 = r5 + (-1) + XER[CA]（Add to Minus One Extended）。結果のキャリーで XER[CA] を更新する。
 
 備考:
   この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。

@@ -16,7 +16,7 @@ RDCYCLE rd — RISC-V 64（システム制御）
   rdcycle t0
 
 解説:
-  この例では サイクルカウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。
+  cycle CSR（サイクルカウンタ）の値を t0 へ読み出す。csrrs t0, cycle, zero と等価。
 
 備考:
   CSRRS rd, cycle, x0 と等価。CSR 0xC00。実行環境・特権設定により読出しが禁止される場合がある。

@@ -13,7 +13,7 @@
       "encodings": [{"syntax": "NOP", "opcode": "00", "bytes": 1}],
       "notes": "ループ待ちやタイミング調整に使われる。\n",
       "src": "book",
-      "example": {"code": ["nop"],"explanation": "この例では 何もしない。4クロック消費するだけの命令。"}
+      "example": {"code": ["nop"],"explanation": "何もせず 4 クロックだけ時間を消費する。レジスタとフラグは不変。"}
     },
     {
       "mnemonic": "HALT",
@@ -26,7 +26,7 @@
       "encodings": [{"syntax": "HALT", "opcode": "76", "bytes": 1}],
       "notes": "PC は HALT 命令の次を指す。停止中もリフレッシュのための動作を続け、割り込みの受け付けまたはリセットで停止状態を解除する。\n",
       "src": "book",
-      "example": {"code": ["halt"],"explanation": "この例では 命令実行を停止状態にする。受け付け可能な割り込みまたはリセットで解除する。"}
+      "example": {"code": ["halt"],"explanation": "CPU を停止状態にし、割り込みの受け付けまたはリセットで解除する（PC は HALT の次の命令を指したまま）。"}
     },
     {
       "mnemonic": "DI",
@@ -39,7 +39,7 @@
       "encodings": [{"syntax": "DI", "opcode": "F3", "bytes": 1}],
       "notes": "NMI は禁止されない。\n",
       "src": "book",
-      "example": {"code": ["di"],"explanation": "この例では 割り込みを禁止する（IFF1 = IFF2 = 0）。"}
+      "example": {"code": ["di"],"explanation": "IFF1 と IFF2 を 0 にしてマスク可能割り込み（INT）を禁止する。NMI は禁止されない。"}
     },
     {
       "mnemonic": "EI",
@@ -52,7 +52,7 @@
       "encodings": [{"syntax": "EI", "opcode": "FB", "bytes": 1}],
       "notes": "マスク可能割り込みの受け付けは EI の次の命令が完了するまで遅延する。NMI はマスク可能割り込みとは別に扱われる。\n",
       "src": "book",
-      "example": {"code": ["ei"],"explanation": "この例では 割り込みを許可する（IFF1 = IFF2 = 1）。"}
+      "example": {"code": ["ei"],"explanation": "IFF1 と IFF2 を 1 にしてマスク可能割り込みを許可する（実際の受け付けは次の命令完了後から）。"}
     },
     {
       "mnemonic": "IM",
@@ -65,7 +65,7 @@
       "encodings": [{"syntax": "IM 0", "opcode": "ED 46", "bytes": 2}, {"syntax": "IM 1", "opcode": "ED 56", "bytes": 2}, {"syntax": "IM 2", "opcode": "ED 5E", "bytes": 2}],
       "notes": "モード 2: I を上位バイト、デバイス提供ベクタを下位バイトとするテーブルアドレスから、2 バイトの割り込みハンドラアドレスを読み出す。\n",
       "src": "book",
-      "example": {"code": ["im 0"],"explanation": "この例では 割り込みモードを設定する（0 / 1 / 2）。"}
+      "example": {"code": ["im 0"],"explanation": "割り込み応答モードを 0 に設定する（モード 0/1/2 のうち）。"}
     },
     {
       "mnemonic": "LD",
@@ -78,7 +78,7 @@
       "encodings": [{"syntax": "LD r,r'", "opcode": "01DDDSSS", "bytes": 1}, {"syntax": "LD r,n", "opcode": "00DDD110 n", "bytes": 2}, {"syntax": "LD (HL),n", "opcode": "36 n", "bytes": 2}, {"syntax": "LD (IX+d),n", "opcode": "DD 36 d n", "bytes": 4}, {"syntax": "LD dd,nn", "opcode": "00ss0001 nn nn", "bytes": 3}, {"syntax": "LD A,(BC)", "opcode": "0A", "bytes": 1}, {"syntax": "LD A,(DE)", "opcode": "1A", "bytes": 1}, {"syntax": "LD A,(nn)", "opcode": "3A nn nn", "bytes": 3}, {"syntax": "LD r,(IX+d)", "opcode": "DD 01DDD110 d", "bytes": 3}, {"syntax": "LD r,(IY+d)", "opcode": "FD 01DDD110 d", "bytes": 3}, {"syntax": "LD (IX+d),r", "opcode": "DD 01110SSS d", "bytes": 3}, {"syntax": "LD (IY+d),r", "opcode": "FD 01110SSS d", "bytes": 3}, {"syntax": "LD (IY+d),n", "opcode": "FD 36 d n", "bytes": 4}, {"syntax": "LD (BC),A", "opcode": "02", "bytes": 1}, {"syntax": "LD (DE),A", "opcode": "12", "bytes": 1}, {"syntax": "LD (nn),A", "opcode": "32 nn nn", "bytes": 3}, {"syntax": "LD A,I", "opcode": "ED 57", "bytes": 2}, {"syntax": "LD A,R", "opcode": "ED 5F", "bytes": 2}, {"syntax": "LD I,A", "opcode": "ED 47", "bytes": 2}, {"syntax": "LD R,A", "opcode": "ED 4F", "bytes": 2}, {"syntax": "LD IX,nn", "opcode": "DD 21 nn nn", "bytes": 4}, {"syntax": "LD IY,nn", "opcode": "FD 21 nn nn", "bytes": 4}, {"syntax": "LD HL,(nn)", "opcode": "2A nn nn", "bytes": 3}, {"syntax": "LD (nn),HL", "opcode": "22 nn nn", "bytes": 3}, {"syntax": "LD dd,(nn)", "opcode": "ED 01ss1011 nn nn", "bytes": 4}, {"syntax": "LD (nn),dd", "opcode": "ED 01ss0011 nn nn", "bytes": 4}, {"syntax": "LD IX,(nn)", "opcode": "DD 2A nn nn", "bytes": 4}, {"syntax": "LD IY,(nn)", "opcode": "FD 2A nn nn", "bytes": 4}, {"syntax": "LD (nn),IX", "opcode": "DD 22 nn nn", "bytes": 4}, {"syntax": "LD (nn),IY", "opcode": "FD 22 nn nn", "bytes": 4}, {"syntax": "LD SP,HL", "opcode": "F9", "bytes": 1}, {"syntax": "LD SP,IX", "opcode": "DD F9", "bytes": 2}, {"syntax": "LD SP,IY", "opcode": "FD F9", "bytes": 2}],
       "notes": "r は B=000 C=001 D=010 E=011 H=100 L=101 (HL)=110 A=111。dd は BC=00 DE=01 HL=10 SP=11。\n一般の LD はフラグ不変。LD A,I / LD A,R は例外でフラグを更新する（S/Z は値、H=0、N=0、C=不変、P/V=IFF2）。\nインデックス形式の r は B/C/D/E/H/L/A であり、コード 110 は使えない。LD dd,(nn) と LD (nn),dd の ED 形式の dd は BC/DE/SP。HL は通常 2A/22 を使用する。d は符号付き 8 ビット変位、nn は下位バイトから格納する。\n",
       "src": "book",
-      "example": {"code": ["ld b,c"],"explanation": "この例では ロード。レジスタ・メモリ・即値の間でデータを転送する。組合せは多数あり。"}
+      "example": {"code": ["ld b,c"],"explanation": "C レジスタの値を B へコピーする（B = C）。"}
     },
     {
       "mnemonic": "EX",
@@ -91,7 +91,7 @@
       "encodings": [{"syntax": "EX DE,HL", "opcode": "EB", "bytes": 1}, {"syntax": "EX AF,AF'", "opcode": "08", "bytes": 1}, {"syntax": "EX (SP),HL", "opcode": "E3", "bytes": 1}, {"syntax": "EX (SP),IX", "opcode": "DD E3", "bytes": 2}, {"syntax": "EX (SP),IY", "opcode": "FD E3", "bytes": 2}],
       "notes": "EX AF,AF' は F と F' も交換するため全フラグが入れ替わる。他の EX 形式はフラグ不変。EXX は BC/DE/HL の切替。\n",
       "src": "book",
-      "example": {"code": ["ex de,hl"],"explanation": "この例では EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP),HL/IX/IY（スタック内容と交換）。"}
+      "example": {"code": ["ex de,hl"],"explanation": "DE と HL の内容を交換する（DE ⇔ HL）。フラグは不変。"}
     },
     {
       "mnemonic": "EXX",
@@ -104,7 +104,7 @@
       "encodings": [{"syntax": "EXX", "opcode": "D9", "bytes": 1}],
       "notes": "AF は含まれない（EX AF,AF' が別途必要）。割り込みハンドラでの退避に使われる。\n",
       "src": "book",
-      "example": {"code": ["exx"],"explanation": "この例では BC/DE/HL を裏レジスタ BC'/DE'/HL' と一括交換する。"}
+      "example": {"code": ["exx"],"explanation": "BC/DE/HL をそれぞれ裏レジスタ BC'/DE'/HL' と一括交換する（AF は対象外）。"}
     },
     {
       "mnemonic": "PUSH",
@@ -117,7 +117,7 @@
       "encodings": [{"syntax": "PUSH qq", "opcode": "C5/D5/E5/F5", "bytes": 1}, {"syntax": "PUSH IX", "opcode": "DD E5", "bytes": 2}, {"syntax": "PUSH IY", "opcode": "FD E5", "bytes": 2}],
       "notes": "上位バイトが先に書き込まれる。SP は 2 減算する。\n",
       "src": "book",
-      "example": {"code": ["push bc"],"explanation": "この例では 16ビットレジスタ qq（BC/DE/HL/AF/IX/IY）をスタックに退避する。"}
+      "example": {"code": ["push bc"],"explanation": "BC の 2 バイトをスタックへ退避する（mem[SP-1] = B、mem[SP-2] = C、SP = SP-2）。フラグは不変。"}
     },
     {
       "mnemonic": "POP",
@@ -130,7 +130,7 @@
       "encodings": [{"syntax": "POP qq", "opcode": "C1/D1/E1/F1", "bytes": 1}, {"syntax": "POP IX", "opcode": "DD E1", "bytes": 2}, {"syntax": "POP IY", "opcode": "FD E1", "bytes": 2}],
       "notes": "低いアドレスが下位バイトに対応。POP AF で F がスタックの値に変わるため全フラグを復帰する。他の POP はフラグ不変。\n",
       "src": "book",
-      "example": {"code": ["pop bc"],"explanation": "この例では スタックから 16ビット値を qq（BC/DE/HL/AF/IX/IY）に復帰する。"}
+      "example": {"code": ["pop bc"],"explanation": "スタックから 2 バイトを BC へ復帰する（C = mem[SP]、B = mem[SP+1]、SP = SP+2）。"}
     },
     {
       "mnemonic": "ADD",
@@ -143,7 +143,7 @@
       "encodings": [{"syntax": "ADD A,r", "opcode": "10000SSS", "bytes": 1}, {"syntax": "ADD A,n", "opcode": "C6 n", "bytes": 2}, {"syntax": "ADD HL,ss", "opcode": "09/19/29/39", "bytes": 1}, {"syntax": "ADD A,(HL)", "opcode": "86", "bytes": 1}, {"syntax": "ADD A,(IX+d)", "opcode": "DD 86 d", "bytes": 3}, {"syntax": "ADD A,(IY+d)", "opcode": "FD 86 d", "bytes": 3}, {"syntax": "ADD IX,pp", "opcode": "DD 00pp1001", "bytes": 2}, {"syntax": "ADD IY,rr", "opcode": "FD 00rr1001", "bytes": 2}],
       "notes": "ss は BC/DE/HL/SP。IX 版は BC/DE/IX/SP、IY 版は BC/DE/IY/SP を使う。上のフラグ欄は 8 ビット形式で、16 ビット形式は S/Z/P-V を保持し、H/C を更新し N=0 とする。8 ビット算術演算時の P/V はオーバーフローとして機能する。\n",
       "src": "book",
-      "example": {"code": ["add a,b"],"explanation": "この例では A に r（または (HL)、即値）を加算し結果を A に入れる。16 ビット版は ADD HL,ss / ADD IX,pp / ADD IY,rr。"}
+      "example": {"code": ["add a,b"],"explanation": "A = A + B。S/Z/H/V/N/C を更新。"}
     },
     {
       "mnemonic": "ADC",
@@ -156,7 +156,7 @@
       "encodings": [{"syntax": "ADC A,r", "opcode": "10001SSS", "bytes": 1}, {"syntax": "ADC A,n", "opcode": "CE n", "bytes": 2}, {"syntax": "ADC HL,ss", "opcode": "ED 4A/5A/6A/7A", "bytes": 2}, {"syntax": "ADC A,(HL)", "opcode": "8E", "bytes": 1}, {"syntax": "ADC A,(IX+d)", "opcode": "DD 8E d", "bytes": 3}, {"syntax": "ADC A,(IY+d)", "opcode": "FD 8E d", "bytes": 3}],
       "notes": "ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。\n",
       "src": "book",
-      "example": {"code": ["adc a,b"],"explanation": "この例では キャリー込みの加算。ADC A,r と 16ビットの ADC HL,ss がある。"}
+      "example": {"code": ["adc a,b"],"explanation": "A = A + B + キャリー。S/Z/H/V/N/C を更新。"}
     },
     {
       "mnemonic": "SUB",
@@ -169,7 +169,7 @@
       "encodings": [{"syntax": "SUB A,r", "opcode": "10010SSS", "bytes": 1}, {"syntax": "SUB A,n", "opcode": "D6 n", "bytes": 2}, {"syntax": "SUB (HL)", "opcode": "96", "bytes": 1}, {"syntax": "SUB (IX+d)", "opcode": "DD 96 d", "bytes": 3}, {"syntax": "SUB (IY+d)", "opcode": "FD 96 d", "bytes": 3}],
       "notes": "減算なので N=1。\n",
       "src": "book",
-      "example": {"code": ["sub a,b"],"explanation": "この例では A から r（または (HL)、即値）を減算し結果を A に入れる。"}
+      "example": {"code": ["sub a,b"],"explanation": "A = A - B。S/Z/H/V/N/C を更新。"}
     },
     {
       "mnemonic": "SBC",
@@ -182,7 +182,7 @@
       "encodings": [{"syntax": "SBC A,r", "opcode": "10011SSS", "bytes": 1}, {"syntax": "SBC A,n", "opcode": "DE n", "bytes": 2}, {"syntax": "SBC HL,ss", "opcode": "ED 42/52/62/72", "bytes": 2}, {"syntax": "SBC A,(HL)", "opcode": "9E", "bytes": 1}, {"syntax": "SBC A,(IX+d)", "opcode": "DD 9E d", "bytes": 3}, {"syntax": "SBC A,(IY+d)", "opcode": "FD 9E d", "bytes": 3}],
       "notes": "SBC HL,ss は 32 ビット演算や多倍長減算で使う。\n",
       "src": "book",
-      "example": {"code": ["sbc a,b"],"explanation": "この例では キャリー込みの減算。SBC A,r と 16ビットの SBC HL,ss がある。"}
+      "example": {"code": ["sbc a,b"],"explanation": "A = A - B - キャリー。S/Z/H/V/N/C を更新。"}
     },
     {
       "mnemonic": "AND",
@@ -195,7 +195,7 @@
       "encodings": [{"syntax": "AND A,r", "opcode": "10100SSS", "bytes": 1}, {"syntax": "AND A,n", "opcode": "E6 n", "bytes": 2}, {"syntax": "AND (HL)", "opcode": "A6", "bytes": 1}, {"syntax": "AND (IX+d)", "opcode": "DD A6 d", "bytes": 3}, {"syntax": "AND (IY+d)", "opcode": "FD A6 d", "bytes": 3}],
       "notes": "P/V はパリティ（1のビット数が偶数なら 1）。\n",
       "src": "book",
-      "example": {"code": ["and a,b"],"explanation": "この例では A と r（または (HL)、即値）の論理積を A に入れる。"}
+      "example": {"code": ["and a,b"],"explanation": "A = A AND B（論理積）。S/Z/P/V を更新し、H = 1、N = 0、C = 0。"}
     },
     {
       "mnemonic": "OR",
@@ -208,7 +208,7 @@
       "encodings": [{"syntax": "OR A,r", "opcode": "10110SSS", "bytes": 1}, {"syntax": "OR A,n", "opcode": "F6 n", "bytes": 2}, {"syntax": "OR (HL)", "opcode": "B6", "bytes": 1}, {"syntax": "OR (IX+d)", "opcode": "DD B6 d", "bytes": 3}, {"syntax": "OR (IY+d)", "opcode": "FD B6 d", "bytes": 3}],
       "notes": "OR A で A の値を保ったままフラグ（S/Z/P）を更新できる。\n",
       "src": "book",
-      "example": {"code": ["or a,b"],"explanation": "この例では A と r（または (HL)、即値）の論理和を A に入れる。"}
+      "example": {"code": ["or a,b"],"explanation": "A = A OR B（論理和）。S/Z/P/V を更新し、H = 0、N = 0、C = 0。"}
     },
     {
       "mnemonic": "XOR",
@@ -221,7 +221,7 @@
       "encodings": [{"syntax": "XOR A,r", "opcode": "10101SSS", "bytes": 1}, {"syntax": "XOR A,n", "opcode": "EE n", "bytes": 2}, {"syntax": "XOR (HL)", "opcode": "AE", "bytes": 1}, {"syntax": "XOR (IX+d)", "opcode": "DD AE d", "bytes": 3}, {"syntax": "XOR (IY+d)", "opcode": "FD AE d", "bytes": 3}],
       "notes": "XOR A は A=0 + キャリークリアの 1 バイト定番。\n",
       "src": "book",
-      "example": {"code": ["xor a,b"],"explanation": "この例では A と r（または (HL)、即値）の排他的論理和を A に入れる。"}
+      "example": {"code": ["xor a,b"],"explanation": "A = A XOR B（排他的論理和）。S/Z/P/V を更新し、H = 0、N = 0、C = 0。"}
     },
     {
       "mnemonic": "CP",
@@ -234,7 +234,7 @@
       "encodings": [{"syntax": "CP A,r", "opcode": "10111SSS", "bytes": 1}, {"syntax": "CP A,n", "opcode": "FE n", "bytes": 2}, {"syntax": "CP (HL)", "opcode": "BE", "bytes": 1}, {"syntax": "CP (IX+d)", "opcode": "DD BE d", "bytes": 3}, {"syntax": "CP (IY+d)", "opcode": "FD BE d", "bytes": 3}],
       "notes": "SUB と同様に N=1。SUB と異なり減算結果を A に格納しない。\n",
       "src": "book",
-      "example": {"code": ["cp a,b"],"explanation": "この例では A と r を比較（減算してフラグのみ更新、A は変わらない）。"}
+      "example": {"code": ["cp a,b"],"explanation": "A - B を計算してフラグのみ更新する（結果は捨てて A は不変、N = 1）。"}
     },
     {
       "mnemonic": "INC",
@@ -247,7 +247,7 @@
       "encodings": [{"syntax": "INC r", "opcode": "00DDD100", "bytes": 1}, {"syntax": "INC (HL)", "opcode": "34", "bytes": 1}, {"syntax": "INC (IX+d)", "opcode": "DD 34 d", "bytes": 3}, {"syntax": "INC ss", "opcode": "03/13/23/33", "bytes": 1}, {"syntax": "INC (IY+d)", "opcode": "FD 34 d", "bytes": 3}, {"syntax": "INC IX", "opcode": "DD 23", "bytes": 2}, {"syntax": "INC IY", "opcode": "FD 23", "bytes": 2}],
       "notes": "8ビット版はキャリーを変えない（P/V はオーバーフロー）。16ビット版はフラグを一切変えない。\n",
       "src": "book",
-      "example": {"code": ["inc b"],"explanation": "この例では レジスタまたはメモリを 1 加算。8ビット版と 16ビット版（INC ss）がある。"}
+      "example": {"code": ["inc b"],"explanation": "B = B + 1。S/Z/H/V/N を更新し、C は不変。"}
     },
     {
       "mnemonic": "DEC",
@@ -260,7 +260,7 @@
       "encodings": [{"syntax": "DEC r", "opcode": "00DDD101", "bytes": 1}, {"syntax": "DEC (HL)", "opcode": "35", "bytes": 1}, {"syntax": "DEC (IX+d)", "opcode": "DD 35 d", "bytes": 3}, {"syntax": "DEC ss", "opcode": "0B/1B/2B/3B", "bytes": 1}, {"syntax": "DEC (IY+d)", "opcode": "FD 35 d", "bytes": 3}, {"syntax": "DEC IX", "opcode": "DD 2B", "bytes": 2}, {"syntax": "DEC IY", "opcode": "FD 2B", "bytes": 2}],
       "notes": "8ビット版はキャリーを変えない。16 ビット版はフラグを一切変えないため、BC 全体のゼロ判定には別の処理が必要。DJNZ は B のみをカウンタとして使う。\n",
       "src": "book",
-      "example": {"code": ["dec b"],"explanation": "この例では レジスタまたはメモリを 1 減算。8ビット版と 16ビット版（DEC ss）がある。"}
+      "example": {"code": ["dec b"],"explanation": "B = B - 1。S/Z/H/V/N を更新し、C は不変。"}
     },
     {
       "mnemonic": "DAA",
@@ -273,7 +273,7 @@
       "encodings": [{"syntax": "DAA", "opcode": "27", "bytes": 1}],
       "notes": "N フラグ（直前が加算か減算か）と H/C を見て補正量を決める。P/V はパリティ。\n",
       "src": "book",
-      "example": {"code": ["daa"],"explanation": "この例では BCD 補正。ADD/ADC/SUB/SBC/NEG の直後に置いて BCD 演算の結果を補正する。"}
+      "example": {"code": ["daa"],"explanation": "直前の加減算結果の A を N/H/C フラグと桁の値に応じて BCD 補正する。"}
     },
     {
       "mnemonic": "CPL",
@@ -286,7 +286,7 @@
       "encodings": [{"syntax": "CPL", "opcode": "2F", "bytes": 1}],
       "notes": "H と N が常に 1 になる。\n",
       "src": "book",
-      "example": {"code": ["cpl"],"explanation": "この例では A をビット反転する（1の補数）。"}
+      "example": {"code": ["cpl"],"explanation": "A の全ビットを反転する（A = NOT A）。H と N は 1、他のフラグは不変。"}
     },
     {
       "mnemonic": "NEG",
@@ -299,7 +299,7 @@
       "encodings": [{"syntax": "NEG", "opcode": "ED 44", "bytes": 2}],
       "notes": "A=0 のとき C=0、A=0x80 のとき P/V=1。\n",
       "src": "book",
-      "example": {"code": ["neg"],"explanation": "この例では A を符号反転する（A = 0 - A、2の補数）。"}
+      "example": {"code": ["neg"],"explanation": "A = 0 - A（2 の補数）。全フラグを更新し、N = 1。"}
     },
     {
       "mnemonic": "CCF",
@@ -312,7 +312,7 @@
       "encodings": [{"syntax": "CCF", "opcode": "3F", "bytes": 1}],
       "notes": "H は実行前のキャリー値を引き継ぐ。\n",
       "src": "book",
-      "example": {"code": ["ccf"],"explanation": "この例では キャリーフラグを反転する。"}
+      "example": {"code": ["ccf"],"explanation": "キャリー C を反転する（H は実行前の C の値、N = 0）。"}
     },
     {
       "mnemonic": "SCF",
@@ -324,7 +324,7 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "SCF", "opcode": "37", "bytes": 1}],
       "src": "book",
-      "example": {"code": ["scf"],"explanation": "この例では キャリーフラグを 1 にセットする。"}
+      "example": {"code": ["scf"],"explanation": "キャリー C を 1 にセットする（H = 0、N = 0）。"}
     },
     {
       "mnemonic": "RLCA",
@@ -337,7 +337,7 @@
       "encodings": [{"syntax": "RLCA", "opcode": "07", "bytes": 1}],
       "notes": "S/Z/P-V は変化しない。9 ビットローテート（キャリーを含む）ではない点に注意。\n",
       "src": "book",
-      "example": {"code": ["rlca"],"explanation": "この例では A を左へ 1 ビットローテート。元の bit7 が C と bit0 の両方に入る。"}
+      "example": {"code": ["rlca"],"explanation": "A を左へ 1 ビットローテートし、旧 bit7 を C と bit0 に入れる。H/N は 0、S/Z/P/V は不変。"}
     },
     {
       "mnemonic": "RLA",
@@ -350,7 +350,7 @@
       "encodings": [{"syntax": "RLA", "opcode": "17", "bytes": 1}],
       "notes": "bit7 → C、C → bit0。多倍長シフトの連結に使う。\n",
       "src": "book",
-      "example": {"code": ["rla"],"explanation": "この例では A をキャリー込みで左へ 1 ビットローテート（9 ビット）。"}
+      "example": {"code": ["rla"],"explanation": "C を含め A を左へ 1 ビットローテートする（旧 C → bit0、旧 bit7 → C）。H/N は 0。"}
     },
     {
       "mnemonic": "RRCA",
@@ -362,7 +362,7 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "RRCA", "opcode": "0F", "bytes": 1}],
       "src": "book",
-      "example": {"code": ["rrca"],"explanation": "この例では A を右へ 1 ビットローテート。元の bit0 が C と bit7 の両方に入る。"}
+      "example": {"code": ["rrca"],"explanation": "A を右へ 1 ビットローテートし、旧 bit0 を C と bit7 に入れる。H/N は 0、S/Z/P/V は不変。"}
     },
     {
       "mnemonic": "RRA",
@@ -374,7 +374,7 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "RRA", "opcode": "1F", "bytes": 1}],
       "src": "book",
-      "example": {"code": ["rra"],"explanation": "この例では A をキャリー込みで右へ 1 ビットローテート（9 ビット）。"}
+      "example": {"code": ["rra"],"explanation": "C を含め A を右へ 1 ビットローテートする（旧 C → bit7、旧 bit0 → C）。H/N は 0。"}
     },
     {
       "mnemonic": "RLC",
@@ -387,7 +387,7 @@
       "encodings": [{"syntax": "RLC r", "opcode": "CB 00000DDD", "bytes": 2}, {"syntax": "RLC (HL)", "opcode": "CB 06", "bytes": 2}, {"syntax": "RLC (IX+d)", "opcode": "DD CB d 06", "bytes": 4}, {"syntax": "RLC (IY+d)", "opcode": "FD CB d 06", "bytes": 4}],
       "notes": "P/V はパリティ。RLCA との違いは全フラグ更新とメモリ操作対応。\n",
       "src": "book",
-      "example": {"code": ["rlc b"],"explanation": "この例では レジスタ/メモリを左へ 1 ビットローテートし、元の bit7 を C と bit0 に入れる。S/Z/P-V を更新する。"}
+      "example": {"code": ["rlc b"],"explanation": "B を左へ 1 ビットローテートし、旧 bit7 を C と bit0 に入れる。S/Z/P/V/C を更新し、H/N は 0。"}
     },
     {
       "mnemonic": "RL",
@@ -399,7 +399,7 @@
       "cycles": [{"cond": "RL r", "cycles": 8}, {"cond": "RL (HL)", "cycles": 15}, {"cond": "RL (IX/IY+d)", "cycles": 23}],
       "encodings": [{"syntax": "RL r", "opcode": "CB 00010DDD", "bytes": 2}, {"syntax": "RL (HL)", "opcode": "CB 16", "bytes": 2}, {"syntax": "RL (IX+d)", "opcode": "DD CB d 16", "bytes": 4}, {"syntax": "RL (IY+d)", "opcode": "FD CB d 16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["rl b"],"explanation": "この例では キャリー込み左ローテート（C → bit0、bit7 → C）。"}
+      "example": {"code": ["rl b"],"explanation": "旧 C を bit0 に入れ、B を左へ 1 ビットローテートする（旧 bit7 → C）。S/Z/P/V/C を更新し、H/N は 0。"}
     },
     {
       "mnemonic": "RRC",
@@ -411,7 +411,7 @@
       "cycles": [{"cond": "RRC r", "cycles": 8}, {"cond": "RRC (HL)", "cycles": 15}, {"cond": "RRC (IX/IY+d)", "cycles": 23}],
       "encodings": [{"syntax": "RRC r", "opcode": "CB 00001DDD", "bytes": 2}, {"syntax": "RRC (HL)", "opcode": "CB 0E", "bytes": 2}, {"syntax": "RRC (IX+d)", "opcode": "DD CB d 0E", "bytes": 4}, {"syntax": "RRC (IY+d)", "opcode": "FD CB d 0E", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["rrc b"],"explanation": "この例では レジスタ/メモリを右へ 1 ビットローテートし、元の bit0 を C と bit7 に入れる。"}
+      "example": {"code": ["rrc b"],"explanation": "B を右へ 1 ビットローテートし、旧 bit0 を C と bit7 に入れる。S/Z/P/V/C を更新し、H/N は 0。"}
     },
     {
       "mnemonic": "RR",
@@ -423,7 +423,7 @@
       "cycles": [{"cond": "RR r", "cycles": 8}, {"cond": "RR (HL)", "cycles": 15}, {"cond": "RR (IX/IY+d)", "cycles": 23}],
       "encodings": [{"syntax": "RR r", "opcode": "CB 00011DDD", "bytes": 2}, {"syntax": "RR (HL)", "opcode": "CB 1E", "bytes": 2}, {"syntax": "RR (IX+d)", "opcode": "DD CB d 1E", "bytes": 4}, {"syntax": "RR (IY+d)", "opcode": "FD CB d 1E", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["rr b"],"explanation": "この例では キャリー込み右ローテート（C → bit7、bit0 → C）。"}
+      "example": {"code": ["rr b"],"explanation": "旧 C を bit7 に入れ、B を右へ 1 ビットローテートする（旧 bit0 → C）。S/Z/P/V/C を更新し、H/N は 0。"}
     },
     {
       "mnemonic": "SLA",
@@ -435,7 +435,7 @@
       "cycles": [{"cond": "SLA r", "cycles": 8}, {"cond": "SLA (HL)", "cycles": 15}, {"cond": "SLA (IX/IY+d)", "cycles": 23}],
       "encodings": [{"syntax": "SLA r", "opcode": "CB 00100DDD", "bytes": 2}, {"syntax": "SLA (HL)", "opcode": "CB 26", "bytes": 2}, {"syntax": "SLA (IX+d)", "opcode": "DD CB d 26", "bytes": 4}, {"syntax": "SLA (IY+d)", "opcode": "FD CB d 26", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["sla b"],"explanation": "この例では 算術左シフト（bit7 → C、bit0 ← 0）。×2 相当。"}
+      "example": {"code": ["sla b"],"explanation": "B を左へ 1 ビットシフトする（bit0 ← 0、旧 bit7 → C）。B × 2 相当。"}
     },
     {
       "mnemonic": "SRA",
@@ -447,7 +447,7 @@
       "cycles": [{"cond": "SRA r", "cycles": 8}, {"cond": "SRA (HL)", "cycles": 15}, {"cond": "SRA (IX/IY+d)", "cycles": 23}],
       "encodings": [{"syntax": "SRA r", "opcode": "CB 00101DDD", "bytes": 2}, {"syntax": "SRA (HL)", "opcode": "CB 2E", "bytes": 2}, {"syntax": "SRA (IX+d)", "opcode": "DD CB d 2E", "bytes": 4}, {"syntax": "SRA (IY+d)", "opcode": "FD CB d 2E", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["sra b"],"explanation": "この例では 算術右シフト（符号ビット保持。bit7 → bit7 かつ bit0 → C）。符号付き値の 2 除算で負の奇数は負の無限大方向に丸める。"}
+      "example": {"code": ["sra b"],"explanation": "B を右へ 1 ビット算術シフトする（旧 bit7 を保持、bit0 → C）。符号付き ÷2 相当。"}
     },
     {
       "mnemonic": "SRL",
@@ -460,7 +460,7 @@
       "encodings": [{"syntax": "SRL r", "opcode": "CB 00111DDD", "bytes": 2}, {"syntax": "SRL (HL)", "opcode": "CB 3E", "bytes": 2}, {"syntax": "SRL (IX+d)", "opcode": "DD CB d 3E", "bytes": 4}, {"syntax": "SRL (IY+d)", "opcode": "FD CB d 3E", "bytes": 4}],
       "notes": "SLL は非公式命令で CB 30–37。CB 37 は SLL A、CB 36 は SLL (HL)。機種によっては動作しない。\n",
       "src": "book",
-      "example": {"code": ["srl b"],"explanation": "この例では 論理右シフト（bit7 ← 0、bit0 → C）。符号なし ÷2 相当。"}
+      "example": {"code": ["srl b"],"explanation": "B を右へ 1 ビット論理シフトする（bit7 ← 0、bit0 → C）。符号なし ÷2 相当。"}
     },
     {
       "mnemonic": "RLD",
@@ -473,7 +473,7 @@
       "encodings": [{"syntax": "RLD", "opcode": "ED 6F", "bytes": 2}],
       "notes": "A の上位 4 ビットは保持される。S/Z/P-V は操作後の A に基づき、C は保持される。\n",
       "src": "book",
-      "example": {"code": ["rld"],"explanation": "この例では A の下位 4 ビットと (HL) の上位・下位各 4 ビットを結合して左へ 4 ビット回転。"}
+      "example": {"code": ["rld"],"explanation": "(HL) の上位 4 ビットを A の下位 4 ビットへ、A の下位 4 ビットを (HL) の下位 4 ビットへ、(HL) の下位 4 ビットを上位 4 ビットへ移す（左 4 ビット回転）。"}
     },
     {
       "mnemonic": "RRD",
@@ -486,7 +486,7 @@
       "encodings": [{"syntax": "RRD", "opcode": "ED 67", "bytes": 2}],
       "notes": "A の上位 4 ビットは保持される。S/Z/P-V は操作後の A に基づき、C は保持される。",
       "src": "book",
-      "example": {"code": ["rrd"],"explanation": "この例では A の下位 4 ビットと (HL) の上位・下位各 4 ビットを結合して右へ 4 ビット回転。"}
+      "example": {"code": ["rrd"],"explanation": "A の下位 4 ビットを (HL) の上位 4 ビットへ、(HL) の上位 4 ビットを下位 4 ビットへ、(HL) の下位 4 ビットを A の下位 4 ビットへ移す（右 4 ビット回転）。"}
     },
     {
       "mnemonic": "BIT",
@@ -499,7 +499,7 @@
       "encodings": [{"syntax": "BIT b,r", "opcode": "CB 01BBBSSS", "bytes": 2}, {"syntax": "BIT b,(HL)", "opcode": "CB 01BBB110", "bytes": 2}, {"syntax": "BIT b,(IX+d)", "opcode": "DD CB d 01BBB110", "bytes": 4}, {"syntax": "BIT b,(IY+d)", "opcode": "FD CB d 01BBB110", "bytes": 4}],
       "notes": "b=0〜7。参照命令表では S と P/V の値は未規定として扱う。H=1、N=0、C は保持される。\n",
       "src": "book",
-      "example": {"code": ["bit 3,b"],"explanation": "この例では レジスタ/メモリのビット b をテストし、0 なら Z フラグを立てる。"}
+      "example": {"code": ["bit 3,b"],"explanation": "B の bit3 をテストし、0 なら Z を 1 にする。H = 1、N = 0、C は不変。"}
     },
     {
       "mnemonic": "SET",
@@ -512,7 +512,7 @@
       "encodings": [{"syntax": "SET b,r", "opcode": "CB 11BBBSSS", "bytes": 2}, {"syntax": "SET b,(HL)", "opcode": "CB 11BBB110", "bytes": 2}, {"syntax": "SET b,(IX+d)", "opcode": "DD CB d 11BBB110", "bytes": 4}, {"syntax": "SET b,(IY+d)", "opcode": "FD CB d 11BBB110", "bytes": 4}],
       "notes": "フラグは一切変化しない。\n",
       "src": "book",
-      "example": {"code": ["set 3,b"],"explanation": "この例では レジスタ/メモリのビット b を 1 にする。"}
+      "example": {"code": ["set 3,b"],"explanation": "B の bit3 を 1 にする。フラグは一切変化しない。"}
     },
     {
       "mnemonic": "RES",
@@ -525,7 +525,7 @@
       "encodings": [{"syntax": "RES b,r", "opcode": "CB 10BBBSSS", "bytes": 2}, {"syntax": "RES b,(HL)", "opcode": "CB 10BBB110", "bytes": 2}, {"syntax": "RES b,(IX+d)", "opcode": "DD CB d 10BBB110", "bytes": 4}, {"syntax": "RES b,(IY+d)", "opcode": "FD CB d 10BBB110", "bytes": 4}],
       "notes": "フラグは一切変化しない。\n",
       "src": "book",
-      "example": {"code": ["res 3,b"],"explanation": "この例では レジスタ/メモリのビット b を 0 にする。"}
+      "example": {"code": ["res 3,b"],"explanation": "B の bit3 を 0 にする。フラグは一切変化しない。"}
     },
     {
       "mnemonic": "LDI",
@@ -538,7 +538,7 @@
       "encodings": [{"syntax": "LDI", "opcode": "ED A0", "bytes": 2}],
       "notes": "P/V は BC=0 で 0、それ以外 1。ループを自前で組む 1 回分の転送。\n",
       "src": "book",
-      "example": {"code": ["ldi"],"explanation": "この例では (HL) を (DE) に 1 バイト転送し、HL/DE を +1、BC を -1。"}
+      "example": {"code": ["ldi"],"explanation": "(HL) の 1 バイトを (DE) へコピーし、HL と DE を +1、BC を -1（BC = 0 で P/V = 0）。"}
     },
     {
       "mnemonic": "LDIR",
@@ -551,7 +551,7 @@
       "encodings": [{"syntax": "LDIR", "opcode": "ED B0", "bytes": 2}],
       "notes": "HL と DE の範囲が重なり DE > HL の場合は破壊的にコピーする（memmove の dst>src 相当）。反復途中で割り込みを受けると、再開する LDIR 命令のアドレスがスタックに積まれる。実行前の BC=0 は 65536 バイト転送を意味する。\n",
       "src": "book",
-      "example": {"code": ["ldir"],"explanation": "この例では LDI を BC=0 になるまで繰り返す。ブロックコピー命令。"}
+      "example": {"code": ["ldir"],"explanation": "(HL) から (DE) への 1 バイト転送を BC = 0 になるまで繰り返す（各回で HL/DE を +1、BC を -1）。"}
     },
     {
       "mnemonic": "LDD",
@@ -564,7 +564,7 @@
       "encodings": [{"syntax": "LDD", "opcode": "ED A8", "bytes": 2}],
       "notes": "P/V は減算後の BC=0 で 0、それ以外は 1。",
       "src": "book",
-      "example": {"code": ["ldd"],"explanation": "この例では (HL) を (DE) に 1 バイト転送し、HL/DE を -1、BC を -1。"}
+      "example": {"code": ["ldd"],"explanation": "(HL) の 1 バイトを (DE) へコピーし、HL と DE を -1、BC を -1（BC = 0 で P/V = 0）。"}
     },
     {
       "mnemonic": "LDDR",
@@ -577,7 +577,7 @@
       "encodings": [{"syntax": "LDDR", "opcode": "ED B8", "bytes": 2}],
       "notes": "終端から降順にコピーする。実行前の BC=0 は 65536 バイト転送を意味する。\n",
       "src": "book",
-      "example": {"code": ["lddr"],"explanation": "この例では LDD を BC=0 になるまで繰り返す。後方ブロックコピー。"}
+      "example": {"code": ["lddr"],"explanation": "(HL) から (DE) への 1 バイト転送（HL/DE を -1）を BC = 0 になるまで繰り返す後方ブロックコピー。"}
     },
     {
       "mnemonic": "CPI",
@@ -590,7 +590,7 @@
       "encodings": [{"syntax": "CPI", "opcode": "ED A1", "bytes": 2}],
       "notes": "P/V は BC=0 で 0、それ以外 1。\n",
       "src": "book",
-      "example": {"code": ["cpi"],"explanation": "この例では A と (HL) を比較し、HL を +1、BC を -1。"}
+      "example": {"code": ["cpi"],"explanation": "A と (HL) を比較（減算してフラグのみ更新）し、HL を +1、BC を -1。C は不変。"}
     },
     {
       "mnemonic": "CPIR",
@@ -603,7 +603,7 @@
       "encodings": [{"syntax": "CPIR", "opcode": "ED B1", "bytes": 2}],
       "notes": "終了時 Z=1 は一致、P/V=0 は BC=0 を示す。最後の要素が一致した場合は両方成立する。初期 BC=0 は最大 65536 バイトを検索する。\n",
       "src": "book",
-      "example": {"code": ["cpir"],"explanation": "この例では CPI を一致（Z=1）または BC=0 まで繰り返す。メモリ検索命令。"}
+      "example": {"code": ["cpir"],"explanation": "A と (HL) の比較（HL を +1、BC を -1）を一致（Z = 1）か BC = 0 になるまで繰り返すメモリ検索。"}
     },
     {
       "mnemonic": "CPD",
@@ -616,7 +616,7 @@
       "encodings": [{"syntax": "CPD", "opcode": "ED A9", "bytes": 2}],
       "notes": "P/V は減算後の BC=0 で 0、それ以外は 1。C は比較結果にかかわらず保持される。",
       "src": "book",
-      "example": {"code": ["cpd"],"explanation": "この例では A と (HL) を比較し、HL を -1、BC を -1。"}
+      "example": {"code": ["cpd"],"explanation": "A と (HL) を比較（減算してフラグのみ更新）し、HL を -1、BC を -1。C は不変。"}
     },
     {
       "mnemonic": "CPDR",
@@ -629,7 +629,7 @@
       "encodings": [{"syntax": "CPDR", "opcode": "ED B9", "bytes": 2}],
       "notes": "終了時 Z=1 は一致、P/V=0 は BC=0 を示す。最後の要素が一致した場合は両方成立する。初期 BC=0 は最大 65536 バイトを検索する。",
       "src": "book",
-      "example": {"code": ["cpdr"],"explanation": "この例では CPD を一致または BC=0 まで繰り返す。後方メモリ検索。"}
+      "example": {"code": ["cpdr"],"explanation": "A と (HL) の比較（HL を -1、BC を -1）を一致（Z = 1）か BC = 0 になるまで繰り返す後方メモリ検索。"}
     },
     {
       "mnemonic": "JP",
@@ -642,7 +642,7 @@
       "encodings": [{"syntax": "JP nn", "opcode": "C3 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP cc,nn", "opcode": "C2/CA/D2/DA/E2/EA/F2/FA nn nn", "bytes": 3}, {"syntax": "JP (HL)", "opcode": "E9", "bytes": 1}, {"syntax": "JP (IX)", "opcode": "DD E9", "bytes": 2}, {"syntax": "JP (IY)", "opcode": "FD E9", "bytes": 2}],
       "notes": "cc: NZ=000 Z=001 NC=010 C=011 PO=100 PE=101 P=110 M=111。JP (HL)/(IX)/(IY) は各レジスタの値へ直接ジャンプし、メモリからアドレスを読み出さない。\n",
       "src": "book",
-      "example": {"code": ["jp 0x4000"],"explanation": "この例では 絶対アドレス nn へ無条件ジャンプ。条件付き JP cc,nn、レジスタ間接の JP (HL)/(IX)/(IY) もある。"}
+      "example": {"code": ["jp 0x4000"],"explanation": "PC に 0x4000 を設定して無条件ジャンプする。"}
     },
     {
       "mnemonic": "JR",
@@ -655,7 +655,7 @@
       "encodings": [{"syntax": "JR d", "opcode": "18 dd", "bytes": 2}, {"syntax": "JR NZ,d", "opcode": "20 dd", "bytes": 2}, {"syntax": "JR Z,d", "opcode": "28 dd", "bytes": 2}, {"syntax": "JR NC,d", "opcode": "30 dd", "bytes": 2}, {"syntax": "JR C,d", "opcode": "38 dd", "bytes": 2}],
       "notes": "dd は次の命令アドレスからの符号付きオフセット（dd=0 で次の命令）。\n",
       "src": "book",
-      "example": {"code": ["jr 2"],"explanation": "この例では 相対アドレス d（-128〜+127）へジャンプ。条件付き JR cc,d は Z/C のみ。"}
+      "example": {"code": ["jr 2"],"explanation": "次の命令アドレス + 2 の位置へ無条件に相対ジャンプする。"}
     },
     {
       "mnemonic": "DJNZ",
@@ -668,7 +668,7 @@
       "encodings": [{"syntax": "DJNZ d", "opcode": "10 dd", "bytes": 2}],
       "notes": "d は次の命令アドレスからの相対オフセット（-128〜+127）。\nDEC B / JR NZ,d より 1 バイト短く高速だが、DJNZ はフラグを変更しないため完全には等価でない。\n",
       "src": "book",
-      "example": {"code": ["djnz 2"],"explanation": "この例では レジスタ B を 1 減算し、0 でなければ相対アドレス d へ分岐する。カウンタ付きループの定番。"}
+      "example": {"code": ["djnz 2"],"explanation": "B を 1 減算し、B ≠ 0 なら次の命令アドレス + 2 の位置へ相対分岐する（B = 0 なら通過）。"}
     },
     {
       "mnemonic": "CALL",
@@ -681,7 +681,7 @@
       "encodings": [{"syntax": "CALL nn", "opcode": "CD nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL cc,nn", "opcode": "C4/CC/D4/DC/E4/EC/F4/FC nn nn", "bytes": 3}],
       "notes": "戻りアドレスは上位バイトから PUSH される（SP は 2 減算）。\n",
       "src": "book",
-      "example": {"code": ["call 0x4000"],"explanation": "この例では 戻りアドレスをスタックに退避して nn へサブルーチンコール。条件付き CALL cc,nn もある。"}
+      "example": {"code": ["call 0x4000"],"explanation": "次の命令のアドレスをスタックへ退避し、PC = 0x4000 へサブルーチンコールする。"}
     },
     {
       "mnemonic": "RET",
@@ -694,7 +694,7 @@
       "encodings": [{"syntax": "RET", "opcode": "C9", "bytes": 1}, {"syntax": "RET cc", "opcode": "C0/C8/D0/D8/E0/E8/F0/F8", "bytes": 1}],
       "notes": "RETI（ED 4D）/RETN（ED 45）は割り込みからの復帰用。\n",
       "src": "book",
-      "example": {"code": ["ret"],"explanation": "この例では スタックから戻りアドレスを POP して復帰。条件付き RET cc もある。"}
+      "example": {"code": ["ret"],"explanation": "スタックから戻りアドレスを取り出して PC に設定し、サブルーチンから復帰する。"}
     },
     {
       "mnemonic": "RETI",
@@ -707,7 +707,7 @@
       "encodings": [{"syntax": "RETI", "opcode": "ED 4D", "bytes": 2}],
       "notes": "対応する Z80 系ペリフェラルは ED 4D の命令フェッチを監視して割り込みチェーンを解放する。マスク可能割り込みの再許可が必要な場合は通常 EI を RETI の前に実行する。\n",
       "src": "book",
-      "example": {"code": ["reti"],"explanation": "この例では 割り込み処理からの復帰。スタックから PC を復帰し、周辺デバイスへ復帰を通知する。"}
+      "example": {"code": ["reti"],"explanation": "スタックから PC を復帰して割り込み処理から戻り、Z80 系ペリフェラルへ割り込みチェーンの解放を通知する。"}
     },
     {
       "mnemonic": "RETN",
@@ -719,7 +719,7 @@
       "cycles": [{"cond": "常時", "cycles": 14}],
       "encodings": [{"syntax": "RETN", "opcode": "ED 45", "bytes": 2}],
       "src": "book",
-      "example": {"code": ["retn"],"explanation": "この例では NMI からの復帰。PC を復帰し、IFF2 の値を IFF1 に戻す。"}
+      "example": {"code": ["retn"],"explanation": "スタックから PC を復帰し、IFF2 の値を IFF1 に戻して NMI から復帰する。"}
     },
     {
       "mnemonic": "RST",
@@ -732,7 +732,7 @@
       "encodings": [{"syntax": "RST p", "opcode": "11PPP111", "bytes": 1}],
       "notes": "p = 00h,08h,10h,18h,20h,28h,30h,38h。標準 CP/M の BDOS 呼び出しは CALL 0005h。RST の用途はシステムごとに異なる。\n",
       "src": "book",
-      "example": {"code": ["rst 0x08"],"explanation": "この例では 固定アドレス 00h/08h/10h/18h/20h/28h/30h/38h への 1 バイトコール。"}
+      "example": {"code": ["rst 0x08"],"explanation": "戻りアドレスをスタックへ退避し、PC = 0x08 へジャンプする 1 バイトコール。"}
     },
     {
       "mnemonic": "IN",
@@ -745,7 +745,7 @@
       "encodings": [{"syntax": "IN A,(n)", "opcode": "DB n", "bytes": 2}, {"syntax": "IN r,(C)", "opcode": "ED 01DDD000", "bytes": 2}],
       "notes": "IN A,(n) はポート番号の上位 8 ビットに A が複製される。IN r,(C) は S/Z が入力値、P/V がパリティに依存し、H=0、N=0、C は不変。\nIN (C)（ED 70、r=110）は値を捨ててフラグのみ更新する非公式だが広く使える形式。\n",
       "src": "book",
-      "example": {"code": ["in a,(0x12)"],"explanation": "この例では I/O ポートから 1 バイト入力。IN A,(n) はフラグ不変、IN r,(C) はフラグ更新あり。"}
+      "example": {"code": ["in a,(0x12)"],"explanation": "ポート 0x12 から 1 バイトを入力して A に入れる（A = ポート 0x12 の値）。フラグは不変。"}
     },
     {
       "mnemonic": "OUT",
@@ -758,7 +758,7 @@
       "encodings": [{"syntax": "OUT (n),A", "opcode": "D3 n", "bytes": 2}, {"syntax": "OUT (C),r", "opcode": "ED 01SSS001", "bytes": 2}],
       "notes": "OUT (n),A はポート番号の上位 8 ビットに A が複製される。フラグは変化しない。\nOUT (C),0（r=110）は非公式の 0 出力（機種差あり）。\n",
       "src": "book",
-      "example": {"code": ["out (0x12),a"],"explanation": "この例では I/O ポートへ 1 バイト出力。OUT (n),A と OUT (C),r の 2 形式。"}
+      "example": {"code": ["out (0x12),a"],"explanation": "A の値をポート 0x12 へ出力する（ポート 0x12 = A）。フラグは不変。"}
     },
     {
       "mnemonic": "INI",
@@ -771,7 +771,7 @@
       "encodings": [{"syntax": "INI", "opcode": "ED A2", "bytes": 2}],
       "notes": "Z は B=0 で 1。Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["ini"],"explanation": "この例では BC がアドレスバスに出る I/O ポートから (HL) に 1 バイト入力し、HL を +1、B を -1。"}
+      "example": {"code": ["ini"],"explanation": "ポート BC（上位 = 入力前の B、下位 = C）から (HL) へ 1 バイト入力し、B を -1、HL を +1。"}
     },
     {
       "mnemonic": "INIR",
@@ -784,7 +784,7 @@
       "encodings": [{"syntax": "INIR", "opcode": "ED B2", "bytes": 2}],
       "notes": "連続入力なので高速なデバイス向け。Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["inir"],"explanation": "この例では INI を B=0 まで繰り返す。ポートから B バイトのブロック入力。"}
+      "example": {"code": ["inir"],"explanation": "ポート BC から (HL) への 1 バイト入力を B = 0 になるまで繰り返す（各回で B を -1、HL を +1）。"}
     },
     {
       "mnemonic": "IND",
@@ -797,7 +797,7 @@
       "encodings": [{"syntax": "IND", "opcode": "ED AA", "bytes": 2}],
       "notes": "Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["ind"],"explanation": "この例では BC がアドレスバスに出る I/O ポートから (HL) に 1 バイト入力し、HL を -1、B を -1。"}
+      "example": {"code": ["ind"],"explanation": "ポート BC（上位 = 入力前の B、下位 = C）から (HL) へ 1 バイト入力し、B を -1、HL を -1。"}
     },
     {
       "mnemonic": "INDR",
@@ -810,7 +810,7 @@
       "encodings": [{"syntax": "INDR", "opcode": "ED BA", "bytes": 2}],
       "notes": "Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには入力前の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["indr"],"explanation": "この例では IND を B=0 まで繰り返す。後方ブロック入力。"}
+      "example": {"code": ["indr"],"explanation": "ポート BC から (HL) への 1 バイト入力を B = 0 になるまで繰り返す（各回で B を -1、HL を -1）。"}
     },
     {
       "mnemonic": "OUTI",
@@ -823,7 +823,7 @@
       "encodings": [{"syntax": "OUTI", "opcode": "ED A3", "bytes": 2}],
       "notes": "Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["outi"],"explanation": "この例では B を -1 した値と C を I/O アドレスに使い、(HL) を出力して HL を +1。"}
+      "example": {"code": ["outi"],"explanation": "B を -1 してから (HL) の 1 バイトをポート BC（上位 = 減算後の B、下位 = C）へ出力し、HL を +1。"}
     },
     {
       "mnemonic": "OTIR",
@@ -836,7 +836,7 @@
       "encodings": [{"syntax": "OTIR", "opcode": "ED B3", "bytes": 2}],
       "notes": "Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["otir"],"explanation": "この例では OUTI を B=0 まで繰り返す。ブロック出力。"}
+      "example": {"code": ["otir"],"explanation": "OUTI を B = 0 になるまで繰り返し、(HL) からポート BC へ B バイトをブロック出力する。"}
     },
     {
       "mnemonic": "OUTD",
@@ -849,7 +849,7 @@
       "encodings": [{"syntax": "OUTD", "opcode": "ED AB", "bytes": 2}],
       "notes": "Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["outd"],"explanation": "この例では B を -1 した値と C を I/O アドレスに使い、(HL) を出力して HL を -1。"}
+      "example": {"code": ["outd"],"explanation": "B を -1 してから (HL) の 1 バイトをポート BC（上位 = 減算後の B、下位 = C）へ出力し、HL を -1。"}
     },
     {
       "mnemonic": "OTDR",
@@ -862,7 +862,7 @@
       "encodings": [{"syntax": "OTDR", "opcode": "ED BB", "bytes": 2}],
       "notes": "Z は B の減算結果で決まる。UM0080 では N=1、C は不変と規定する。一部実機で異なる N の挙動が報告される場合は、公式仕様値との違いとして扱う。初期 B=0 のときは 256 回転送する。I/O アドレスの上位 8 ビットには減算後の B、下位 8 ビットには C が出る。",
       "src": "book",
-      "example": {"code": ["otdr"],"explanation": "この例では OUTD を B=0 まで繰り返す。後方ブロック出力。"}
+      "example": {"code": ["otdr"],"explanation": "OUTD を B = 0 になるまで繰り返し、(HL) からポート BC へ B バイトを後方ブロック出力する。"}
     }
   ]
 }

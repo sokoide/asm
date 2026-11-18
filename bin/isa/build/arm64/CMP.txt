@@ -17,7 +17,7 @@ CMP src1, src2 — ARM64（比較）
   cmp x1,x2
 
 解説:
-  この例では 比較（subs の WZR/XZR デスティネーション形のエイリアス。減算結果に従いフラグを設定）。条件分岐/CSEL の前提。
+  x1 - x2 を計算し、結果を捨てて N/Z/C/V を更新する（SUBS xzr 形の別名）。
 
 備考:
   符号付き比較は B.GE/B.LT/B.GT/B.LE、符号なしは B.HS/B.LO/B.HI/B.LS。

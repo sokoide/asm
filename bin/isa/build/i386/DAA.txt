@@ -17,7 +17,7 @@ ADD/ADC の直後に置き、AL の packed BCD（2 桁 10 進）結果を補正�
   daa
 
 解説:
-  この例では ADD/ADC の直後に置き、AL の packed BCD（2 桁 10 進）結果を補正する。
+  ADD/ADC 直後の AL を packed BCD 2 桁へ補正する（下位 4bit>9 か AF=1 で +6、AL>0x99 か CF=1 で +0x60）。
 
 備考:
   AF/C を見て +6/+0x60 補正。64bit モードでは廃止（#UD）。

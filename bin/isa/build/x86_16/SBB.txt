@@ -18,6 +18,6 @@ SBB dst, src — 8086（算術）
   sbb ax, bx
 
 解説:
-  この例では キャリー込み減算（borrow）。dst = dst - src - CF。
+  AX = AX - BX - CF（キャリー込み減算）。OF/SF/ZF/AF/PF/CF を更新。
 
 （根拠: book）

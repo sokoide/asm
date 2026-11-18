@@ -18,7 +18,7 @@ dst AND src を計算してフラグのみ更新する（dst は不変）。ビ�
   test rax, rbx
 
 解説:
-  この例では dst AND src を計算してフラグのみ更新する（dst は不変）。ビットの有無やゼロ判定に使う。
+  rax AND rbx を計算してフラグのみ更新する。rax は不変で CF = OF = 0。
 
 備考:
   test reg, reg は「レジスタが 0 か」の判定イディオム。

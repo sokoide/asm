@@ -23,7 +23,7 @@ MUL src — 80386（算術）
   mul ebx
 
 解説:
-  この例では 符号なし乗算。EDX:EAX = EAX × src（32bit）。結果の上位半分が EDX に入る。
+  EDX:EAX = EAX × ebx を符号なしで計算する（上位 32bit が 0 でなければ CF=OF=1）。
 
 備考:
   上位半分が 0 なら C=O=0、0 でなければ C=O=1。8bit は AX=AL×src、16bit は DX:AX。

@@ -17,7 +17,7 @@ SUB/SBB の直後に置き、AL の packed BCD 結果を補正する。
   das
 
 解説:
-  この例では SUB/SBB の直後に置き、AL の packed BCD 結果を補正する。
+  SUB/SBB 直後の AL を packed BCD 2 桁へ補正する（下位 4bit>9 か AF=1 で -6、AL>0x99 か CF=1 で -0x60）。
 
 備考:
   64bit モードでは廃止（#UD）。

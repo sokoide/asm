@@ -25,7 +25,7 @@ dst - src を計算してフラグのみ更新する（dst は不変）。分岐
   cmp eax, ebx
 
 解説:
-  この例では dst - src を計算してフラグのみ更新する（dst は不変）。分岐・setcc の判定に使う。
+  eax - ebx を計算して OF/SF/ZF/AF/PF/CF を更新する（eax は不変）。
 
 備考:
   符号付きは jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。

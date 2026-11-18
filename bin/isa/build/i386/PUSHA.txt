@@ -18,7 +18,7 @@ PUSHA — 80386（スタック）
   pusha
 
 解説:
-  この例では オペランドサイズに応じ、汎用レジスタ 8 個を一括退避する。保存する SP/ESP は命令実行前の値。
+  AX, CX, DX, BX, 実行前 SP, BP, SI, DI の順に 8 個（計 16 バイト）をスタックへ退避する。
 
 備考:
   16 ビット形は AX/CX/DX/BX/SP/BP/SI/DI、32 ビット形は EAX/ECX/EDX/EBX/ESP/EBP/ESI/EDI の順。32 ビット形は PUSHAD とも表記する。

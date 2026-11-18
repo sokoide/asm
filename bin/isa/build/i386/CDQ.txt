@@ -17,7 +17,7 @@ EAX の符号拡張（32→64bit）で EDX:EAX を作る。32bit IDIV の前処�
   cdq
 
 解説:
-  この例では EAX の符号拡張（32→64bit）で EDX:EAX を作る。32bit IDIV の前処理。
+  EAX の符号ビットを EDX へ複製する（EAX<0 なら EDX=0xFFFFFFFF となり EDX:EAX が 64bit 符号付き値になる）。
 
 備考:
   EDX に EAX の符号ビット（MSB）を満たす。16bit モードでは CDQ=66 99。

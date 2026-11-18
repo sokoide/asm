@@ -15,7 +15,7 @@ NOT（ビット反転）（Logical NOT）
   not 4,4
 
 解説:
-  この例では NOT（ビット反転）（Logical NOT）
+  r4 = NOT(r4)（全ビット反転、nor r4,r4,r4 の簡記）。
 
 元命令: isa ppc NOR
 NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
@@ -30,6 +30,6 @@ NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
   nor %r5,%r4,%r6
 
 解説:
-  この例では NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
+  r5 = NOT(r4 OR r6)。nor rX,rY,rY はビット反転（not 拡張形式）。
 
 （根拠: book）

@@ -17,6 +17,6 @@ NAND。
   nand %r5,%r4,%r6
 
 解説:
-  この例では NAND。
+  r5 = NOT(r4 AND r6)（NAND）。
 
 （根拠: book）

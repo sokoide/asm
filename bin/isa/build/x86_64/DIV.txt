@@ -18,7 +18,7 @@ DIV src — x86-64（算術）
   div rbx
 
 解説:
-  この例では 符号なし除算。RDX:RAX ÷ src で RAX=商、RDX=剰余（64bit）。
+  符号なし除算。RDX:RAX ÷ rbx の商を RAX、剰余を RDX へ。rbx = 0 や商が RAX に収まらないときは #DE 例外。
 
 備考:
   0 除算や商があふれると #DE 例外。事前準備: 64bit は RDX=0、32bit は EDX=0（例: xor edx,edx）。CDQ は符号拡張であり符号なし除算のゼロ拡張には使えない。

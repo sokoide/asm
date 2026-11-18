@@ -27,7 +27,7 @@ CALL label / reg / mem / seg:offset — 80386（サブルーチン）
   target:
 
 解説:
-  この例では 戻りアドレス（EIP、far では CS:EIP）をスタックに積んでからプロシージャへジャンプする。
+  次の命令の EIP をスタックへ積み、target へジャンプする。
 
 備考:
   far CALL（9A / FF /3）は CS:EIP を退避し、プロテクトモードではコールゲート経由で特権切替が起こる。

@@ -16,7 +16,7 @@ retired 命令カウンタ CSR を読み、XLEN ビットの値を rd に返す�
   rdinstret t0
 
 解説:
-  この例では retired 命令カウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。
+  instret CSR（実行完了命令カウンタ）の値を t0 へ読み出す。csrrs t0, instret, zero と等価。
 
 備考:
   CSRRS rd, instret, x0 と等価。CSR 0xC02。実行環境・特権設定により読出しが禁止される場合がある。

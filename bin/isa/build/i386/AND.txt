@@ -25,7 +25,7 @@ AND dst, src — 80386（論理）
   and eax, ebx
 
 解説:
-  この例では ビット単位の論理積を dst に格納する。マスク生成・ビットクリアに使う。
+  eax = eax AND ebx（SF/ZF/PF を更新、OF=CF=0）。
 
 備考:
   O と C は必ず 0、A は未定義。

@@ -17,7 +17,7 @@ ORI rA, rS, u16 — PowerPC（論理）
   ori %r5,%r4,1
 
 解説:
-  この例では ゼロ拡張即値との論理和。ori r0,r0,0 が nop の実体。
+  r5 = r4 OR 1（ゼロ拡張即値）。ori r0,r0,0 が nop の実体。
 
 備考:
   lis + ori で 32 ビット即値ロード。ORI は CR を更新しない（CR0 更新が必要なら or. を使う）。

@@ -24,7 +24,7 @@ EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP
   ex de,hl
 
 解説:
-  この例では EX DE,HL（レジスタ交換）、EX AF,AF'（裏レジスタ切替）、EX (SP),HL/IX/IY（スタック内容と交換）。
+  DE と HL の内容を交換する（DE ⇔ HL）。フラグは不変。
 
 備考:
   EX AF,AF' は F と F' も交換するため全フラグが入れ替わる。他の EX 形式はフラグ不変。EXX は BC/DE/HL の切替。

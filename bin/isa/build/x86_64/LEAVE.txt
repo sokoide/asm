@@ -17,7 +17,7 @@ RSP を RBP に戻したうえで RBP をポップする（フレームポイン
   leave
 
 解説:
-  この例では RSP を RBP に戻したうえで RBP をポップする（フレームポインタ破棄）。
+  RSP を RBP に戻したうえで RBP をポップする（RSP = RBP、RBP = [RSP]、RSP = RSP + 8）。
 
 備考:
   標準エピローグ（mov rsp, rbp / pop rbp）を 1 命令にしたもの。

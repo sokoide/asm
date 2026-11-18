@@ -18,6 +18,6 @@ SUB dst, src — 8086（算術）
   sub ax, bx
 
 解説:
-  この例では 減算。dst = dst - src。全フラグ更新。
+  AX = AX - BX を計算し、OF/SF/ZF/AF/PF/CF を更新。
 
 （根拠: book）

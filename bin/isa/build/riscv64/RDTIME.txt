@@ -16,7 +16,7 @@ RDTIME rd — RISC-V 64（システム制御）
   rdtime t0
 
 解説:
-  この例では 時間カウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。
+  time CSR（時間カウンタ）の値を t0 へ読み出す。csrrs t0, time, zero と等価。
 
 備考:
   CSRRS rd, time, x0 と等価。CSR 0xC01。実行環境・特権設定により読出しが禁止される場合がある。

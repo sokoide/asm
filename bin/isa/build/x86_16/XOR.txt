@@ -19,7 +19,7 @@ XOR dst, src — 8086（論理）
   xor ax, bx
 
 解説:
-  この例では 排他的論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。
+  AX = AX XOR BX（ビットごとの排他的論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。
 
 備考:
   XOR AX,AX は AX を 0 にし、演算結果に応じてフラグを更新する。命令長は 2 バイト。

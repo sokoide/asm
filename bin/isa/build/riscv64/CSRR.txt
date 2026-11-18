@@ -13,7 +13,7 @@ CSR を読み出して rd に入れる疑似命令。
   csrr t0, mstatus
 
 解説:
-  この例では CSR を読み出して rd に入れる疑似命令。
+  mstatus の値を t0 へ読み出す。csrrs t0, mstatus, zero と等価。
 
 備考:
   CSRRS rd,csr,x0 に展開し、CSR への書込みを行わない。CSR ごとの権限・読出し副作用は別途適用される。

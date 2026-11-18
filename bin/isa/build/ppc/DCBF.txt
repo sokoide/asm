@@ -19,7 +19,7 @@ DCBF rA, rB — PowerPC（キャッシュ）
   dcbf %r5,%r6
 
 解説:
-  この例では データキャッシュブロックを記憶域へ書き戻し、無効化する（Data Cache Block Flush）。
+  r5+r6 番地を含むデータキャッシュブロックを記憶域へ書き戻し、無効化する（Data Cache Block Flush）。
 
 備考:
   dcbst は書き戻しのみ、dcbi は無効化のみ。

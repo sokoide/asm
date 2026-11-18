@@ -16,7 +16,7 @@ bsoctr（拡張ニーモニック）→ BCCTR BO, BI — PowerPC（分岐）
   bsoctr
 
 解説:
-  この例では サマリーオーバーフローのときCTRへ分岐（Branch if Summary Overflow to CTR）
+  cr0 の SO が 1 のとき CTR へ分岐する（bcctr 0x0C,3 の簡記）。
 
 元命令: isa ppc BCCTR
 CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する間接呼び出しに使う。
@@ -31,7 +31,7 @@ CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する�
   bcctr 12,2
 
 解説:
-  この例では CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する間接呼び出しに使う。
+  BO=12、BI=2 なので cr0 の EQ=1 のとき CTR の番地へ分岐する（beqctr 相当）。bctr は無条件、bctrl は LR を更新する間接呼び出し。
 
 備考:
   CTR を分岐先に使うため CTR を減算する BO 形式は無効。bcctrl では分岐の成否にかかわらず次の命令のアドレスを LR に設定する。

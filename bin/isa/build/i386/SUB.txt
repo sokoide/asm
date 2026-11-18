@@ -25,7 +25,7 @@ dst から src を減算する。桁借りは C、符号付きオーバーフロ
   sub eax, ebx
 
 解説:
-  この例では dst から src を減算する。桁借りは C、符号付きオーバーフローは O で検出。
+  eax = eax - ebx。OF/SF/ZF/AF/PF/CF を更新する。
 
 備考:
   C=1 が「dst < src」（符号なし）。分岐・setcc と組み合わせる。

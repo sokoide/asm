@@ -26,7 +26,7 @@ ADC A, r — Z80（算術）
   adc a,b
 
 解説:
-  この例では キャリー込みの加算。ADC A,r と 16ビットの ADC HL,ss がある。
+  A = A + B + キャリー。S/Z/H/V/N/C を更新。
 
 備考:
   ADC HL,ss は全フラグ更新（ADD HL,ss は S/Z/P-V を更新しない）。

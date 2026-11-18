@@ -26,7 +26,7 @@ JMP dst — 8086（分岐）
   target:
 
 解説:
-  この例では 無条件ジャンプ（short/near/far、レジスタ間接・メモリ間接）。
+  target へ無条件ジャンプ（IP を書き換え）。
 
 備考:
   far は CS:IP を書き換える。

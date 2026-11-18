@@ -17,6 +17,6 @@ rT = 符号拡張即値 - rA で XER[CA] 更新。
   subfic %r3,%r5,1
 
 解説:
-  この例では rT = 符号拡張即値 - rA で XER[CA] 更新。
+  r3 = 1 - r5 を計算し XER[CA] を更新する。
 
 （根拠: book）

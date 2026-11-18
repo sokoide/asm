@@ -19,7 +19,7 @@ dst - src を計算してフラグのみ更新する（dst は不変）。分岐
   cmp rax, rbx
 
 解説:
-  この例では dst - src を計算してフラグのみ更新する（dst は不変）。分岐・条件転送の判定に使う。
+  rax - rbx を計算してフラグ（OF/SF/ZF/AF/PF/CF）のみ更新する。rax は不変。
 
 備考:
   符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。

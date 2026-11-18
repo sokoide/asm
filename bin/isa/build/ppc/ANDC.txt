@@ -17,6 +17,6 @@ rA = rS AND NOT rB（ビットクリア）。
   andc %r5,%r4,%r6
 
 解説:
-  この例では rA = rS AND NOT rB（ビットクリア）。
+  r5 = r4 AND NOT r6（ビットクリア）。
 
 （根拠: book）

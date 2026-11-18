@@ -16,7 +16,7 @@ mtxer（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ�
   mtxer 4
 
 解説:
-  この例では 固定小数点例外レジスタへの移動（Move to XER）
+  r4 の値を XER へ書き込む（mtspr 1,r4 の簡記）。
 
 元命令: isa ppc MTSPR
 特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
@@ -31,6 +31,6 @@ mtxer（拡張ニーモニック）→ MTSPR SPR, rS — PowerPC（レジスタ�
   mtspr 8,%r4
 
 解説:
-  この例では 特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。
+  r4 の値を SPR 8（LR）へ書き込む（mtlr r4 相当）。拡張形式 mtlr/mtctr/mtxer。
 
 （根拠: book）

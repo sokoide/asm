@@ -17,7 +17,7 @@ LWARX rT, rA, rB — PowerPC（ロード）
   lwarx %r3,%r5,%r6
 
 解説:
-  この例では ワードをロードし、実効アドレスに予約（reservation）を置く（Load Word and Reserve Indexed）。
+  r5+r6 番地のメモリから 4 バイトを取り出し r3 へ入れる（r3 = mem[r5+r6]）。同時にこのアドレスに予約（reservation）を置き、stwcx. と対でアトミック更新を実現する。
 
 備考:
   stwcx. と対で読み出し・更新を行う。古い予約は次の lwarx で置き換えられる。実効アドレスは 4 バイト境界に揃える。予約が成立しても必要なメモリ順序には別途同期が必要。

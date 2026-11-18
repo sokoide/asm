@@ -74,7 +74,7 @@
       ],
       "notes": "メモリ形式の多くは実効アドレス計算時間 EA が加算される。AL/AX と直接アドレス間の専用形式は 10 クロック。セグメントレジスタへ即値を直接転送できず、CS は MOV の転送先に指定できない。セグメントオーバーライドプレフィックス（26/2E/36/3E）で 2 クロック加算。",
       "src": "book",
-      "example": {"code": ["mov ax, bx"],"explanation": "この例では データ転送。レジスタ/メモリ/即値間で 8/16 ビットを転送する。メモリ同士の直接転送はできない。フラグは一切変化しない。"}
+      "example": {"code": ["mov ax, bx"],"explanation": "BX の 1 ワード（2 バイト）を AX へコピー（AX = BX）。フラグは一切変化しない。"}
     },
     {
       "mnemonic": "XCHG",
@@ -119,7 +119,7 @@
       ],
       "notes": "XCHG AX,reg（オペコード 90〜97）は 1 バイト。",
       "src": "book",
-      "example": {"code": ["xchg ax, bx"],"explanation": "この例では 2 つのオペランドを交換する（8/16 ビット）。"}
+      "example": {"code": ["xchg ax, bx"],"explanation": "AX と BX の 1 ワードを交換（AX = 元の BX、BX = 元の AX）。フラグは一切変化しない。"}
     },
     {
       "mnemonic": "LEA",
@@ -154,7 +154,7 @@
       ],
       "notes": "[BX+SI+disp] のような計算を 1 命令で済ませる技巧にも使われる。8086 のクロック表では 2+EA と数える。",
       "src": "book",
-      "example": {"code": ["lea ax, [si+4]"],"explanation": "この例では メモリオペランドの実効アドレスを計算してレジスタに入れる（メモリを読まない）。"}
+      "example": {"code": ["lea ax, [si+4]"],"explanation": "実効アドレス SI+4 を計算して AX へ代入（AX = SI+4）。メモリ [SI+4] は読まない。"}
     },
     {
       "mnemonic": "LDS",
@@ -189,7 +189,7 @@
       ],
       "notes": "LES は ES 版（C4 /r）。",
       "src": "book",
-      "example": {"code": ["lds ax, [bx]"],"explanation": "この例では メモリからオフセット（reg）とセグメント（DS）を一括ロードする（far ポインタ用）。"}
+      "example": {"code": ["lds ax, [bx]"],"explanation": "DS:BX の 1 ワードを AX へ、DS:BX+2 の 1 ワードを DS へロード（far ポインタの一括ロード）。"}
     },
     {
       "mnemonic": "LES",
@@ -224,7 +224,7 @@
       ],
       "notes": "LDS（C5 /r）は DS 版。",
       "src": "book",
-      "example": {"code": ["les ax, [bx]"],"explanation": "この例では メモリからオフセット（reg）とセグメント（ES）を一括ロードする（far ポインタ用）。"}
+      "example": {"code": ["les ax, [bx]"],"explanation": "DS:BX の 1 ワードを AX へ、DS:BX+2 の 1 ワードを ES へロード（far ポインタの一括ロード）。"}
     },
     {
       "mnemonic": "XLAT",
@@ -314,7 +314,7 @@
       ],
       "notes": "8086 は PUSH SP で SP を 2 減算した新しい値を退避する。80186 以降は減算前の SP を退避する。",
       "src": "book",
-      "example": {"code": ["push ax"],"explanation": "この例では 16 ビット値をスタックに退避（SP を -2 して書き込む）。"}
+      "example": {"code": ["push ax"],"explanation": "SP を 2 減算し、SS:SP 番地に AX の 1 ワードを退避。"}
     },
     {
       "mnemonic": "POP",
@@ -369,7 +369,7 @@
       ],
       "notes": "POP CS は公式命令として存在しない（8086 固有の非公式挙動を除く）。POP SP では最終的な SP はスタックから読み出した値になる。",
       "src": "book",
-      "example": {"code": ["pop ax"],"explanation": "この例では スタックから 16 ビット値を復帰（読み込んでから SP を +2）。"}
+      "example": {"code": ["pop ax"],"explanation": "SS:SP 番地の 1 ワードを AX へ読み出し、SP を 2 加算。"}
     },
     {
       "mnemonic": "PUSHF",
@@ -403,7 +403,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["pushf"],"explanation": "この例では フラグレジスタ FLAGS をスタックに退避。"}
+      "example": {"code": ["pushf"],"explanation": "SP を 2 減算し、FLAGS（1 ワード）を SS:SP 番地へ退避。"}
     },
     {
       "mnemonic": "POPF",
@@ -437,7 +437,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["popf"],"explanation": "この例では スタックから FLAGS を復帰（全フラグ上書き）。"}
+      "example": {"code": ["popf"],"explanation": "SS:SP 番地の FLAGS 値を復帰し、SP を 2 加算（全フラグ上書き）。"}
     },
     {
       "mnemonic": "LAHF",
@@ -565,7 +565,7 @@
       ],
       "notes": "EA はメモリオペランド実効アドレスの加算クロック。",
       "src": "book",
-      "example": {"code": ["add ax, bx"],"explanation": "この例では 加算。dst = dst + src。全フラグ更新。"}
+      "example": {"code": ["add ax, bx"],"explanation": "AX = AX + BX を計算し、OF/SF/ZF/AF/PF/CF を更新。"}
     },
     {
       "mnemonic": "ADC",
@@ -609,7 +609,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["adc ax, bx"],"explanation": "この例では キャリー込み加算。dst = dst + src + CF。多倍長演算用。"}
+      "example": {"code": ["adc ax, bx"],"explanation": "AX = AX + BX + CF（キャリー込み加算）。OF/SF/ZF/AF/PF/CF を更新。"}
     },
     {
       "mnemonic": "SUB",
@@ -649,7 +649,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sub ax, bx"],"explanation": "この例では 減算。dst = dst - src。全フラグ更新。"}
+      "example": {"code": ["sub ax, bx"],"explanation": "AX = AX - BX を計算し、OF/SF/ZF/AF/PF/CF を更新。"}
     },
     {
       "mnemonic": "SBB",
@@ -689,7 +689,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sbb ax, bx"],"explanation": "この例では キャリー込み減算（borrow）。dst = dst - src - CF。"}
+      "example": {"code": ["sbb ax, bx"],"explanation": "AX = AX - BX - CF（キャリー込み減算）。OF/SF/ZF/AF/PF/CF を更新。"}
     },
     {
       "mnemonic": "INC",
@@ -743,7 +743,7 @@
       ],
       "notes": "CF が変わらないためループカウンタに使える。",
       "src": "book",
-      "example": {"code": ["inc ax"],"explanation": "この例では 1 加算（CF は不変）。"}
+      "example": {"code": ["inc ax"],"explanation": "AX = AX + 1（CF は不変）。OF/SF/ZF/AF/PF を更新。"}
     },
     {
       "mnemonic": "DEC",
@@ -796,7 +796,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["dec ax"],"explanation": "この例では 1 減算（CF は不変）。"}
+      "example": {"code": ["dec ax"],"explanation": "AX = AX - 1（CF は不変）。OF/SF/ZF/AF/PF を更新。"}
     },
     {
       "mnemonic": "NEG",
@@ -836,7 +836,7 @@
       ],
       "notes": "0x8000 の NEG はオーバーフロー（OF=1）で値は 0x8000 のまま。",
       "src": "book",
-      "example": {"code": ["neg ax"],"explanation": "この例では 符号反転（dst = 0 - dst）。dst=0 以外のとき CF=1。"}
+      "example": {"code": ["neg ax"],"explanation": "AX = 0 - AX（符号反転）。AX≠0 のとき CF=1。"}
     },
     {
       "mnemonic": "CMP",
@@ -886,7 +886,7 @@
       ],
       "notes": "結果を書き戻さないため SUB より mem,reg が速い（9+EA）。",
       "src": "book",
-      "example": {"code": ["cmp ax, bx"],"explanation": "この例では 比較（dst - src のフラグのみ反映、dst は不変）。JA/JB/JG/JL 等の分岐の前提。"}
+      "example": {"code": ["cmp ax, bx"],"explanation": "AX - BX を計算しフラグのみ更新（AX は不変）。OF/SF/ZF/AF/PF/CF を更新。"}
     },
     {
       "mnemonic": "MUL",
@@ -933,7 +933,7 @@
       ],
       "notes": "CF=OF=1 は上位半分が非 0（結果がオーバーフロー）を示す。S/Z/A/P は未定義。",
       "src": "book",
-      "example": {"code": ["mul bx"],"explanation": "この例では 符号なし乗算。8ビット: AX = AL×src、16ビット: DX:AX = AX×src。"}
+      "example": {"code": ["mul bx"],"explanation": "DX:AX = AX × BX（符号なし 1 ワード乗算）。上位半分 DX が非 0 のとき CF=OF=1。"}
     },
     {
       "mnemonic": "IMUL",
@@ -980,7 +980,7 @@
       ],
       "notes": "CF=OF=1 は下位半分を符号拡張した値が積全体と一致しない（桁あふれ）ことを示す。",
       "src": "book",
-      "example": {"code": ["imul bx"],"explanation": "この例では 符号付き乗算。8ビット: AX = AL×src、16ビット: DX:AX = AX×src。"}
+      "example": {"code": ["imul bx"],"explanation": "DX:AX = AX × BX（符号付き 1 ワード乗算）。積が AX に収まらないとき CF=OF=1。"}
     },
     {
       "mnemonic": "DIV",
@@ -1027,7 +1027,7 @@
       ],
       "notes": "商がオーバーフローまたは除算零のときは INT 0（例外ベクタ 0）が発生。",
       "src": "book",
-      "example": {"code": ["div bx"],"explanation": "この例では 符号なし除算。16÷8: AL=商 AH=剰余、32÷16: AX=商 DX=剰余。"}
+      "example": {"code": ["div bx"],"explanation": "DX:AX ÷ BX（符号なし 1 ワード除算）を計算し、商を AX、剰余を DX へ。"}
     },
     {
       "mnemonic": "IDIV",
@@ -1074,7 +1074,7 @@
       ],
       "notes": "割算零・商の範囲外は INT 0。8086/8088 の許容商は 8 ビット版が -127〜127、16 ビット版が -32767〜32767。-128 / -32768 は後世代と異なり範囲外。",
       "src": "book",
-      "example": {"code": ["idiv bx"],"explanation": "この例では 符号付き除算。商の丸めは 0 方向。"}
+      "example": {"code": ["idiv bx"],"explanation": "DX:AX ÷ BX（符号付き 1 ワード除算）を計算し、商を AX、剰余を DX へ。丸めは 0 方向。"}
     },
     {
       "mnemonic": "CBW",
@@ -1213,7 +1213,7 @@
       ],
       "notes": "SUB/SBB 直後に使用。",
       "src": "book",
-      "example": {"code": ["das"],"explanation": "この例では 減算後の BCD 補正。"}
+      "example": {"code": ["das"],"explanation": "減算後の AL をパック BCD に補正。"}
     },
     {
       "mnemonic": "AAA",
@@ -1247,7 +1247,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["aaa"],"explanation": "この例では 加算後の ASCII 補正（非パック BCD）。"}
+      "example": {"code": ["aaa"],"explanation": "AX を非パック BCD に補正（繰り上がりで AL+6・AH+1、AF/CF をセット）し、AL の上位ニブルを 0 に。"}
     },
     {
       "mnemonic": "AAS",
@@ -1281,7 +1281,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["aas"],"explanation": "この例では 減算後の ASCII 補正（非パック BCD）。"}
+      "example": {"code": ["aas"],"explanation": "AX を非パック BCD に補正（繰り下がりで AL-6・AH-1、AF/CF をセット）し、AL の上位ニブルを 0 に。"}
     },
     {
       "mnemonic": "AAM",
@@ -1395,7 +1395,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["and ax, bx"],"explanation": "この例では 論理積。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。"}
+      "example": {"code": ["and ax, bx"],"explanation": "AX = AX AND BX（ビットごとの論理積）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"}
     },
     {
       "mnemonic": "OR",
@@ -1441,7 +1441,7 @@
       ],
       "notes": "OR AX,AX で値を保ったままフラグ更新。",
       "src": "book",
-      "example": {"code": ["or ax, bx"],"explanation": "この例では 論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。"}
+      "example": {"code": ["or ax, bx"],"explanation": "AX = AX OR BX（ビットごとの論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"}
     },
     {
       "mnemonic": "XOR",
@@ -1487,7 +1487,7 @@
       ],
       "notes": "XOR AX,AX は AX を 0 にし、演算結果に応じてフラグを更新する。命令長は 2 バイト。",
       "src": "book",
-      "example": {"code": ["xor ax, bx"],"explanation": "この例では 排他的論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。"}
+      "example": {"code": ["xor ax, bx"],"explanation": "AX = AX XOR BX（ビットごとの排他的論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"}
     },
     {
       "mnemonic": "NOT",
@@ -1526,7 +1526,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["not ax"],"explanation": "この例では ビット反転（1の補数）。フラグは一切変化しない。"}
+      "example": {"code": ["not ax"],"explanation": "AX の全ビットを反転（AX = NOT AX）。フラグは一切変化しない。"}
     },
     {
       "mnemonic": "TEST",
@@ -1591,7 +1591,7 @@
       ],
       "notes": "結果を書き戻さないため mem,reg は 9+EA と AND より速い。",
       "src": "book",
-      "example": {"code": ["test ax, bx"],"explanation": "この例では AND のフラグのみ反映（dst は不変）。ビットテスト用。"}
+      "example": {"code": ["test ax, bx"],"explanation": "AX AND BX を計算しフラグのみ更新（AX は不変）。CF=OF=0、SF/ZF/PF を更新。"}
     },
     {
       "mnemonic": "SHL",
@@ -1646,7 +1646,7 @@
       ],
       "notes": "回数 0 ではフラグ不変。1 回の OF は定義され、複数回では未定義。8086 は CL を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["shl ax, 1"],"explanation": "この例では 左論理シフト（SAL と同一）。最上位ビットを CF に送り、下位に 0 を詰める。"}
+      "example": {"code": ["shl ax, 1"],"explanation": "AX を 1 ビット左へシフト（bit15 → CF、bit0 に 0 を詰める）。"}
     },
     {
       "mnemonic": "SHR",
@@ -1701,7 +1701,7 @@
       ],
       "notes": "回数 0 ではフラグ不変。1 回の OF は定義され、複数回では未定義。8086 は CL を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["shr ax, 1"],"explanation": "この例では 右論理シフト。bit0 → CF、上位に 0。符号なし ÷2 相当。"}
+      "example": {"code": ["shr ax, 1"],"explanation": "AX を 1 ビット右へシフト（bit0 → CF、bit15 に 0 を詰める）。符号なし ÷2 相当。"}
     },
     {
       "mnemonic": "SAR",
@@ -1756,7 +1756,7 @@
       ],
       "notes": "1 ビットシフトでは OF=0。複数ビット時の OF は未定義。回数 0 ではフラグ不変。8086 は CL を 5 ビットにマスクしない。負の奇数は負の無限大方向に丸めるため、0 方向へ丸める IDIV とは異なる。",
       "src": "book",
-      "example": {"code": ["sar ax, 1"],"explanation": "この例では 右算術シフト（符号ビット保持）。bit0 → CF。符号付き ÷2 相当。"}
+      "example": {"code": ["sar ax, 1"],"explanation": "AX を 1 ビット右へ算術シフト（bit0 → CF、bit15 は符号を保持）。符号付き ÷2 相当。"}
     },
     {
       "mnemonic": "ROL",
@@ -1811,7 +1811,7 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["rol ax, 1"],"explanation": "この例では 左ローテート。元の最上位ビットが最下位ビットと CF に入る（8/16 ビット内循環）。"}
+      "example": {"code": ["rol ax, 1"],"explanation": "AX を 1 ビット左へ回転（元の bit15 を bit0 と CF へ）。"}
     },
     {
       "mnemonic": "ROR",
@@ -1866,7 +1866,7 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["ror ax, 1"],"explanation": "この例では 右ローテート。元の最下位ビットが最上位ビットと CF に入る（8/16 ビット内循環）。"}
+      "example": {"code": ["ror ax, 1"],"explanation": "AX を 1 ビット右へ回転（元の bit0 を bit15 と CF へ）。"}
     },
     {
       "mnemonic": "RCL",
@@ -1921,7 +1921,7 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["rcl ax, 1"],"explanation": "この例では キャリー込み左ローテート（9/17 ビット循環）。多倍長シフト用。"}
+      "example": {"code": ["rcl ax, 1"],"explanation": "CF を含めて AX を 1 ビット左へ回転（bit15 → CF、元の CF → bit0）。"}
     },
     {
       "mnemonic": "RCR",
@@ -1976,7 +1976,7 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["rcr ax, 1"],"explanation": "この例では キャリー込み右ローテート（9/17 ビット循環）。"}
+      "example": {"code": ["rcr ax, 1"],"explanation": "CF を含めて AX を 1 ビット右へ回転（bit0 → CF、元の CF → bit15）。"}
     },
     {
       "mnemonic": "JMP",
@@ -2041,7 +2041,7 @@
       ],
       "notes": "far は CS:IP を書き換える。",
       "src": "book",
-      "example": {"code": ["jmp target","target:"],"explanation": "この例では 無条件ジャンプ（short/near/far、レジスタ間接・メモリ間接）。"}
+      "example": {"code": ["jmp target","target:"],"explanation": "target へ無条件ジャンプ（IP を書き換え）。"}
     },
     {
       "mnemonic": "Jcc",
@@ -2080,7 +2080,7 @@
       ],
       "notes": "70 JO, 71 JNO, 72 JB/JNAE, 73 JAE/JNB, 74 JE/JZ, 75 JNE/JNZ, 76 JBE/JNA, 77 JA/JNBE, 78 JS, 79 JNS, 7A JP/JPE, 7B JNP/JPO, 7C JL/JNGE, 7D JGE/JNL, 7E JLE/JNG, 7F JG/JNLE（8086 の一覧）。符号付き比較は JG/JGE/JL/JLE、符号なしは JA/JAE/JB/JBE。",
       "src": "book",
-      "example": {"code": ["jz target","target:"],"explanation": "この例では 条件付き相対分岐（次の命令から -128〜+127 バイト）。条件コード一式（JA/JB/JE/JG/JL/JS/JZ と否定形 16 種）。"}
+      "example": {"code": ["jz target","target:"],"explanation": "ZF=1 のとき target へ相対分岐（次の命令から -128〜+127 バイト以内）。"}
     },
     {
       "mnemonic": "LOOP",
@@ -2119,7 +2119,7 @@
       ],
       "notes": "CX 減算はフラグに影響しない。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loop target","target:"],"explanation": "この例では CX を -1 し、CX≠0 なら相対分岐（カウンタループ）。"}
+      "example": {"code": ["loop target","target:"],"explanation": "CX を -1 し、CX≠0 の間 target へ相対分岐。"}
     },
     {
       "mnemonic": "LOOPE",
@@ -2158,7 +2158,7 @@
       ],
       "notes": "cmps/scas と組み合わせ、一致が続く間ループする。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loope target","target:"],"explanation": "この例では CX を -1 し、ZF=1 かつ CX≠0 なら相対分岐。LOOPZ と同じ。"}
+      "example": {"code": ["loope target","target:"],"explanation": "CX を -1 し、ZF=1 かつ CX≠0 のとき target へ相対分岐。"}
     },
     {
       "mnemonic": "LOOPNE",
@@ -2197,7 +2197,7 @@
       ],
       "notes": "cmps/scas と組み合わせ、不一致を見つけたら抜ける。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loopne target","target:"],"explanation": "この例では CX を -1 し、ZF=0 かつ CX≠0 なら相対分岐。LOOPNZ と同じ。"}
+      "example": {"code": ["loopne target","target:"],"explanation": "CX を -1 し、ZF=0 かつ CX≠0 のとき target へ相対分岐。"}
     },
     {
       "mnemonic": "JCXZ",
@@ -2235,7 +2235,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["jcxz target","target:"],"explanation": "この例では CX = 0 のときだけ相対分岐（ループ事前脱出）。"}
+      "example": {"code": ["jcxz target","target:"],"explanation": "CX=0 のときだけ target へ相対分岐（CX 自体は変化しない）。"}
     },
     {
       "mnemonic": "CALL",
@@ -2295,7 +2295,7 @@
       ],
       "notes": "far call は CS と IP の両方を退避。",
       "src": "book",
-      "example": {"code": ["call target","target:"],"explanation": "この例では サブルーチンコール（near/far、間接）。戻りアドレスをスタックに退避。"}
+      "example": {"code": ["call target","target:"],"explanation": "次の命令のアドレス（IP）をスタックへ退避し、target へジャンプ。"}
     },
     {
       "mnemonic": "RET",
@@ -2356,7 +2356,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["ret"],"explanation": "この例では サブルーチン復帰。RET imm は復帰後に SP をさらに加算（引数破棄）。"}
+      "example": {"code": ["ret"],"explanation": "スタック先頭の戻りアドレスを IP へ復帰して呼び出し元へ戻る（SP を 2 加算）。"}
     },
     {
       "mnemonic": "MOVSB",
@@ -2781,7 +2781,7 @@
       ],
       "notes": "REP/REPE/REPZ は同一オペコード F3 で 1 回の指定のみ有効。繰り返し中の実クロックは下位の文字列命令の REP 時レートに従う。",
       "src": "book",
-      "example": {"code": ["rep movsb"],"explanation": "この例では 後続の文字列命令を CX≠0 の間繰り返すプレフィックス（反復ごとに CX を -1）。movs/stos 用。"}
+      "example": {"code": ["rep movsb"],"explanation": "CX≠0 の間 movsb（DS:SI の 1 バイト → ES:DI）を繰り返し、反復ごとに CX を -1。"}
     },
     {
       "mnemonic": "REPE",
@@ -2816,7 +2816,7 @@
       ],
       "notes": "各反復後に CX=0 または ZF=0 で終了する。初期 CX=0 なら比較せず ZF も変わらない。",
       "src": "book",
-      "example": {"code": ["repe cmpsb"],"explanation": "この例では 文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=1 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。"}
+      "example": {"code": ["repe cmpsb"],"explanation": "CX≠0 の間 cmpsb（DS:SI と ES:DI の 1 バイト比較）を繰り返し、ZF=0 または CX=0 で終了。"}
     },
     {
       "mnemonic": "REPNE",
@@ -2851,7 +2851,7 @@
       ],
       "notes": "各反復後に CX=0 または ZF=1 で終了する。初期 CX=0 なら比較せず ZF も変わらない。",
       "src": "book",
-      "example": {"code": ["repne scasb"],"explanation": "この例では 文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=0 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。"}
+      "example": {"code": ["repne scasb"],"explanation": "CX≠0 の間 scasb（AL と ES:DI の 1 バイト比較）を繰り返し、ZF=1 または CX=0 で終了。"}
     },
     {
       "mnemonic": "IN",
@@ -2897,7 +2897,7 @@
       ],
       "notes": "I/O ポート番号は 16 ビット。即値形式はポート番号 0〜255 に限られる。",
       "src": "book",
-      "example": {"code": ["in al, dx"],"explanation": "この例では I/O ポートから入力。ポート番号は 8 ビット即値または DX 間接（16 ビット）。"}
+      "example": {"code": ["in al, dx"],"explanation": "DX が指す I/O ポートから 1 バイトを入力し AL へ入れる。"}
     },
     {
       "mnemonic": "OUT",
@@ -2942,7 +2942,7 @@
         {"syntax": "OUT DX,AX", "opcode": "EF", "bytes": 1}
       ],
       "src": "book",
-      "example": {"code": ["out dx, al"],"explanation": "この例では I/O ポートへ出力。"}
+      "example": {"code": ["out dx, al"],"explanation": "AL の 1 バイトを DX が指す I/O ポートへ出力。"}
     },
     {
       "mnemonic": "CLC",
@@ -2976,7 +2976,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["clc"],"explanation": "この例では キャリーフラグを 0 にクリア。"}
+      "example": {"code": ["clc"],"explanation": "キャリーフラグをクリア（CF = 0）。"}
     },
     {
       "mnemonic": "STC",
@@ -3010,7 +3010,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["stc"],"explanation": "この例では キャリーフラグを 1 にセット。"}
+      "example": {"code": ["stc"],"explanation": "キャリーフラグをセット（CF = 1）。"}
     },
     {
       "mnemonic": "CMC",
@@ -3044,7 +3044,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cmc"],"explanation": "この例では キャリーフラグを反転。"}
+      "example": {"code": ["cmc"],"explanation": "キャリーフラグを反転（CF を 0↔1）。"}
     },
     {
       "mnemonic": "CLD",
@@ -3224,7 +3224,7 @@
       ],
       "notes": "退避時に IF=0、TF=0 にされる。DOS の INT 21h 等の OS API 入口。",
       "src": "book",
-      "example": {"code": ["int 0x10"],"explanation": "この例では ソフトウェア割り込み（ベクタ imm8）。FLAGS/CS/IP を退避してハンドラへ。"}
+      "example": {"code": ["int 0x10"],"explanation": "FLAGS/CS/IP をスタックへ退避し、ベクタ 0x10 のハンドラへジャンプ（IF=0、TF=0）。"}
     },
     {
       "mnemonic": "INTO",
@@ -3436,7 +3436,7 @@
       ],
       "notes": "XCHG や ADD [mem],reg など RMW 命令に付けるのが本来の用法。",
       "src": "book",
-      "example": {"code": ["lock add word [bx], 1"],"explanation": "この例では 次の命令のバスをロックするプレフィックス（マルチプロセッサ同期用）。"}
+      "example": {"code": ["lock add word [bx], 1"],"explanation": "続く add word [bx],1 のメモリ更新中にバスをロックし、他プロセッサのアクセスを禁止。"}
     },
     {
       "mnemonic": "ESC",
@@ -3477,7 +3477,7 @@
       ],
       "notes": "8087 用のエスケープ枠。8087 がなくてもメモリ形式は読み出しバスサイクルを発生させるため、メモリマップド I/O には副作用がありうる。exop はコプロセッサ命令内にエンコードされる 0〜63 の数値。",
       "src": "book",
-      "example": {"code": ["esc 0, [bx]"],"explanation": "この例では コプロセッサへのエスケープ。上位 5 ビットが 11011 のオペコードを FPU 命令として解釈させ、メモリオペランドを読み出して破棄し、外部プロセッサがバス上の値を取得できる。"}
+      "example": {"code": ["esc 0, [bx]"],"explanation": "DS:[BX] の 1 ワード読み出しサイクルを発生させ（値は破棄）、コプロセッサ命令 exop=0 として 8087 へ渡す。"}
     },
     {
       "mnemonic": "SEG",
@@ -3527,7 +3527,7 @@
       ],
       "notes": "例: MOV AX, ES:[BX]。DS 既定のメモリ参照を SS（BP 実効アドレス時の既定）以外へ変える用途が中心。string 命令の ES:DI 側のように既定でセグメントが決まっているオペランドには効果がない。",
       "src": "book",
-      "example": {"code": ["mov ax, [cs:bx]"],"explanation": "この例では セグメントオーバーライドプレフィックス。CS:/DS:/ES:/SS: を後続の 1 命令に前置し、既定のセグメント参照を明示的に差し替える。"}
+      "example": {"code": ["mov ax, [cs:bx]"],"explanation": "既定 DS のメモリ参照 [bx] を CS 基準に読み替え、CS:BX の 1 ワードを AX へロード。"}
     }
   ]
 }

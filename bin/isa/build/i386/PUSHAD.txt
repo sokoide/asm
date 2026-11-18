@@ -17,7 +17,7 @@ PUSHAD — 80386（スタック）
   pushad
 
 解説:
-  この例では 32 ビット汎用レジスタ 8 個を一括退避する。
+  eax, ecx, edx, ebx, 実行前 esp, ebp, esi, edi の順に 8 個（計 32 バイト）をスタックへ退避する。
 
 備考:
   EAX/ECX/EDX/EBX/元の ESP/EBP/ESI/EDI の順に積む。16 ビット既定の場合は 66 60。PUSHA も参照。

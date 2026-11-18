@@ -17,7 +17,7 @@ MSUB dst, src1, src2, src3 — ARM64（算術）
   msub x0,x1,x2,x3
 
 解説:
-  この例では 乗算して減算（dst = src3 - src1 * src2）。積のオーバーフローは無視。
+  x0 = x3 - x1 × x2（下位 64 ビット、積の上位は無視）。
 
 備考:
   除算後の剰余は UDIV/SDIV + MSUB で求める。

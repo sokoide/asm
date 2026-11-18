@@ -17,7 +17,7 @@ SETcc dst8 — x86-64（データ転送）
   setz byte [rdi]
 
 解説:
-  この例では 条件が成立していれば dst（8ビットレジスタ/メモリ）に 1、不成立なら 0 を格納する。
+  ZF = 1 なら rdi が指す 1 バイトに 1、ZF = 0 なら 0 を格納する。
 
 備考:
   cc の種類と別名は Jcc の備考と同じ。（sete/setne/seta/setb/setg/setl 等）。

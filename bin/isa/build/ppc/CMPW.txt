@@ -16,7 +16,7 @@ cmpw（拡張ニーモニック）→ CMP crfT, L, rA, rB — PowerPC（比較�
   cmpw crT,4,5
 
 解説:
-  この例では ワード比較（Compare Word）
+  r4 と r5 を符号付き 32 ビット比較し結果を CR フィールド crT に設定する（cmp crT,0,4,5 の簡記）。
 
 元命令: isa ppc CMP
 符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
@@ -31,7 +31,7 @@ cmpw（拡張ニーモニック）→ CMP crfT, L, rA, rB — PowerPC（比較�
   cmp cr0,l,%r5,%r6
 
 解説:
-  この例では 符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
+  r5 と r6 を符号付き比較し、cr0 の LT/GT/EQ を設定する（SO は XER[SO] をコピー）。
 
 備考:
   拡張形式 cmpw（L=0 暗黙）。分岐は後続の bc 系や bne/beq など条件分岐で使う。

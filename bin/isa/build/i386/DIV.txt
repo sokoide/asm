@@ -23,7 +23,7 @@ DIV src — 80386（算術）
   div ebx
 
 解説:
-  この例では 符号なし除算。EDX:EAX ÷ src で EAX=商、EDX=剰余（32bit）。
+  EDX:EAX を ebx で符号なし除算し、商を eax、剰余を edx へ入れる（ebx=0 か商の桁あふれで割り込み 0）。
 
 備考:
   0 除算や商あふれで #DE 例外。事前準備: 32bit は EDX=0（xor edx, edx）、8bit は AX=AL のゼロ拡張。

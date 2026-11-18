@@ -17,6 +17,6 @@ EQV rA, rS, rB — PowerPC（論理）
   eqv %r5,%r4,%r6
 
 解説:
-  この例では 同値（XNOR）。
+  r5 = NOT(r4 XOR r6)（同値、XNOR）。
 
 （根拠: book）

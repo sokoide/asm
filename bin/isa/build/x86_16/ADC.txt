@@ -19,6 +19,6 @@ ADC dst, src — 8086（算術）
   adc ax, bx
 
 解説:
-  この例では キャリー込み加算。dst = dst + src + CF。多倍長演算用。
+  AX = AX + BX + CF（キャリー込み加算）。OF/SF/ZF/AF/PF/CF を更新。
 
 （根拠: book）

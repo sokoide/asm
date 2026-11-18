@@ -16,7 +16,7 @@ cmpwi（拡張ニーモニック）→ CMPI crfT, L, rA, s16 — PowerPC（比�
   cmpwi crT,4,s16
 
 解説:
-  この例では ワード即値比較（Compare Word Immediate）
+  r4 と符号拡張即値 s16 を符号付き比較し結果を crT に設定する（cmpi crT,0,4,s16 の簡記）。
 
 元命令: isa ppc CMPI
 符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。
@@ -31,7 +31,7 @@ cmpwi（拡張ニーモニック）→ CMPI crfT, L, rA, s16 — PowerPC（比�
   cmpi cr0,l,%r5,1
 
 解説:
-  この例では 符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。
+  r5 と即値 1 を符号付き比較し、cr0 の LT/GT/EQ を設定する。拡張形式 cmpwi crfT,rA,s16 が実用形。
 
 備考:
   16 ビット即値は符号拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。

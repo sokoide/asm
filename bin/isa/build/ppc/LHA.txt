@@ -17,7 +17,7 @@ LHA rT, d(rA) — PowerPC（ロード）
   lha %r3,4(%r5)
 
 解説:
-  この例では 2 バイトを符号拡張してロードする（Load Halfword Algebraic）。
+  r5+4 番地のメモリから 2 バイトを取り出し符号拡張して r3 へ入れる（r3 = 符号拡張 mem[r5+4]）。アドレス = ベース r5 + 即値オフセット 4。
 
 備考:
   更新形式は lhau/lhaux。

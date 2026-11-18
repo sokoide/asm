@@ -16,7 +16,7 @@ mflr（拡張ニーモニック）→ MFSPR rT, SPR — PowerPC（レジスタ�
   mflr 3
 
 解説:
-  この例では リンクレジスタからの移動（Move from Link Register）
+  LR の値を r3 へ読み出す（mfspr r3,8 の簡記）。
 
 元命令: isa ppc MFSPR
 特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
@@ -31,7 +31,7 @@ mflr（拡張ニーモニック）→ MFSPR rT, SPR — PowerPC（レジスタ�
   mfspr %r3,8
 
 解説:
-  この例では 特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。
+  SPR 8（LR）の値を r3 へ読み出す（mflr r3 相当）。拡張形式は mflr/mfctr/mfxer。
 
 備考:
   LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。

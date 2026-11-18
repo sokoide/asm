@@ -13,7 +13,7 @@ CSRSI csr, uimm — RISC-V 32（システム制御）
   csrsi mstatus, 1
 
 解説:
-  この例では 5 ビット即値で指定した CSR ビットをセットする疑似命令。
+  即値 1 に対応するビットを CSR mstatus にセットする（csrrsi zero, mstatus, 1 に展開される疑似命令）。
 
 備考:
   CSRRSI x0,csr,uimm に展開する。uimm=0 の場合は書込みを行わない。

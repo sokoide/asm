@@ -17,7 +17,7 @@ ICBI rA, rB — PowerPC（キャッシュ）
   icbi %r5,%r6
 
 解説:
-  この例では 命令キャッシュブロックを無効化する（Instruction Cache Block Invalidate）。
+  r5+r6 番地を含む命令キャッシュブロックを無効化する（Instruction Cache Block Invalidate）。
 
 備考:
   自己書換コードでは必要なデータキャッシュ書戻しと同期の後に実行し、命令同期を行う。具体的な手順は CPU のキャッシュ構成に依存する。

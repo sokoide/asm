@@ -17,7 +17,7 @@ CSINV dst, src1, src2, cond — ARM64（分岐）
   csinv x0,x1,x2,eq
 
 解説:
-  この例では 条件選択 + 反転。cond 成立なら src1、不成立なら NOT src2 を dst へコピーする。
+  EQ 成立なら x0 = x1、不成立なら x0 = ~x2。フラグは変化しない。
 
 備考:
   sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。

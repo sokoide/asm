@@ -13,7 +13,7 @@ rs の 1 ビットに対応する CSR ビットをセットする疑似命令。
   csrs mstatus, t1
 
 解説:
-  この例では rs の 1 ビットに対応する CSR ビットをセットする疑似命令。
+  t1 の 1 になっているビットを CSR mstatus にセットする（csrrs zero, mstatus, t1 に展開される疑似命令）。
 
 備考:
   CSRRS x0,csr,rs に展開する。rs=x0 の場合は書込みを行わない。

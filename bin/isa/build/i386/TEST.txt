@@ -22,7 +22,7 @@ dst AND src を計算してフラグのみ更新する（dst は不変）。ビ�
   test eax, ebx
 
 解説:
-  この例では dst AND src を計算してフラグのみ更新する（dst は不変）。ビットの有無やゼロ判定に使う。
+  eax AND ebx を計算して SF/ZF/PF を更新し OF=CF=0 にする（eax は不変）。
 
 備考:
   test reg, reg はゼロ判定のイディオム。

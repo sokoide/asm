@@ -17,7 +17,7 @@ CMPL crfT, L, rA, rB — PowerPC（比較）
   cmpl cr0,l,%r5,%r6
 
 解説:
-  この例では 符号なし（logical）比較。拡張形式 cmplw。
+  r5 と r6 を符号なし（logical）比較し、cr0 の LT/GT/EQ を設定する。拡張形式 cmplw。
 
 備考:
   比較した CR フィールドの LT/GT/EQ を更新し、SO には XER[SO] をコピーする。

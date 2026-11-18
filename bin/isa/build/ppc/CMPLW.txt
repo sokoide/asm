@@ -16,7 +16,7 @@ cmplw（拡張ニーモニック）→ CMPL crfT, L, rA, rB — PowerPC（比較
   cmplw crT,4,5
 
 解説:
-  この例では 論理ワード比較（Compare Logical Word）
+  r4 と r5 を符号なし比較し結果を crT に設定する（cmpl crT,0,4,5 の簡記）。
 
 元命令: isa ppc CMPL
 符号なし（logical）比較。拡張形式 cmplw。
@@ -31,7 +31,7 @@ cmplw（拡張ニーモニック）→ CMPL crfT, L, rA, rB — PowerPC（比較
   cmpl cr0,l,%r5,%r6
 
 解説:
-  この例では 符号なし（logical）比較。拡張形式 cmplw。
+  r5 と r6 を符号なし（logical）比較し、cr0 の LT/GT/EQ を設定する。拡張形式 cmplw。
 
 備考:
   比較した CR フィールドの LT/GT/EQ を更新し、SO には XER[SO] をコピーする。

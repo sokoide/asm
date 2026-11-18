@@ -19,7 +19,7 @@ Jcc short — 8086（分岐）
   target:
 
 解説:
-  この例では 条件付き相対分岐（次の命令から -128〜+127 バイト）。条件コード一式（JA/JB/JE/JG/JL/JS/JZ と否定形 16 種）。
+  ZF=1 のとき target へ相対分岐（次の命令から -128〜+127 バイト以内）。
 
 備考:
   70 JO, 71 JNO, 72 JB/JNAE, 73 JAE/JNB, 74 JE/JZ, 75 JNE/JNZ, 76 JBE/JNA, 77 JA/JNBE, 78 JS, 79 JNS, 7A JP/JPE, 7B JNP/JPO, 7C JL/JNGE, 7D JGE/JNL, 7E JLE/JNG, 7F JG/JNLE（8086 の一覧）。符号付き比較は JG/JGE/JL/JLE、符号なしは JA/JAE/JB/JBE。

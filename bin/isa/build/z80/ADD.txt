@@ -29,7 +29,7 @@ A に r（または (HL)、即値）を加算し結果を A に入れる。16 �
   add a,b
 
 解説:
-  この例では A に r（または (HL)、即値）を加算し結果を A に入れる。16 ビット版は ADD HL,ss / ADD IX,pp / ADD IY,rr。
+  A = A + B。S/Z/H/V/N/C を更新。
 
 備考:
   ss は BC/DE/HL/SP。IX 版は BC/DE/IX/SP、IY 版は BC/DE/IY/SP を使う。上のフラグ欄は 8 ビット形式で、16 ビット形式は S/Z/P-V を保持し、H/C を更新し N=0 とする。8 ビット算術演算時の P/V はオーバーフローとして機能する。

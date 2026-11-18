@@ -17,6 +17,6 @@ rA = rS OR NOT rB。
   orc %r5,%r4,%r6
 
 解説:
-  この例では rA = rS OR NOT rB。
+  r5 = r4 OR NOT r6。
 
 （根拠: book）

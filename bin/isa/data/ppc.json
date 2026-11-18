@@ -14,7 +14,7 @@
       "equivalent": "bc 0x10, 0, addr",
       "summary": "減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bdnz target","target:"],"explanation": "この例では 減算後のCTRが非ゼロのとき分岐（Branch if Decremented CTR is Not Zero）"}
+      "example": {"code": ["bdnz target","target:"],"explanation": "CTR を減算して 0 でなければ target へ分岐する（bc 0x10,0,target の簡記）。"}
     },
     {
       "mnemonic": "bdz",
@@ -23,7 +23,7 @@
       "equivalent": "bc 0x12, 0, addr",
       "summary": "減算後のCTRがゼロのとき分岐（Branch if Decremented CTR is Zero）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bdz target","target:"],"explanation": "この例では 減算後のCTRがゼロのとき分岐（Branch if Decremented CTR is Zero）"}
+      "example": {"code": ["bdz target","target:"],"explanation": "CTR を減算して 0 になったら target へ分岐する（bc 0x12,0,target の簡記）。"}
     },
     {
       "mnemonic": "bdnzf",
@@ -32,7 +32,7 @@
       "equivalent": "bc 0x00, crbT, addr",
       "summary": "減算後のCTRが非ゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Not Zero and Condition False）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bdnzf 2,target","target:"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Not Zero and Condition False）"}
+      "example": {"code": ["bdnzf 2,target","target:"],"explanation": "CTR を減算し 0 でなく、かつ CR ビット 2 が 0 のとき target へ分岐する（bc 0x00,2,target の簡記）。"}
     },
     {
       "mnemonic": "bdnzt",
@@ -41,7 +41,7 @@
       "equivalent": "bc 0x08, crbT, addr",
       "summary": "減算後のCTRが非ゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Not Zero and Condition True）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bdnzt 2,target","target:"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Not Zero and Condition True）"}
+      "example": {"code": ["bdnzt 2,target","target:"],"explanation": "CTR を減算し 0 でなく、かつ CR ビット 2 が 1 のとき target へ分岐する（bc 0x08,2,target の簡記）。"}
     },
     {
       "mnemonic": "bdzf",
@@ -50,7 +50,7 @@
       "equivalent": "bc 0x02, crbT, addr",
       "summary": "減算後のCTRがゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Zero and Condition False）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bdzf 2,target","target:"],"explanation": "この例では 減算後のCTRがゼロかつ条件が偽のとき分岐（Branch if Decremented CTR is Zero and Condition False）"}
+      "example": {"code": ["bdzf 2,target","target:"],"explanation": "CTR を減算し 0 で、かつ CR ビット 2 が 0 のとき target へ分岐する（bc 0x02,2,target の簡記）。"}
     },
     {
       "mnemonic": "bdzt",
@@ -59,7 +59,7 @@
       "equivalent": "bc 0x0A, crbT, addr",
       "summary": "減算後のCTRがゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Zero and Condition True）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bdzt 2,target","target:"],"explanation": "この例では 減算後のCTRがゼロかつ条件が真のとき分岐（Branch if Decremented CTR is Zero and Condition True）"}
+      "example": {"code": ["bdzt 2,target","target:"],"explanation": "CTR を減算し 0 で、かつ CR ビット 2 が 1 のとき target へ分岐する（bc 0x0A,2,target の簡記）。"}
     },
     {
       "mnemonic": "beq",
@@ -68,7 +68,7 @@
       "equivalent": "bc 0x0C, (crT*4)+2, addr",
       "summary": "等しいとき分岐（Branch if Equal）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["beq target","target:"],"explanation": "この例では 等しいとき分岐（Branch if Equal）"}
+      "example": {"code": ["beq target","target:"],"explanation": "cr0 の EQ（等しい）が 1 のとき target へ分岐する（bc 0x0C,2,target の簡記）。"}
     },
     {
       "mnemonic": "bne",
@@ -77,7 +77,7 @@
       "equivalent": "bc 0x04, (crT*4)+2, addr",
       "summary": "等しくないとき分岐（Branch if Not Equal）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["bne target","target:"],"explanation": "この例では 等しくないとき分岐（Branch if Not Equal）"}
+      "example": {"code": ["bne target","target:"],"explanation": "cr0 の EQ が 0 のとき target へ分岐する（bc 0x04,2,target の簡記）。"}
     },
     {
       "mnemonic": "blt",
@@ -86,7 +86,7 @@
       "equivalent": "bc 0x0C, (crT*4)+0, addr",
       "summary": "未満のとき分岐（Branch if Less Than）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["blt target","target:"],"explanation": "この例では 未満のとき分岐（Branch if Less Than）"}
+      "example": {"code": ["blt target","target:"],"explanation": "cr0 の LT が 1 のとき target へ分岐する（bc 0x0C,0,target の簡記）。"}
     },
     {
       "mnemonic": "bge",
@@ -95,7 +95,7 @@
       "equivalent": "bc 0x04, (crT*4)+0, addr",
       "summary": "以上のとき分岐（Branch if Greater Than or Equal）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["bge target","target:"],"explanation": "この例では 以上のとき分岐（Branch if Greater Than or Equal）"}
+      "example": {"code": ["bge target","target:"],"explanation": "cr0 の LT が 0 のとき target へ分岐する（bc 0x04,0,target の簡記）。"}
     },
     {
       "mnemonic": "bgt",
@@ -104,7 +104,7 @@
       "equivalent": "bc 0x0C, (crT*4)+1, addr",
       "summary": "より大きいとき分岐（Branch if Greater Than）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["bgt target","target:"],"explanation": "この例では より大きいとき分岐（Branch if Greater Than）"}
+      "example": {"code": ["bgt target","target:"],"explanation": "cr0 の GT が 1 のとき target へ分岐する（bc 0x0C,1,target の簡記）。"}
     },
     {
       "mnemonic": "ble",
@@ -113,7 +113,7 @@
       "equivalent": "bc 0x04, (crT*4)+1, addr",
       "summary": "以下のとき分岐（Branch if Less Than or Equal）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["ble target","target:"],"explanation": "この例では 以下のとき分岐（Branch if Less Than or Equal）"}
+      "example": {"code": ["ble target","target:"],"explanation": "cr0 の GT が 0 のとき target へ分岐する（bc 0x04,1,target の簡記）。"}
     },
     {
       "mnemonic": "bng",
@@ -122,7 +122,7 @@
       "equivalent": "bc 0x04, (crT*4)+1, addr",
       "summary": "大きくないとき分岐（Branch if Not Greater Than）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["bng target","target:"],"explanation": "この例では 大きくないとき分岐（Branch if Not Greater Than）"}
+      "example": {"code": ["bng target","target:"],"explanation": "cr0 の GT が 0 のとき target へ分岐する（bc 0x04,1,target の簡記）。"}
     },
     {
       "mnemonic": "bnl",
@@ -131,7 +131,7 @@
       "equivalent": "bc 0x04, (crT*4)+0, addr",
       "summary": "小さくないとき分岐（Branch if Not Less Than）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["bnl target","target:"],"explanation": "この例では 小さくないとき分岐（Branch if Not Less Than）"}
+      "example": {"code": ["bnl target","target:"],"explanation": "cr0 の LT が 0 のとき target へ分岐する（bc 0x04,0,target の簡記）。"}
     },
     {
       "mnemonic": "bns",
@@ -140,7 +140,7 @@
       "equivalent": "bc 0x04, (crT*4)+3, addr",
       "summary": "サマリーオーバーフローでないとき分岐（Branch if Not Summary Overflow）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["bns target","target:"],"explanation": "この例では サマリーオーバーフローでないとき分岐（Branch if Not Summary Overflow）"}
+      "example": {"code": ["bns target","target:"],"explanation": "cr0 の SO が 0 のとき target へ分岐する（bc 0x04,3,target の簡記）。"}
     },
     {
       "mnemonic": "bso",
@@ -149,7 +149,7 @@
       "equivalent": "bc 0x0C, (crT*4)+3, addr",
       "summary": "サマリーオーバーフローのとき分岐（Branch if Summary Overflow）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。",
-      "example": {"code": ["bso target","target:"],"explanation": "この例では サマリーオーバーフローのとき分岐（Branch if Summary Overflow）"}
+      "example": {"code": ["bso target","target:"],"explanation": "cr0 の SO が 1 のとき target へ分岐する（bc 0x0C,3,target の簡記）。"}
     },
     {
       "mnemonic": "bnu",
@@ -158,7 +158,7 @@
       "equivalent": "bc 0x04, (crT*4)+3, addr",
       "summary": "順序付けなしでないとき分岐（Branch if Not Unordered）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。 浮動小数点比較の結果用。",
-      "example": {"code": ["bnu target","target:"],"explanation": "この例では 順序付けなしでないとき分岐（Branch if Not Unordered）"}
+      "example": {"code": ["bnu target","target:"],"explanation": "cr0 の SO が 0 のとき target へ分岐する（bc 0x04,3,target の簡記）。"}
     },
     {
       "mnemonic": "bun",
@@ -167,7 +167,7 @@
       "equivalent": "bc 0x0C, (crT*4)+3, addr",
       "summary": "順序付けなしのとき分岐（Branch if Unordered）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。条件コード用の CR フィールド指定を省略すると CR0。 浮動小数点比較の結果用。",
-      "example": {"code": ["bun target","target:"],"explanation": "この例では 順序付けなしのとき分岐（Branch if Unordered）"}
+      "example": {"code": ["bun target","target:"],"explanation": "cr0 の SO が 1 のとき target へ分岐する（bc 0x0C,3,target の簡記）。"}
     },
     {
       "mnemonic": "bt",
@@ -176,7 +176,7 @@
       "equivalent": "bc 0x0C, crbT, addr",
       "summary": "条件が真のとき分岐（Branch if Condition True）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bt 2,target","target:"],"explanation": "この例では 条件が真のとき分岐（Branch if Condition True）"}
+      "example": {"code": ["bt 2,target","target:"],"explanation": "CR ビット 2 が 1 のとき target へ分岐する（bc 0x0C,2,target の簡記）。"}
     },
     {
       "mnemonic": "bf",
@@ -185,7 +185,7 @@
       "equivalent": "bc 0x04, crbT, addr",
       "summary": "条件が偽のとき分岐（Branch if Condition False）",
       "notes": "[l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。",
-      "example": {"code": ["bf 2,target","target:"],"explanation": "この例では 条件が偽のとき分岐（Branch if Condition False）"}
+      "example": {"code": ["bf 2,target","target:"],"explanation": "CR ビット 2 が 0 のとき target へ分岐する（bc 0x04,2,target の簡記）。"}
     },
     {
       "mnemonic": "blr",
@@ -194,7 +194,7 @@
       "equivalent": "bclr 0x14, 0",
       "summary": "LRへの無条件分岐（Branch Unconditionally to LR）",
       "notes": "[l] 接尾可（blrl）。サブルーチンからの return の定型。",
-      "example": {"code": ["blr"],"explanation": "この例では LRへの無条件分岐（Branch Unconditionally to LR）"}
+      "example": {"code": ["blr"],"explanation": "LR の番地へ無条件分岐する（bclr 0x14,0 の簡記）。関数復帰の標準形。"}
     },
     {
       "mnemonic": "bctr",
@@ -203,7 +203,7 @@
       "equivalent": "bcctr 0x14, 0",
       "summary": "CTRへの無条件分岐（Branch Unconditionally to CTR）",
       "notes": "[l] 接尾可（bctrl）。switch/jump table や末尾呼び出しに使う。",
-      "example": {"code": ["bctr"],"explanation": "この例では CTRへの無条件分岐（Branch Unconditionally to CTR）"}
+      "example": {"code": ["bctr"],"explanation": "CTR の番地へ無条件分岐する（bcctr 0x14,0 の簡記）。"}
     },
     {
       "mnemonic": "bdnzlr",
@@ -212,7 +212,7 @@
       "equivalent": "bclr 0x10, 0",
       "summary": "減算後のCTRが非ゼロのときLRへ分岐（Branch if Decremented CTR is Not Zero to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bdnzlr"],"explanation": "この例では 減算後のCTRが非ゼロのときLRへ分岐（Branch if Decremented CTR is Not Zero to LR）"}
+      "example": {"code": ["bdnzlr"],"explanation": "CTR を減算し 0 でなければ LR へ分岐する（bclr 0x10,0 の簡記）。"}
     },
     {
       "mnemonic": "bdzlr",
@@ -221,7 +221,7 @@
       "equivalent": "bclr 0x12, 0",
       "summary": "減算後のCTRがゼロのときLRへ分岐（Branch if Decremented CTR is Zero to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bdzlr"],"explanation": "この例では 減算後のCTRがゼロのときLRへ分岐（Branch if Decremented CTR is Zero to LR）"}
+      "example": {"code": ["bdzlr"],"explanation": "CTR を減算し 0 になったら LR へ分岐する（bclr 0x12,0 の簡記）。"}
     },
     {
       "mnemonic": "bdnzflr",
@@ -230,7 +230,7 @@
       "equivalent": "bclr 0x00, crbT",
       "summary": "減算後のCTRが非ゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition False to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bdnzflr 2"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition False to LR）"}
+      "example": {"code": ["bdnzflr 2"],"explanation": "CTR を減算し 0 でなく、かつ CR ビット 2 が 0 のとき LR へ分岐する（bclr 0x00,2 の簡記）。"}
     },
     {
       "mnemonic": "bdnztlr",
@@ -239,7 +239,7 @@
       "equivalent": "bclr 0x08, crbT",
       "summary": "減算後のCTRが非ゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition True to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bdnztlr 2"],"explanation": "この例では 減算後のCTRが非ゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Not Zero and Condition True to LR）"}
+      "example": {"code": ["bdnztlr 2"],"explanation": "CTR を減算し 0 でなく、かつ CR ビット 2 が 1 のとき LR へ分岐する（bclr 0x08,2 の簡記）。"}
     },
     {
       "mnemonic": "bdzflr",
@@ -248,7 +248,7 @@
       "equivalent": "bclr 0x02, crbT",
       "summary": "減算後のCTRがゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Zero and Condition False to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bdzflr 2"],"explanation": "この例では 減算後のCTRがゼロかつ条件が偽のときLRへ分岐（Branch if Decremented CTR is Zero and Condition False to LR）"}
+      "example": {"code": ["bdzflr 2"],"explanation": "CTR を減算し 0 で、かつ CR ビット 2 が 0 のとき LR へ分岐する（bclr 0x02,2 の簡記）。"}
     },
     {
       "mnemonic": "bdztlr",
@@ -257,7 +257,7 @@
       "equivalent": "bclr 0x0A, crbT",
       "summary": "減算後のCTRがゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Zero and Condition True to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bdztlr 2"],"explanation": "この例では 減算後のCTRがゼロかつ条件が真のときLRへ分岐（Branch if Decremented CTR is Zero and Condition True to LR）"}
+      "example": {"code": ["bdztlr 2"],"explanation": "CTR を減算し 0 で、かつ CR ビット 2 が 1 のとき LR へ分岐する（bclr 0x0A,2 の簡記）。"}
     },
     {
       "mnemonic": "beqlr",
@@ -266,7 +266,7 @@
       "equivalent": "bclr 0x0C, (crT*4)+2",
       "summary": "等しいときLRへ分岐（Branch if Equal to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["beqlr"],"explanation": "この例では 等しいときLRへ分岐（Branch if Equal to LR）"}
+      "example": {"code": ["beqlr"],"explanation": "cr0 の EQ が 1 のとき LR へ分岐する（bclr 0x0C,2 の簡記）。"}
     },
     {
       "mnemonic": "bnelr",
@@ -275,7 +275,7 @@
       "equivalent": "bclr 0x04, (crT*4)+2",
       "summary": "等しくないときLRへ分岐（Branch if Not Equal to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bnelr"],"explanation": "この例では 等しくないときLRへ分岐（Branch if Not Equal to LR）"}
+      "example": {"code": ["bnelr"],"explanation": "cr0 の EQ が 0 のとき LR へ分岐する（bclr 0x04,2 の簡記）。"}
     },
     {
       "mnemonic": "bltlr",
@@ -284,7 +284,7 @@
       "equivalent": "bclr 0x0C, (crT*4)+0",
       "summary": "未満のときLRへ分岐（Branch if Less Than to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bltlr"],"explanation": "この例では 未満のときLRへ分岐（Branch if Less Than to LR）"}
+      "example": {"code": ["bltlr"],"explanation": "cr0 の LT が 1 のとき LR へ分岐する（bclr 0x0C,0 の簡記）。"}
     },
     {
       "mnemonic": "bgelr",
@@ -293,7 +293,7 @@
       "equivalent": "bclr 0x04, (crT*4)+0",
       "summary": "以上のときLRへ分岐（Branch if Greater Than or Equal to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bgelr"],"explanation": "この例では 以上のときLRへ分岐（Branch if Greater Than or Equal to LR）"}
+      "example": {"code": ["bgelr"],"explanation": "cr0 の LT が 0 のとき LR へ分岐する（bclr 0x04,0 の簡記）。"}
     },
     {
       "mnemonic": "bgtlr",
@@ -302,7 +302,7 @@
       "equivalent": "bclr 0x0C, (crT*4)+1",
       "summary": "より大きいときLRへ分岐（Branch if Greater Than to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bgtlr"],"explanation": "この例では より大きいときLRへ分岐（Branch if Greater Than to LR）"}
+      "example": {"code": ["bgtlr"],"explanation": "cr0 の GT が 1 のとき LR へ分岐する（bclr 0x0C,1 の簡記）。"}
     },
     {
       "mnemonic": "blelr",
@@ -311,7 +311,7 @@
       "equivalent": "bclr 0x04, (crT*4)+1",
       "summary": "以下のときLRへ分岐（Branch if Less Than or Equal to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["blelr"],"explanation": "この例では 以下のときLRへ分岐（Branch if Less Than or Equal to LR）"}
+      "example": {"code": ["blelr"],"explanation": "cr0 の GT が 0 のとき LR へ分岐する（bclr 0x04,1 の簡記）。"}
     },
     {
       "mnemonic": "bnglr",
@@ -320,7 +320,7 @@
       "equivalent": "bclr 0x04, (crT*4)+1",
       "summary": "大きくないときLRへ分岐（Branch if Not Greater Than to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bnglr"],"explanation": "この例では 大きくないときLRへ分岐（Branch if Not Greater Than to LR）"}
+      "example": {"code": ["bnglr"],"explanation": "cr0 の GT が 0 のとき LR へ分岐する（bclr 0x04,1 の簡記）。"}
     },
     {
       "mnemonic": "bnllr",
@@ -329,7 +329,7 @@
       "equivalent": "bclr 0x04, (crT*4)+0",
       "summary": "小さくないときLRへ分岐（Branch if Not Less Than to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bnllr"],"explanation": "この例では 小さくないときLRへ分岐（Branch if Not Less Than to LR）"}
+      "example": {"code": ["bnllr"],"explanation": "cr0 の LT が 0 のとき LR へ分岐する（bclr 0x04,0 の簡記）。"}
     },
     {
       "mnemonic": "bnslr",
@@ -338,7 +338,7 @@
       "equivalent": "bclr 0x04, (crT*4)+3",
       "summary": "サマリーオーバーフローでないときLRへ分岐（Branch if Not Summary Overflow to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bnslr"],"explanation": "この例では サマリーオーバーフローでないときLRへ分岐（Branch if Not Summary Overflow to LR）"}
+      "example": {"code": ["bnslr"],"explanation": "cr0 の SO が 0 のとき LR へ分岐する（bclr 0x04,3 の簡記）。"}
     },
     {
       "mnemonic": "bsolr",
@@ -347,7 +347,7 @@
       "equivalent": "bclr 0x0C, (crT*4)+3",
       "summary": "サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bsolr"],"explanation": "この例では サマリーオーバーフローのときLRへ分岐（Branch if Summary Overflow to LR）"}
+      "example": {"code": ["bsolr"],"explanation": "cr0 の SO が 1 のとき LR へ分岐する（bclr 0x0C,3 の簡記）。"}
     },
     {
       "mnemonic": "bnulr",
@@ -356,7 +356,7 @@
       "equivalent": "bclr 0x04, (crT*4)+3",
       "summary": "順序付けなしでないときLRへ分岐（Branch if Not Unordered to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
-      "example": {"code": ["bnulr"],"explanation": "この例では 順序付けなしでないときLRへ分岐（Branch if Not Unordered to LR）"}
+      "example": {"code": ["bnulr"],"explanation": "cr0 の SO が 0 のとき LR へ分岐する（bclr 0x04,3 の簡記）。"}
     },
     {
       "mnemonic": "bunlr",
@@ -365,7 +365,7 @@
       "equivalent": "bclr 0x0C, (crT*4)+3",
       "summary": "順序付けなしのときLRへ分岐（Branch if Unordered to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
-      "example": {"code": ["bunlr"],"explanation": "この例では 順序付けなしのときLRへ分岐（Branch if Unordered to LR）"}
+      "example": {"code": ["bunlr"],"explanation": "cr0 の SO が 1 のとき LR へ分岐する（bclr 0x0C,3 の簡記）。"}
     },
     {
       "mnemonic": "btlr",
@@ -374,7 +374,7 @@
       "equivalent": "bclr 0x0C, crbT",
       "summary": "条件が真のときLRへ分岐（Branch if Condition True to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["btlr 2"],"explanation": "この例では 条件が真のときLRへ分岐（Branch if Condition True to LR）"}
+      "example": {"code": ["btlr 2"],"explanation": "CR ビット 2 が 1 のとき LR へ分岐する（bclr 0x0C,2 の簡記）。"}
     },
     {
       "mnemonic": "bflr",
@@ -383,7 +383,7 @@
       "equivalent": "bclr 0x04, crbT",
       "summary": "条件が偽のときLRへ分岐（Branch if Condition False to LR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bflr 2"],"explanation": "この例では 条件が偽のときLRへ分岐（Branch if Condition False to LR）"}
+      "example": {"code": ["bflr 2"],"explanation": "CR ビット 2 が 0 のとき LR へ分岐する（bclr 0x04,2 の簡記）。"}
     },
     {
       "mnemonic": "beqctr",
@@ -392,7 +392,7 @@
       "equivalent": "bcctr 0x0C, (crT*4)+2",
       "summary": "等しいときCTRへ分岐（Branch if Equal to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["beqctr"],"explanation": "この例では 等しいときCTRへ分岐（Branch if Equal to CTR）"}
+      "example": {"code": ["beqctr"],"explanation": "cr0 の EQ が 1 のとき CTR へ分岐する（bcctr 0x0C,2 の簡記）。"}
     },
     {
       "mnemonic": "bnectr",
@@ -401,7 +401,7 @@
       "equivalent": "bcctr 0x04, (crT*4)+2",
       "summary": "等しくないときCTRへ分岐（Branch if Not Equal to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bnectr"],"explanation": "この例では 等しくないときCTRへ分岐（Branch if Not Equal to CTR）"}
+      "example": {"code": ["bnectr"],"explanation": "cr0 の EQ が 0 のとき CTR へ分岐する（bcctr 0x04,2 の簡記）。"}
     },
     {
       "mnemonic": "bltctr",
@@ -410,7 +410,7 @@
       "equivalent": "bcctr 0x0C, (crT*4)+0",
       "summary": "未満のときCTRへ分岐（Branch if Less Than to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bltctr"],"explanation": "この例では 未満のときCTRへ分岐（Branch if Less Than to CTR）"}
+      "example": {"code": ["bltctr"],"explanation": "cr0 の LT が 1 のとき CTR へ分岐する（bcctr 0x0C,0 の簡記）。"}
     },
     {
       "mnemonic": "bgectr",
@@ -419,7 +419,7 @@
       "equivalent": "bcctr 0x04, (crT*4)+0",
       "summary": "以上のときCTRへ分岐（Branch if Greater Than or Equal to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bgectr"],"explanation": "この例では 以上のときCTRへ分岐（Branch if Greater Than or Equal to CTR）"}
+      "example": {"code": ["bgectr"],"explanation": "cr0 の LT が 0 のとき CTR へ分岐する（bcctr 0x04,0 の簡記）。"}
     },
     {
       "mnemonic": "bgtctr",
@@ -428,7 +428,7 @@
       "equivalent": "bcctr 0x0C, (crT*4)+1",
       "summary": "より大きいときCTRへ分岐（Branch if Greater Than to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bgtctr"],"explanation": "この例では より大きいときCTRへ分岐（Branch if Greater Than to CTR）"}
+      "example": {"code": ["bgtctr"],"explanation": "cr0 の GT が 1 のとき CTR へ分岐する（bcctr 0x0C,1 の簡記）。"}
     },
     {
       "mnemonic": "blectr",
@@ -437,7 +437,7 @@
       "equivalent": "bcctr 0x04, (crT*4)+1",
       "summary": "以下のときCTRへ分岐（Branch if Less Than or Equal to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["blectr"],"explanation": "この例では 以下のときCTRへ分岐（Branch if Less Than or Equal to CTR）"}
+      "example": {"code": ["blectr"],"explanation": "cr0 の GT が 0 のとき CTR へ分岐する（bcctr 0x04,1 の簡記）。"}
     },
     {
       "mnemonic": "bngctr",
@@ -446,7 +446,7 @@
       "equivalent": "bcctr 0x04, (crT*4)+1",
       "summary": "大きくないときCTRへ分岐（Branch if Not Greater Than to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bngctr"],"explanation": "この例では 大きくないときCTRへ分岐（Branch if Not Greater Than to CTR）"}
+      "example": {"code": ["bngctr"],"explanation": "cr0 の GT が 0 のとき CTR へ分岐する（bcctr 0x04,1 の簡記）。"}
     },
     {
       "mnemonic": "bnlctr",
@@ -455,7 +455,7 @@
       "equivalent": "bcctr 0x04, (crT*4)+0",
       "summary": "小さくないときCTRへ分岐（Branch if Not Less Than to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bnlctr"],"explanation": "この例では 小さくないときCTRへ分岐（Branch if Not Less Than to CTR）"}
+      "example": {"code": ["bnlctr"],"explanation": "cr0 の LT が 0 のとき CTR へ分岐する（bcctr 0x04,0 の簡記）。"}
     },
     {
       "mnemonic": "bnsctr",
@@ -464,7 +464,7 @@
       "equivalent": "bcctr 0x04, (crT*4)+3",
       "summary": "サマリーオーバーフローでないときCTRへ分岐（Branch if Not Summary Overflow to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bnsctr"],"explanation": "この例では サマリーオーバーフローでないときCTRへ分岐（Branch if Not Summary Overflow to CTR）"}
+      "example": {"code": ["bnsctr"],"explanation": "cr0 の SO が 0 のとき CTR へ分岐する（bcctr 0x04,3 の簡記）。"}
     },
     {
       "mnemonic": "bsoctr",
@@ -473,7 +473,7 @@
       "equivalent": "bcctr 0x0C, (crT*4)+3",
       "summary": "サマリーオーバーフローのときCTRへ分岐（Branch if Summary Overflow to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bsoctr"],"explanation": "この例では サマリーオーバーフローのときCTRへ分岐（Branch if Summary Overflow to CTR）"}
+      "example": {"code": ["bsoctr"],"explanation": "cr0 の SO が 1 のとき CTR へ分岐する（bcctr 0x0C,3 の簡記）。"}
     },
     {
       "mnemonic": "bnuctr",
@@ -482,7 +482,7 @@
       "equivalent": "bcctr 0x04, (crT*4)+3",
       "summary": "順序付けなしでないときCTRへ分岐（Branch if Not Unordered to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
-      "example": {"code": ["bnuctr"],"explanation": "この例では 順序付けなしでないときCTRへ分岐（Branch if Not Unordered to CTR）"}
+      "example": {"code": ["bnuctr"],"explanation": "cr0 の SO が 0 のとき CTR へ分岐する（bcctr 0x04,3 の簡記）。"}
     },
     {
       "mnemonic": "bunctr",
@@ -491,7 +491,7 @@
       "equivalent": "bcctr 0x0C, (crT*4)+3",
       "summary": "順序付けなしのときCTRへ分岐（Branch if Unordered to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。 浮動小数点比較の結果用。",
-      "example": {"code": ["bunctr"],"explanation": "この例では 順序付けなしのときCTRへ分岐（Branch if Unordered to CTR）"}
+      "example": {"code": ["bunctr"],"explanation": "cr0 の SO が 1 のとき CTR へ分岐する（bcctr 0x0C,3 の簡記）。"}
     },
     {
       "mnemonic": "btctr",
@@ -500,7 +500,7 @@
       "equivalent": "bcctr 0x0C, crbT",
       "summary": "条件が真のときCTRへ分岐（Branch if Condition True to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["btctr 2"],"explanation": "この例では 条件が真のときCTRへ分岐（Branch if Condition True to CTR）"}
+      "example": {"code": ["btctr 2"],"explanation": "CR ビット 2 が 1 のとき CTR へ分岐する（bcctr 0x0C,2 の簡記）。"}
     },
     {
       "mnemonic": "bfctr",
@@ -509,7 +509,7 @@
       "equivalent": "bcctr 0x04, crbT",
       "summary": "条件が偽のときCTRへ分岐（Branch if Condition False to CTR）",
       "notes": "[l] 接尾でリンク（LR 更新）。",
-      "example": {"code": ["bfctr 2"],"explanation": "この例では 条件が偽のときCTRへ分岐（Branch if Condition False to CTR）"}
+      "example": {"code": ["bfctr 2"],"explanation": "CR ビット 2 が 0 のとき CTR へ分岐する（bcctr 0x04,2 の簡記）。"}
     },
     {
       "mnemonic": "li",
@@ -518,7 +518,7 @@
       "equivalent": "addi rT, 0, s16",
       "summary": "即値ロード（Load Immediate）",
       "notes": "rA=0 の場合、addi は d をそのまま加算するため即値ロードになる。",
-      "example": {"code": ["li 3, 42"],"explanation": "この例では 即値ロード（Load Immediate）"}
+      "example": {"code": ["li 3, 42"],"explanation": "r3 = 42 を入れる（addi r3,0,42 の簡記、rA=0 はベース 0 の即値ロード）。"}
     },
     {
       "mnemonic": "lis",
@@ -527,7 +527,7 @@
       "equivalent": "addis rT, 0, s16",
       "summary": "即値ロード・シフト付き（Load Immediate Shifted）",
       "notes": "16 ビット即値を上位 16 ビットに置く。32 ビット定数は lis + ori の 2 命令で構成する。",
-      "example": {"code": ["lis 3,s16"],"explanation": "この例では 即値ロード・シフト付き（Load Immediate Shifted）"}
+      "example": {"code": ["lis 3,s16"],"explanation": "r3 = s16 << 16 を入れる（addis r3,0,s16 の簡記、上位 16 ビット設定）。"}
     },
     {
       "mnemonic": "la",
@@ -536,7 +536,7 @@
       "equivalent": "addi rT, rA, d",
       "summary": "アドレスロード（Load Address）",
       "notes": "実効アドレス rA+d を rT に入れる。メモリアクセスはしない。",
-      "example": {"code": ["la 3, 4(4)"],"explanation": "この例では アドレスロード（Load Address）"}
+      "example": {"code": ["la 3, 4(4)"],"explanation": "r3 = r4 + 4 を計算する（addi r3,r4,4 の簡記、アドレス計算用）。"}
     },
         {"mnemonic":"sub","operands":"rT,rA,rB","target":"SUBF","equivalent":"subf rT, rB, rA","summary":"減算（Subtract）","notes":"subf のオペランド順を入れ替え、rT = rA - rB とする拡張形式。","example":{"code":["sub %r3,%r4,%r5"],"explanation":"r4 から r5 を減算して r3 に格納する。"}},
 {
@@ -546,7 +546,7 @@
       "equivalent": "addi rT, rA, -s16",
       "summary": "即値減算（Subtract Immediate）",
       "notes": "",
-      "example": {"code": ["subi 3,4,s16"],"explanation": "この例では 即値減算（Subtract Immediate）"}
+      "example": {"code": ["subi 3,4,s16"],"explanation": "r3 = r4 - s16 を計算する（addi r3,r4,-s16 の簡記）。"}
     },
     {
       "mnemonic": "subic",
@@ -555,7 +555,7 @@
       "equivalent": "addic rT, rA, -s16",
       "summary": "キャリー付き即値減算（Subtract Immediate Carrying）",
       "notes": "",
-      "example": {"code": ["subic 3,4,s16"],"explanation": "この例では キャリー付き即値減算（Subtract Immediate Carrying）"}
+      "example": {"code": ["subic 3,4,s16"],"explanation": "r3 = r4 - s16 を計算し XER[CA] を更新する（addic r3,r4,-s16 の簡記）。"}
     },
     {
       "mnemonic": "subis",
@@ -564,7 +564,7 @@
       "equivalent": "addis rT, rA, -s16",
       "summary": "シフト付き即値減算（Subtract Immediate Shifted）",
       "notes": "",
-      "example": {"code": ["subis 3,4,s16"],"explanation": "この例では シフト付き即値減算（Subtract Immediate Shifted）"}
+      "example": {"code": ["subis 3,4,s16"],"explanation": "r3 = r4 - (s16 << 16) を計算する（addis r3,r4,-s16 の簡記）。"}
     },
     {
       "mnemonic": "nop",
@@ -591,7 +591,7 @@
       "equivalent": "nor rA, rS, rS",
       "summary": "NOT（ビット反転）（Logical NOT）",
       "notes": "",
-      "example": {"code": ["not 4,4"],"explanation": "この例では NOT（ビット反転）（Logical NOT）"}
+      "example": {"code": ["not 4,4"],"explanation": "r4 = NOT(r4)（全ビット反転、nor r4,r4,r4 の簡記）。"}
     },
     {
       "mnemonic": "crclr",
@@ -600,7 +600,7 @@
       "equivalent": "crxor crbT, crbT, crbT",
       "summary": "コンディションレジスタビットのクリア（Condition Register Clear）",
       "notes": "",
-      "example": {"code": ["crclr 2"],"explanation": "この例では コンディションレジスタビットのクリア（Condition Register Clear）"}
+      "example": {"code": ["crclr 2"],"explanation": "CR ビット 2 を 0 にする（crxor 2,2,2 の簡記）。"}
     },
     {
       "mnemonic": "crmove",
@@ -609,7 +609,7 @@
       "equivalent": "cror crbT, crbA, crbA",
       "summary": "コンディションレジスタビットの移動（Condition Register Move）",
       "notes": "",
-      "example": {"code": ["crmove 2,crbA"],"explanation": "この例では コンディションレジスタビットの移動（Condition Register Move）"}
+      "example": {"code": ["crmove 2,crbA"],"explanation": "CR ビット crbA の値を CR ビット 2 へコピーする（cror 2,crbA,crbA の簡記）。"}
     },
     {
       "mnemonic": "crnot",
@@ -618,7 +618,7 @@
       "equivalent": "crnor crbT, crbA, crbA",
       "summary": "コンディションレジスタビットの反転（Condition Register Not）",
       "notes": "",
-      "example": {"code": ["crnot 2,crbA"],"explanation": "この例では コンディションレジスタビットの反転（Condition Register Not）"}
+      "example": {"code": ["crnot 2,crbA"],"explanation": "CR ビット crbA の反転を CR ビット 2 へ代入する（crnor 2,crbA,crbA の簡記）。"}
     },
     {
       "mnemonic": "crset",
@@ -627,7 +627,7 @@
       "equivalent": "creqv crbT, crbT, crbT",
       "summary": "コンディションレジスタビットのセット（Condition Register Set）",
       "notes": "",
-      "example": {"code": ["crset 2"],"explanation": "この例では コンディションレジスタビットのセット（Condition Register Set）"}
+      "example": {"code": ["crset 2"],"explanation": "CR ビット 2 を 1 にする（creqv 2,2,2 の簡記）。"}
     },
     {
       "mnemonic": "rotlwi",
@@ -636,7 +636,7 @@
       "equivalent": "rlwinm rA, rS, nBits, 0, 31",
       "summary": "ワード左回転（即値）（Rotate Left Word Immediate）",
       "notes": "マスクなしの回転（全 32 ビット）。",
-      "example": {"code": ["rotlwi 4,4,nBits"],"explanation": "この例では ワード左回転（即値）（Rotate Left Word Immediate）"}
+      "example": {"code": ["rotlwi 4,4,nBits"],"explanation": "r4 を左へ nBits ビット回転して r4 へ入れる（rlwinm r4,r4,nBits,0,31 の簡記）。"}
     },
     {
       "mnemonic": "rotrwi",
@@ -645,7 +645,7 @@
       "equivalent": "rlwinm rA, rS, (32-nBits)&31, 0, 31",
       "summary": "ワード右回転（即値）（Rotate Right Word Immediate）",
       "notes": "nBits は 0〜31。左回転量は (32-nBits)&31 で、0 回転も表現できる。",
-      "example": {"code": ["rotrwi 4,4,nBits"],"explanation": "この例では ワード右回転（即値）（Rotate Right Word Immediate）"}
+      "example": {"code": ["rotrwi 4,4,nBits"],"explanation": "r4 を右へ nBits ビット回転して r4 へ入れる（rlwinm r4,r4,(32-nBits)&31,0,31 の簡記）。"}
     },
     {
       "mnemonic": "rotlw",
@@ -654,7 +654,7 @@
       "equivalent": "rlwnm rA, rS, rB, 0, 31",
       "summary": "ワード左回転（レジスタ）（Rotate Left Word）",
       "notes": "回転量は rB の下位 5 ビット。",
-      "example": {"code": ["rotlw 4,4,5"],"explanation": "この例では ワード左回転（レジスタ）（Rotate Left Word）"}
+      "example": {"code": ["rotlw 4,4,5"],"explanation": "r4 を r5 の下位 5 ビット分だけ左回転して r4 へ入れる（rlwnm r4,r4,r5,0,31 の簡記）。"}
     },
     {
       "mnemonic": "slwi",
@@ -663,7 +663,7 @@
       "equivalent": "rlwinm rA, rS, nBits, 0, 31-nBits",
       "summary": "ワード左シフト（即値）（Shift Left Word Immediate）",
       "notes": "",
-      "example": {"code": ["slwi 4,4,nBits"],"explanation": "この例では ワード左シフト（即値）（Shift Left Word Immediate）"}
+      "example": {"code": ["slwi 4,4,nBits"],"explanation": "r4 を左へ nBits ビットシフトして r4 へ入れる（rlwinm r4,r4,nBits,0,31-nBits の簡記）。"}
     },
     {
       "mnemonic": "srwi",
@@ -672,7 +672,7 @@
       "equivalent": "rlwinm rA, rS, (32-nBits)&31, nBits, 31",
       "summary": "ワード右シフト（即値）（Shift Right Word Immediate）",
       "notes": "論理シフト（符号拡張は srawi を使う）。",
-      "example": {"code": ["srwi 4,4,nBits"],"explanation": "この例では ワード右シフト（即値）（Shift Right Word Immediate）"}
+      "example": {"code": ["srwi 4,4,nBits"],"explanation": "r4 を右へ nBits ビット論理シフトして r4 へ入れる（rlwinm r4,r4,(32-nBits)&31,nBits,31 の簡記）。"}
     },
     {
       "mnemonic": "clrlwi",
@@ -681,7 +681,7 @@
       "equivalent": "rlwinm rA, rS, 0, nBits, 31",
       "summary": "ワード左クリア即値（Clear Left Word Immediate）",
       "notes": "下位 32-nBits ビットを残す。",
-      "example": {"code": ["clrlwi 4,4,nBits"],"explanation": "この例では ワード左クリア即値（Clear Left Word Immediate）"}
+      "example": {"code": ["clrlwi 4,4,nBits"],"explanation": "r4 の上位 nBits ビットを 0 にクリアして r4 へ入れる（rlwinm r4,r4,0,nBits,31 の簡記）。"}
     },
     {
       "mnemonic": "clrrwi",
@@ -690,7 +690,7 @@
       "equivalent": "rlwinm rA, rS, 0, 0, 31-nBits",
       "summary": "ワード右クリア即値（Clear Right Word Immediate）",
       "notes": "上位 32-nBits ビットを残す。",
-      "example": {"code": ["clrrwi 4,4,nBits"],"explanation": "この例では ワード右クリア即値（Clear Right Word Immediate）"}
+      "example": {"code": ["clrrwi 4,4,nBits"],"explanation": "r4 の下位 nBits ビットを 0 にクリアして r4 へ入れる（rlwinm r4,r4,0,0,31-nBits の簡記）。"}
     },
     {
       "mnemonic": "clrlslwi",
@@ -699,7 +699,7 @@
       "equivalent": "rlwinm rA, rS, shift, nBits-shift, 31-shift",
       "summary": "ワード左クリア左シフト即値（Clear Left and Shift Left Word Immediate）",
       "notes": "0 <= shift <= nBits <= 31 の範囲の組み合わせを指定する。",
-      "example": {"code": ["clrlslwi 4,4,nBits,shift"],"explanation": "この例では ワード左クリア左シフト即値（Clear Left and Shift Left Word Immediate）"}
+      "example": {"code": ["clrlslwi 4,4,nBits,shift"],"explanation": "r4 の上位 nBits ビットをクリアし、さらに shift ビット左シフトして r4 へ入れる（rlwinm r4,r4,shift,nBits-shift,31-shift の簡記）。"}
     },
     {
       "mnemonic": "extlwi",
@@ -708,7 +708,7 @@
       "equivalent": "rlwinm rA, rS, start, 0, nBits-1",
       "summary": "ワード即値抽出・左詰め（Extract and Left Justify Word Immediate）",
       "notes": "rS の bit start から nBits ビットを取り出し左詰めする。",
-      "example": {"code": ["extlwi 4,4,nBits,start"],"explanation": "この例では ワード即値抽出・左詰め（Extract and Left Justify Word Immediate）"}
+      "example": {"code": ["extlwi 4,4,nBits,start"],"explanation": "r4 の（MSB から数えて）start ビット目から nBits ビットを取り出し左詰めにして r4 へ入れる（rlwinm r4,r4,start,0,nBits-1 の簡記）。"}
     },
     {
       "mnemonic": "extrwi",
@@ -717,7 +717,7 @@
       "equivalent": "rlwinm rA, rS, (start+nBits)&31, 32-nBits, 31",
       "summary": "ワード即値抽出・右詰め（Extract and Right Justify Word Immediate）",
       "notes": "rS の bit start から nBits ビットを取り出し右詰めする。",
-      "example": {"code": ["extrwi 4,4,nBits,start"],"explanation": "この例では ワード即値抽出・右詰め（Extract and Right Justify Word Immediate）"}
+      "example": {"code": ["extrwi 4,4,nBits,start"],"explanation": "r4 の（MSB から数えて）start ビット目から nBits ビットを取り出し右詰めにして r4 へ入れる（rlwinm r4,r4,(start+nBits)&31,32-nBits,31 の簡記）。"}
     },
     {
       "mnemonic": "inslwi",
@@ -726,7 +726,7 @@
       "equivalent": "rlwimi rA, rS, (32-start)&31, start, (start+nBits)-1",
       "summary": "ワード即値左側挿入（Insert from Left Word Immediate）",
       "notes": "rS の nBits ビットを rA の bit start 以降に挿入する。",
-      "example": {"code": ["inslwi 4,4,nBits,start"],"explanation": "この例では ワード即値左側挿入（Insert from Left Word Immediate）"}
+      "example": {"code": ["inslwi 4,4,nBits,start"],"explanation": "r4 の左端（上位）nBits ビットを、r4 の（MSB から数えて）start ビット目の位置へ挿入する（rlwimi r4,r4,(32-start)&31,start,(start+nBits)-1 の簡記）。"}
     },
     {
       "mnemonic": "insrwi",
@@ -735,7 +735,7 @@
       "equivalent": "rlwimi rA, rS, (32-end)&31, start, end-1",
       "summary": "ワード即値右側挿入（Insert from Right Word Immediate）",
       "notes": "end = start+nBits。rS の下位 nBits ビットを rA の bit start 以降に挿入する。",
-      "example": {"code": ["insrwi 4,4,nBits,start"],"explanation": "この例では ワード即値右側挿入（Insert from Right Word Immediate）"}
+      "example": {"code": ["insrwi 4,4,nBits,start"],"explanation": "r4 の右端（下位）nBits ビットを、r4 の（MSB から数えて）start ビット目の位置へ挿入する（rlwimi r4,r4,(32-end)&31,start,end-1、end=start+nBits の簡記）。"}
     },
     {
       "mnemonic": "cmpw",
@@ -744,7 +744,7 @@
       "equivalent": "cmp crT, 0, rA, rB",
       "summary": "ワード比較（Compare Word）",
       "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmpw は L=0（ワード）を明示する形式。",
-      "example": {"code": ["cmpw crT,4,5"],"explanation": "この例では ワード比較（Compare Word）"}
+      "example": {"code": ["cmpw crT,4,5"],"explanation": "r4 と r5 を符号付き 32 ビット比較し結果を CR フィールド crT に設定する（cmp crT,0,4,5 の簡記）。"}
     },
     {
       "mnemonic": "cmpwi",
@@ -753,7 +753,7 @@
       "equivalent": "cmpi crT, 0, rA, s16",
       "summary": "ワード即値比較（Compare Word Immediate）",
       "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmpwi は L=0（ワード）を明示する形式。",
-      "example": {"code": ["cmpwi crT,4,s16"],"explanation": "この例では ワード即値比較（Compare Word Immediate）"}
+      "example": {"code": ["cmpwi crT,4,s16"],"explanation": "r4 と符号拡張即値 s16 を符号付き比較し結果を crT に設定する（cmpi crT,0,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "cmplw",
@@ -762,7 +762,7 @@
       "equivalent": "cmpl crT, 0, rA, rB",
       "summary": "論理ワード比較（Compare Logical Word）",
       "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmplw は L=0（ワード）を明示する形式。",
-      "example": {"code": ["cmplw crT,4,5"],"explanation": "この例では 論理ワード比較（Compare Logical Word）"}
+      "example": {"code": ["cmplw crT,4,5"],"explanation": "r4 と r5 を符号なし比較し結果を crT に設定する（cmpl crT,0,4,5 の簡記）。"}
     },
     {
       "mnemonic": "cmplwi",
@@ -771,7 +771,7 @@
       "equivalent": "cmpli crT, 0, rA, u16",
       "summary": "論理ワード即値比較（Compare Logical Word Immediate）",
       "notes": "比較命令の第 2 オペランド L で幅を選ぶ。cmplwi は L=0（ワード）を明示する形式。",
-      "example": {"code": ["cmplwi crT,4,u16"],"explanation": "この例では 論理ワード即値比較（Compare Logical Word Immediate）"}
+      "example": {"code": ["cmplwi crT,4,u16"],"explanation": "r4 とゼロ拡張即値 u16 を符号なし比較し結果を crT に設定する（cmpli crT,0,4,u16 の簡記）。"}
     },
     {
       "mnemonic": "trap",
@@ -789,7 +789,7 @@
       "equivalent": "tw 4, rA, rB",
       "summary": "等しい場合のワードトラップ（Trap Word if Equal）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["tweq 4,5"],"explanation": "この例では 等しい場合のワードトラップ（Trap Word if Equal）"}
+      "example": {"code": ["tweq 4,5"],"explanation": "r4 と r5 が等しいときプログラム割り込みを発生させる（tw 4,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twne",
@@ -798,7 +798,7 @@
       "equivalent": "tw 24, rA, rB",
       "summary": "等しくない場合のワードトラップ（Trap Word if Not Equal）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twne 4,5"],"explanation": "この例では 等しくない場合のワードトラップ（Trap Word if Not Equal）"}
+      "example": {"code": ["twne 4,5"],"explanation": "r4 と r5 が等しくないときトラップを発生させる（tw 24,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twgt",
@@ -807,7 +807,7 @@
       "equivalent": "tw 8, rA, rB",
       "summary": "大きい場合のワードトラップ（Trap Word if Greater Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twgt 4,5"],"explanation": "この例では 大きい場合のワードトラップ（Trap Word if Greater Than）"}
+      "example": {"code": ["twgt 4,5"],"explanation": "r4 が r5 より大きいときトラップを発生させる（tw 8,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twlt",
@@ -816,7 +816,7 @@
       "equivalent": "tw 16, rA, rB",
       "summary": "小さい場合のワードトラップ（Trap Word if Less Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlt 4,5"],"explanation": "この例では 小さい場合のワードトラップ（Trap Word if Less Than）"}
+      "example": {"code": ["twlt 4,5"],"explanation": "r4 が r5 より小さいときトラップを発生させる（tw 16,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twge",
@@ -825,7 +825,7 @@
       "equivalent": "tw 12, rA, rB",
       "summary": "大きいまたは等しい場合のワードトラップ（Trap Word if Greater Than or Equal）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twge 4,5"],"explanation": "この例では 大きいまたは等しい場合のワードトラップ（Trap Word if Greater Than or Equal）"}
+      "example": {"code": ["twge 4,5"],"explanation": "r4 が r5 以上のときトラップを発生させる（tw 12,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twle",
@@ -834,7 +834,7 @@
       "equivalent": "tw 20, rA, rB",
       "summary": "小さいまたは等しい場合のワードトラップ（Trap Word if Less Than or Equal）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twle 4,5"],"explanation": "この例では 小さいまたは等しい場合のワードトラップ（Trap Word if Less Than or Equal）"}
+      "example": {"code": ["twle 4,5"],"explanation": "r4 が r5 以下のときトラップを発生させる（tw 20,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twlgt",
@@ -843,7 +843,7 @@
       "equivalent": "tw 1, rA, rB",
       "summary": "論理的に大きい場合のワードトラップ（Trap Word if Logically Greater Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlgt 4,5"],"explanation": "この例では 論理的に大きい場合のワードトラップ（Trap Word if Logically Greater Than）"}
+      "example": {"code": ["twlgt 4,5"],"explanation": "r4 が r5 より論理的（符号なし）に大きいときトラップを発生させる（tw 1,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twllt",
@@ -852,7 +852,7 @@
       "equivalent": "tw 2, rA, rB",
       "summary": "論理的に小さい場合のワードトラップ（Trap Word if Logically Less Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twllt 4,5"],"explanation": "この例では 論理的に小さい場合のワードトラップ（Trap Word if Logically Less Than）"}
+      "example": {"code": ["twllt 4,5"],"explanation": "r4 が r5 より論理的に小さいときトラップを発生させる（tw 2,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twlge",
@@ -861,7 +861,7 @@
       "equivalent": "tw 5, rA, rB",
       "summary": "論理的に大きいまたは等しい場合のワードトラップ（Trap Word if Logically Greater Than or Equal）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlge 4,5"],"explanation": "この例では 論理的に大きいまたは等しい場合のワードトラップ（Trap Word if Logically Greater Than or Equal）"}
+      "example": {"code": ["twlge 4,5"],"explanation": "r4 が r5 以上のとき論理比較でトラップを発生させる（tw 5,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twlle",
@@ -870,7 +870,7 @@
       "equivalent": "tw 6, rA, rB",
       "summary": "論理的に小さいまたは等しい場合のワードトラップ（Trap Word if Logically Less Than or Equal）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlle 4,5"],"explanation": "この例では 論理的に小さいまたは等しい場合のワードトラップ（Trap Word if Logically Less Than or Equal）"}
+      "example": {"code": ["twlle 4,5"],"explanation": "r4 が r5 以下のとき論理比較でトラップを発生させる（tw 6,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twng",
@@ -879,7 +879,7 @@
       "equivalent": "tw 20, rA, rB",
       "summary": "大きくない場合のワードトラップ（Trap Word if Not Greater Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twng 4,5"],"explanation": "この例では 大きくない場合のワードトラップ（Trap Word if Not Greater Than）"}
+      "example": {"code": ["twng 4,5"],"explanation": "r4 が r5 より大きくないときトラップを発生させる（tw 20,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twnl",
@@ -888,7 +888,7 @@
       "equivalent": "tw 12, rA, rB",
       "summary": "小さくない場合のワードトラップ（Trap Word if Not Less Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twnl 4,5"],"explanation": "この例では 小さくない場合のワードトラップ（Trap Word if Not Less Than）"}
+      "example": {"code": ["twnl 4,5"],"explanation": "r4 が r5 より小さくないときトラップを発生させる（tw 12,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twlng",
@@ -897,7 +897,7 @@
       "equivalent": "tw 6, rA, rB",
       "summary": "論理的に大きくない場合のワードトラップ（Trap Word if Logically Not Greater Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlng 4,5"],"explanation": "この例では 論理的に大きくない場合のワードトラップ（Trap Word if Logically Not Greater Than）"}
+      "example": {"code": ["twlng 4,5"],"explanation": "r4 が r5 より論理的に大きくないときトラップを発生させる（tw 6,4,5 の簡記）。"}
     },
     {
       "mnemonic": "twlnl",
@@ -906,7 +906,7 @@
       "equivalent": "tw 5, rA, rB",
       "summary": "論理的に小さくない場合のワードトラップ（Trap Word if Logically Not Less Than）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlnl 4,5"],"explanation": "この例では 論理的に小さくない場合のワードトラップ（Trap Word if Logically Not Less Than）"}
+      "example": {"code": ["twlnl 4,5"],"explanation": "r4 が r5 より論理的に小さくないときトラップを発生させる（tw 5,4,5 の簡記）。"}
     },
     {
       "mnemonic": "tweqi",
@@ -915,7 +915,7 @@
       "equivalent": "twi 4, rA, s16",
       "summary": "等しい場合のワード即値トラップ（Trap Word if Equal Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["tweqi 4,s16"],"explanation": "この例では 等しい場合のワード即値トラップ（Trap Word if Equal Immediate）"}
+      "example": {"code": ["tweqi 4,s16"],"explanation": "r4 が即値 s16 と等しいときトラップを発生させる（twi 4,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twnei",
@@ -924,7 +924,7 @@
       "equivalent": "twi 24, rA, s16",
       "summary": "等しくない場合のワード即値トラップ（Trap Word if Not Equal Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twnei 4,s16"],"explanation": "この例では 等しくない場合のワード即値トラップ（Trap Word if Not Equal Immediate）"}
+      "example": {"code": ["twnei 4,s16"],"explanation": "r4 が即値 s16 と等しくないときトラップを発生させる（twi 24,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twgti",
@@ -933,7 +933,7 @@
       "equivalent": "twi 8, rA, s16",
       "summary": "大きい場合のワード即値トラップ（Trap Word if Greater Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twgti 4,s16"],"explanation": "この例では 大きい場合のワード即値トラップ（Trap Word if Greater Than Immediate）"}
+      "example": {"code": ["twgti 4,s16"],"explanation": "r4 が即値 s16 より大きいときトラップを発生させる（twi 8,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twlti",
@@ -942,7 +942,7 @@
       "equivalent": "twi 16, rA, s16",
       "summary": "小さい場合のワード即値トラップ（Trap Word if Less Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlti 4,s16"],"explanation": "この例では 小さい場合のワード即値トラップ（Trap Word if Less Than Immediate）"}
+      "example": {"code": ["twlti 4,s16"],"explanation": "r4 が即値 s16 より小さいときトラップを発生させる（twi 16,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twgei",
@@ -951,7 +951,7 @@
       "equivalent": "twi 12, rA, s16",
       "summary": "大きいまたは等しい場合のワード即値トラップ（Trap Word if Greater Than or Equal Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twgei 4,s16"],"explanation": "この例では 大きいまたは等しい場合のワード即値トラップ（Trap Word if Greater Than or Equal Immediate）"}
+      "example": {"code": ["twgei 4,s16"],"explanation": "r4 が即値 s16 以上のときトラップを発生させる（twi 12,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twlei",
@@ -960,7 +960,7 @@
       "equivalent": "twi 20, rA, s16",
       "summary": "小さいまたは等しい場合のワード即値トラップ（Trap Word if Less Than or Equal Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlei 4,s16"],"explanation": "この例では 小さいまたは等しい場合のワード即値トラップ（Trap Word if Less Than or Equal Immediate）"}
+      "example": {"code": ["twlei 4,s16"],"explanation": "r4 が即値 s16 以下のときトラップを発生させる（twi 20,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twlgti",
@@ -969,7 +969,7 @@
       "equivalent": "twi 1, rA, s16",
       "summary": "論理的に大きい場合のワード即値トラップ（Trap Word if Logically Greater Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlgti 4,s16"],"explanation": "この例では 論理的に大きい場合のワード即値トラップ（Trap Word if Logically Greater Than Immediate）"}
+      "example": {"code": ["twlgti 4,s16"],"explanation": "r4 が即値 s16 より論理的に大きいときトラップを発生させる（twi 1,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twllti",
@@ -978,7 +978,7 @@
       "equivalent": "twi 2, rA, s16",
       "summary": "論理的に小さい場合のワード即値トラップ（Trap Word if Logically Less Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twllti 4,s16"],"explanation": "この例では 論理的に小さい場合のワード即値トラップ（Trap Word if Logically Less Than Immediate）"}
+      "example": {"code": ["twllti 4,s16"],"explanation": "r4 が即値 s16 より論理的に小さいときトラップを発生させる（twi 2,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twlgei",
@@ -987,7 +987,7 @@
       "equivalent": "twi 5, rA, s16",
       "summary": "論理的に大きいまたは等しい場合のワード即値トラップ（Trap Word if Logically Greater Than or Equal Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlgei 4,s16"],"explanation": "この例では 論理的に大きいまたは等しい場合のワード即値トラップ（Trap Word if Logically Greater Than or Equal Immediate）"}
+      "example": {"code": ["twlgei 4,s16"],"explanation": "r4 が即値 s16 以上のとき論理比較でトラップを発生させる（twi 5,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twllei",
@@ -996,7 +996,7 @@
       "equivalent": "twi 6, rA, s16",
       "summary": "論理的に小さいまたは等しい場合のワード即値トラップ（Trap Word if Logically Less Than or Equal Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twllei 4,s16"],"explanation": "この例では 論理的に小さいまたは等しい場合のワード即値トラップ（Trap Word if Logically Less Than or Equal Immediate）"}
+      "example": {"code": ["twllei 4,s16"],"explanation": "r4 が即値 s16 以下のとき論理比較でトラップを発生させる（twi 6,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twngi",
@@ -1005,7 +1005,7 @@
       "equivalent": "twi 20, rA, s16",
       "summary": "大きくない場合のワード即値トラップ（Trap Word if Not Greater Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twngi 4,s16"],"explanation": "この例では 大きくない場合のワード即値トラップ（Trap Word if Not Greater Than Immediate）"}
+      "example": {"code": ["twngi 4,s16"],"explanation": "r4 が即値 s16 より大きくないときトラップを発生させる（twi 20,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twnli",
@@ -1014,7 +1014,7 @@
       "equivalent": "twi 12, rA, s16",
       "summary": "小さくない場合のワード即値トラップ（Trap Word if Not Less Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twnli 4,s16"],"explanation": "この例では 小さくない場合のワード即値トラップ（Trap Word if Not Less Than Immediate）"}
+      "example": {"code": ["twnli 4,s16"],"explanation": "r4 が即値 s16 より小さくないときトラップを発生させる（twi 12,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twlngi",
@@ -1023,7 +1023,7 @@
       "equivalent": "twi 6, rA, s16",
       "summary": "論理的に大きくない場合のワード即値トラップ（Trap Word if Logically Not Greater Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlngi 4,s16"],"explanation": "この例では 論理的に大きくない場合のワード即値トラップ（Trap Word if Logically Not Greater Than Immediate）"}
+      "example": {"code": ["twlngi 4,s16"],"explanation": "r4 が即値 s16 より論理的に大きくないときトラップを発生させる（twi 6,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "twlnli",
@@ -1032,7 +1032,7 @@
       "equivalent": "twi 5, rA, s16",
       "summary": "論理的に小さくない場合のワード即値トラップ（Trap Word if Logically Not Less Than Immediate）",
       "notes": "trapOn は TO ビット値: 1=論理GT、2=論理LT、4=EQ、8=GT、16=LT の論理和（31 で無条件）。",
-      "example": {"code": ["twlnli 4,s16"],"explanation": "この例では 論理的に小さくない場合のワード即値トラップ（Trap Word if Logically Not Less Than Immediate）"}
+      "example": {"code": ["twlnli 4,s16"],"explanation": "r4 が即値 s16 より論理的に小さくないときトラップを発生させる（twi 5,4,s16 の簡記）。"}
     },
     {
       "mnemonic": "mflr",
@@ -1041,7 +1041,7 @@
       "equivalent": "mfspr rT, 8",
       "summary": "リンクレジスタからの移動（Move from Link Register）",
       "notes": "SPR 8 = LR。",
-      "example": {"code": ["mflr 3"],"explanation": "この例では リンクレジスタからの移動（Move from Link Register）"}
+      "example": {"code": ["mflr 3"],"explanation": "LR の値を r3 へ読み出す（mfspr r3,8 の簡記）。"}
     },
     {
       "mnemonic": "mtlr",
@@ -1050,7 +1050,7 @@
       "equivalent": "mtspr 8, rS",
       "summary": "リンクレジスタへの移動（Move to Link Register）",
       "notes": "SPR 8 = LR。bl の戻り先保存先。",
-      "example": {"code": ["mtlr 4"],"explanation": "この例では リンクレジスタへの移動（Move to Link Register）"}
+      "example": {"code": ["mtlr 4"],"explanation": "r4 の値を LR へ書き込む（mtspr 8,r4 の簡記）。"}
     },
     {
       "mnemonic": "mfctr",
@@ -1059,7 +1059,7 @@
       "equivalent": "mfspr rT, 9",
       "summary": "カウントレジスタからの移動（Move from Count Register）",
       "notes": "SPR 9 = CTR。",
-      "example": {"code": ["mfctr 3"],"explanation": "この例では カウントレジスタからの移動（Move from Count Register）"}
+      "example": {"code": ["mfctr 3"],"explanation": "CTR の値を r3 へ読み出す（mfspr r3,9 の簡記）。"}
     },
     {
       "mnemonic": "mtctr",
@@ -1068,7 +1068,7 @@
       "equivalent": "mtspr 9, rS",
       "summary": "カウントレジスタへの移動（Move to Count Register）",
       "notes": "SPR 9 = CTR。bctr・bdnz 系の分岐先指定に使う。",
-      "example": {"code": ["mtctr 4"],"explanation": "この例では カウントレジスタへの移動（Move to Count Register）"}
+      "example": {"code": ["mtctr 4"],"explanation": "r4 の値を CTR へ書き込む（mtspr 9,r4 の簡記）。"}
     },
     {
       "mnemonic": "mfxer",
@@ -1077,7 +1077,7 @@
       "equivalent": "mfspr rT, 1",
       "summary": "固定小数点例外レジスタからの移動（Move from XER）",
       "notes": "SPR 1 = XER。",
-      "example": {"code": ["mfxer 3"],"explanation": "この例では 固定小数点例外レジスタからの移動（Move from XER）"}
+      "example": {"code": ["mfxer 3"],"explanation": "XER の値を r3 へ読み出す（mfspr r3,1 の簡記）。"}
     },
     {
       "mnemonic": "mtxer",
@@ -1086,7 +1086,7 @@
       "equivalent": "mtspr 1, rS",
       "summary": "固定小数点例外レジスタへの移動（Move to XER）",
       "notes": "SPR 1 = XER。",
-      "example": {"code": ["mtxer 4"],"explanation": "この例では 固定小数点例外レジスタへの移動（Move to XER）"}
+      "example": {"code": ["mtxer 4"],"explanation": "r4 の値を XER へ書き込む（mtspr 1,r4 の簡記）。"}
     }
 ,
     {
@@ -1096,7 +1096,7 @@
       "equivalent": "mtcrf 255, rS",
       "summary": "条件レジスタ全体への移動（Move to Condition Register）",
       "notes": "全8フィールドを更新する mtcrf の拡張形式。",
-      "example": {"code": ["mtcr 4"],"explanation": "この例では 条件レジスタ全体への移動（Move to Condition Register）"}
+      "example": {"code": ["mtcr 4"],"explanation": "r4 の値を CR 全体（cr0〜cr7）へ書き込む（mtcrf 255,r4 の簡記）。"}
     },
     {
       "mnemonic": "mftb",
@@ -1105,7 +1105,7 @@
       "equivalent": "mfspr rT, 268",
       "summary": "Time Base 下位ワードからの移動（Move from Time Base）",
       "notes": "SPR 268 を読む。",
-      "example": {"code": ["mftb 3"],"explanation": "この例では Time Base 下位ワードからの移動（Move from Time Base）"}
+      "example": {"code": ["mftb 3"],"explanation": "Time Base の下位ワード（SPR 268）を r3 へ読み出す（mfspr r3,268 と等価・専用オペコードを持つ）。"}
     },
     {
       "mnemonic": "mftbu",
@@ -1114,7 +1114,7 @@
       "equivalent": "mfspr rT, 269",
       "summary": "Time Base 上位ワードからの移動（Move from Time Base Upper）",
       "notes": "SPR 269 を読む。",
-      "example": {"code": ["mftbu 3"],"explanation": "この例では Time Base 上位ワードからの移動（Move from Time Base Upper）"}
+      "example": {"code": ["mftbu 3"],"explanation": "Time Base の上位ワード（SPR 269）を r3 へ読み出す（mfspr r3,269 と等価・専用オペコードを持つ）。"}
     }
 ,
     {
@@ -1124,7 +1124,7 @@
       "equivalent": "b target (AA=1)",
       "summary": "絶対アドレスへの分岐（Branch Absolute）",
       "notes": "B 形式の AA ビットを1にする。",
-      "example": {"code": ["ba target","target:"],"explanation": "この例では 絶対アドレスへの分岐（Branch Absolute）"}
+      "example": {"code": ["ba target","target:"],"explanation": "target（絶対アドレス）へ無条件分岐する（b target の AA=1 版）。"}
     },
     {
       "mnemonic": "bl",
@@ -1133,7 +1133,7 @@
       "equivalent": "b target (LK=1)",
       "summary": "戻り先を LR に記録して分岐（Branch with Link）",
       "notes": "B 形式の LK ビットを1にする。",
-      "example": {"code": ["bl target","target:"],"explanation": "この例では 戻り先を LR に記録して分岐（Branch with Link）"}
+      "example": {"code": ["bl target","target:"],"explanation": "戻りアドレスを LR へ記録して target へ分岐する（b target の LK=1 版）。"}
     },
     {
       "mnemonic": "bla",
@@ -1142,7 +1142,7 @@
       "equivalent": "b target (AA=1, LK=1)",
       "summary": "絶対アドレスへ戻り先を LR に記録して分岐",
       "notes": "B 形式の AA と LK ビットを1にする。",
-      "example": {"code": ["bla target","target:"],"explanation": "この例では 絶対アドレスへ戻り先を LR に記録して分岐"}
+      "example": {"code": ["bla target","target:"],"explanation": "戻りアドレスを LR へ記録して target（絶対アドレス）へ分岐する（AA=1、LK=1）。"}
     },
     {
       "mnemonic": "bctrl",
@@ -1151,7 +1151,7 @@
       "equivalent": "bcctr 0x14, 0 (LK=1)",
       "summary": "LR を更新して CTR へ無条件分岐（Branch to Count Register with Link）",
       "notes": "BCCTR の LK ビットを1にする。",
-      "example": {"code": ["bctrl"],"explanation": "この例では LR を更新して CTR へ無条件分岐（Branch to Count Register with Link）"}
+      "example": {"code": ["bctrl"],"explanation": "戻りアドレスを LR へ記録して CTR の番地へ無条件分岐する（bcctr 0x14,0 の LK=1 版）。"}
     }
   ],
   "instructions": [
@@ -1184,7 +1184,7 @@
       ],
       "notes": "インデックス形式は lbzx（X-Form）、更新形式は lbzu/lbzux。",
       "src": "book",
-      "example": {"code": ["lbz %r3,4(%r5)"],"explanation": "この例では 1 バイトをゼロ拡張してロードする（Load Byte and Zero）。"}
+      "example": {"code": ["lbz %r3,4(%r5)"],"explanation": "r5+4 番地のメモリから 1 バイトを取り出し、上位 24 ビットを 0 にして r3 へ入れる（r3 = ゼロ拡張 mem[r5+4]）。アドレス = ベース r5 + 即値オフセット 4。"}
     },
     {
       "mnemonic": "LBZX",
@@ -1209,7 +1209,7 @@
       "encodings": [{"syntax": "lbzx rT,rA,rB", "opcode": "011111 rT rA rB 0001010111 0", "bytes": 4}],
       "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book",
-      "example": {"code": ["lbzx %r3,%r5,%r6"],"explanation": "この例では 1 バイトをゼロ拡張してロード（レジスタインデックス形式）。"}
+      "example": {"code": ["lbzx %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 1 バイトを取り出し、上位 24 ビットを 0 にして r3 へ入れる（r3 = ゼロ拡張 mem[r5+r6]）。オフセットをレジスタ r6 で与えるインデックス形式。"}
     },
     {
       "mnemonic": "LBZU",
@@ -1234,7 +1234,7 @@
       "encodings": [{"syntax": "lbzu rT,d(rA)", "opcode": "100011 rT rA D", "bytes": 4}],
       "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book",
-      "example": {"code": ["lbzu %r3,4(%r5)"],"explanation": "この例では 1 バイトロード後、実効アドレスを rA に書き戻す（update 形式）。"}
+      "example": {"code": ["lbzu %r3,4(%r5)"],"explanation": "r5+4 番地のメモリから 1 バイトをゼロ拡張して r3 へロードし、使ったアドレスを r5 に書き戻す（r3 = ゼロ拡張 mem[r5+4]、r5 = r5+4）。"}
     },
     {
       "mnemonic": "LBZUX",
@@ -1259,7 +1259,7 @@
       "encodings": [{"syntax": "lbzux rT,rA,rB", "opcode": "011111 rT rA rB 0001110111 0", "bytes": 4}],
       "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book",
-      "example": {"code": ["lbzux %r3,%r5,%r6"],"explanation": "この例では レジスタインデックス形式のバイトロード + アドレス更新。"}
+      "example": {"code": ["lbzux %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 1 バイトをゼロ拡張して r3 へロードし、使ったアドレスを r5 に書き戻す（r3 = ゼロ拡張 mem[r5+r6]、r5 = r5+r6）。"}
     },
     {
       "mnemonic": "LHZ",
@@ -1291,7 +1291,7 @@
       ],
       "notes": "符号拡張版は LHA。更新形式は lhzu/lhzux。",
       "src": "book",
-      "example": {"code": ["lhz %r3,4(%r5)"],"explanation": "この例では 2 バイト（ハーフワード）をゼロ拡張してロードする。"}
+      "example": {"code": ["lhz %r3,4(%r5)"],"explanation": "r5+4 番地のメモリから 2 バイト（ハーフワード）を取り出しゼロ拡張して r3 へ入れる（r3 = ゼロ拡張 mem[r5+4]）。アドレス = ベース r5 + 即値オフセット 4。"}
     },
     {
       "mnemonic": "LHZX",
@@ -1316,7 +1316,7 @@
       "encodings": [{"syntax": "lhzx rT,rA,rB", "opcode": "011111 rT rA rB 0100010111 0", "bytes": 4}],
       "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book",
-      "example": {"code": ["lhzx %r3,%r5,%r6"],"explanation": "この例では ハーフワードをゼロ拡張してロード（レジスタインデックス形式）。"}
+      "example": {"code": ["lhzx %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 2 バイトを取り出しゼロ拡張して r3 へ入れる（r3 = ゼロ拡張 mem[r5+r6]）。オフセットをレジスタ r6 で与えるインデックス形式。"}
     },
     {
       "mnemonic": "LHZU",
@@ -1341,7 +1341,7 @@
       "encodings": [{"syntax": "lhzu rT,d(rA)", "opcode": "101001 rT rA D", "bytes": 4}],
       "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book",
-      "example": {"code": ["lhzu %r3,4(%r5)"],"explanation": "この例では 2 バイト（ハーフワード）をゼロ拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。"}
+      "example": {"code": ["lhzu %r3,4(%r5)"],"explanation": "r5+4 番地のメモリから 2 バイトをゼロ拡張して r3 へロードし、使ったアドレスを r5 に書き戻す（r3 = ゼロ拡張 mem[r5+4]、r5 = r5+4）。"}
     },
     {
       "mnemonic": "LHZUX",
@@ -1366,7 +1366,7 @@
       "encodings": [{"syntax": "lhzux rT,rA,rB", "opcode": "011111 rT rA rB 0100110111 0", "bytes": 4}],
       "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book",
-      "example": {"code": ["lhzux %r3,%r5,%r6"],"explanation": "この例では ハーフワードをゼロ拡張してロード + アドレス更新（レジスタインデックス形式）。"}
+      "example": {"code": ["lhzux %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 2 バイトをゼロ拡張して r3 へロードし、使ったアドレスを r5 に書き戻す（r3 = ゼロ拡張 mem[r5+r6]、r5 = r5+r6）。"}
     },
     {
       "mnemonic": "LHA",
@@ -1398,7 +1398,7 @@
       ],
       "notes": "更新形式は lhau/lhaux。",
       "src": "book",
-      "example": {"code": ["lha %r3,4(%r5)"],"explanation": "この例では 2 バイトを符号拡張してロードする（Load Halfword Algebraic）。"}
+      "example": {"code": ["lha %r3,4(%r5)"],"explanation": "r5+4 番地のメモリから 2 バイトを取り出し符号拡張して r3 へ入れる（r3 = 符号拡張 mem[r5+4]）。アドレス = ベース r5 + 即値オフセット 4。"}
     },
     {
       "mnemonic": "LHAX",
@@ -1423,7 +1423,7 @@
       "encodings": [{"syntax": "lhax rT,rA,rB", "opcode": "011111 rT rA rB 0101010111 0", "bytes": 4}],
       "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book",
-      "example": {"code": ["lhax %r3,%r5,%r6"],"explanation": "この例では ハーフワードを符号拡張してロード（レジスタインデックス形式）。"}
+      "example": {"code": ["lhax %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 2 バイトを取り出し符号拡張して r3 へ入れる（r3 = 符号拡張 mem[r5+r6]）。オフセットをレジスタ r6 で与えるインデックス形式。"}
     },
     {
       "mnemonic": "LHAU",
@@ -1448,7 +1448,7 @@
       "encodings": [{"syntax": "lhau rT,d(rA)", "opcode": "101011 rT rA D", "bytes": 4}],
       "notes": "インデックス + 更新は lhaux。 rA=0 または rA=rT は無効な命令形式。",
       "src": "book",
-      "example": {"code": ["lhau %r3,4(%r5)"],"explanation": "この例では 2 バイトを符号拡張してロードし、実効アドレスを rA に書き戻す（update 形式）。"}
+      "example": {"code": ["lhau %r3,4(%r5)"],"explanation": "r5+4 番地のメモリから 2 バイトを符号拡張して r3 へロードし、使ったアドレスを r5 に書き戻す（r3 = 符号拡張 mem[r5+4]、r5 = r5+4）。"}
     },
     {
       "mnemonic": "LHAUX",
@@ -1473,7 +1473,7 @@
       "encodings": [{"syntax": "lhaux rT,rA,rB", "opcode": "011111 rT rA rB 0101110111 0", "bytes": 4}],
       "notes": "rA=0 または rA=rT は無効な命令形式。",
       "src": "book",
-      "example": {"code": ["lhaux %r3,%r5,%r6"],"explanation": "この例では ハーフワードを符号拡張してロード + アドレス更新（レジスタインデックス形式）。"}
+      "example": {"code": ["lhaux %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 2 バイトを符号拡張して r3 へロードし、使ったアドレスを r5 に書き戻す（r3 = 符号拡張 mem[r5+r6]、r5 = r5+r6）。"}
     },
     {
       "mnemonic": "LWZ",
@@ -1604,7 +1604,7 @@
       ],
       "encodings": [{"syntax": "lhbrx rT,rA,rB", "opcode": "011111 rT rA rB 1100010110 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["lhbrx %r3,%r5,%r6"],"explanation": "この例では ハーフワードをバイトリバース（ビッグ/リトルエンディアン変換）してロードする。"}
+      "example": {"code": ["lhbrx %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 2 バイトを取り出し、バイト順を逆にして r3 へ入れる（r3 = バイトスワップ mem[r5+r6]）。リトルエンディアンデータの読み込みに使う。"}
     },
     {
       "mnemonic": "LWBRX",
@@ -1628,7 +1628,7 @@
       ],
       "encodings": [{"syntax": "lwbrx rT,rA,rB", "opcode": "011111 rT rA rB 1000010110 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["lwbrx %r3,%r5,%r6"],"explanation": "この例では ワードをバイトリバースしてロードする。"}
+      "example": {"code": ["lwbrx %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 4 バイト（ワード）を取り出し、バイト順を逆にして r3 へ入れる（r3 = バイトスワップ mem[r5+r6]）。"}
     },
     {
       "mnemonic": "LMW",
@@ -1659,7 +1659,7 @@
       ],
       "notes": "PPC440 でもサポートする。POWER 旧ニーモニックは lm。rA がロード対象範囲に含まれる形式は無効（601 を除く）。",
       "src": "book",
-      "example": {"code": ["lmw %r3,4(%r5)"],"explanation": "この例では rT から r31 までのすべての GPR へ連続ワードを一括ロード（Load Multiple Word）。"}
+      "example": {"code": ["lmw %r3,4(%r5)"],"explanation": "r5+4 番地を起点に 4 バイト間隔で r3 から r31 まで順にロードする（r3 = mem[r5+4]、r4 = mem[r5+8]、…）。"}
     },
     {
       "mnemonic": "STMW",
@@ -1690,7 +1690,7 @@
       ],
       "notes": "PPC440 でもサポートする。POWER 旧ニーモニックは stm。",
       "src": "book",
-      "example": {"code": ["stmw %r4,4(%r5)"],"explanation": "この例では rS から r31 までの連続 GPR の下位ワードをメモリへ一括ストア（Store Multiple Word）。"}
+      "example": {"code": ["stmw %r4,4(%r5)"],"explanation": "r4 から r31 までのレジスタを r5+4 番地を起点に 4 バイト間隔で順にストアする（mem[r5+4] = r4、mem[r5+8] = r5 の値、…。ベース r5 自体は更新されない）。"}
     },
     {
       "mnemonic": "LSWI",
@@ -1715,7 +1715,7 @@
       "encodings": [{"syntax": "lswi rT,rA,NB", "opcode": "011111 rT rA NB 1001010101 0", "bytes": 4}],
       "notes": "rT から順にレジスタの上位バイト側から詰め、r31 の次は r0 に折り返す。rA がロード対象範囲に含まれる場合、および rA=rT=0 は無効な命令形式。",
       "src": "book",
-      "example": {"code": ["lswi %r3,%r5,4"],"explanation": "この例では NB が 1〜31 ならそのバイト数、0 なら 32 バイトを連続レジスタへロードする。"}
+      "example": {"code": ["lswi %r3,%r5,4"],"explanation": "r5 番地を起点に 4 バイト（NB=4）を取り出し、先頭バイトが最上位バイトになるよう r3 へ詰めてロードする。NB=0 は 32 バイト（r3〜r10）。"}
     },
     {
       "mnemonic": "LSWX",
@@ -1740,7 +1740,7 @@
       "encodings": [{"syntax": "lswx rT,rA,rB", "opcode": "011111 rT rA rB 1000010101 0", "bytes": 4}],
       "notes": "rT から順に詰め、r31 の次は r0 に折り返す。ロード対象範囲に rA/rB が含まれる形式は無効。転送数 0 でも rT=rA または rT=rB なら無効、それ以外では rT は未定義。即値版は LSWI。",
       "src": "book",
-      "example": {"code": ["lswx %r3,%r5,%r6"],"explanation": "この例では 転送バイト数を XER[25:31] から取得して連続レジスタへロードする（Load String Word Indexed、0〜127 バイト）。"}
+      "example": {"code": ["lswx %r3,%r5,%r6"],"explanation": "r5+r6 番地を起点に XER[25:31] で指定したバイト数（0〜127）を、先頭バイトが最上位になるよう r3 以降のレジスタへロードする。"}
     },
     {
       "mnemonic": "LWARX",
@@ -1765,7 +1765,7 @@
       "encodings": [{"syntax": "lwarx rT,rA,rB", "opcode": "011111 rT rA rB 0000010100 0", "bytes": 4}],
       "notes": "stwcx. と対で読み出し・更新を行う。古い予約は次の lwarx で置き換えられる。実効アドレスは 4 バイト境界に揃える。予約が成立しても必要なメモリ順序には別途同期が必要。",
       "src": "book",
-      "example": {"code": ["lwarx %r3,%r5,%r6"],"explanation": "この例では ワードをロードし、実効アドレスに予約（reservation）を置く（Load Word and Reserve Indexed）。"}
+      "example": {"code": ["lwarx %r3,%r5,%r6"],"explanation": "r5+r6 番地のメモリから 4 バイトを取り出し r3 へ入れる（r3 = mem[r5+r6]）。同時にこのアドレスに予約（reservation）を置き、stwcx. と対でアトミック更新を実現する。"}
     },
     {
       "mnemonic": "STSWI",
@@ -1790,7 +1790,7 @@
       "encodings": [{"syntax": "stswi rS,rA,NB", "opcode": "011111 rS rA NB 1011010101 0", "bytes": 4}],
       "notes": "rS の上位バイトから順に取り出し、r31 の次は r0 に折り返す。",
       "src": "book",
-      "example": {"code": ["stswi %r4,%r5,4"],"explanation": "この例では NB が 1〜31 ならそのバイト数、0 なら 32 バイトを連続レジスタからメモリへストアする。"}
+      "example": {"code": ["stswi %r4,%r5,4"],"explanation": "r4 以降のレジスタから 4 バイト（NB=4、先頭バイトが最上位）を r5 番地へストアする。NB=0 は 32 バイト（r4〜r11）。"}
     },
     {
       "mnemonic": "STBU",
@@ -1815,7 +1815,7 @@
       "encodings": [{"syntax": "stbu rS,d(rA)", "opcode": "100111 rS rA D", "bytes": 4}],
       "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book",
-      "example": {"code": ["stbu %r4,4(%r5)"],"explanation": "この例では 下位 1 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=0 は指定できない。rA=rS は使用可能で、更新前の値をストアする。"}
+      "example": {"code": ["stbu %r4,4(%r5)"],"explanation": "r4 の下位 1 バイトを r5+4 番地のメモリへストアし、使ったアドレスを r5 に書き戻す（mem[r5+4] = r4 の下位バイト、r5 = r5+4）。"}
     },
     {
       "mnemonic": "STBUX",
@@ -1840,7 +1840,7 @@
       "encodings": [{"syntax": "stbux rS,rA,rB", "opcode": "011111 rS rA rB 0011110111 0", "bytes": 4}],
       "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book",
-      "example": {"code": ["stbux %r4,%r5,%r6"],"explanation": "この例では バイトストア + アドレス更新（レジスタインデックス形式）。"}
+      "example": {"code": ["stbux %r4,%r5,%r6"],"explanation": "r4 の下位 1 バイトを r5+r6 番地のメモリへストアし、使ったアドレスを r5 に書き戻す（mem[r5+r6] = r4 の下位バイト、r5 = r5+r6）。"}
     },
     {
       "mnemonic": "STSWX",
@@ -1865,7 +1865,7 @@
       "encodings": [{"syntax": "stswx rS,rA,rB", "opcode": "011111 rS rA rB 1010010101 0", "bytes": 4}],
       "notes": "XER[25:31] がバイト数。rS の上位バイトから順に取り出し、必要に応じて r31 から r0 に折り返す。即値版は STSWI。",
       "src": "book",
-      "example": {"code": ["stswx %r4,%r5,%r6"],"explanation": "この例では 転送バイト数を XER[25:31] から取得して連続レジスタからストアする（Store String Word Indexed、0〜127 バイト）。"}
+      "example": {"code": ["stswx %r4,%r5,%r6"],"explanation": "r4 以降のレジスタから XER[25:31] で指定したバイト数（0〜127）を、先頭バイトが最上位になるよう r5+r6 番地へストアする。"}
     },
     {
       "mnemonic": "STB",
@@ -1896,7 +1896,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["stb %r4,4(%r5)"],"explanation": "この例では 下位 1 バイトをストアする（Store Byte）。フラグは一切変化しない。"}
+      "example": {"code": ["stb %r4,4(%r5)"],"explanation": "r4 の下位 1 バイトを r5+4 番地のメモリへストアする（mem[r5+4] = r4 の下位バイト）。アドレス = ベース r5 + 即値オフセット 4。"}
     },
     {
       "mnemonic": "STBX",
@@ -1921,7 +1921,7 @@
       "encodings": [{"syntax": "stbx rS,rA,rB", "opcode": "011111 rS rA rB 0011010111 0", "bytes": 4}],
       "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book",
-      "example": {"code": ["stbx %r4,%r5,%r6"],"explanation": "この例では 1 バイトストア（レジスタインデックス形式）。"}
+      "example": {"code": ["stbx %r4,%r5,%r6"],"explanation": "r4 の下位 1 バイトを r5+r6 番地のメモリへストアする（mem[r5+r6] = r4 の下位バイト）。オフセットをレジスタ r6 で与えるインデックス形式。"}
     },
     {
       "mnemonic": "STH",
@@ -1952,7 +1952,7 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sth %r4,4(%r5)"],"explanation": "この例では 下位 2 バイトをストアする（Store Halfword）。"}
+      "example": {"code": ["sth %r4,4(%r5)"],"explanation": "r4 の下位 2 バイトを r5+4 番地のメモリへストアする（mem[r5+4] = r4 の下位ハーフワード）。アドレス = ベース r5 + 即値オフセット 4。"}
     },
     {
       "mnemonic": "STHX",
@@ -1977,7 +1977,7 @@
       "encodings": [{"syntax": "sthx rS,rA,rB", "opcode": "011111 rS rA rB 0110010111 0", "bytes": 4}],
       "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book",
-      "example": {"code": ["sthx %r4,%r5,%r6"],"explanation": "この例では ハーフワードストア（レジスタインデックス形式）。"}
+      "example": {"code": ["sthx %r4,%r5,%r6"],"explanation": "r4 の下位 2 バイトを r5+r6 番地のメモリへストアする（mem[r5+r6] = r4 の下位ハーフワード）。オフセットをレジスタ r6 で与えるインデックス形式。"}
     },
     {
       "mnemonic": "STHU",
@@ -2002,7 +2002,7 @@
       "encodings": [{"syntax": "sthu rS,d(rA)", "opcode": "101101 rS rA D", "bytes": 4}],
       "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book",
-      "example": {"code": ["sthu %r4,4(%r5)"],"explanation": "この例では 下位 2 バイトをストアし、実効アドレスを rA に書き戻す（update 形式）。rA=0 は指定できない。rA=rS は使用可能で、更新前の値をストアする。"}
+      "example": {"code": ["sthu %r4,4(%r5)"],"explanation": "r4 の下位 2 バイトを r5+4 番地のメモリへストアし、使ったアドレスを r5 に書き戻す（mem[r5+4] = r4 の下位ハーフワード、r5 = r5+4）。"}
     },
     {
       "mnemonic": "STHUX",
@@ -2027,7 +2027,7 @@
       "encodings": [{"syntax": "sthux rS,rA,rB", "opcode": "011111 rS rA rB 0110110111 0", "bytes": 4}],
       "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book",
-      "example": {"code": ["sthux %r4,%r5,%r6"],"explanation": "この例では ハーフワードストア + アドレス更新（レジスタインデックス形式）。"}
+      "example": {"code": ["sthux %r4,%r5,%r6"],"explanation": "r4 の下位 2 バイトを r5+r6 番地のメモリへストアし、使ったアドレスを r5 に書き戻す（mem[r5+r6] = r4 の下位ハーフワード、r5 = r5+r6）。"}
     },
     {
       "mnemonic": "STW",
@@ -2059,7 +2059,7 @@
       ],
       "notes": "主オペコードは stw=0x24、stb=0x26、sth=0x2C。D-Form の配置は主オペコード/rS/rA/16 ビット変位。",
       "src": "book",
-      "example": {"code": ["stw %r4,4(%r5)"],"explanation": "この例では ワードストア。スタック退避（stwu r1,-N(r1)）の基本形。"}
+      "example": {"code": ["stw %r4,4(%r5)"],"explanation": "r4 の 4 バイト（ワード）を r5+4 番地のメモリへストアする（mem[r5+4] = r4）。アドレス = ベース r5 + 即値オフセット 4。"}
     },
     {
       "mnemonic": "STWX",
@@ -2084,7 +2084,7 @@
       "encodings": [{"syntax": "stwx rS,rA,rB", "opcode": "011111 rS rA rB 0010010111 0", "bytes": 4}],
       "notes": "実効アドレスは (rA=0 なら 0、それ以外は GPR[rA]) + GPR[rB]。rB=0 は定数 0 ではなく GPR0 の値を使う。",
       "src": "book",
-      "example": {"code": ["stwx %r4,%r5,%r6"],"explanation": "この例では ワードストア（レジスタインデックス形式）。"}
+      "example": {"code": ["stwx %r4,%r5,%r6"],"explanation": "r4 の 4 バイトを r5+r6 番地のメモリへストアする（mem[r5+r6] = r4）。オフセットをレジスタ r6 で与えるインデックス形式。"}
     },
     {
       "mnemonic": "STWU",
@@ -2109,7 +2109,7 @@
       "encodings": [{"syntax": "stwu rS,d(rA)", "opcode": "100101 rS rA D", "bytes": 4}],
       "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book",
-      "example": {"code": ["stwu %r4,4(%r5)"],"explanation": "この例では ワードストア + アドレス更新。関数プロローグ stwu r1,-N(r1) の定番。"}
+      "example": {"code": ["stwu %r4,4(%r5)"],"explanation": "r4 の 4 バイトを r5+4 番地のメモリへストアし、使ったアドレスを r5 に書き戻す（mem[r5+4] = r4、r5 = r5+4）。"}
     },
     {
       "mnemonic": "STWUX",
@@ -2134,7 +2134,7 @@
       "encodings": [{"syntax": "stwux rS,rA,rB", "opcode": "011111 rS rA rB 0010110111 0", "bytes": 4}],
       "notes": "rA=0 は無効な命令形式。rA=rS は使用可能で、更新前の値をストアする。",
       "src": "book",
-      "example": {"code": ["stwux %r4,%r5,%r6"],"explanation": "この例では ワードストア + アドレス更新（レジスタインデックス形式）。"}
+      "example": {"code": ["stwux %r4,%r5,%r6"],"explanation": "r4 の 4 バイトを r5+r6 番地のメモリへストアし、使ったアドレスを r5 に書き戻す（mem[r5+r6] = r4、r5 = r5+r6）。"}
     },
     {
       "mnemonic": "STWCX.",
@@ -2163,7 +2163,7 @@
       "encodings": [{"syntax": "stwcx. rS,rA,rB", "opcode": "011111 rS rA rB 0010010110 1", "bytes": 4}],
       "notes": "lwarx と対で使う。ストア成立時は CR0[EQ]=1、不成立時は EQ=0。SO は XER[SO] のコピー。予約はストアの成否にかかわらず解除される。実効アドレスを 4 バイト境界に揃え、対応する lwarx と同じ対象を使用する。",
       "src": "book",
-      "example": {"code": ["stwcx. %r4,%r5,%r6"],"explanation": "この例では 予約が有効なときだけワードをストアし、成否を CR0[EQ] で報告する（Store Word Conditional Indexed）。"}
+      "example": {"code": ["stwcx. %r4,%r5,%r6"],"explanation": "lwarx の予約が有効なときだけ r4 の 4 バイトを r5+r6 番地へストアし（mem[r5+r6] = r4）、成功を CR0[EQ]=1 で報告する。予約が切れていればストアせず CR0[EQ]=0。"}
     },
     {
       "mnemonic": "STHBRX",
@@ -2187,7 +2187,7 @@
       ],
       "encodings": [{"syntax": "sthbrx rS,rA,rB", "opcode": "011111 rS rA rB 1110010110 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["sthbrx %r4,%r5,%r6"],"explanation": "この例では ハーフワードをバイトリバースしてストアする。"}
+      "example": {"code": ["sthbrx %r4,%r5,%r6"],"explanation": "r4 の下位 2 バイトを取り出し、バイト順を逆にして r5+r6 番地へストアする（mem[r5+r6] = バイトスワップ r4 の下位ハーフワード）。"}
     },
     {
       "mnemonic": "STWBRX",
@@ -2211,7 +2211,7 @@
       ],
       "encodings": [{"syntax": "stwbrx rS,rA,rB", "opcode": "011111 rS rA rB 1010010110 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["stwbrx %r4,%r5,%r6"],"explanation": "この例では ワードをバイトリバースしてストアする。"}
+      "example": {"code": ["stwbrx %r4,%r5,%r6"],"explanation": "r4 の 4 バイトを取り出し、バイト順を逆にして r5+r6 番地へストアする（mem[r5+r6] = バイトスワップ r4）。"}
     },
     {
       "mnemonic": "ADD",
@@ -2242,7 +2242,7 @@
       ],
       "notes": "CR0 更新（. 版）は LT/GT/EQ = 結果の符号・零、SO = XER[SO] のコピー。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["add %r3,%r5,%r6"],"explanation": "この例では rT = rA + rB。キャリーは使わず更新もしない。o 接尾で XER[SO/OV]、. 接尾で CR0 更新。"}
+      "example": {"code": ["add %r3,%r5,%r6"],"explanation": "r3 = r5 + r6。キャリーは使わず更新もしない。o 接尾で XER[SO/OV]、. 接尾で CR0 更新。"}
     },
     {
       "mnemonic": "ADDC",
@@ -2267,7 +2267,7 @@
       "encodings": [{"syntax": "addc[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000001010 Rc", "bytes": 4}],
       "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["addc %r3,%r5,%r6"],"explanation": "この例では 加算して XER[CA] を更新する（Add Carrying）。CA は使わない。"}
+      "example": {"code": ["addc %r3,%r5,%r6"],"explanation": "r3 = r5 + r6 を計算し、桁上がりを XER[CA] に記録する。CA 自身はこの加算には使わない。"}
     },
     {
       "mnemonic": "ADDE",
@@ -2292,7 +2292,7 @@
       "encodings": [{"syntax": "adde[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 010001010 Rc", "bytes": 4}],
       "notes": "32 ビットワード 2 個の 64 ビット加算は下位を addc、上位を adde で処理する。128 ビットなら上位 3 ワードに adde を使う。CA は入力にも出力にも使う。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["adde %r3,%r5,%r6"],"explanation": "この例では rT = rA + rB + XER[CA]。多倍長加算の上位ワード用。"}
+      "example": {"code": ["adde %r3,%r5,%r6"],"explanation": "r3 = r5 + r6 + XER[CA]。多倍長加算の上位ワード用。結果のキャリーで XER[CA] を更新する。"}
     },
     {
       "mnemonic": "ADDME",
@@ -2317,7 +2317,7 @@
       "encodings": [{"syntax": "addme rT,rA", "opcode": "011111 rT rA 00000 OE 011101010 Rc", "bytes": 4}],
       "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book",
-      "example": {"code": ["addme %r3,%r5"],"explanation": "この例では rT = rA + (-1) + XER[CA]（Add to Minus One Extended）。"}
+      "example": {"code": ["addme %r3,%r5"],"explanation": "r3 = r5 + (-1) + XER[CA]（Add to Minus One Extended）。結果のキャリーで XER[CA] を更新する。"}
     },
     {
       "mnemonic": "ADDZE",
@@ -2342,7 +2342,7 @@
       "encodings": [{"syntax": "addze rT,rA", "opcode": "011111 rT rA 00000 OE 011001010 Rc", "bytes": 4}],
       "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book",
-      "example": {"code": ["addze %r3,%r5"],"explanation": "この例では rT = rA + 0 + XER[CA]（Add to Zero Extended）。"}
+      "example": {"code": ["addze %r3,%r5"],"explanation": "r3 = r5 + 0 + XER[CA]（Add to Zero Extended）。結果のキャリーで XER[CA] を更新する。"}
     },
     {
       "mnemonic": "ADDI",
@@ -2373,7 +2373,7 @@
       ],
       "notes": "拡張形式: li rT,s16（addi rT,0,s16）、la rT,d(rA)（アドレスロード）、subi rT,rA,s16（addi rT,rA,-s16）。\n32 ビット即値加算は下位ハーフの符号拡張に注意（addis の上位側で調整）。",
       "src": "book",
-      "example": {"code": ["addi %r3,%r5,1"],"explanation": "この例では rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。"}
+      "example": {"code": ["addi %r3,%r5,1"],"explanation": "r3 = r5 + 1（符号拡張即値）。rA=0 のときはベースを 0 とみなし即値ロード（li）になる。"}
     },
     {
       "mnemonic": "ADDIC",
@@ -2398,7 +2398,7 @@
       "encodings": [{"syntax": "addic rT,rA,s16", "opcode": "001100 rT rA s16", "bytes": 4}],
       "notes": "addic. は CR0 更新あり。addi とは違い r0 を 0 に置換しない（rA 必須）。",
       "src": "book",
-      "example": {"code": ["addic %r3,%r5,1"],"explanation": "この例では 即値加算して XER[CA] 更新。addic. 版は CR0 も更新する。"}
+      "example": {"code": ["addic %r3,%r5,1"],"explanation": "r3 = r5 + 1 を計算し XER[CA] を更新する。addic. 版は CR0 も更新する。"}
     },
     {
       "mnemonic": "ADDIS",
@@ -2423,7 +2423,7 @@
       "encodings": [{"syntax": "addis rT,rA,s16", "opcode": "001111 rT rA s16", "bytes": 4}],
       "notes": "lis + ori で 32 ビット即値を 2 命令で組み立てるのが定番。",
       "src": "book",
-      "example": {"code": ["addis %r3,%r5,1"],"explanation": "この例では rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。"}
+      "example": {"code": ["addis %r3,%r5,1"],"explanation": "r3 = r5 + (1 << 16)。rA=0 で lis（上位ハーフ即値ロード）になる。"}
     },
     {
       "mnemonic": "SUBF",
@@ -2448,7 +2448,7 @@
       "encodings": [{"syntax": "subf[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000101000 Rc", "bytes": 4}],
       "notes": "拡張形式 sub rT,rA,rB（別名一覧参照）は rT = rA - rB（自然な順序）に展開される。subfc/subfe/subfme/subfze はキャリー対応版。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["subf %r3,%r5,%r6"],"explanation": "この例では rT = rB - rA（Subtract From — オペランド順に注意）。"}
+      "example": {"code": ["subf %r3,%r5,%r6"],"explanation": "r3 = r6 - r5（Subtract From — オペランド順に注意）。"}
     },
     {
       "mnemonic": "SUBFC",
@@ -2473,7 +2473,7 @@
       "encodings": [{"syntax": "subfc[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000001000 Rc", "bytes": 4}],
       "notes": "内部的には rB + NOT rA + 1 を計算する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["subfc %r3,%r5,%r6"],"explanation": "この例では rT = rB - rA を計算し XER[CA] を更新する。符号なし減算で借りがなければ CA=1。"}
+      "example": {"code": ["subfc %r3,%r5,%r6"],"explanation": "r3 = r6 - r5 を計算し XER[CA] を更新する。符号なし減算で借りがなければ CA=1。"}
     },
     {
       "mnemonic": "SUBFE",
@@ -2498,7 +2498,7 @@
       "encodings": [{"syntax": "subfe[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 010001000 Rc", "bytes": 4}],
       "notes": "この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["subfe %r3,%r5,%r6"],"explanation": "この例では rT = rB - rA + XER[CA] - 1。多倍長減算用（subfme/subfze は定数版）。"}
+      "example": {"code": ["subfe %r3,%r5,%r6"],"explanation": "r3 = r6 - r5 + XER[CA] - 1。多倍長減算用（subfme/subfze は定数版）。"}
     },
     {
       "mnemonic": "SUBFZE",
@@ -2527,7 +2527,7 @@
       "encodings": [{"syntax": "subfze rT,rA", "opcode": "011111 rT rA 00000 OE 011001000 Rc", "bytes": 4}],
       "notes": "SUBFE の定数版（0 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。 この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book",
-      "example": {"code": ["subfze %r3,%r5"],"explanation": "この例では rT = 0 - rA + XER[CA] - 1（Subtract From Zero Extended）。XER[CA] を更新。多倍長減算用。"}
+      "example": {"code": ["subfze %r3,%r5"],"explanation": "r3 = 0 - r5 + XER[CA] - 1（Subtract From Zero Extended）。XER[CA] を更新。多倍長減算用。"}
     },
     {
       "mnemonic": "SUBFME",
@@ -2556,7 +2556,7 @@
       "encodings": [{"syntax": "subfme rT,rA", "opcode": "011111 rT rA 00000 OE 011101000 Rc", "bytes": 4}],
       "notes": "SUBFE の定数版（-1 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。 この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。",
       "src": "book",
-      "example": {"code": ["subfme %r3,%r5"],"explanation": "この例では rT = -1 - rA + XER[CA] - 1（Subtract From Minus One Extended）。XER[CA] を更新。多倍長減算用。"}
+      "example": {"code": ["subfme %r3,%r5"],"explanation": "r3 = -1 - r5 + XER[CA] - 1（Subtract From Minus One Extended）。XER[CA] を更新。多倍長減算用。"}
     },
     {
       "mnemonic": "SUBFIC",
@@ -2580,7 +2580,7 @@
       ],
       "encodings": [{"syntax": "subfic rT,rA,s16", "opcode": "001000 rT rA s16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["subfic %r3,%r5,1"],"explanation": "この例では rT = 符号拡張即値 - rA で XER[CA] 更新。"}
+      "example": {"code": ["subfic %r3,%r5,1"],"explanation": "r3 = 1 - r5 を計算し XER[CA] を更新する。"}
     },
     {
       "mnemonic": "NEG",
@@ -2605,7 +2605,7 @@
       "encodings": [{"syntax": "neg rT,rA", "opcode": "011111 rT rA 00000 OE 001101000 Rc", "bytes": 4}],
       "notes": "フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["neg %r3,%r5"],"explanation": "この例では rT = -(rA)（2 の補数）。o 接尾で 0x80000000 の NEG をオーバーフローとして検出可能。"}
+      "example": {"code": ["neg %r3,%r5"],"explanation": "r3 = 0 - r5（2 の補数）。o 接尾で 0x80000000 の NEG をオーバーフローとして検出可能。"}
     },
     {
       "mnemonic": "MULLW",
@@ -2636,7 +2636,7 @@
       ],
       "notes": "上位ワードは mulhw（符号付き）/mulhwu（符号なし）。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["mullw %r3,%r5,%r6"],"explanation": "この例では 32×32 ビット乗算の下位ワードを rT へ。符号付き/符号なし共通（下位は同じ）。"}
+      "example": {"code": ["mullw %r3,%r5,%r6"],"explanation": "r3 = r5 × r6 の下位 32 ビット。符号付き/符号なし共通（下位は同じ）。"}
     },
     {
       "mnemonic": "MULHW",
@@ -2660,7 +2660,7 @@
       ],
       "encodings": [{"syntax": "mulhw[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 001001011 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["mulhw %r3,%r5,%r6"],"explanation": "この例では 符号付き 32×32 乗算の上位ワードを rT へ。"}
+      "example": {"code": ["mulhw %r3,%r5,%r6"],"explanation": "r3 = r5 × r6（符号付き 32×32）の上位 32 ビット。"}
     },
     {
       "mnemonic": "MULHWU",
@@ -2684,7 +2684,7 @@
       ],
       "encodings": [{"syntax": "mulhwu[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 000001011 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["mulhwu %r3,%r5,%r6"],"explanation": "この例では 符号なし 32×32 乗算の上位ワードを rT へ。"}
+      "example": {"code": ["mulhwu %r3,%r5,%r6"],"explanation": "r3 = r5 × r6（符号なし 32×32）の上位 32 ビット。"}
     },
     {
       "mnemonic": "MULLI",
@@ -2703,7 +2703,7 @@
       "cycles": [{"cond":"440 コア","cycles":2}],
       "encodings": [{"syntax": "mulli rT,rA,s16", "opcode": "000111 rT rA s16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["mulli %r3,%r5,1"],"explanation": "この例では rT = rA × 符号拡張即値（下位ワード）。上位は取得不能。"}
+      "example": {"code": ["mulli %r3,%r5,1"],"explanation": "r3 = r5 × 1（符号拡張即値）の下位ワード。上位は取得不能。"}
     },
     {
       "mnemonic": "DIVW",
@@ -2723,7 +2723,7 @@
       "encodings": [{"syntax": "divw[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 111101011 Rc", "bytes": 4}],
       "notes": "0 除算・オーバーフロー時の rT は未定義（o 版で SO/OV により検出）。商は 0 方向へ丸め。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["divw %r3,%r5,%r6"],"explanation": "この例では 符号付き 32÷32 → 商（rT）。剰余は提供されない（divw→mullw→subf で計算）。"}
+      "example": {"code": ["divw %r3,%r5,%r6"],"explanation": "r3 = r5 ÷ r6 の商（符号付き 32÷32）。剰余は提供されない（divw→mullw→subf で計算）。"}
     },
     {
       "mnemonic": "DIVWU",
@@ -2743,7 +2743,7 @@
       "encodings": [{"syntax": "divwu[o][.] rT,rA,rB", "opcode": "011111 rT rA rB OE 111001011 Rc", "bytes": 4}],
       "notes": "除数が 0 の場合、結果は未定義。o 形式では XER[OV/SO] を更新する。. 形式の CR0 は結果を符号付きとみなして LT/GT/EQ を設定する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。",
       "src": "book",
-      "example": {"code": ["divwu %r3,%r5,%r6"],"explanation": "この例では 符号なし 32÷32 → 商（rT）。"}
+      "example": {"code": ["divwu %r3,%r5,%r6"],"explanation": "r3 = r5 ÷ r6 の商（符号なし 32÷32）。"}
     },
     {
       "mnemonic": "CNTLZW",
@@ -2767,7 +2767,7 @@
       ],
       "encodings": [{"syntax": "cntlzw rA,rS", "opcode": "011111 rS rA 00000 0000011010 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["cntlzw %r5,%r4"],"explanation": "この例では 先導ゼロカウント（0〜32 を rA へ）。正規化・優先度計算に使う。"}
+      "example": {"code": ["cntlzw %r5,%r4"],"explanation": "r4 の先導ゼロ数（0〜32）を数えて r5 へ入れる。正規化・優先度計算に使う。"}
     },
     {
       "mnemonic": "EXTSB",
@@ -2792,7 +2792,7 @@
       "encodings": [{"syntax": "extsb rA,rS", "opcode": "011111 rS rA 00000 1110111010 0", "bytes": 4}],
       "notes": "ハーフワード版は extsh。",
       "src": "book",
-      "example": {"code": ["extsb %r5,%r4"],"explanation": "この例では バイトをワードへ符号拡張する。"}
+      "example": {"code": ["extsb %r5,%r4"],"explanation": "r4 の下位 8 ビットを符号拡張して r5 へ入れる。"}
     },
     {
       "mnemonic": "EXTSH",
@@ -2816,7 +2816,7 @@
       ],
       "encodings": [{"syntax": "extsh rA,rS", "opcode": "011111 rS rA 00000 1110011010 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["extsh %r5,%r4"],"explanation": "この例では ハーフワードをワードへ符号拡張する。"}
+      "example": {"code": ["extsh %r5,%r4"],"explanation": "r4 の下位 16 ビットを符号拡張して r5 へ入れる。"}
     },
     {
       "mnemonic": "CMP",
@@ -2847,7 +2847,7 @@
       ],
       "notes": "拡張形式 cmpw（L=0 暗黙）。分岐は後続の bc 系や bne/beq など条件分岐で使う。",
       "src": "book",
-      "example": {"code": ["cmp cr0,l,%r5,%r6"],"explanation": "この例では 符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。"}
+      "example": {"code": ["cmp cr0,l,%r5,%r6"],"explanation": "r5 と r6 を符号付き比較し、cr0 の LT/GT/EQ を設定する（SO は XER[SO] をコピー）。"}
     },
     {
       "mnemonic": "CMPL",
@@ -2872,7 +2872,7 @@
       "encodings": [{"syntax": "cmpl crfT,L,rA,rB", "opcode": "011111 BF L 0 rA rB 0000100000 0", "bytes": 4}],
       "notes": "比較した CR フィールドの LT/GT/EQ を更新し、SO には XER[SO] をコピーする。",
       "src": "book",
-      "example": {"code": ["cmpl cr0,l,%r5,%r6"],"explanation": "この例では 符号なし（logical）比較。拡張形式 cmplw。"}
+      "example": {"code": ["cmpl cr0,l,%r5,%r6"],"explanation": "r5 と r6 を符号なし（logical）比較し、cr0 の LT/GT/EQ を設定する。拡張形式 cmplw。"}
     },
     {
       "mnemonic": "CMPI",
@@ -2897,7 +2897,7 @@
       "encodings": [{"syntax": "cmpi crfT,L,rA,s16", "opcode": "001011 BF L 0 rA s16", "bytes": 4}],
       "notes": "16 ビット即値は符号拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。",
       "src": "book",
-      "example": {"code": ["cmpi cr0,l,%r5,1"],"explanation": "この例では 符号付き即値比較。拡張形式 cmpwi crfT,rA,s16 が実用形。"}
+      "example": {"code": ["cmpi cr0,l,%r5,1"],"explanation": "r5 と即値 1 を符号付き比較し、cr0 の LT/GT/EQ を設定する。拡張形式 cmpwi crfT,rA,s16 が実用形。"}
     },
     {
       "mnemonic": "CMPLI",
@@ -2922,7 +2922,7 @@
       "encodings": [{"syntax": "cmpli crfT,L,rA,u16", "opcode": "001010 BF L 0 rA u16", "bytes": 4}],
       "notes": "16 ビット即値はゼロ拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。",
       "src": "book",
-      "example": {"code": ["cmpli cr0,l,%r5,1"],"explanation": "この例では 符号なし即値比較。拡張形式 cmplwi。"}
+      "example": {"code": ["cmpli cr0,l,%r5,1"],"explanation": "r5 と即値 1 を符号なし比較し、cr0 の LT/GT/EQ を設定する。拡張形式 cmplwi。"}
     },
     {
       "mnemonic": "AND",
@@ -2947,7 +2947,7 @@
       "encodings": [{"syntax": "and[.] rA,rS,rB", "opcode": "011111 rS rA rB 0000011100 Rc", "bytes": 4}],
       "notes": "andc（補数 AND）、nand、eqv、nor、orc、xor も同系。",
       "src": "book",
-      "example": {"code": ["and %r5,%r4,%r6"],"explanation": "この例では 論理積。. 接尾で CR0 更新。"}
+      "example": {"code": ["and %r5,%r4,%r6"],"explanation": "r5 = r4 AND r6（論理積）。. 接尾で CR0 更新。"}
     },
     {
       "mnemonic": "ANDC",
@@ -2971,7 +2971,7 @@
       ],
       "encodings": [{"syntax": "andc[.] rA,rS,rB", "opcode": "011111 rS rA rB 0000111100 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["andc %r5,%r4,%r6"],"explanation": "この例では rA = rS AND NOT rB（ビットクリア）。"}
+      "example": {"code": ["andc %r5,%r4,%r6"],"explanation": "r5 = r4 AND NOT r6（ビットクリア）。"}
     },
     {
       "mnemonic": "OR",
@@ -2995,7 +2995,7 @@
       ],
       "encodings": [{"syntax": "or[.] rA,rS,rB", "opcode": "011111 rS rA rB 0110111100 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["or %r5,%r4,%r6"],"explanation": "この例では 論理和。or rA,rB,rB はレジスタ移動の推奨形（mr 拡張形式）。"}
+      "example": {"code": ["or %r5,%r4,%r6"],"explanation": "r5 = r4 OR r6（論理和）。同一レジスタ形 or rX,rY,rY に対応する簡記が mr（レジスタ移動）。"}
     },
     {
       "mnemonic": "ORC",
@@ -3019,7 +3019,7 @@
       ],
       "encodings": [{"syntax": "orc[.] rA,rS,rB", "opcode": "011111 rS rA rB 0110011100 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["orc %r5,%r4,%r6"],"explanation": "この例では rA = rS OR NOT rB。"}
+      "example": {"code": ["orc %r5,%r4,%r6"],"explanation": "r5 = r4 OR NOT r6。"}
     },
     {
       "mnemonic": "XOR",
@@ -3043,7 +3043,7 @@
       ],
       "encodings": [{"syntax": "xor[.] rA,rS,rB", "opcode": "011111 rS rA rB 0100111100 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["xor %r5,%r4,%r6"],"explanation": "この例では 排他的論理和。"}
+      "example": {"code": ["xor %r5,%r4,%r6"],"explanation": "r5 = r4 XOR r6（排他的論理和）。. 接尾で CR0 更新。"}
     },
     {
       "mnemonic": "NOR",
@@ -3067,7 +3067,7 @@
       ],
       "encodings": [{"syntax": "nor[.] rA,rS,rB", "opcode": "011111 rS rA rB 0001111100 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["nor %r5,%r4,%r6"],"explanation": "この例では NOR。nor rA,rB,rB はビット反転（not 拡張形式）。"}
+      "example": {"code": ["nor %r5,%r4,%r6"],"explanation": "r5 = NOT(r4 OR r6)。nor rX,rY,rY はビット反転（not 拡張形式）。"}
     },
     {
       "mnemonic": "NAND",
@@ -3091,7 +3091,7 @@
       ],
       "encodings": [{"syntax": "nand[.] rA,rS,rB", "opcode": "011111 rS rA rB 0111011100 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["nand %r5,%r4,%r6"],"explanation": "この例では NAND。"}
+      "example": {"code": ["nand %r5,%r4,%r6"],"explanation": "r5 = NOT(r4 AND r6)（NAND）。"}
     },
     {
       "mnemonic": "EQV",
@@ -3115,7 +3115,7 @@
       ],
       "encodings": [{"syntax": "eqv[.] rA,rS,rB", "opcode": "011111 rS rA rB 0100011100 Rc", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["eqv %r5,%r4,%r6"],"explanation": "この例では 同値（XNOR）。"}
+      "example": {"code": ["eqv %r5,%r4,%r6"],"explanation": "r5 = NOT(r4 XOR r6)（同値、XNOR）。"}
     },
     {
       "mnemonic": "ORI",
@@ -3140,7 +3140,7 @@
       "encodings": [{"syntax": "ori rA,rS,u16", "opcode": "011000 rS rA u16", "bytes": 4}],
       "notes": "lis + ori で 32 ビット即値ロード。ORI は CR を更新しない（CR0 更新が必要なら or. を使う）。",
       "src": "book",
-      "example": {"code": ["ori %r5,%r4,1"],"explanation": "この例では ゼロ拡張即値との論理和。ori r0,r0,0 が nop の実体。"}
+      "example": {"code": ["ori %r5,%r4,1"],"explanation": "r5 = r4 OR 1（ゼロ拡張即値）。ori r0,r0,0 が nop の実体。"}
     },
     {
       "mnemonic": "ORIS",
@@ -3164,7 +3164,7 @@
       ],
       "encodings": [{"syntax": "oris rA,rS,u16", "opcode": "011001 rS rA u16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["oris %r5,%r4,1"],"explanation": "この例では 16 ビット左シフト即値との論理和（上位ハーフ設定）。"}
+      "example": {"code": ["oris %r5,%r4,1"],"explanation": "r5 = r4 OR (1 << 16)（16 ビット左シフト即値、上位ハーフ設定）。"}
     },
     {
       "mnemonic": "XORI",
@@ -3188,7 +3188,7 @@
       ],
       "encodings": [{"syntax": "xori rA,rS,u16", "opcode": "011010 rS rA u16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["xori %r5,%r4,1"],"explanation": "この例では ゼロ拡張即値との排他的論理和。"}
+      "example": {"code": ["xori %r5,%r4,1"],"explanation": "r5 = r4 XOR 1（ゼロ拡張即値）。"}
     },
     {
       "mnemonic": "XORIS",
@@ -3212,7 +3212,7 @@
       ],
       "encodings": [{"syntax": "xoris rA,rS,u16", "opcode": "011011 rS rA u16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["xoris %r5,%r4,1"],"explanation": "この例では 16 ビット左シフト即値との排他的論理和。"}
+      "example": {"code": ["xoris %r5,%r4,1"],"explanation": "r5 = r4 XOR (1 << 16)（16 ビット左シフト即値）。"}
     },
     {
       "mnemonic": "ANDI.",
@@ -3236,7 +3236,7 @@
       ],
       "encodings": [{"syntax": "andi. rA,rS,u16", "opcode": "011100 rS rA u16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["andi. %r5,%r4,1"],"explanation": "この例では ゼロ拡張即値との AND + CR0 更新（論理即値命令で唯一 CR0 を更新する系統）。"}
+      "example": {"code": ["andi. %r5,%r4,1"],"explanation": "r5 = r4 AND 1（ゼロ拡張即値）を実行し CR0 を更新する（論理即値命令で唯一 CR0 を更新する系統）。"}
     },
     {
       "mnemonic": "ANDIS.",
@@ -3260,7 +3260,7 @@
       ],
       "encodings": [{"syntax": "andis. rA,rS,u16", "opcode": "011101 rS rA u16", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["andis. %r5,%r4,1"],"explanation": "この例では 16 ビット左シフト即値との AND + CR0 更新。"}
+      "example": {"code": ["andis. %r5,%r4,1"],"explanation": "r5 = r4 AND (1 << 16) を実行し CR0 を更新する。"}
     },
     {
       "mnemonic": "RLWINM",
@@ -3291,7 +3291,7 @@
       ],
       "notes": "拡張形式には rotlwi/rotrwi、slwi/srwi、extrwi がある。ビット番号は最上位が 0。MB≤ME ならその範囲を、MB>ME なら末尾と先頭にまたがる範囲を残す。. 形式の CR0[LT] は結果の符号ビットであり、抽出したビットが常に LT に入るわけではない。",
       "src": "book",
-      "example": {"code": ["rlwinm %r5,%r4,1,0,31"],"explanation": "この例では 左回転 n ビット後、マスク mB..mE で AND（Rotate Left Word Immediate then AND with Mask）。ビットフィールド抽出の万能命令。"}
+      "example": {"code": ["rlwinm %r5,%r4,1,0,31"],"explanation": "r4 を左へ 1 ビット回転し、マスク（MB=0〜ME=31 の全ビット）を AND して r5 へ入れる。この例はマスク全体なので純粋な 1 ビット左回転。"}
     },
     {
       "mnemonic": "RLWIMI",
@@ -3316,7 +3316,7 @@
       "encodings": [{"syntax": "rlwimi[.] rA,rS,SH,MB,ME", "opcode": "010100 rS rA SH MB ME Rc", "bytes": 4}],
       "notes": "ビット番号は最上位が 0。マスク内を回転後の値に置換し、マスク外は元の rA を保持する。MB>ME ではマスクが末尾と先頭にまたがる。",
       "src": "book",
-      "example": {"code": ["rlwimi %r5,%r4,1,0,31"],"explanation": "この例では 左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。"}
+      "example": {"code": ["rlwimi %r5,%r4,1,0,31"],"explanation": "r4 を左へ 1 ビット回転した値のマスク範囲（ここでは全ビット）を r5 の元の値へ上書き挿入する（Mask Insert）。この例では r5 は回転値で完全に置き換わる。"}
     },
     {
       "mnemonic": "RLWNM",
@@ -3341,7 +3341,7 @@
       "encodings": [{"syntax": "rlwnm[.] rA,rS,rB,MB,ME", "opcode": "010111 rS rA rB MB ME Rc", "bytes": 4}],
       "notes": "rB の下位 5 ビットを回転量として使う。MB/ME のビット番号は最上位が 0 で、MB>ME のマスクは末尾と先頭にまたがる。",
       "src": "book",
-      "example": {"code": ["rlwnm %r5,%r4,%r6,0,31"],"explanation": "この例では rB の下位 5 ビットで左回転後、マスクと AND。rotlw 拡張形式が全ビット回転。"}
+      "example": {"code": ["rlwnm %r5,%r4,%r6,0,31"],"explanation": "r4 を r6 の下位 5 ビット分だけ左回転し、マスク（ここでは全ビット）を AND して r5 へ入れる。rotlw 拡張形式が全ビット回転。"}
     },
     {
       "mnemonic": "SLW",
@@ -3366,7 +3366,7 @@
       "encodings": [{"syntax": "slw rA,rS,rB", "opcode": "011111 rS rA rB 0000011000 0", "bytes": 4}],
       "notes": "即値版は拡張形式 slwi（rlwinm 展開）。",
       "src": "book",
-      "example": {"code": ["slw %r5,%r4,%r6"],"explanation": "この例では 左シフト。rB の下位 6 ビットがシフト量で、32 以上なら結果 0。"}
+      "example": {"code": ["slw %r5,%r4,%r6"],"explanation": "r5 = r4 を r6 の下位 6 ビット分だけ左シフトした値。シフト量 32 以上なら結果は 0。"}
     },
     {
       "mnemonic": "SRW",
@@ -3391,7 +3391,7 @@
       "encodings": [{"syntax": "srw rA,rS,rB", "opcode": "011111 rS rA rB 1000011000 0", "bytes": 4}],
       "notes": "上位は 0 を詰める。即値シフトは srwi 拡張形式を使う。",
       "src": "book",
-      "example": {"code": ["srw %r5,%r4,%r6"],"explanation": "この例では 右論理シフト。rB の下位 6 ビットを使い、32〜63 なら結果は 0。"}
+      "example": {"code": ["srw %r5,%r4,%r6"],"explanation": "r5 = r4 を r6 の下位 6 ビット分だけ右論理シフトした値。32〜63 なら結果は 0。"}
     },
     {
       "mnemonic": "SRAW",
@@ -3416,7 +3416,7 @@
       "encodings": [{"syntax": "sraw rA,rS,rB", "opcode": "011111 rS rA rB 1100011000 0", "bytes": 4}],
       "notes": "rB の下位 6 ビットがシフト量。32〜63 では結果は符号に応じて 0 または全 1。負の値で捨てたビットに 1 があれば XER[CA]=1、それ以外は 0。負の無限大方向に丸める。",
       "src": "book",
-      "example": {"code": ["sraw %r5,%r4,%r6"],"explanation": "この例では 右代数（算術）シフト。入力が負で、シフトで捨てたビットに 1 があるとき XER[CA] をセット。"}
+      "example": {"code": ["sraw %r5,%r4,%r6"],"explanation": "r5 = r4 を r6 の下位 6 ビット分だけ算術右シフトした値。r4 が負で捨てたビットに 1 があるとき XER[CA] をセット。"}
     },
     {
       "mnemonic": "SRAWI",
@@ -3441,7 +3441,7 @@
       "encodings": [{"syntax": "srawi rA,rS,SH", "opcode": "011111 rS rA SH 1100111000 0", "bytes": 4}],
       "notes": "負の入力でシフトにより捨てたビットに 1 があれば CA=1、それ以外は 0。0 ビットシフトでは CA=0。",
       "src": "book",
-      "example": {"code": ["srawi %r5,%r4,1"],"explanation": "この例では 32 ビットワードを即値 0〜31 ビットだけ算術右シフトし、XER[CA] を更新する。"}
+      "example": {"code": ["srawi %r5,%r4,1"],"explanation": "r5 = r4 を 1 ビット（即値 0〜31）だけ算術右シフトした値。捨てたビットに応じて XER[CA] を更新。"}
     },
     {
       "mnemonic": "B",
@@ -3499,7 +3499,7 @@
       "encodings": [{"syntax": "bc BO,BI,BD", "opcode": "010000 BO BI BD AA LK", "bytes": 4}],
       "notes": "相対分岐の範囲は命令アドレスから -32,768〜+32,764 バイト。BO=16 は CTR 減算後に非ゼロなら分岐、12 は CR 真、4 は CR 偽、20 は CTR 減算も CR 判定もしない無条件分岐。bdnz/bdz などは拡張形式。LK=1 の形式は、分岐の成否にかかわらず次命令のアドレスを LR に設定する。",
       "src": "book",
-      "example": {"code": ["bc 12,2,target","target:"],"explanation": "この例では 条件付き分岐（B-Form）。BO/BI の組合せで CTR 減算・CR ビットテストを制御する。"}
+      "example": {"code": ["bc 12,2,target","target:"],"explanation": "BO=12（CR ビット=1 で分岐）× BI=2（cr0 の EQ ビット）なので、cr0 の EQ=1 のとき target へ分岐する（beq 相当）。BO/BI の組合せで CTR 減算と CR テストを制御する。"}
     },
     {
       "mnemonic": "BCLR",
@@ -3524,7 +3524,7 @@
       "encodings": [{"syntax": "bclr BO,BI", "opcode": "010011 BO BI 00000 0000010000 LK", "bytes": 4}],
       "notes": "btlr/bflr などの拡張形式がある。bclrl は分岐先として更新前の LR を使い、分岐の成否にかかわらず次の命令のアドレスを LR に設定する。",
       "src": "book",
-      "example": {"code": ["bclr 12,2"],"explanation": "この例では LR への条件分岐。blr 拡張形式（bclr 20,0）が関数復帰の標準。"}
+      "example": {"code": ["bclr 12,2"],"explanation": "BO=12、BI=2 なので cr0 の EQ=1 のとき LR の番地へ分岐する（beqlr 相当）。blr（bclr 20,0）が関数復帰の標準。"}
     },
     {
       "mnemonic": "BCCTR",
@@ -3549,7 +3549,7 @@
       "encodings": [{"syntax": "bcctr BO,BI", "opcode": "010011 BO BI 00000 1000010000 LK", "bytes": 4}],
       "notes": "CTR を分岐先に使うため CTR を減算する BO 形式は無効。bcctrl では分岐の成否にかかわらず次の命令のアドレスを LR に設定する。",
       "src": "book",
-      "example": {"code": ["bcctr 12,2"],"explanation": "この例では CTR への条件分岐。bctr は無条件分岐、bctrl は LR を更新する間接呼び出しに使う。"}
+      "example": {"code": ["bcctr 12,2"],"explanation": "BO=12、BI=2 なので cr0 の EQ=1 のとき CTR の番地へ分岐する（beqctr 相当）。bctr は無条件、bctrl は LR を更新する間接呼び出し。"}
     },
     {
       "mnemonic": "CRAND",
@@ -3574,7 +3574,7 @@
       "encodings": [{"syntax": "crand BT,BA,BB", "opcode": "010011 BT BA BB 0100000001 0", "bytes": 4}],
       "notes": "同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror crbT,crbA,crbA はビットのコピー（crmove）。セットは creqv crbT,crbT,crbT。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["crand 2,3,4"],"explanation": "この例では CR ビット同士の論理積（条件レジスタ論理）。"}
+      "example": {"code": ["crand 2,3,4"],"explanation": "CR ビット 3 と 4 の論理積を CR ビット 2 へ代入する（crb2 = crb3 AND crb4）。"}
     },
     {
       "mnemonic": "CRANDC",
@@ -3599,7 +3599,7 @@
       "encodings": [{"syntax": "crandc BT,BA,BB", "opcode": "010011 BT BA BB 0010000001 0", "bytes": 4}],
       "notes": "同系: crand、creqv、crnand、crnor、cror、crorc、crxor。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["crandc 2,3,4"],"explanation": "この例では CR ビット同士の論理積で crB の補数を取る（crA AND NOT crB）。"}
+      "example": {"code": ["crandc 2,3,4"],"explanation": "CR ビット 2 = ビット 3 AND NOT ビット 4。"}
     },
     {
       "mnemonic": "CROR",
@@ -3624,7 +3624,7 @@
       "encodings": [{"syntax": "cror BT,BA,BB", "opcode": "010011 BT BA BB 0111000001 0", "bytes": 4}],
       "notes": "オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["cror 2,3,4"],"explanation": "この例では CR ビット同士の論理和。"}
+      "example": {"code": ["cror 2,3,4"],"explanation": "CR ビット 2 = ビット 3 OR ビット 4。"}
     },
     {
       "mnemonic": "CRXOR",
@@ -3649,7 +3649,7 @@
       "encodings": [{"syntax": "crxor BT,BA,BB", "opcode": "010011 BT BA BB 0011000001 0", "bytes": 4}],
       "notes": "オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["crxor 2,3,4"],"explanation": "この例では CR ビット同士の排他的論理和。"}
+      "example": {"code": ["crxor 2,3,4"],"explanation": "CR ビット 2 = ビット 3 XOR ビット 4。"}
     },
     {
       "mnemonic": "CREQV",
@@ -3674,7 +3674,7 @@
       "encodings": [{"syntax": "creqv BT,BA,BB", "opcode": "010011 BT BA BB 0100100001 0", "bytes": 4}],
       "notes": "crset crbT ⇔ creqv crbT,crbT,crbT（ビットのセット）。Book E（440）のカテゴリ表では crxnor に相当。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["creqv 2,3,4"],"explanation": "この例では CR ビット同士の同値（XNOR）。両ビットが等しいとき 1。"}
+      "example": {"code": ["creqv 2,3,4"],"explanation": "CR ビット 2 = NOT(ビット 3 XOR ビット 4)。両ビットが等しいとき 1。"}
     },
     {
       "mnemonic": "CRNAND",
@@ -3699,7 +3699,7 @@
       "encodings": [{"syntax": "crnand BT,BA,BB", "opcode": "010011 BT BA BB 0011100001 0", "bytes": 4}],
       "notes": "オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["crnand 2,3,4"],"explanation": "この例では CR ビット同士の NAND。"}
+      "example": {"code": ["crnand 2,3,4"],"explanation": "CR ビット 2 = NOT(ビット 3 AND ビット 4)。"}
     },
     {
       "mnemonic": "CRNOR",
@@ -3724,7 +3724,7 @@
       "encodings": [{"syntax": "crnor BT,BA,BB", "opcode": "010011 BT BA BB 0000100001 0", "bytes": 4}],
       "notes": "crnot crbT,crbA ⇔ crnor crbT,crbA,crbA（ビットの反転）。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["crnor 2,3,4"],"explanation": "この例では CR ビット同士の NOR。"}
+      "example": {"code": ["crnor 2,3,4"],"explanation": "CR ビット 2 = NOT(ビット 3 OR ビット 4)。"}
     },
     {
       "mnemonic": "CRORC",
@@ -3749,7 +3749,7 @@
       "encodings": [{"syntax": "crorc BT,BA,BB", "opcode": "010011 BT BA BB 0110100001 0", "bytes": 4}],
       "notes": "crandc の OR 版。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。",
       "src": "book",
-      "example": {"code": ["crorc 2,3,4"],"explanation": "この例では CR ビット同士の論理和で crB の補数を取る（crA OR NOT crB）。"}
+      "example": {"code": ["crorc 2,3,4"],"explanation": "CR ビット 2 = ビット 3 OR NOT ビット 4。"}
     },
     {
       "mnemonic": "MCRF",
@@ -3774,7 +3774,7 @@
       "encodings": [{"syntax": "mcrf BF,BFA", "opcode": "010011 BF 00 BFA 00 0000000000000000", "bytes": 4}],
       "notes": "指定先 CR フィールドだけを更新する。 flags の ‡ はコピー元の値に依存する。実際に更新される CR フィールドはオペランドで指定される。",
       "src": "book",
-      "example": {"code": ["mcrf 0,1"],"explanation": "この例では CR フィールド（4 ビット単位）のコピー。"}
+      "example": {"code": ["mcrf 0,1"],"explanation": "CR フィールド cr1 の 4 ビットを cr0 へコピーする。"}
     },
     {
       "mnemonic": "MCRXR",
@@ -3799,7 +3799,7 @@
       "encodings": [{"syntax": "mcrxr crfT", "opcode": "011111 crfT 00 00000 00000 1000000000 0", "bytes": 4}],
       "notes": "XER{0}（SO/OV/CA/予約）が CR フィールドにコピーされ、XER 側のビット 0-3 は 0 にクリアされる。",
       "src": "book",
-      "example": {"code": ["mcrxr cr0"],"explanation": "この例では XER[0:3] を CR フィールド crfT へコピーし、XER[0:3] をクリアする（Move to CR from XER）。"}
+      "example": {"code": ["mcrxr cr0"],"explanation": "XER[0:3]（SO/OV/CA など）を cr0 へコピーし、XER[0:3] を 0 にクリアする（Move to CR from XER）。"}
     },
     {
       "mnemonic": "MFCR",
@@ -3823,7 +3823,7 @@
       ],
       "encodings": [{"syntax": "mfcr rT", "opcode": "011111 rT 00000 00000 0000010011 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["mfcr %r3"],"explanation": "この例では CR 全体（32 ビット）を GPR へコピーする。"}
+      "example": {"code": ["mfcr %r3"],"explanation": "CR 全体（8 フィールド×4 ビットの 32 ビット）を r3 へコピーする。"}
     },
     {
       "mnemonic": "MTCRF",
@@ -3848,7 +3848,7 @@
       "encodings": [{"syntax": "mtcrf FM,rS", "opcode": "011111 rS 0 FM 0 0010010000 0", "bytes": 4}],
       "notes": "マスクで指定した CR フィールドだけを更新する。 flags の ‡ はコピー元の値に依存する。実際に更新される CR フィールドはオペランドで指定される。",
       "src": "book",
-      "example": {"code": ["mtcrf 255,%r4"],"explanation": "この例では GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0xFF の全フィールド版。"}
+      "example": {"code": ["mtcrf 255,%r4"],"explanation": "r4 の値をマスク 255（=全 8 フィールド）の指定に従い CR 全体（cr0〜cr7）へ書き込む。mtcr r4 はこの mask=0xFF の簡記。"}
     },
     {
       "mnemonic": "MFSPR",
@@ -3873,7 +3873,7 @@
       "encodings": [{"syntax": "mfspr rT,SPR", "opcode": "011111 rT SPR[0:4] SPR[5:9] 0101010011 0", "bytes": 4}],
       "notes": "LR=8、CTR=9、XER=1。mfdcr/mtdcr は Book E（440）のデバイス制御レジスタアクセス（特権）。",
       "src": "book",
-      "example": {"code": ["mfspr %r3,8"],"explanation": "この例では 特殊目的レジスタ（LR/CTR/XER など）からの読出し。拡張形式は mflr/mfctr/mfxer。"}
+      "example": {"code": ["mfspr %r3,8"],"explanation": "SPR 8（LR）の値を r3 へ読み出す（mflr r3 相当）。拡張形式は mflr/mfctr/mfxer。"}
     },
     {
       "mnemonic": "MTSPR",
@@ -3897,7 +3897,7 @@
       ],
       "encodings": [{"syntax": "mtspr SPR,rS", "opcode": "011111 rS SPR[0:4] SPR[5:9] 0111010011 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["mtspr 8,%r4"],"explanation": "この例では 特殊目的レジスタへの書込み。拡張形式 mtlr/mtctr/mtxer。"}
+      "example": {"code": ["mtspr 8,%r4"],"explanation": "r4 の値を SPR 8（LR）へ書き込む（mtlr r4 相当）。拡張形式 mtlr/mtctr/mtxer。"}
     },
     {
       "mnemonic": "MFMSR",
@@ -3925,7 +3925,7 @@
       ],
       "encodings": [{"syntax": "mfmsr rT", "opcode": "011111 rT 00000 00000 0001010011 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["mfmsr %r3"],"explanation": "この例では マシン状態レジスタ（MSR）から GPR へコピーする（Move from MSR）。スーパーバイザレベル命令。"}
+      "example": {"code": ["mfmsr %r3"],"explanation": "マシン状態レジスタ（MSR）の値を r3 へコピーする。スーパーバイザレベル命令。"}
     },
     {
       "mnemonic": "MTMSR",
@@ -3958,7 +3958,7 @@
       "encodings": [{"syntax": "mtmsr rS", "opcode": "011111 rS 00000 00000 0010010010 0", "bytes": 4}],
       "notes": "601 では先行するすべての命令の完了まで ID でストールする。",
       "src": "book",
-      "example": {"code": ["mtmsr %r4"],"explanation": "この例では GPR からマシン状態レジスタ（MSR）へコピーする（Move to MSR）。スーパーバイザレベル命令。"}
+      "example": {"code": ["mtmsr %r4"],"explanation": "r4 の値をマシン状態レジスタ（MSR）へ書き込む。スーパーバイザレベル命令。"}
     },
     {
       "mnemonic": "SC",
@@ -4037,7 +4037,7 @@
       "encodings": [{"syntax": "tw TO,rA,rB", "opcode": "011111 TO rA rB 0000000100 0", "bytes": 4}],
       "notes": "TO は符号付き less/greater、equal、符号なし less/greater の 5 条件を組み合わせる。trap は tw 31,r0,r0 の拡張形式。即値版は twi。",
       "src": "book",
-      "example": {"code": ["tw 31,%r5,%r6"],"explanation": "この例では TO で指定した比較条件に一致するとプログラム割り込みを発生させる。"}
+      "example": {"code": ["tw 31,%r5,%r6"],"explanation": "TO=31 はすべての比較条件を有効にするので、r5 と r6 の値にかかわらず必ずプログラム割り込みを発生させる（無条件トラップ相当）。"}
     },
     {
       "mnemonic": "TWI",
@@ -4066,7 +4066,7 @@
       "encodings": [{"syntax": "twi TO,rA,s16", "opcode": "000011 TO rA s16", "bytes": 4}],
       "notes": "16 ビット即値を符号拡張して比較する。TO の 5 ビットは符号付き less/greater、equal、符号なし less/greater を指定する。",
       "src": "book",
-      "example": {"code": ["twi 31,%r5,1"],"explanation": "この例では 即値比較付き条件トラップ。範囲チェック（配列境界）の実装に使う。"}
+      "example": {"code": ["twi 31,%r5,1"],"explanation": "TO=31（全条件有効）なので、r5 と符号拡張即値 1 の値にかかわらず必ずトラップを発生させる。"}
     },
     {
       "mnemonic": "ISYNC",
@@ -4190,7 +4190,7 @@
       "encodings": [{"syntax": "dcbz rA,rB", "opcode": "011111 00000 rA rB 1111110110 0", "bytes": 4}],
       "notes": "保護上は対象ブロックへのストアとして扱う。キャッシュ抑止領域などでは使用条件や例外が実装に依存する。旧 POWER の dclz は特権命令。",
       "src": "book",
-      "example": {"code": ["dcbz %r5,%r6"],"explanation": "この例では データキャッシュブロックをゼロにして割り当てる。ブロックサイズは実装依存（PPC440 は 32 バイト）。バッファ初期化の高速化に使う。"}
+      "example": {"code": ["dcbz %r5,%r6"],"explanation": "r5+r6 番地を含むデータキャッシュブロックをゼロで埋めて割り当てる。ブロックサイズは実装依存（PPC440 は 32 バイト）。"}
     },
     {
       "mnemonic": "DCBF",
@@ -4223,7 +4223,7 @@
       "encodings": [{"syntax": "dcbf rA,rB", "opcode": "011111 00000 rA rB 0001010110 0", "bytes": 4}],
       "notes": "dcbst は書き戻しのみ、dcbi は無効化のみ。",
       "src": "book",
-      "example": {"code": ["dcbf %r5,%r6"],"explanation": "この例では データキャッシュブロックを記憶域へ書き戻し、無効化する（Data Cache Block Flush）。"}
+      "example": {"code": ["dcbf %r5,%r6"],"explanation": "r5+r6 番地を含むデータキャッシュブロックを記憶域へ書き戻し、無効化する（Data Cache Block Flush）。"}
     },
     {
       "mnemonic": "DCBI",
@@ -4252,7 +4252,7 @@
       "encodings": [{"syntax": "dcbi rA,rB", "opcode": "011111 00000 rA rB 0111010110 0", "bytes": 4}],
       "notes": "dcbf と違い書き戻しを行わないため、変更済みブロックのデータは失われる。",
       "src": "book",
-      "example": {"code": ["dcbi %r5,%r6"],"explanation": "この例では データキャッシュブロックを書き戻さずに無効化する（Data Cache Block Invalidate）。特権命令。"}
+      "example": {"code": ["dcbi %r5,%r6"],"explanation": "r5+r6 番地を含むデータキャッシュブロックを書き戻さずに無効化する（特権命令）。"}
     },
     {
       "mnemonic": "DCBST",
@@ -4284,7 +4284,7 @@
       ],
       "encodings": [{"syntax": "dcbst rA,rB", "opcode": "011111 00000 rA rB 0000110110 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["dcbst %r5,%r6"],"explanation": "この例では データキャッシュブロックを記憶域へ書き戻す（Data Cache Block Store）。無効化はしない。"}
+      "example": {"code": ["dcbst %r5,%r6"],"explanation": "r5+r6 番地を含むデータキャッシュブロックを記憶域へ書き戻す（無効化はしない）。"}
     },
     {
       "mnemonic": "DCBTST",
@@ -4309,7 +4309,7 @@
       "encodings": [{"syntax": "dcbtst rA,rB", "opcode": "011111 00000 rA rB 0011110110 0", "bytes": 4}],
       "notes": "dcbt のストア向け版。",
       "src": "book",
-      "example": {"code": ["dcbtst %r5,%r6"],"explanation": "この例では ストア用のデータキャッシュブロックタッチ（Data Cache Block Touch for Store）。将来のストアに備えてブロックを先読みする。"}
+      "example": {"code": ["dcbtst %r5,%r6"],"explanation": "r5+r6 番地を含むブロックをストア向けに先読み（タッチ）する。"}
     },
     {
       "mnemonic": "DCBT",
@@ -4333,7 +4333,7 @@
       ],
       "encodings": [{"syntax": "dcbt rA,rB", "opcode": "011111 00000 rA rB 0100010110 0", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["dcbt %r5,%r6"],"explanation": "この例では データキャッシュブロックタッチ（プリフェッチ）。dcbtst はストア向けタッチ。"}
+      "example": {"code": ["dcbt %r5,%r6"],"explanation": "r5+r6 番地を含むブロックをロード向けに先読み（プリフェッチ）する。dcbtst はストア向け。"}
     },
     {
       "mnemonic": "ICBT",
@@ -4358,7 +4358,7 @@
       "encodings": [{"syntax": "icbt CT,rA,rB", "opcode": "011111 CT rA rB 0000010110 0", "bytes": 4}],
       "notes": "命令キャッシュへの先読みヒント。自己書換コードの同期には、データキャッシュの書戻し・同期と命令キャッシュの無効化・isync を使う。",
       "src": "book",
-      "example": {"code": ["icbt 0,%r5,%r6"],"explanation": "この例では 命令キャッシュブロックタッチ（命令プリフェッチ）。"}
+      "example": {"code": ["icbt 0,%r5,%r6"],"explanation": "r5+r6 番地を含む命令キャッシュブロックを先読み（タッチ）する。"}
     },
     {
       "mnemonic": "ICBI",
@@ -4383,7 +4383,7 @@
       "encodings": [{"syntax": "icbi rA,rB", "opcode": "011111 00000 rA rB 1111010110 0", "bytes": 4}],
       "notes": "自己書換コードでは必要なデータキャッシュ書戻しと同期の後に実行し、命令同期を行う。具体的な手順は CPU のキャッシュ構成に依存する。",
       "src": "book",
-      "example": {"code": ["icbi %r5,%r6"],"explanation": "この例では 命令キャッシュブロックを無効化する（Instruction Cache Block Invalidate）。"}
+      "example": {"code": ["icbi %r5,%r6"],"explanation": "r5+r6 番地を含む命令キャッシュブロックを無効化する（Instruction Cache Block Invalidate）。"}
     },
     {
       "mnemonic": "MACCHW",
@@ -5138,7 +5138,7 @@
       ],
       "notes": "特権命令。DCR の番号や機能は PPC440 コアではなく個々のチップに依存する。DCRN は命令中で 5 ビットずつ入れ替えて符号化する。",
       "src": "book",
-      "example": {"code": ["mfdcr %r3, 0"],"explanation": "この例では DCRN で指定したデバイス制御レジスタの値を rT に読み出す。"}
+      "example": {"code": ["mfdcr %r3, 0"],"explanation": "DCR 番号 0 のデバイス制御レジスタの値を r3 へ読み出す。"}
     },
     {
       "mnemonic": "MTDCR",
@@ -5169,7 +5169,7 @@
       ],
       "notes": "特権命令。DCR の番号や機能はチップに依存する。DCRN は命令中で 5 ビットずつ入れ替えて符号化する。",
       "src": "book",
-      "example": {"code": ["mtdcr 0, %r4"],"explanation": "この例では rS の値を DCRN で指定したデバイス制御レジスタへ書き込む。"}
+      "example": {"code": ["mtdcr 0, %r4"],"explanation": "r4 の値を DCR 番号 0 のデバイス制御レジスタへ書き込む。"}
     },
     {
       "mnemonic": "WRTEE",
@@ -5200,7 +5200,7 @@
       ],
       "notes": "特権命令。他の MSR ビットは変更しない。",
       "src": "book",
-      "example": {"code": ["wrtee %r4"],"explanation": "この例では rS のビット 16（MSB を 0 とする番号）を MSR[EE] に設定する。"}
+      "example": {"code": ["wrtee %r4"],"explanation": "r4 のビット 16（MSB を 0 とする番号）を MSR[EE] に設定する。"}
     },
     {
       "mnemonic": "WRTEEI",
@@ -5231,7 +5231,7 @@
       ],
       "notes": "特権命令。他の MSR ビットは変更しない。",
       "src": "book",
-      "example": {"code": ["wrteei 1"],"explanation": "この例では 即値 E（0 または 1）を MSR[EE] に設定する。"}
+      "example": {"code": ["wrteei 1"],"explanation": "即値 1 を MSR[EE] に設定する（外部割込みの許可）。"}
     },
     {
       "mnemonic": "TLBRE",
@@ -5262,7 +5262,7 @@
       ],
       "notes": "特権命令。WS=0/1/2 のみ有効。WS=0 では TID が MMUCR[STID] にもロードされる。",
       "src": "book",
-      "example": {"code": ["tlbre %r3, %r5, 0"],"explanation": "この例では PPC440 の TLB エントリを rA で選び、WS で指定した部分を rT に読み出す。"}
+      "example": {"code": ["tlbre %r3, %r5, 0"],"explanation": "r5 で選んだ PPC440 の TLB エントリの word 0（WS=0）を r3 へ読み出す。"}
     },
     {
       "mnemonic": "TLBWE",
@@ -5293,7 +5293,7 @@
       ],
       "notes": "特権命令。WS=0/1/2 のみ有効。WS=0 では MMUCR[STID] も TID として使用される。",
       "src": "book",
-      "example": {"code": ["tlbwe %r4, %r5, 0"],"explanation": "この例では PPC440 の TLB エントリを rA で選び、WS で指定した部分に rS を書き込む。"}
+      "example": {"code": ["tlbwe %r4, %r5, 0"],"explanation": "r5 で選んだ PPC440 の TLB エントリの word 0（WS=0）に r4 を書き込む。"}
     },
     {
       "mnemonic": "TLBSX",
@@ -5324,7 +5324,7 @@
       ],
       "notes": "特権命令。記録形式 tlbsx. は CR0[EQ] に検索成功を示し、失敗時の rT は未定義。rA=0 の場合はベース値 0 を使う。",
       "src": "book",
-      "example": {"code": ["tlbsx %r3, %r5, %r6"],"explanation": "この例では 実効アドレスと MMUCR の検索条件に一致する TLB エントリを検索する。"}
+      "example": {"code": ["tlbsx %r3, %r5, %r6"],"explanation": "r5+r6 を実効アドレスとして TLB を検索し、一致したエントリの番号を r3 へ書き込む（検索対象と方式は MMUCR で制御、PPC440）。"}
     },
     {
       "mnemonic": "TLBSYNC",
@@ -5386,7 +5386,7 @@
       ],
       "notes": "特権命令。PPC440x5 ではキャッシュ全体を無効化し、rA/rB の値は使用しない。他の PPC440 実装では動作・対応を確認する。",
       "src": "book",
-      "example": {"code": ["dccci %r5, %r6"],"explanation": "この例では データキャッシュを無効化する PPC440x5 固有の命令。"}
+      "example": {"code": ["dccci %r5, %r6"],"explanation": "r5+r6 番地を含むデータキャッシュラインを無効化する（Book E 系・PPC440 ファミリのキャッシュ命令）。"}
     },
     {
       "mnemonic": "ICCCI",
@@ -5417,7 +5417,7 @@
       ],
       "notes": "特権命令。PPC440x5 ではキャッシュ全体を無効化し、rA/rB の値は使用しない。他の PPC440 実装では動作・対応を確認する。",
       "src": "book",
-      "example": {"code": ["iccci %r5, %r6"],"explanation": "この例では 命令キャッシュを無効化する PPC440x5 固有の命令。"}
+      "example": {"code": ["iccci %r5, %r6"],"explanation": "r5+r6 番地を含む命令キャッシュラインを無効化する（Book E 系・PPC440 ファミリのキャッシュ命令）。"}
     },
     {
       "mnemonic": "DCREAD",
@@ -5448,7 +5448,7 @@
       ],
       "notes": "PPC440x5 固有の特権診断命令。実効アドレスの一部をキャッシュのインデックスとして使用する。他の実装では対応を確認する。",
       "src": "book",
-      "example": {"code": ["dcread %r3, %r5, %r6"],"explanation": "この例では 指定されたキャッシュ位置のデータワードを rT に、タグ情報を診断レジスタに読み出す。"}
+      "example": {"code": ["dcread %r3, %r5, %r6"],"explanation": "r5+r6 番地で指定したデータキャッシュ位置のデータワードを r3 へ、タグ情報を診断レジスタへ読み出す。"}
     },
     {
       "mnemonic": "ICREAD",
@@ -5479,7 +5479,7 @@
       ],
       "notes": "PPC440x5 固有の特権診断命令。実効アドレスの一部をキャッシュのインデックスとして使用する。他の実装では対応を確認する。",
       "src": "book",
-      "example": {"code": ["icread %r5, %r6"],"explanation": "この例では 指定された命令キャッシュ位置のデータとタグを診断レジスタに読み出す。"}
+      "example": {"code": ["icread %r5, %r6"],"explanation": "r5+r6 番地で指定した命令キャッシュ位置のデータとタグを診断レジスタへ読み出す。"}
     },
     {
       "mnemonic": "DCBA",
@@ -5510,7 +5510,7 @@
       ],
       "notes": "PPC440x5 では何もしない。他の実装での動作は対象 CPU を確認する。",
       "src": "book",
-      "example": {"code": ["dcba %r5, %r6"],"explanation": "この例では キャッシュブロックの割り付けを示す命令。"}
+      "example": {"code": ["dcba %r5, %r6"],"explanation": "r5+r6 番地を含むデータキャッシュブロックを割り当てる。"}
     },
     {
       "mnemonic": "ISEL",
@@ -5541,7 +5541,7 @@
       ],
       "notes": "CR ビットが 1 かつ rA=0 の場合は GPR0 ではなく 0 を選ぶ。CR は変更しない。PPC440x5 など対象 CPU の対応を確認する。",
       "src": "book",
-      "example": {"code": ["isel %r3, %r5, %r6, 2"],"explanation": "この例では 指定した CR ビットが 1 なら rA の値、0 なら rB の値を rT に入れる。"}
+      "example": {"code": ["isel %r3, %r5, %r6, 2"],"explanation": "CR ビット 2（cr0 の EQ）が 1 なら r5 を、0 なら r6 を r3 へ入れる。"}
     },
     {
       "mnemonic": "ADDIC.",
@@ -5572,7 +5572,7 @@
       ],
       "notes": "CR0 の LT/GT/EQ は結果に基づき、SO は XER[SO] のコピー。rA=0 は定数 0 ではなく GPR0 を読み出す。",
       "src": "book",
-      "example": {"code": ["addic. %r3,%r5,1"],"explanation": "この例では 符号拡張した 16 ビット即値を rA に加算し、XER[CA] と CR0 を更新する。"}
+      "example": {"code": ["addic. %r3,%r5,1"],"explanation": "r3 = r5 + 1（符号拡張即値）を計算し、XER[CA] と CR0 を更新する。"}
     }
   ]
 }

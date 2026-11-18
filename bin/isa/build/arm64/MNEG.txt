@@ -18,6 +18,6 @@ MNEG dst, src1, src2 — ARM64（算術）
   mneg w0,w1,w2
 
 解説:
-  この例では 乗算して否定（dst = -src1*src2）。
+  w0 = -(w1 × w2) の下位 32 ビット。
 
 （根拠: book）

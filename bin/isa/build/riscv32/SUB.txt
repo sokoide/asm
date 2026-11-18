@@ -16,7 +16,7 @@ rs1 - rs2 を rd に代入する（32 ビット）。
   sub t0, t1, t2
 
 解説:
-  この例では rs1 - rs2 を rd に代入する（32 ビット）。
+  t0 = t1 - t2。
 
 備考:
   ADD と同じ funct3=000 で funct7 だけが異なる。RV32 には w 接尾命令（addw/subw/addiw）は存在しない。

@@ -17,6 +17,6 @@ UMSUBL dst64, src1w, src2w, src3 — ARM64（算術）
   umsubl x0,w1,w2,x3
 
 解説:
-  この例では 64 ビット値から符号なし 32×32 ビット積を減算（dst = src3 - (src1w * src2w)）。
+  x0 = x3 - 符号なし (w1 × w2)（64 ビット値から全積を減算）。
 
 （根拠: book）

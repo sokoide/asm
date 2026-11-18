@@ -21,6 +21,6 @@ DEC dst — 8086（算術）
   dec ax
 
 解説:
-  この例では 1 減算（CF は不変）。
+  AX = AX - 1（CF は不変）。OF/SF/ZF/AF/PF を更新。
 
 （根拠: book）

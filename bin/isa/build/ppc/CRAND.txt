@@ -17,7 +17,7 @@ CR ビット同士の論理積（条件レジスタ論理）。
   crand 2,3,4
 
 解説:
-  この例では CR ビット同士の論理積（条件レジスタ論理）。
+  CR ビット 3 と 4 の論理積を CR ビット 2 へ代入する（crb2 = crb3 AND crb4）。
 
 備考:
   同系: cror（OR）、crxor（XOR）、crandc、crorc、crnand、crnor、crxnor。cror crbT,crbA,crbA はビットのコピー（crmove）。セットは creqv crbT,crbT,crbT。 オペランドで選んだ CR ビットだけを更新する。flags の ‡ は対象ビットの値が入力に依存することを示し、4 ビット全てを同時に更新する意味ではない。 指定先以外の CR ビットは変化しない。

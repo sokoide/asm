@@ -14,7 +14,7 @@ LA rd, label — RISC-V 32（データ転送）
   target:
 
 解説:
-  この例では ラベルのアドレスを rd にロードする疑似命令。
+  ラベル target のアドレスを t0 へ設定する（通常 auipc + addi に展開される疑似命令）。
 
 備考:
   展開はアセンブラの PIC 設定とシンボルに依存する。非 PIC のローカルアドレスは通常 AUIPC+ADDI、PIC では GOT 経由の AUIPC+ロードを使う。

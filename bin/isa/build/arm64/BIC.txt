@@ -17,7 +17,7 @@ BIC dst, src1, src2 — ARM64（論理）
   bic x0,x1,x2,lsl #2
 
 解説:
-  この例では ビットクリア（dst = src1 AND NOT src2）。ソースに 1 がある位置のデスティネーションビットをクリアする。S 付きは BICS。
+  x0 = x1 & ~(x2 << 2)（x2 の 1 ビット位置に対応する x0 のビットをクリア）。
 
 備考:
   sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。

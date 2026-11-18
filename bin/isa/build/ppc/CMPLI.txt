@@ -17,7 +17,7 @@ CMPLI crfT, L, rA, u16 — PowerPC（比較）
   cmpli cr0,l,%r5,1
 
 解説:
-  この例では 符号なし即値比較。拡張形式 cmplwi。
+  r5 と即値 1 を符号なし比較し、cr0 の LT/GT/EQ を設定する。拡張形式 cmplwi。
 
 備考:
   16 ビット即値はゼロ拡張する。CR の LT/GT/EQ を更新し、SO に XER[SO] をコピーする。

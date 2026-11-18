@@ -17,7 +17,7 @@ ADD の直後に置き、AL の非パック BCD（ASCII 1 桁）加算結果を�
   aaa
 
 解説:
-  この例では ADD の直後に置き、AL の非パック BCD（ASCII 1 桁）加算結果を補正し AX に正規化する。
+  ADD 直後の AL を非パック BCD 1 桁へ補正する（下位 4bit>9 か AF=1 で AH+1・AL+6 かつ AF=CF=1、それ以外は AF=CF=0。最後に AL の上位 4bit を 0 に）。
 
 備考:
   下位ニブルが A〜F または AF=1 で AL+6・AH+1。64bit モードでは廃止（#UD）。

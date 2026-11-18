@@ -22,7 +22,7 @@ ADD dst, src — 8086（算術）
   add ax, bx
 
 解説:
-  この例では 加算。dst = dst + src。全フラグ更新。
+  AX = AX + BX を計算し、OF/SF/ZF/AF/PF/CF を更新。
 
 備考:
   EA はメモリオペランド実効アドレスの加算クロック。

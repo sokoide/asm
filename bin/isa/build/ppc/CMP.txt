@@ -17,7 +17,7 @@ CMP crfT, L, rA, rB — PowerPC（比較）
   cmp cr0,l,%r5,%r6
 
 解説:
-  この例では 符号付き比較。CR フィールド crfT の LT/GT/EQ を設定、SO は XER[SO] をコピー。
+  r5 と r6 を符号付き比較し、cr0 の LT/GT/EQ を設定する（SO は XER[SO] をコピー）。
 
 備考:
   拡張形式 cmpw（L=0 暗黙）。分岐は後続の bc 系や bne/beq など条件分岐で使う。

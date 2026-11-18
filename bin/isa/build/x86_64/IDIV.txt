@@ -18,7 +18,7 @@ IDIV src — x86-64（算術）
   idiv rbx
 
 解説:
-  この例では 符号付き除算。RDX:RAX ÷ src で RAX=商、RDX=剰余（64bit）。商は 0 方向へ丸め、剰余は被除数と同符号。
+  符号付き除算。RDX:RAX ÷ rbx の商を RAX、剰余を RDX へ。商は 0 方向へ丸め、剰余は被除数と同符号。
 
 備考:
   符号拡張準備: 64bit は CQO、32bit は CDQ。

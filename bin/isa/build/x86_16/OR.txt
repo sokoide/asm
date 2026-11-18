@@ -19,7 +19,7 @@ OR dst, src — 8086（論理）
   or ax, bx
 
 解説:
-  この例では 論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。
+  AX = AX OR BX（ビットごとの論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。
 
 備考:
   OR AX,AX で値を保ったままフラグ更新。

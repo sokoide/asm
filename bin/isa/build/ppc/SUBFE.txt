@@ -17,7 +17,7 @@ rT = rB - rA + XER[CA] - 1。多倍長減算用（subfme/subfze は定数版）�
   subfe %r3,%r5,%r6
 
 解説:
-  この例では rT = rB - rA + XER[CA] - 1。多倍長減算用（subfme/subfze は定数版）。
+  r3 = r6 - r5 + XER[CA] - 1。多倍長減算用（subfme/subfze は定数版）。
 
 備考:
   この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。フラグ欄は記録なしの基本形式を示す。記録形式（.）は CR0 を更新し、o 形式は XER の OV/SO を更新する。

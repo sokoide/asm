@@ -17,7 +17,7 @@ AX の符号拡張（16→32bit）で DX:AX を作る。16bit IDIV の前処理�
   cwd
 
 解説:
-  この例では AX の符号拡張（16→32bit）で DX:AX を作る。16bit IDIV の前処理。
+  AX の符号ビットを DX へ複製する（AX<0 なら DX=0xFFFF となり DX:AX が 32bit 符号付き値になる）。
 
 備考:
   DX に AX の符号ビット（MSB）を満たす。32bit プロテクトモードでは既定オペランド 32bit のため CWD に 66 プレフィックス。16bit モードでは CWD=99 / CDQ=66 99。

@@ -17,6 +17,6 @@ ANDIS. rA, rS, u16 — PowerPC（論理）
   andis. %r5,%r4,1
 
 解説:
-  この例では 16 ビット左シフト即値との AND + CR0 更新。
+  r5 = r4 AND (1 << 16) を実行し CR0 を更新する。
 
 （根拠: book）

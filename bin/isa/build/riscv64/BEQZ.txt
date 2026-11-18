@@ -14,7 +14,7 @@ rs == 0 なら PC 相対オフセットへ分岐する疑似命令。
   target:
 
 解説:
-  この例では rs == 0 なら PC 相対オフセットへ分岐する疑似命令。
+  t1 == 0 なら target へ分岐する。beq t1, zero, offset と等価。
 
 備考:
   BEQ rs, x0, offset に展開される。

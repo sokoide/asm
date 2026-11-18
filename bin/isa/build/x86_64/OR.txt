@@ -18,7 +18,7 @@ OR dst, src — x86-64（論理）
   or rax, rbx
 
 解説:
-  この例では ビット単位の論理和を dst に格納する。ビットセットに使う。
+  rax = rax OR rbx。CF = OF = 0、SF/ZF/PF を結果で更新。
 
 備考:
   xor と同様に O=C=0。

@@ -18,7 +18,7 @@ XOR dst, src — x86-64（論理）
   xor rax, rbx
 
 解説:
-  この例では ビット単位の排他的論理和を dst に格納する。ビット反転や排他選択に使う。
+  rax = rax XOR rbx。CF = OF = 0、SF/ZF/PF を結果で更新。
 
 備考:
   xor eax, eax は「0 を設定しつつフラグ更新」の 1 命令イディオム。

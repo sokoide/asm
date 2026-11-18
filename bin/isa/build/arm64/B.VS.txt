@@ -16,7 +16,7 @@ VS 条件コード（cond=0110）を指定した条件付き相対分岐。
   target:
 
 解説:
-  この例では VS 条件コード（cond=0110）を指定した条件付き相対分岐。
+  VS（V=1、符号付きオーバーフロー）成立なら target へ分岐し、不成立なら次の命令へ進む。
 
 元命令: isa arm64 B.COND
 条件付き相対分岐（B.cond）。条件コード接尾辞により B.EQ／B.NE／B.CS（B.HS）／B.CC（B.LO）／B.MI／B.PL／B.VS／B.VC／B.HI／B.LS／B.GE／B.LT／B.GT／B.LE／B.AL／B.NV として記述する。
@@ -32,7 +32,7 @@ VS 条件コード（cond=0110）を指定した条件付き相対分岐。
   target:
 
 解説:
-  この例では 条件付き相対分岐（B.cond）。条件コード接尾辞により B.EQ／B.NE／B.CS（B.HS）／B.CC（B.LO）／B.MI／B.PL／B.VS／B.VC／B.HI／B.LS／B.GE／B.LT／B.GT／B.LE／B.AL／B.NV として記述する。
+  EQ 成立なら target へ分岐し、不成立なら次の命令へ進む。
 
 備考:
   条件コード cond は4ビット。EQ=0000, NE=0001, CS/HS=0010, CC/LO=0011, MI=0100, PL=0101, VS=0110, VC=0111, HI=1000, LS=1001, GE=1010, LT=1011, GT=1100, LE=1101, AL=1110, NV=1111。変位は命令アドレス基準で4バイト単位。アセンブラ表記は b.eq label など。CLIでは B.COND を検索し、この条件一覧を参照する。

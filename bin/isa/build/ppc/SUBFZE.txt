@@ -18,7 +18,7 @@ rT = 0 - rA + XER[CA] - 1（Subtract From Zero Extended）。XER[CA] を更新�
   subfze %r3,%r5
 
 解説:
-  この例では rT = 0 - rA + XER[CA] - 1（Subtract From Zero Extended）。XER[CA] を更新。多倍長減算用。
+  r3 = 0 - r5 + XER[CA] - 1（Subtract From Zero Extended）。XER[CA] を更新。多倍長減算用。
 
 備考:
   SUBFE の定数版（0 - rA）。o 接尾で XER[SO/OV]、. 接尾で CR0 更新が可能。 この命令は XER[CA] を更新する。o 形式は XER[OV/SO]、. 形式は CR0 も更新する。

@@ -17,7 +17,7 @@ bl（拡張ニーモニック）→ B target — PowerPC（分岐）
   target:
 
 解説:
-  この例では 戻り先を LR に記録して分岐（Branch with Link）
+  戻りアドレスを LR へ記録して target へ分岐する（b target の LK=1 版）。
 
 元命令: isa ppc B
 無条件分岐（I-Form）。相対分岐の範囲は命令アドレスから -33,554,432〜+33,554,428 バイト。

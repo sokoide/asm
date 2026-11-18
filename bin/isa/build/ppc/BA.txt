@@ -17,7 +17,7 @@ ba（拡張ニーモニック）→ B target — PowerPC（分岐）
   target:
 
 解説:
-  この例では 絶対アドレスへの分岐（Branch Absolute）
+  target（絶対アドレス）へ無条件分岐する（b target の AA=1 版）。
 
 元命令: isa ppc B
 無条件分岐（I-Form）。相対分岐の範囲は命令アドレスから -33,554,432〜+33,554,428 バイト。

@@ -19,6 +19,6 @@ AND dst, src — 8086（論理）
   and ax, bx
 
 解説:
-  この例では 論理積。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。
+  AX = AX AND BX（ビットごとの論理積）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。
 
 （根拠: book）

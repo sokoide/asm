@@ -18,7 +18,7 @@ DS:(E)SI の指すワードを ES:(E)DI へ転送し、DF に応じて (E)SI/(E)
   movsw
 
 解説:
-  この例では DS:(E)SI の指すワードを ES:(E)DI へ転送し、DF に応じて (E)SI/(E)DI を ±2 する。
+  DS:(E)SI のワードを ES:(E)DI へ転送し、DF=0 なら両レジスタ +2、DF=1 なら -2 する。
 
 備考:
   転送方向は DF（cld=増加、std=減少）。rep movsw の (E)CX はワード数（要素数）。 アドレスサイズが 16 ビットなら SI/DI、32 ビットなら ESI/EDI を使う。

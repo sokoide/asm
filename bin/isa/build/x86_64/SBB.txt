@@ -18,7 +18,7 @@ SBB dst, src — x86-64（算術）
   sbb rax, rbx
 
 解説:
-  この例では キャリー込み減算。dst = dst - src - C。多倍長減算の上位ワード処理に使う。
+  rax = rax - rbx - CF。OF/SF/ZF/AF/PF/CF を更新。
 
 備考:
   多倍長演算で使用。

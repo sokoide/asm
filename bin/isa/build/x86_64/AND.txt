@@ -18,7 +18,7 @@ AND dst, src — x86-64（論理）
   and rax, rbx
 
 解説:
-  この例では ビット単位の論理積を dst に格納する。マスク生成・ビットクリアに使う。
+  rax = rax AND rbx。CF = OF = 0、SF/ZF/PF を結果で更新。
 
 備考:
   O と C は必ず 0、A は未定義。

@@ -17,6 +17,6 @@ XOR rA, rS, rB — PowerPC（論理）
   xor %r5,%r4,%r6
 
 解説:
-  この例では 排他的論理和。
+  r5 = r4 XOR r6（排他的論理和）。. 接尾で CR0 更新。
 
 （根拠: book）

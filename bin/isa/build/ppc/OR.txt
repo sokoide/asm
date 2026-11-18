@@ -17,6 +17,6 @@ OR rA, rS, rB — PowerPC（論理）
   or %r5,%r4,%r6
 
 解説:
-  この例では 論理和。or rA,rB,rB はレジスタ移動の推奨形（mr 拡張形式）。
+  r5 = r4 OR r6（論理和）。同一レジスタ形 or rX,rY,rY に対応する簡記が mr（レジスタ移動）。
 
 （根拠: book）

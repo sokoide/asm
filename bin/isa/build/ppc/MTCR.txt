@@ -16,7 +16,7 @@ mtcr（拡張ニーモニック）→ MTCRF mask, rS — PowerPC（レジスタ�
   mtcr 4
 
 解説:
-  この例では 条件レジスタ全体への移動（Move to Condition Register）
+  r4 の値を CR 全体（cr0〜cr7）へ書き込む（mtcrf 255,r4 の簡記）。
 
 元命令: isa ppc MTCRF
 GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0xFF の全フィールド版。
@@ -31,7 +31,7 @@ GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0
   mtcrf 255,%r4
 
 解説:
-  この例では GPR からマスク指定の CR フィールドへコピー。mtcr rS は mask=0xFF の全フィールド版。
+  r4 の値をマスク 255（=全 8 フィールド）の指定に従い CR 全体（cr0〜cr7）へ書き込む。mtcr r4 はこの mask=0xFF の簡記。
 
 備考:
   マスクで指定した CR フィールドだけを更新する。 flags の ‡ はコピー元の値に依存する。実際に更新される CR フィールドはオペランドで指定される。

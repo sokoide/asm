@@ -17,6 +17,6 @@ NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
   nor %r5,%r4,%r6
 
 解説:
-  この例では NOR。nor rA,rB,rB はビット反転（not 拡張形式）。
+  r5 = NOT(r4 OR r6)。nor rX,rY,rY はビット反転（not 拡張形式）。
 
 （根拠: book）

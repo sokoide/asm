@@ -19,7 +19,7 @@ Jcc label — x86-64（分岐）
   target:
 
 解説:
-  この例では 条件付きジャンプ。フラグの状態をテストして成立時のみ rel8/rel32 のターゲットへ分岐する（16 種類の条件）。
+  ZF = 1 のときだけ target へ分岐する（rel8/rel32 相対）。不成立なら次の命令へ直進する。
 
 備考:
   cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。

@@ -13,7 +13,7 @@
       "encodings": [{"syntax": "LW rd, offset(rs1)", "opcode": "imm[11:0] rs1 funct3=010 rd op=0000011", "bytes": 4}],
       "notes": "RV32 ではレジスタ幅が 32 ビットなので LW が最も広いロード（RV64 の LWU/符号拡張の問題は存在しない）。ポインタサイズも 32 ビット。自然境界に整列しないアクセスの成否や例外は実行環境に依存し、成功しても原子性は保証されない。",
       "src": "book",
-      "example": {"code": ["lw t0, 8(t1)"],"explanation": "この例では 32 ビット（ワード）をメモリから rd にロードする。実効アドレスは rs1 + 符号拡張オフセット。"}
+      "example": {"code": ["lw t0, 8(t1)"],"explanation": "t1+8 番地のメモリから 4 バイトを取り出し t0 へ入れる（t0 = mem[t1+8]）。"}
     },
     {
       "mnemonic": "LH",
@@ -26,7 +26,7 @@
       "encodings": [{"syntax": "LH rd, offset(rs1)", "opcode": "imm[11:0] rs1 funct3=001 rd op=0000011", "bytes": 4}],
       "notes": "ゼロ拡張版は LHU。バイト単位は LB/LBU。自然境界に整列しないアクセスの成否や例外は実行環境に依存し、成功しても原子性は保証されない。",
       "src": "book",
-      "example": {"code": ["lh t0, 8(t1)"],"explanation": "この例では 16 ビット（ハーフワード）をメモリからロードし、符号拡張して rd に入れる。"}
+      "example": {"code": ["lh t0, 8(t1)"],"explanation": "t1+8 番地のメモリから 2 バイトを取り出し、符号拡張して t0 へ入れる（t0 = mem[t1+8]）。"}
     },
     {
       "mnemonic": "LHU",
@@ -39,7 +39,7 @@
       "encodings": [{"syntax": "LHU rd, offset(rs1)", "opcode": "imm[11:0] rs1 funct3=101 rd op=0000011", "bytes": 4}],
       "notes": "自然境界に整列しないアクセスの成否や例外は実行環境に依存し、成功しても原子性は保証されない。",
       "src": "book",
-      "example": {"code": ["lhu t0, 8(t1)"],"explanation": "この例では 16 ビットをメモリからロードし、ゼロ拡張して rd に入れる。"}
+      "example": {"code": ["lhu t0, 8(t1)"],"explanation": "t1+8 番地のメモリから 2 バイトを取り出し、上位 16 ビットを 0 で埋めて t0 へ入れる（t0 = mem[t1+8]）。"}
     },
     {
       "mnemonic": "LB",
@@ -52,7 +52,7 @@
       "encodings": [{"syntax": "LB rd, offset(rs1)", "opcode": "imm[11:0] rs1 funct3=000 rd op=0000011", "bytes": 4}],
       "notes": "文字列処理で 1 文字ずつ読むときの定番。",
       "src": "book",
-      "example": {"code": ["lb t0, 8(t1)"],"explanation": "この例では 8 ビット（バイト）をメモリからロードし、符号拡張して rd に入れる。"}
+      "example": {"code": ["lb t0, 8(t1)"],"explanation": "t1+8 番地のメモリから 1 バイトを取り出し、符号拡張して t0 へ入れる（t0 = mem[t1+8]）。"}
     },
     {
       "mnemonic": "LBU",
@@ -65,7 +65,7 @@
       "encodings": [{"syntax": "LBU rd, offset(rs1)", "opcode": "imm[11:0] rs1 funct3=100 rd op=0000011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["lbu t0, 8(t1)"],"explanation": "この例では 8 ビットをメモリからロードし、ゼロ拡張して rd に入れる。"}
+      "example": {"code": ["lbu t0, 8(t1)"],"explanation": "t1+8 番地のメモリから 1 バイトを取り出し、上位 24 ビットを 0 で埋めて t0 へ入れる（t0 = mem[t1+8]）。"}
     },
     {
       "mnemonic": "SW",
@@ -78,7 +78,7 @@
       "encodings": [{"syntax": "SW rs2, offset(rs1)", "opcode": "imm[11:5] rs2 rs1 funct3=010 imm[4:0] op=0100011", "bytes": 4}],
       "notes": "関数プロローグのレジスタ退避（sw ra, 4(sp) など）の定番形式。ロードと異なり S 形式の命令フォーマットを使う。自然境界に整列しないアクセスの成否や例外は実行環境に依存し、成功しても原子性は保証されない。",
       "src": "book",
-      "example": {"code": ["sw t2, 8(t1)"],"explanation": "この例では rs2 の 32 ビット全体をメモリにストアする。実効アドレスは rs1 + 符号拡張オフセット。"}
+      "example": {"code": ["sw t2, 8(t1)"],"explanation": "t2 の 4 バイトを t1+8 番地のメモリへ書き込む（mem[t1+8] = t2）。"}
     },
     {
       "mnemonic": "SH",
@@ -91,7 +91,7 @@
       "encodings": [{"syntax": "SH rs2, offset(rs1)", "opcode": "imm[11:5] rs2 rs1 funct3=001 imm[4:0] op=0100011", "bytes": 4}],
       "notes": "自然境界に整列しないアクセスの成否や例外は実行環境に依存し、成功しても原子性は保証されない。",
       "src": "book",
-      "example": {"code": ["sh t2, 8(t1)"],"explanation": "この例では rs2 の下位 16 ビットをメモリにストアする。"}
+      "example": {"code": ["sh t2, 8(t1)"],"explanation": "t2 の下位 2 バイトを t1+8 番地のメモリへ書き込む（mem[t1+8] = t2 の下位 16 ビット）。"}
     },
     {
       "mnemonic": "SB",
@@ -104,7 +104,7 @@
       "encodings": [{"syntax": "SB rs2, offset(rs1)", "opcode": "imm[11:5] rs2 rs1 funct3=000 imm[4:0] op=0100011", "bytes": 4}],
       "notes": "文字列処理で 1 文字ずつ書くときの定番。",
       "src": "book",
-      "example": {"code": ["sb t2, 8(t1)"],"explanation": "この例では rs2 の下位 8 ビットをメモリにストアする。"}
+      "example": {"code": ["sb t2, 8(t1)"],"explanation": "t2 の下位 1 バイトを t1+8 番地のメモリへ書き込む（mem[t1+8] = t2 の下位 8 ビット）。"}
     },
     {
       "mnemonic": "LUI",
@@ -117,7 +117,7 @@
       "encodings": [{"syntax": "LUI rd, imm", "opcode": "imm[31:12] rd op=0110111", "bytes": 4}],
       "notes": "ADDI と組み合わせて 32 ビット定数を構成する。アセンブラの %hi/%lo はこの 2 分割を自動生成する。",
       "src": "book",
-      "example": {"code": ["lui t0, 1"],"explanation": "この例では 20 ビット即値を上位に置き、下位 12 ビットを 0 にした値（imm << 12）を rd に設定する。"}
+      "example": {"code": ["lui t0, 1"],"explanation": "即値 1 を上位 20 ビットに置き、下位 12 ビットを 0 にした値を t0 へ設定する（t0 = 1 << 12 = 0x1000）。"}
     },
     {
       "mnemonic": "AUIPC",
@@ -130,7 +130,7 @@
       "encodings": [{"syntax": "AUIPC rd, imm", "opcode": "imm[31:12] rd op=0010111", "bytes": 4}],
       "notes": "PC 相対アドレスの上位ビット生成に使う。LA 疑似命令の展開は PIC 設定に依存する。",
       "src": "book",
-      "example": {"code": ["auipc t0, 1"],"explanation": "この例では PC に (imm << 12) を加算した値を rd に設定する。"}
+      "example": {"code": ["auipc t0, 1"],"explanation": "この命令の PC に 1 << 12 を加えた値を t0 へ設定する（t0 = PC + 0x1000）。"}
     },
     {
       "mnemonic": "MV",
@@ -143,7 +143,7 @@
       "notes": "ADDI rd, rs, 0 に展開される。RISC-V には専用の move 命令は存在しない。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["mv t0, t1"],"explanation": "この例では rs の値を rd にコピーする疑似命令。"}
+      "example": {"code": ["mv t0, t1"],"explanation": "t1 の値を t0 へコピーする（addi t0, t1, 0 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "LI",
@@ -156,7 +156,7 @@
       "notes": "符号付き 12 ビットに収まる値は ADDI、それ以外の 32 ビット定数は通常 LUI+ADDI に展開される。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["li t0, 1"],"explanation": "この例では 即値定数を rd にロードする疑似命令。"}
+      "example": {"code": ["li t0, 1"],"explanation": "即値 1 を t0 へ設定する（12 ビットに収まる値は addi 1 命令、大きい定数は lui+addi に展開される疑似命令）。"}
     },
     {
       "mnemonic": "LA",
@@ -169,7 +169,7 @@
       "notes": "展開はアセンブラの PIC 設定とシンボルに依存する。非 PIC のローカルアドレスは通常 AUIPC+ADDI、PIC では GOT 経由の AUIPC+ロードを使う。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["la t0, target","target:"],"explanation": "この例では ラベルのアドレスを rd にロードする疑似命令。"}
+      "example": {"code": ["la t0, target","target:"],"explanation": "ラベル target のアドレスを t0 へ設定する（通常 auipc + addi に展開される疑似命令）。"}
     },
     {
       "mnemonic": "ADD",
@@ -182,7 +182,7 @@
       "encodings": [{"syntax": "ADD rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=000 rd op=0110011", "bytes": 4}],
       "notes": "キャリーフラグは存在しない。多倍長加算は SLTU でキャリーを検出して足し込む。rd に x0 を指定すると結果を破棄できる。",
       "src": "book",
-      "example": {"code": ["add t0, t1, t2"],"explanation": "この例では rs1 + rs2 を rd に代入する（32 ビット）。"}
+      "example": {"code": ["add t0, t1, t2"],"explanation": "t0 = t1 + t2。"}
     },
     {
       "mnemonic": "ADDI",
@@ -195,7 +195,7 @@
       "encodings": [{"syntax": "ADDI rd, rs1, imm", "opcode": "imm[11:0] rs1 funct3=000 rd op=0010011", "bytes": 4}],
       "notes": "MV（ADDI rd, rs, 0）、NOP（ADDI x0, x0, 0）の実体。即値範囲は -2048〜2047。",
       "src": "book",
-      "example": {"code": ["addi t0, t1, 1"],"explanation": "この例では rs1 + 符号拡張 12 ビット即値を rd に代入する（32 ビット）。"}
+      "example": {"code": ["addi t0, t1, 1"],"explanation": "t0 = t1 + 1（即値は符号付き 12 ビット）。"}
     },
     {
       "mnemonic": "SUB",
@@ -208,7 +208,7 @@
       "encodings": [{"syntax": "SUB rd, rs1, rs2", "opcode": "funct7=0100000 rs2 rs1 funct3=000 rd op=0110011", "bytes": 4}],
       "notes": "ADD と同じ funct3=000 で funct7 だけが異なる。RV32 には w 接尾命令（addw/subw/addiw）は存在しない。",
       "src": "book",
-      "example": {"code": ["sub t0, t1, t2"],"explanation": "この例では rs1 - rs2 を rd に代入する（32 ビット）。"}
+      "example": {"code": ["sub t0, t1, t2"],"explanation": "t0 = t1 - t2。"}
     },
     {
       "mnemonic": "MUL",
@@ -221,7 +221,7 @@
       "encodings": [{"syntax": "MUL rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=000 rd op=0110011", "bytes": 4}],
       "notes": "M 拡張。積の全体は MUL（下位）と MULH（上位）の 2 命令で得られる。",
       "src": "book",
-      "example": {"code": ["mul t0, t1, t2"],"explanation": "この例では rs1 × rs2 の下位 32 ビットを rd に入れる。"}
+      "example": {"code": ["mul t0, t1, t2"],"explanation": "t0 = t1 × t2 の下位 32 ビット。"}
     },
     {
       "mnemonic": "MULH",
@@ -234,7 +234,7 @@
       "encodings": [{"syntax": "MULH rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=001 rd op=0110011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["mulh t0, t1, t2"],"explanation": "この例では 符号付き × 符号付きの 64 ビット積のうち、上位 32 ビットを rd に入れる。"}
+      "example": {"code": ["mulh t0, t1, t2"],"explanation": "t1 × t2 を符号付き 64 ビットで計算し、上位 32 ビットを t0 へ入れる。"}
     },
     {
       "mnemonic": "MULHSU",
@@ -247,7 +247,7 @@
       "encodings": [{"syntax": "MULHSU rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=010 rd op=0110011", "bytes": 4}],
       "notes": "rs1 が符号付き、rs2 が符号なし。",
       "src": "book",
-      "example": {"code": ["mulhsu t0, t1, t2"],"explanation": "この例では 符号付き × 符号なしの 64 ビット積のうち、上位 32 ビットを rd に入れる。"}
+      "example": {"code": ["mulhsu t0, t1, t2"],"explanation": "t1（符号付き）× t2（符号なし）の 64 ビット積の上位 32 ビットを t0 へ入れる。"}
     },
     {
       "mnemonic": "MULHU",
@@ -260,7 +260,7 @@
       "encodings": [{"syntax": "MULHU rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=011 rd op=0110011", "bytes": 4}],
       "notes": "MULHU + MUL の組で符号なし 64 ビット積が得られる。ソフトウェア 64 ビット除算の実装にも使う。",
       "src": "book",
-      "example": {"code": ["mulhu t0, t1, t2"],"explanation": "この例では 符号なし × 符号なしの 64 ビット積のうち、上位 32 ビットを rd に入れる。"}
+      "example": {"code": ["mulhu t0, t1, t2"],"explanation": "t1 × t2 を符号なし 64 ビットで計算し、上位 32 ビットを t0 へ入れる。"}
     },
     {
       "mnemonic": "DIV",
@@ -273,7 +273,7 @@
       "encodings": [{"syntax": "DIV rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=100 rd op=0110011", "bytes": 4}],
       "notes": "0 除算ではトラップせず -1（全ビット 1）を返す。最小値 ÷ -1 のオーバーフローでは被除数そのものを返す。剰余は REM。商は 0 方向に丸める。",
       "src": "book",
-      "example": {"code": ["div t0, t1, t2"],"explanation": "この例では 符号付き除算 rs1 ÷ rs2 の商を rd に入れる。"}
+      "example": {"code": ["div t0, t1, t2"],"explanation": "t0 = t1 ÷ t2 の商（符号付き）。"}
     },
     {
       "mnemonic": "DIVU",
@@ -286,7 +286,7 @@
       "encodings": [{"syntax": "DIVU rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=101 rd op=0110011", "bytes": 4}],
       "notes": "0 除算ではトラップせず 2^32 - 1（全ビット 1）を返す。",
       "src": "book",
-      "example": {"code": ["divu t0, t1, t2"],"explanation": "この例では 符号なし除算 rs1 ÷ rs2 の商を rd に入れる。"}
+      "example": {"code": ["divu t0, t1, t2"],"explanation": "t0 = t1 ÷ t2 の商（符号なし）。"}
     },
     {
       "mnemonic": "REM",
@@ -299,7 +299,7 @@
       "encodings": [{"syntax": "REM rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=110 rd op=0110011", "bytes": 4}],
       "notes": "0 除算では被除数をそのまま返す。除数が 0 でない通常の場合、C の整数剰余と同じ符号規則。C では 0 除算と最小値 ÷ -1 は未定義。最小値 ÷ -1 のオーバーフロー時の剰余は 0。",
       "src": "book",
-      "example": {"code": ["rem t0, t1, t2"],"explanation": "この例では 符号付き除算 rs1 ÷ rs2 の剰余を rd に入れる。結果の符号は被除数（rs1）に従う。"}
+      "example": {"code": ["rem t0, t1, t2"],"explanation": "t0 = t1 ÷ t2 の剰余（符号付き、符号は t1 に従う）。"}
     },
     {
       "mnemonic": "REMU",
@@ -312,7 +312,7 @@
       "encodings": [{"syntax": "REMU rd, rs1, rs2", "opcode": "funct7=0000001 rs2 rs1 funct3=111 rd op=0110011", "bytes": 4}],
       "notes": "0 除算では被除数をそのまま返す。",
       "src": "book",
-      "example": {"code": ["remu t0, t1, t2"],"explanation": "この例では 符号なし除算 rs1 ÷ rs2 の剰余を rd に入れる。"}
+      "example": {"code": ["remu t0, t1, t2"],"explanation": "t0 = t1 ÷ t2 の剰余（符号なし）。"}
     },
     {
       "mnemonic": "NEG",
@@ -325,7 +325,7 @@
       "notes": "SUB rd, x0, rs に展開される。RV64 の negw に相当する命令は RV32 には存在しない（NEG がそのまま 32 ビット幅）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["neg t0, t1"],"explanation": "この例では rs の 2 の補数（0 - rs）を rd に入れる疑似命令。"}
+      "example": {"code": ["neg t0, t1"],"explanation": "t0 = 0 - t1（t1 の 2 の補数。sub t0, zero, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "AND",
@@ -338,7 +338,7 @@
       "encodings": [{"syntax": "AND rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=111 rd op=0110011", "bytes": 4}],
       "notes": "マスク処理（下位 n ビット取り出しなど）に使う。",
       "src": "book",
-      "example": {"code": ["and t0, t1, t2"],"explanation": "この例では rs1 と rs2 の論理積を rd に入れる。"}
+      "example": {"code": ["and t0, t1, t2"],"explanation": "t0 = t1 & t2（ビットごとの論理積）。"}
     },
     {
       "mnemonic": "ANDI",
@@ -351,7 +351,7 @@
       "encodings": [{"syntax": "ANDI rd, rs1, imm", "opcode": "imm[11:0] rs1 funct3=111 rd op=0010011", "bytes": 4}],
       "notes": "即値は 12 ビットから符号拡張される。0〜2047 は正のマスクとして指定でき、ビット 11 が 1 の即値は上位ビットも 1 になる。",
       "src": "book",
-      "example": {"code": ["andi t0, t1, 1"],"explanation": "この例では rs1 と符号拡張 12 ビット即値の論理積を rd に入れる。"}
+      "example": {"code": ["andi t0, t1, 1"],"explanation": "t0 = t1 & 1（即値は符号拡張 12 ビット）。"}
     },
     {
       "mnemonic": "OR",
@@ -364,7 +364,7 @@
       "encodings": [{"syntax": "OR rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=110 rd op=0110011", "bytes": 4}],
       "notes": "フラグレジスタがないため、OR による比較（Z80 の OR A 相当）は存在しない。判定は分岐や SLT で行う。",
       "src": "book",
-      "example": {"code": ["or t0, t1, t2"],"explanation": "この例では rs1 と rs2 の論理和を rd に入れる。"}
+      "example": {"code": ["or t0, t1, t2"],"explanation": "t0 = t1 | t2（ビットごとの論理和）。"}
     },
     {
       "mnemonic": "ORI",
@@ -377,7 +377,7 @@
       "encodings": [{"syntax": "ORI rd, rs1, imm", "opcode": "imm[11:0] rs1 funct3=110 rd op=0010011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["ori t0, t1, 1"],"explanation": "この例では rs1 と符号拡張 12 ビット即値の論理和を rd に入れる。"}
+      "example": {"code": ["ori t0, t1, 1"],"explanation": "t0 = t1 | 1（即値は符号拡張 12 ビット）。"}
     },
     {
       "mnemonic": "XOR",
@@ -390,7 +390,7 @@
       "encodings": [{"syntax": "XOR rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=100 rd op=0110011", "bytes": 4}],
       "notes": "XOR rd, rs1, rs1 でレジスタを 0 にクリアできる。",
       "src": "book",
-      "example": {"code": ["xor t0, t1, t2"],"explanation": "この例では rs1 と rs2 の排他的論理和を rd に入れる。"}
+      "example": {"code": ["xor t0, t1, t2"],"explanation": "t0 = t1 ^ t2（ビットごとの排他的論理和）。"}
     },
     {
       "mnemonic": "XORI",
@@ -403,7 +403,7 @@
       "encodings": [{"syntax": "XORI rd, rs1, imm", "opcode": "imm[11:0] rs1 funct3=100 rd op=0010011", "bytes": 4}],
       "notes": "XORI rd, rs, -1 がビット反転（NOT 疑似命令）の実体。",
       "src": "book",
-      "example": {"code": ["xori t0, t1, 1"],"explanation": "この例では rs1 と符号拡張 12 ビット即値の排他的論理和を rd に入れる。"}
+      "example": {"code": ["xori t0, t1, 1"],"explanation": "t0 = t1 ^ 1（即値は符号拡張 12 ビット）。"}
     },
     {
       "mnemonic": "NOT",
@@ -416,7 +416,7 @@
       "notes": "XORI rd, rs, -1 に展開される。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["not t0, t1"],"explanation": "この例では rs の全ビットを反転して rd に入れる疑似命令。"}
+      "example": {"code": ["not t0, t1"],"explanation": "t0 = t1 の全ビット反転（xori t0, t1, -1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "SLL",
@@ -429,7 +429,7 @@
       "encodings": [{"syntax": "SLL rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=001 rd op=0110011", "bytes": 4}],
       "notes": "RV32 ではシフト量は rs2 の下位 5 ビット（0〜31）のみ使用。空いたビットは 0 を埋める。",
       "src": "book",
-      "example": {"code": ["sll t0, t1, t2"],"explanation": "この例では rs1 を左に rs2 の下位 5 ビット分だけ論理左シフトする。"}
+      "example": {"code": ["sll t0, t1, t2"],"explanation": "t0 = t1 を t2 の下位 5 ビットの値だけ左シフトする（空いたビットは 0）。"}
     },
     {
       "mnemonic": "SLLI",
@@ -442,7 +442,7 @@
       "encodings": [{"syntax": "SLLI rd, rs1, shamt", "opcode": "0000000 shamt[4:0] rs1 funct3=001 rd op=0010011", "bytes": 4}],
       "notes": "RV64 では shamt が 6 ビットになり上位フィールドが 6 ビットの 000000 に変わる。",
       "src": "book",
-      "example": {"code": ["slli t0, t1, 2"],"explanation": "この例では rs1 を即値 shamt（0〜31）だけ論理左シフトする。"}
+      "example": {"code": ["slli t0, t1, 2"],"explanation": "t0 = t1 を 2 ビットだけ左シフトする（空いたビットは 0）。"}
     },
     {
       "mnemonic": "SRL",
@@ -455,7 +455,7 @@
       "encodings": [{"syntax": "SRL rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=101 rd op=0110011", "bytes": 4}],
       "notes": "符号なし除算（÷2^n）に使われる。",
       "src": "book",
-      "example": {"code": ["srl t0, t1, t2"],"explanation": "この例では rs1 を右に rs2 の下位 5 ビット分だけ論理右シフトする（上位に 0 を埋める）。"}
+      "example": {"code": ["srl t0, t1, t2"],"explanation": "t0 = t1 を t2 の下位 5 ビットの値だけ論理右シフトする（空いた上位ビットは 0）。"}
     },
     {
       "mnemonic": "SRLI",
@@ -468,7 +468,7 @@
       "encodings": [{"syntax": "SRLI rd, rs1, shamt", "opcode": "0000000 shamt[4:0] rs1 funct3=101 rd op=0010011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["srli t0, t1, 2"],"explanation": "この例では rs1 を即値 shamt（0〜31）だけ論理右シフトする。"}
+      "example": {"code": ["srli t0, t1, 2"],"explanation": "t0 = t1 を 2 ビットだけ論理右シフトする（空いた上位ビットは 0）。"}
     },
     {
       "mnemonic": "SRA",
@@ -481,7 +481,7 @@
       "encodings": [{"syntax": "SRA rd, rs1, rs2", "opcode": "funct7=0100000 rs2 rs1 funct3=101 rd op=0110011", "bytes": 4}],
       "notes": "符号付き除算（÷2^n、負数は床方向）に使われる。SRL との差は funct7 のみ。",
       "src": "book",
-      "example": {"code": ["sra t0, t1, t2"],"explanation": "この例では rs1 を右に rs2 の下位 5 ビット分だけ算術右シフトする（符号ビットを複製して埋める）。"}
+      "example": {"code": ["sra t0, t1, t2"],"explanation": "t0 = t1 を t2 の下位 5 ビットの値だけ算術右シフトする（空いた上位ビットは符号ビットで埋める）。"}
     },
     {
       "mnemonic": "SRAI",
@@ -494,7 +494,7 @@
       "encodings": [{"syntax": "SRAI rd, rs1, shamt", "opcode": "0100000 shamt[4:0] rs1 funct3=101 rd op=0010011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["srai t0, t1, 2"],"explanation": "この例では rs1 を即値 shamt（0〜31）だけ算術右シフトする。"}
+      "example": {"code": ["srai t0, t1, 2"],"explanation": "t0 = t1 を 2 ビットだけ算術右シフトする（空いた上位ビットは符号ビットで埋める）。"}
     },
     {
       "mnemonic": "SLT",
@@ -507,7 +507,7 @@
       "encodings": [{"syntax": "SLT rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=010 rd op=0110011", "bytes": 4}],
       "notes": "比較結果を値として使えるのが RISC-V の特徴。等値判定は分岐を使うか XOR+SEQZ で行う。",
       "src": "book",
-      "example": {"code": ["slt t0, t1, t2"],"explanation": "この例では rs1 < rs2（符号付き）なら 1、そうでなければ 0 を rd に入れる。"}
+      "example": {"code": ["slt t0, t1, t2"],"explanation": "t1 < t2（符号付き）なら t0 = 1、そうでなければ t0 = 0。"}
     },
     {
       "mnemonic": "SLTI",
@@ -520,7 +520,7 @@
       "encodings": [{"syntax": "SLTI rd, rs1, imm", "opcode": "imm[11:0] rs1 funct3=010 rd op=0010011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["slti t0, t1, 1"],"explanation": "この例では rs1 < 符号拡張即値（符号付き）なら 1、そうでなければ 0 を rd に入れる。"}
+      "example": {"code": ["slti t0, t1, 1"],"explanation": "t1 < 1（符号付き）なら t0 = 1、そうでなければ t0 = 0。"}
     },
     {
       "mnemonic": "SLTU",
@@ -533,7 +533,7 @@
       "encodings": [{"syntax": "SLTU rd, rs1, rs2", "opcode": "funct7=0000000 rs2 rs1 funct3=011 rd op=0110011", "bytes": 4}],
       "notes": "アドレス（ポインタ）比較はこちら。SLTU rd, x0, rs は rs≠0 の判定。多倍長加算のキャリー検出にも使う。",
       "src": "book",
-      "example": {"code": ["sltu t0, t1, t2"],"explanation": "この例では rs1 < rs2（符号なし）なら 1、そうでなければ 0 を rd に入れる。"}
+      "example": {"code": ["sltu t0, t1, t2"],"explanation": "t1 < t2（符号なし）なら t0 = 1、そうでなければ t0 = 0。"}
     },
     {
       "mnemonic": "SLTIU",
@@ -546,7 +546,7 @@
       "encodings": [{"syntax": "SLTIU rd, rs1, imm", "opcode": "imm[11:0] rs1 funct3=011 rd op=0010011", "bytes": 4}],
       "notes": "注意: 即値はまず符号拡張され、その結果を符号なし整数として比較する。",
       "src": "book",
-      "example": {"code": ["sltiu t0, t1, 1"],"explanation": "この例では rs1 < 即値（符号なし）なら 1、そうでなければ 0 を rd に入れる。"}
+      "example": {"code": ["sltiu t0, t1, 1"],"explanation": "t1 < 1 を符号なし比較し、成立なら t0 = 1、不成立なら t0 = 0（即値は符号拡張後に符号なし比較）。"}
     },
     {
       "mnemonic": "SEQZ",
@@ -559,7 +559,7 @@
       "notes": "SLTIU rd, rs, 1 に展開される。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["seqz t0, t1"],"explanation": "この例では rs == 0 なら 1、そうでなければ 0 を rd に入れる疑似命令。"}
+      "example": {"code": ["seqz t0, t1"],"explanation": "t1 == 0 なら t0 = 1、そうでなければ t0 = 0（sltiu t0, t1, 1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "SNEZ",
@@ -572,7 +572,7 @@
       "notes": "SLTU rd, x0, rs に展開される。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["snez t0, t1"],"explanation": "この例では rs != 0 なら 1、そうでなければ 0 を rd に入れる疑似命令。"}
+      "example": {"code": ["snez t0, t1"],"explanation": "t1 != 0 なら t0 = 1、そうでなければ t0 = 0（sltu t0, zero, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BEQ",
@@ -585,7 +585,7 @@
       "encodings": [{"syntax": "BEQ rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=000 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "分岐オフセットの表現範囲は -4096〜+4094 バイト（2 バイト単位）。C 拡張がない IALIGN=32 の環境では、成立した分岐の行き先は 4 バイト境界に限られる。",
       "src": "book",
-      "example": {"code": ["beq t1, t2, 8"],"explanation": "この例では rs1 == rs2 なら PC 相対オフセットへ分岐する。"}
+      "example": {"code": ["beq t1, t2, 8"],"explanation": "t1 == t2 なら PC+8 へ分岐する（不成立なら次の命令へ）。"}
     },
     {
       "mnemonic": "BNE",
@@ -598,7 +598,7 @@
       "encodings": [{"syntax": "BNE rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=001 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "ループのカウンタ判定（BNEZ）の実体。",
       "src": "book",
-      "example": {"code": ["bne t1, t2, 8"],"explanation": "この例では rs1 != rs2 なら PC 相対オフセットへ分岐する。"}
+      "example": {"code": ["bne t1, t2, 8"],"explanation": "t1 != t2 なら PC+8 へ分岐する（不成立なら次の命令へ）。"}
     },
     {
       "mnemonic": "BLT",
@@ -611,7 +611,7 @@
       "encodings": [{"syntax": "BLT rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=100 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "「より大きい」はオペランドを入れ替えて BLT rs2, rs1 と書く（BGT 疑似命令）。",
       "src": "book",
-      "example": {"code": ["blt t1, t2, 8"],"explanation": "この例では rs1 < rs2（符号付き）なら PC 相対オフセットへ分岐する。"}
+      "example": {"code": ["blt t1, t2, 8"],"explanation": "t1 < t2（符号付き）なら PC+8 へ分岐する。"}
     },
     {
       "mnemonic": "BGE",
@@ -624,7 +624,7 @@
       "encodings": [{"syntax": "BGE rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=101 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["bge t1, t2, 8"],"explanation": "この例では rs1 >= rs2（符号付き）なら PC 相対オフセットへ分岐する。"}
+      "example": {"code": ["bge t1, t2, 8"],"explanation": "t1 >= t2（符号付き）なら PC+8 へ分岐する。"}
     },
     {
       "mnemonic": "BLTU",
@@ -637,7 +637,7 @@
       "encodings": [{"syntax": "BLTU rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=110 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "アドレス比較の分岐は符号なし版を使う。",
       "src": "book",
-      "example": {"code": ["bltu t1, t2, 8"],"explanation": "この例では rs1 < rs2（符号なし）なら PC 相対オフセットへ分岐する。"}
+      "example": {"code": ["bltu t1, t2, 8"],"explanation": "t1 < t2（符号なし）なら PC+8 へ分岐する。"}
     },
     {
       "mnemonic": "BGEU",
@@ -650,7 +650,7 @@
       "encodings": [{"syntax": "BGEU rs1, rs2, offset", "opcode": "imm[12|10:5] rs2 rs1 funct3=111 imm[4:1|11] op=1100011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["bgeu t1, t2, 8"],"explanation": "この例では rs1 >= rs2（符号なし）なら PC 相対オフセットへ分岐する。"}
+      "example": {"code": ["bgeu t1, t2, 8"],"explanation": "t1 >= t2（符号なし）なら PC+8 へ分岐する。"}
     },
     {
       "mnemonic": "BEQZ",
@@ -663,7 +663,7 @@
       "notes": "BEQ rs, x0, offset に展開される。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["beqz t1, target","target:"],"explanation": "この例では rs == 0 なら PC 相対オフセットへ分岐する疑似命令。"}
+      "example": {"code": ["beqz t1, target","target:"],"explanation": "t1 == 0 ならラベル target へ分岐する（beq t1, zero, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BNEZ",
@@ -676,7 +676,7 @@
       "notes": "BNE rs, x0, offset に展開される。カウンタループの定番。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["bnez t1, target","target:"],"explanation": "この例では rs != 0 なら PC 相対オフセットへ分岐する疑似命令。"}
+      "example": {"code": ["bnez t1, target","target:"],"explanation": "t1 != 0 ならラベル target へ分岐する（bne t1, zero, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "JAL",
@@ -689,7 +689,7 @@
       "encodings": [{"syntax": "JAL rd, offset", "opcode": "imm[20|10:1|11|19:12] rd op=1101111", "bytes": 4}],
       "notes": "rd = ra（x1）で関数呼び出し、rd = x0 で無条件ジャンプ（J 疑似命令）になる。IALIGN=32 の場合、分岐先が 4 バイト境界でなければ命令アドレス不整列例外となる。",
       "src": "book",
-      "example": {"code": ["jal t0, 8"],"explanation": "この例では 戻りアドレス PC+4 を rd に保存し、PC 相対オフセット（-1048576〜+1048574 バイト、2 バイト単位）へジャンプする。"}
+      "example": {"code": ["jal t0, 8"],"explanation": "戻りアドレス PC+4 を t0 へ保存し、PC+8 へジャンプする。"}
     },
     {
       "mnemonic": "JALR",
@@ -702,7 +702,7 @@
       "encodings": [{"syntax": "JALR rd, offset(rs1)", "opcode": "imm[11:0] rs1 funct3=000 rd op=1100111", "bytes": 4}],
       "notes": "間接ジャンプ。オフセットは符号付き 12 ビット。最下位ビットをクリアした後も IALIGN=32 では 4 バイト境界でなければ命令アドレス不整列例外となる。RET は JALR x0, 0(ra)。",
       "src": "book",
-      "example": {"code": ["jalr t0, 8(t1)"],"explanation": "この例では 戻りアドレス PC+4 を rd に保存し、rs1 + オフセット（最下位ビットを 0 に整列）へジャンプする。"}
+      "example": {"code": ["jalr t0, 8(t1)"],"explanation": "戻りアドレス PC+4 を t0 へ保存し、t1+8 番地（最下位ビットを 0 に整列）へジャンプする。"}
     },
     {
       "mnemonic": "J",
@@ -715,7 +715,7 @@
       "notes": "JAL x0, offset に展開される（戻りアドレスは保存しない）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["j target","target:"],"explanation": "この例では PC 相対オフセットへ無条件ジャンプする疑似命令。"}
+      "example": {"code": ["j target","target:"],"explanation": "ラベル target へ無条件ジャンプする（jal zero, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "JR",
@@ -728,7 +728,7 @@
       "notes": "JALR x0, 0(rs) に展開される。分岐テーブルや末尾呼び出しなどに使う。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["jr t1"],"explanation": "この例では rs のアドレスへ戻りアドレスを保存せずに間接ジャンプする疑似命令。"}
+      "example": {"code": ["jr t1"],"explanation": "t1 の値を飛び先アドレスとして間接ジャンプする（jalr zero, 0(t1) に展開される疑似命令）。"}
     },
     {
       "mnemonic": "RET",
@@ -741,7 +741,7 @@
       "notes": "JALR x0, 0(ra) に展開される。RISC-V の関数呼び出し規約では戻りアドレスはスタックではなく ra レジスタで受け渡す。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["ret"],"explanation": "この例では ra（x1）に保存された戻りアドレスへ復帰する疑似命令。"}
+      "example": {"code": ["ret"],"explanation": "ra に保存された戻りアドレスへ復帰する（jalr zero, 0(ra) に展開される疑似命令）。"}
     },
     {
       "mnemonic": "ECALL",
@@ -754,7 +754,7 @@
       "encodings": [{"syntax": "ECALL", "opcode": "imm=000000000000 rs1=0 funct3=000 rd=0 op=1110011", "bytes": 4}],
       "notes": "RISC-V Linux ABI（RV32）ではシステムコール番号を a7、引数を a0〜a5 に置き、戻り値は a0 で返る。",
       "src": "book",
-      "example": {"code": ["ecall"],"explanation": "この例では 環境コール。制御をオペレーティングシステム（トラップハンドラ）へ移す。"}
+      "example": {"code": ["ecall"],"explanation": "例外を発生させ、呼び出した PC を mepc/sepc に保存して制御をトラップハンドラへ移す。"}
     },
     {
       "mnemonic": "EBREAK",
@@ -767,7 +767,7 @@
       "encodings": [{"syntax": "EBREAK", "opcode": "imm=000000000001 rs1=0 funct3=000 rd=0 op=1110011", "bytes": 4}],
       "notes": "",
       "src": "book",
-      "example": {"code": ["ebreak"],"explanation": "この例では ブレークポイント。ブレークポイント例外を発生させる。デバッグ機構の設定によってはデバッグモードへ入る。"}
+      "example": {"code": ["ebreak"],"explanation": "ブレークポイント例外を発生させ（呼び出した PC は mepc/sepc に保存）、デバッグ機構の設定によってはデバッグモードへ入る。"}
     },
     {
       "mnemonic": "FENCE",
@@ -780,7 +780,7 @@
       "encodings": [{"syntax": "FENCE pred, succ", "opcode": "fm[3:0] pred[3:0] succ[3:0] rs1=0 funct3=000 rd=0 op=0001111", "bytes": 4}],
       "notes": "pred/succ の I/O/R/W はデバイス入力・出力・メモリ読み出し・書き込みを表す。通常の FENCE は fm=0000。FENCE.TSO は fm=1000、pred=succ=RW で、一部のストア→ロード順序を保証しない。命令フェッチの同期は Zifencei の FENCE.I。",
       "src": "book",
-      "example": {"code": ["fence rw, rw"],"explanation": "この例では メモリ・I/O アクセスの順序付けを保証する。pred（先行）と succ（後続）のアクセス種別の間に順序を強制する。"}
+      "example": {"code": ["fence rw, rw"],"explanation": "この命令より前の読み書き（rw）を、後の読み書き（rw）より先に実行するよう順序付けを強制する。"}
     },
     {
       "mnemonic": "FENCE.I",
@@ -806,7 +806,7 @@
       "encodings": [{"syntax": "CSRRW rd, csr, rs1", "opcode": "csr rs1 funct3=001 rd op=1110011", "bytes": 4}],
       "notes": "CSR の番号は 12 ビット即値フィールドで指定する。rd に x0 を指定すると CSR の読み出し自体を行わず、読み出しの副作用も生じない。",
       "src": "book",
-      "example": {"code": ["csrrw t0, mstatus, t1"],"explanation": "この例では CSR（制御/ステータスレジスタ）を rd に読み出し、rs1 の値を CSR に書き込む。"}
+      "example": {"code": ["csrrw t0, mstatus, t1"],"explanation": "CSR mstatus の旧値を t0 へ読み出し、t1 の値を mstatus へ書き込む。"}
     },
     {
       "mnemonic": "CSRRS",
@@ -819,7 +819,7 @@
       "encodings": [{"syntax": "CSRRS rd, csr, rs1", "opcode": "csr rs1 funct3=010 rd op=1110011", "bytes": 4}],
       "notes": "rs1 に x0 を指定すると CSR の読み出し専用アクセスになる（CSR の値は変化しない）。rd=x0 でも CSR を読み出し、読み出しの副作用が生じうる。rs1 が x0 以外なら、その値が 0 でも CSR 全体への書き込み副作用が生じうる。",
       "src": "book",
-      "example": {"code": ["csrrs t0, mstatus, t1"],"explanation": "この例では CSR を rd に読み出し、CSR と rs1 のビットごとの OR を CSR に書き込む。"}
+      "example": {"code": ["csrrs t0, mstatus, t1"],"explanation": "CSR mstatus の旧値を t0 へ読み出し、t1 の 1 になっているビットを mstatus にセットする。"}
     },
     {
       "mnemonic": "CSRRC",
@@ -832,7 +832,7 @@
       "encodings": [{"syntax": "CSRRC rd, csr, rs1", "opcode": "csr rs1 funct3=011 rd op=1110011", "bytes": 4}],
       "notes": "rs1 に x0 を指定すると CSR の読み出し専用アクセスになる。rd=x0 でも CSR を読み出し、読み出しの副作用が生じうる。rs1 が x0 以外なら、その値が 0 でも CSR 全体への書き込み副作用が生じうる。",
       "src": "book",
-      "example": {"code": ["csrrc t0, mstatus, t1"],"explanation": "この例では CSR を rd に読み出し、CSR と rs1 のビット反転との論理積を CSR に書き込む（rs1 が 1 のビットをクリア）。"}
+      "example": {"code": ["csrrc t0, mstatus, t1"],"explanation": "CSR mstatus の旧値を t0 へ読み出し、t1 の 1 になっているビットを mstatus からクリアする。"}
     },
     {
       "mnemonic": "CSRRWI",
@@ -845,7 +845,7 @@
       "encodings": [{"syntax": "CSRRWI rd, csr, zimm", "opcode": "csr zimm[4:0] funct3=101 rd op=1110011", "bytes": 4}],
       "notes": "5 ビット即値を XLEN ビットにゼロ拡張して書き込む。rd=x0 なら CSR の読み出し自体を行わない。",
       "src": "book",
-      "example": {"code": ["csrrwi t0, mstatus, 1"],"explanation": "この例では CSR を rd に読み出し、5 ビット即値（ゼロ拡張）を CSR に書き込む。"}
+      "example": {"code": ["csrrwi t0, mstatus, 1"],"explanation": "CSR mstatus の旧値を t0 へ読み出し、即値 1 をゼロ拡張して mstatus へ書き込む。"}
     },
     {
       "mnemonic": "CSRRSI",
@@ -858,7 +858,7 @@
       "encodings": [{"syntax": "CSRRSI rd, csr, zimm", "opcode": "csr zimm[4:0] funct3=110 rd op=1110011", "bytes": 4}],
       "notes": "zimm に 0 を指定すると CSR の読み出し専用アクセスになる。rd=x0 でも CSR を読み出し、読み出しの副作用が生じうる。",
       "src": "book",
-      "example": {"code": ["csrrsi t0, mstatus, 1"],"explanation": "この例では CSR を rd に読み出し、CSR と 5 ビット即値（ゼロ拡張）のビットごとの OR を CSR に書き込む。"}
+      "example": {"code": ["csrrsi t0, mstatus, 1"],"explanation": "CSR mstatus の旧値を t0 へ読み出し、即値 1 に対応するビットを mstatus にセットする。"}
     },
     {
       "mnemonic": "CSRRCI",
@@ -871,7 +871,7 @@
       "encodings": [{"syntax": "CSRRCI rd, csr, zimm", "opcode": "csr zimm[4:0] funct3=111 rd op=1110011", "bytes": 4}],
       "notes": "zimm に 0 を指定すると CSR の読み出し専用アクセスになる。rd=x0 でも CSR を読み出し、読み出しの副作用が生じうる。",
       "src": "book",
-      "example": {"code": ["csrrci t0, mstatus, 1"],"explanation": "この例では CSR を rd に読み出し、CSR と 5 ビット即値のビット反転との論理積を CSR に書き込む（zimm が 1 のビットをクリア）。"}
+      "example": {"code": ["csrrci t0, mstatus, 1"],"explanation": "CSR mstatus の旧値を t0 へ読み出し、即値 1 に対応するビットを mstatus からクリアする。"}
     },
     {
       "mnemonic": "CALL",
@@ -883,7 +883,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "通常は AUIPC ra + JALR ra に展開し、リンカが再配置を解決する。条件を満たすとリンク時に短い JAL に緩和されうる。rd を明示する形式もある。",
       "encodings": [],
-      "example": {"code": ["call target","target:"],"explanation": "この例では 戻り先を既定の ra または指定した rd に設定し、シンボルを呼び出す疑似命令。"}
+      "example": {"code": ["call target","target:"],"explanation": "戻りアドレスを ra に設定して target を呼び出す（通常 auipc ra + jalr ra に展開される疑似命令）。"}
     },
     {
       "mnemonic": "TAIL",
@@ -895,7 +895,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "通常は一時レジスタ x6 を使う AUIPC + JALR x0 に展開する。Zicfilp 有効時には x7 を使用する形式がある。リンカによる緩和がありうる。",
       "encodings": [],
-      "example": {"code": ["tail target","target:"],"explanation": "この例では 戻り先を新たに設定せずにシンボルへ末尾呼び出しする疑似命令。"}
+      "example": {"code": ["tail target","target:"],"explanation": "戻りアドレスを設定せず target へ末尾ジャンプする（通常 auipc x6 + jalr x0 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "CSRR",
@@ -907,7 +907,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "CSRRS rd,csr,x0 に展開し、CSR への書込みを行わない。CSR ごとの権限・読出し副作用は別途適用される。",
       "encodings": [],
-      "example": {"code": ["csrr t0, mstatus"],"explanation": "この例では CSR を読み出して rd に入れる疑似命令。"}
+      "example": {"code": ["csrr t0, mstatus"],"explanation": "CSR mstatus の値を読み出して t0 へ入れる（csrrs t0, mstatus, zero に展開される疑似命令）。"}
     },
     {
       "mnemonic": "CSRW",
@@ -919,7 +919,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "CSRRW x0,csr,rs に展開する。rd=x0 のため CSR の読み出しは行わない。",
       "encodings": [],
-      "example": {"code": ["csrw mstatus, t1"],"explanation": "この例では rs を CSR に書き込む疑似命令。"}
+      "example": {"code": ["csrw mstatus, t1"],"explanation": "t1 の値を CSR mstatus へ書き込む（csrrw zero, mstatus, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "CSRS",
@@ -931,7 +931,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "CSRRS x0,csr,rs に展開する。rs=x0 の場合は書込みを行わない。",
       "encodings": [],
-      "example": {"code": ["csrs mstatus, t1"],"explanation": "この例では rs の 1 ビットに対応する CSR ビットをセットする疑似命令。"}
+      "example": {"code": ["csrs mstatus, t1"],"explanation": "t1 の 1 になっているビットを CSR mstatus にセットする（csrrs zero, mstatus, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "CSRC",
@@ -943,7 +943,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "CSRRC x0,csr,rs に展開する。rs=x0 の場合は書込みを行わない。",
       "encodings": [],
-      "example": {"code": ["csrc mstatus, t1"],"explanation": "この例では rs の 1 ビットに対応する CSR ビットをクリアする疑似命令。"}
+      "example": {"code": ["csrc mstatus, t1"],"explanation": "t1 の 1 になっているビットを CSR mstatus からクリアする（csrrc zero, mstatus, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "CSRWI",
@@ -955,7 +955,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "CSRRWI x0,csr,uimm に展開する。rd=x0 のため CSR の読み出しは行わない。",
       "encodings": [],
-      "example": {"code": ["csrwi mstatus, 1"],"explanation": "この例では 5 ビット即値をゼロ拡張して CSR に書き込む疑似命令。"}
+      "example": {"code": ["csrwi mstatus, 1"],"explanation": "即値 1 をゼロ拡張して CSR mstatus へ書き込む（csrrwi zero, mstatus, 1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "CSRSI",
@@ -967,7 +967,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "CSRRSI x0,csr,uimm に展開する。uimm=0 の場合は書込みを行わない。",
       "encodings": [],
-      "example": {"code": ["csrsi mstatus, 1"],"explanation": "この例では 5 ビット即値で指定した CSR ビットをセットする疑似命令。"}
+      "example": {"code": ["csrsi mstatus, 1"],"explanation": "即値 1 に対応するビットを CSR mstatus にセットする（csrrsi zero, mstatus, 1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "CSRCI",
@@ -979,7 +979,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "notes": "CSRRCI x0,csr,uimm に展開する。uimm=0 の場合は書込みを行わない。",
       "encodings": [],
-      "example": {"code": ["csrci mstatus, 1"],"explanation": "この例では 5 ビット即値で指定した CSR ビットをクリアする疑似命令。"}
+      "example": {"code": ["csrci mstatus, 1"],"explanation": "即値 1 に対応するビットを CSR mstatus からクリアする（csrrci zero, mstatus, 1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "RDCYCLE",
@@ -991,7 +991,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "encodings": [{"syntax":"rdcycle rd","opcode":"csr=0xC00 rs1=00000 funct3=010 rd opcode=1110011","bytes":4}],
       "notes": "CSRRS rd, cycle, x0 と等価。CSR 0xC00。実行環境・特権設定により読出しが禁止される場合がある。",
-      "example": {"code": ["rdcycle t0"],"explanation": "この例では サイクルカウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。"}
+      "example": {"code": ["rdcycle t0"],"explanation": "サイクルカウンタ CSR（cycle, 0xC00）を読み出して t0 へ入れる（csrrs t0, cycle, zero と等価）。"}
     },
     {
       "mnemonic": "RDTIME",
@@ -1003,7 +1003,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "encodings": [{"syntax":"rdtime rd","opcode":"csr=0xC01 rs1=00000 funct3=010 rd opcode=1110011","bytes":4}],
       "notes": "CSRRS rd, time, x0 と等価。CSR 0xC01。実行環境・特権設定により読出しが禁止される場合がある。",
-      "example": {"code": ["rdtime t0"],"explanation": "この例では 時間カウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。"}
+      "example": {"code": ["rdtime t0"],"explanation": "時間カウンタ CSR（time, 0xC01）を読み出して t0 へ入れる（csrrs t0, time, zero と等価）。"}
     },
     {
       "mnemonic": "RDINSTRET",
@@ -1015,7 +1015,7 @@
       "cycles": [{"cond": "ISA では規定されない", "cycles": "実装依存"}],
       "encodings": [{"syntax":"rdinstret rd","opcode":"csr=0xC02 rs1=00000 funct3=010 rd opcode=1110011","bytes":4}],
       "notes": "CSRRS rd, instret, x0 と等価。CSR 0xC02。実行環境・特権設定により読出しが禁止される場合がある。",
-      "example": {"code": ["rdinstret t0"],"explanation": "この例では retired 命令カウンタ CSR を読み、XLEN ビットの値を rd に返す疑似命令。"}
+      "example": {"code": ["rdinstret t0"],"explanation": "実行完了命令カウンタ CSR（instret, 0xC02）を読み出して t0 へ入れる（csrrs t0, instret, zero と等価）。"}
     },
     {
       "mnemonic": "NOP",
@@ -1028,7 +1028,7 @@
       "notes": "ADDI x0, x0, 0 に展開される。アライメント調整や遅延に使う。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["addi zero, zero, 0"],"explanation": "この例では 何もしない疑似命令。"}
+      "example": {"code": ["addi zero, zero, 0"],"explanation": "zero は常に 0 を読むため書き込みは破棄され、何もしない（addi zero, zero, 0 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "SLTZ",
@@ -1041,7 +1041,7 @@
       "notes": "疑似命令。SLT rd,rs,x0 に展開する。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["sltz t0, t1"],"explanation": "この例では rs を符号付きで 0 と比較し、負なら 1、それ以外は 0 を rd に設定する。"}
+      "example": {"code": ["sltz t0, t1"],"explanation": "t1 < 0（符号付き）なら t0 = 1、そうでなければ t0 = 0（slt t0, t1, zero に展開される疑似命令）。"}
     },
     {
       "mnemonic": "SGTZ",
@@ -1054,7 +1054,7 @@
       "notes": "疑似命令。SLT rd,x0,rs に展開する。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["sgtz t0, t1"],"explanation": "この例では rs を符号付きで 0 と比較し、正なら 1、それ以外は 0 を rd に設定する。"}
+      "example": {"code": ["sgtz t0, t1"],"explanation": "t1 > 0（符号付き）なら t0 = 1、そうでなければ t0 = 0（slt t0, zero, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "SGT",
@@ -1067,7 +1067,7 @@
       "notes": "疑似命令。SLT rd,rt,rs に展開する。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["sgt t0, t1, t2"],"explanation": "この例では rs が rt より符号付きで大きければ 1、それ以外は 0 を rd に設定する。"}
+      "example": {"code": ["sgt t0, t1, t2"],"explanation": "t1 > t2（符号付き）なら t0 = 1、そうでなければ t0 = 0（slt t0, t2, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "SGTU",
@@ -1080,7 +1080,7 @@
       "notes": "疑似命令。SLTU rd,rt,rs に展開する。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["sgtu t0, t1, t2"],"explanation": "この例では rs が rt より符号なしで大きければ 1、それ以外は 0 を rd に設定する。"}
+      "example": {"code": ["sgtu t0, t1, t2"],"explanation": "t1 > t2（符号なし）なら t0 = 1、そうでなければ t0 = 0（sltu t0, t2, t1 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BLEZ",
@@ -1093,7 +1093,7 @@
       "notes": "疑似命令。BGE x0,rs,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["blez t1, target","target:"],"explanation": "この例では rs が符号付きで 0 以下なら分岐する。"}
+      "example": {"code": ["blez t1, target","target:"],"explanation": "t1 <= 0（符号付き）ならラベル target へ分岐する（bge zero, t1, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BGEZ",
@@ -1106,7 +1106,7 @@
       "notes": "疑似命令。BGE rs,x0,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["bgez t1, target","target:"],"explanation": "この例では rs が符号付きで 0 以上なら分岐する。"}
+      "example": {"code": ["bgez t1, target","target:"],"explanation": "t1 >= 0（符号付き）ならラベル target へ分岐する（bge t1, zero, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BLTZ",
@@ -1119,7 +1119,7 @@
       "notes": "疑似命令。BLT rs,x0,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["bltz t1, target","target:"],"explanation": "この例では rs が符号付きで 0 未満なら分岐する。"}
+      "example": {"code": ["bltz t1, target","target:"],"explanation": "t1 < 0（符号付き）ならラベル target へ分岐する（blt t1, zero, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BGTZ",
@@ -1132,7 +1132,7 @@
       "notes": "疑似命令。BLT x0,rs,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["bgtz t1, target","target:"],"explanation": "この例では rs が符号付きで 0 より大きければ分岐する。"}
+      "example": {"code": ["bgtz t1, target","target:"],"explanation": "t1 > 0（符号付き）ならラベル target へ分岐する（blt zero, t1, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BGT",
@@ -1145,7 +1145,7 @@
       "notes": "疑似命令。BLT rt,rs,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["bgt t0, t1, target","target:"],"explanation": "この例では rs が rt より符号付きで大きければ分岐する。"}
+      "example": {"code": ["bgt t0, t1, target","target:"],"explanation": "t0 > t1（符号付き）ならラベル target へ分岐する（blt t1, t0, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BLE",
@@ -1158,7 +1158,7 @@
       "notes": "疑似命令。BGE rt,rs,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["ble t0, t1, target","target:"],"explanation": "この例では rs が rt 以下なら符号付き比較で分岐する。"}
+      "example": {"code": ["ble t0, t1, target","target:"],"explanation": "t0 <= t1（符号付き）ならラベル target へ分岐する（bge t1, t0, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BGTU",
@@ -1171,7 +1171,7 @@
       "notes": "疑似命令。BLTU rt,rs,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["bgtu t0, t1, target","target:"],"explanation": "この例では rs が rt より符号なしで大きければ分岐する。"}
+      "example": {"code": ["bgtu t0, t1, target","target:"],"explanation": "t0 > t1（符号なし）ならラベル target へ分岐する（bltu t1, t0, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "BLEU",
@@ -1184,7 +1184,7 @@
       "notes": "疑似命令。BGEU rt,rs,offset に展開する。変位は分岐命令のアドレスを基準とし、範囲は -4096〜+4094 バイト（2 バイト単位）。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["bleu t0, t1, target","target:"],"explanation": "この例では rs が rt 以下なら符号なし比較で分岐する。"}
+      "example": {"code": ["bleu t0, t1, target","target:"],"explanation": "t0 <= t1（符号なし）ならラベル target へ分岐する（bgeu t1, t0, target に展開される疑似命令）。"}
     },
     {
       "mnemonic": "FENCE.TSO",
@@ -1197,7 +1197,7 @@
       "encodings": [{"syntax": "FENCE.TSO", "opcode": "fm=1000 pred=0011 succ=0011 rs1=0 funct3=000 rd=0 op=0001111", "bytes": 4}],
       "notes": "非 AMO の先行ストアと後続ロードの順序は保証しない。実装はより強い FENCE RW,RW として扱ってよい。",
       "src": "book",
-      "example": {"code": ["fence.tso"],"explanation": "この例では 先行ロードを後続ロード・ストアより前に、先行ストアを後続ストアより前に順序付ける。"}
+      "example": {"code": ["fence.tso"],"explanation": "先行するロードを後続のロード・ストアより前に、先行するストアを後続のストアより前に順序付ける（先行ストアと後続ロードの順序は保証しない）。"}
     },
     {
       "mnemonic": "MRET",
@@ -1210,7 +1210,7 @@
       "encodings": [{"syntax": "MRET", "opcode": "imm=001100000010 rs1=0 funct3=000 rd=0 op=1110011", "bytes": 4}],
       "notes": "M モードで実行する。mstatus の MPP と MPIE から権限と割り込み許可状態を復元する。",
       "src": "book",
-      "example": {"code": ["mret"],"explanation": "この例では M モードのトラップから復帰し、mepc のアドレスに戻る。"}
+      "example": {"code": ["mret"],"explanation": "mepc に保存されたアドレスへ復帰し、mstatus の MPP/MPIE から特権モードと割り込み許可を復元する。"}
     },
     {
       "mnemonic": "SRET",
@@ -1223,7 +1223,7 @@
       "encodings": [{"syntax": "SRET", "opcode": "imm=000100000010 rs1=0 funct3=000 rd=0 op=1110011", "bytes": 4}],
       "notes": "S モードを実装する環境で使用する。mstatus の SPP と SPIE から権限と割り込み許可状態を復元する。S モードで TSR=1 の場合は不正命令例外となる。",
       "src": "book",
-      "example": {"code": ["sret"],"explanation": "この例では S モードのトラップから復帰し、sepc のアドレスに戻る。"}
+      "example": {"code": ["sret"],"explanation": "sepc に保存されたアドレスへ復帰し、mstatus の SPP/SPIE から特権モードと割り込み許可を復元する。"}
     },
     {
       "mnemonic": "WFI",
@@ -1236,7 +1236,7 @@
       "encodings": [{"syntax": "WFI", "opcode": "imm=000100000101 rs1=0 funct3=000 rd=0 op=1110011", "bytes": 4}],
       "notes": "実装は停止せず NOP として扱ってもよく、割り込み以外の理由でも再開できる。低い権限では設定により例外が発生しうる。",
       "src": "book",
-      "example": {"code": ["wfi"],"explanation": "この例では 割り込みなどを待つ間、hart を停止可能であることを実装に通知する。"}
+      "example": {"code": ["wfi"],"explanation": "次の割り込みまで hart の実行を停止してよいことを示すヒント命令（NOP として扱ってもよく、割り込み以外の理由でも再開しうる）。"}
     },
     {
       "mnemonic": "SFENCE.VMA",
@@ -1249,7 +1249,7 @@
       "encodings": [{"syntax": "SFENCE.VMA rs1, rs2", "opcode": "funct7=0001001 rs2 rs1 funct3=000 rd=0 op=1110011", "bytes": 4}],
       "notes": "S モードを実装する環境で使用する。rs1 が x0 なら全仮想アドレス、rs2 が x0 なら全 ASID（グローバルな変換を含む）が対象。他の hart は別途同期する。",
       "src": "book",
-      "example": {"code": ["sfence.vma t1, t2"],"explanation": "この例では ローカル hart のアドレス変換と先行するページテーブル書き込みを同期する。"}
+      "example": {"code": ["sfence.vma t1, t2"],"explanation": "ローカル hart で、t1 の仮想アドレスと t2 の ASID に対応するアドレス変換を、先行するページテーブル書き込みと同期させる。"}
     },
     {
       "mnemonic": "SEXT.B",
@@ -1262,7 +1262,7 @@
       "notes": "疑似命令。RV32I では SLLI rd,rs,24 と SRAI rd,rd,24 に展開する。拡張命令の有効化により展開は変わりうる。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["sext.b t0, t1"],"explanation": "この例では 下位 8 ビットを符号拡張する。"}
+      "example": {"code": ["sext.b t0, t1"],"explanation": "t1 の下位 8 ビットを符号拡張して t0 へ入れる（RV32I では slli t0,t1,24 と srai t0,t0,24 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "SEXT.H",
@@ -1275,7 +1275,7 @@
       "notes": "疑似命令。RV32I では SLLI rd,rs,16 と SRAI rd,rd,16 に展開する。拡張命令の有効化により展開は変わりうる。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["sext.h t0, t1"],"explanation": "この例では 下位 16 ビットを符号拡張する。"}
+      "example": {"code": ["sext.h t0, t1"],"explanation": "t1 の下位 16 ビットを符号拡張して t0 へ入れる（RV32I では slli t0,t1,16 と srai t0,t0,16 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "ZEXT.B",
@@ -1288,7 +1288,7 @@
       "notes": "疑似命令。ANDI rd,rs,255 に展開する。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["zext.b t0, t1"],"explanation": "この例では 下位 8 ビットをゼロ拡張する。"}
+      "example": {"code": ["zext.b t0, t1"],"explanation": "t1 の下位 8 ビットをゼロ拡張して t0 へ入れる（andi t0,t1,255 に展開される疑似命令）。"}
     },
     {
       "mnemonic": "ZEXT.H",
@@ -1301,7 +1301,7 @@
       "notes": "疑似命令。RV32I では SLLI rd,rs,16 と SRLI rd,rd,16 に展開する。拡張命令の有効化により展開は変わりうる。",
       "src": "book",
       "encodings": [],
-      "example": {"code": ["zext.h t0, t1"],"explanation": "この例では 下位 16 ビットをゼロ拡張する。"}
+      "example": {"code": ["zext.h t0, t1"],"explanation": "t1 の下位 16 ビットをゼロ拡張して t0 へ入れる（RV32I では slli t0,t1,16 と srli t0,t0,16 に展開される疑似命令）。"}
     }
   ]
 }

@@ -12,7 +12,7 @@
       "notes": "転送先 An への .W/.L は MOVEA として扱われ、フラグは変化しない。Dn への .B/.W は残りの上位ビットを保持する。",
       "cycles": [{"cond": "MOVE.L D0,D1（レジスタ間）", "cycles": 4}, {"cond": "MOVE.W #n,D0", "cycles": 8}, {"cond": "MOVE.W (A0),D0", "cycles": 8}, {"cond": "MOVE.L (A0),D0", "cycles": 12}],
       "encodings": [{"syntax": "MOVE.B/W/L src,dst", "opcode": "00 SS DDD MMM mmm rrr（SS: B=01、L=10、W=11；DDD/MMM は転送先レジスタ/モード、mmm/rrr は転送元モード/レジスタ。EA 拡張ワードが続く場合あり）"}],
-      "example": {"code": ["move.l #$1234,d0"],"explanation": "この例では 8/16/32 ビット（.B/.W/.L）の汎用データ転送。src → dst。"}
+      "example": {"code": ["move.l #$1234,d0"],"explanation": "即値 $1234 を D0 へロングワード転送（D0 = $00001234）。N/Z が転送値で更新され V/C は 0。"}
     },
     {
       "mnemonic": "MOVEA",
@@ -35,7 +35,7 @@
       "cycles": [{"cond": "MOVE.W D0,CCR", "cycles": 12}, {"cond": "MOVE.W #n,CCR", "cycles": 16}, {"cond": "MOVE.W (A0),CCR", "cycles": 16}, {"cond": "MOVE.W d16(A0),CCR", "cycles": 20}],
       "encodings": [{"syntax": "MOVE.W src,CCR", "opcode": "0100010011 MMM RRR", "length": "可変"}],
       "src": "book",
-      "example": {"code": ["move.w #$0015,ccr"],"explanation": "この例では CCR（SR の下位 8 ビット）へのワード転送。ソースのビット 4〜0 が X/N/Z/V/C に反映される。フラグをまとめて復帰・設定できる。"}
+      "example": {"code": ["move.w #$0015,ccr"],"explanation": "即値 $0015 の下位 8 ビットを CCR へ転送。bit4-0 が X/N/Z/V/C に反映され $15 は Z=1・C=1、X/N/V は 0 になる。"}
     },
     {
       "mnemonic": "MOVETOSR",
@@ -47,7 +47,7 @@
       "cycles": [{"cond": "MOVE.W D0,SR", "cycles": 12}, {"cond": "MOVE.W #n,SR", "cycles": 16}, {"cond": "MOVE.W (A0),SR", "cycles": 16}, {"cond": "MOVE.W d16(A0),SR", "cycles": 20}],
       "encodings": [{"syntax": "MOVE.W src,SR", "opcode": "0100011011 MMM RRR", "length": "可変"}],
       "src": "book",
-      "example": {"code": ["move.w #$2000,sr"],"explanation": "この例では SR 全体（システムバイト + CCR）へのワード転送。T/S/割り込みマスク (I2-I0) もまとめて設定できる（スーパーバイザモード専用）。"}
+      "example": {"code": ["move.w #$2000,sr"],"explanation": "即値 $2000 を SR へ転送し bit13 (S) をセットしてスーパーバイザモードを指定。割り込みマスク (I2-I0) は 000 ですべてのレベルの割り込みを許可。"}
     },
     {
       "mnemonic": "MOVEFROMSR",
@@ -59,7 +59,7 @@
       "cycles": [{"cond": "MOVE.W SR,D0", "cycles": 6}, {"cond": "MOVE.W SR,(A0)", "cycles": 12}, {"cond": "MOVE.W SR,d16(A0)", "cycles": 16}, {"cond": "MOVE.W SR,d8(A0,D1)", "cycles": 18}],
       "encodings": [{"syntax": "MOVE.W SR,dst", "opcode": "0100000011 MMM RRR", "length": "可変"}],
       "src": "book",
-      "example": {"code": ["move.w sr,d0"],"explanation": "この例では SR の内容のワード退避。68000 では特権命令ではない（68010 以降は特権命令に変更）。"}
+      "example": {"code": ["move.w sr,d0"],"explanation": "SR の現在値（システムバイト + CCR の 16 ビット）を D0 の下位ワードへ退避。D0 の上位ワードとフラグは不変。"}
     },
     {
       "mnemonic": "MOVEQ",
@@ -72,7 +72,7 @@
       "encodings": [{"syntax": "MOVEQ #d,Dn", "opcode": "0 111 DDD 0 dddddddd", "bytes": 2}],
       "notes": "MOVE.L #imm,D0 より短く高速。即値は -128〜127。MOVE.L と同様に N/Z を更新し V/C をクリアする。",
       "src": "book",
-      "example": {"code": ["moveq #1,d0"],"explanation": "この例では 8 ビット符号拡張即値をデータレジスタへ高速転送（#-1 で 32 ビット -1 が入る）。フラグ更新あり。"}
+      "example": {"code": ["moveq #1,d0"],"explanation": "即値 1 を符号拡張して D0 へロングワード転送（D0 = $00000001）。2 バイト命令で 4 クロック、N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "MOVEM",
@@ -84,7 +84,7 @@
       "cycles": [{"cond": "MOVEM.L D0-D2/A4-A6,-(A7)（6 レジスタ）", "cycles": 56}],
       "notes": "メモリからの .W 転送は各ワードを bit15 を上位 16 ビットへ複製して 32 ビットに符号拡張する。レジスタからの .W 転送は各レジスタの下位ワードを格納する。",
       "encodings": [{"syntax": "MOVEM.L list,-(A7)", "opcode": "0100100011100111 mmmmmmmmmmmmmmmm（プリデクリメント時はレジスタマスクのビット順が逆）", "bytes": 4}],
-      "example": {"code": ["movem.l d0-d2,-(a7)"],"explanation": "この例では 複数レジスタの一括退避/復帰（.W/.L）。レジスタリストは D0-D7/A0-A7 の指定。"}
+      "example": {"code": ["movem.l d0-d2,-(a7)"],"explanation": "D0〜D2 の 3 本のロングワードを A7 プリデクリメントでスタックへ退避し A7 は 12 減少。プリデクリメント形式では高番号レジスタほど低い番地へ格納され (A7) は D2 になる。"}
     },
     {
       "mnemonic": "MOVEP",
@@ -96,7 +96,7 @@
       "cycles": [{"cond": "MOVEP.W", "cycles": 16}, {"cond": "MOVEP.L", "cycles": 24}],
       "encodings": [{"syntax": "MOVEP.W d16(An),Dn", "opcode": "0000 DDD 100 001 AAA disp16", "bytes": 4}, {"syntax": "MOVEP.L d16(An),Dn", "opcode": "0000 DDD 101 001 AAA disp16", "bytes": 4}, {"syntax": "MOVEP.W Dn,d16(An)", "opcode": "0000 DDD 110 001 AAA disp16", "bytes": 4}, {"syntax": "MOVEP.L Dn,d16(An)", "opcode": "0000 DDD 111 001 AAA disp16", "bytes": 4}],
       "notes": ".W では Dn の下位ワードを転送し、メモリから Dn への転送では上位ワードを保持する。",
-      "example": {"code": ["movep.w 4(a0),d0"],"explanation": "この例では データレジスタとメモリ間のバイト単位転送（周辺 I/O 用）。メモリの 1 バイトおきのアドレスに、上位バイトから 2 または 4 バイトを転送する。"}
+      "example": {"code": ["movep.w 4(a0),d0"],"explanation": "(A0+4) と (A0+6) の 2 バイトを 1 バイトおきに読み D0 の bit15-8 と bit7-0 へ格納（周辺 I/O 用）。D0 の上位ワードは保持。"}
     },
     {
       "mnemonic": "LEA",
@@ -118,7 +118,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond":"PEA (d16,An)","cycles":16}],
       "encodings": [{"syntax": "PEA ea", "opcode": "0100100001 MMM RRR", "length": "可変"}],
-      "example": {"code": ["pea (a0)"],"explanation": "この例では 実効アドレスの値（アドレス計算結果）をスタックに PUSH する。"}
+      "example": {"code": ["pea (a0)"],"explanation": "A0 の値そのもの（アドレス計算結果）をロングワードでスタックへプッシュし A7 は 4 減少。(A0) の内容ではなくアドレス値を積む点が MOVE と異なる。"}
     },
     {
       "mnemonic": "LINK",
@@ -129,7 +129,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "LINK An,#disp16", "opcode": "0100111001010 RRR disp16", "bytes": 4}],
-      "example": {"code": ["link a6,#-4"],"explanation": "この例では スタックフレーム確保。An を退避し SP を An にコピーしてから 16 ビット符号付きディスプレースメント d を SP に加算する。"}
+      "example": {"code": ["link a6,#-4"],"explanation": "旧 A6 をスタックへ退避し A7 の値を新 A6 へコピー、さらに A7 から 4 を引いてローカル変数 1 個分（4 バイト）のフレームを確保。"}
     },
     {
       "mnemonic": "UNLK",
@@ -140,7 +140,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 12}],
       "encodings": [{"syntax": "UNLK An", "opcode": "0100111001011 RRR", "bytes": 2}],
-      "example": {"code": ["unlk a0"],"explanation": "この例では LINK の逆。An を SP に戻し、退避していた旧 An を復帰する。"}
+      "example": {"code": ["unlk a0"],"explanation": "A0 の値を A7 へ戻し、スタックトップのロングワード（LINK が退避した旧 A0）をポップして復元。LINK で確保したフレームを解放する。"}
     },
     {
       "mnemonic": "MOVEFROMUSP",
@@ -152,7 +152,7 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "MOVE.L USP,An", "opcode": "010011100110 1 RRR", "bytes": 2}],
       "src": "book",
-      "example": {"code": ["move.l usp,a0"],"explanation": "この例では ユーザモードの A7 である USP の内容をアドレスレジスタへ転送。スーパーバイザモードの A7 は SSP を指す。サイズは .L のみ（スーパーバイザモード専用）。"}
+      "example": {"code": ["move.l usp,a0"],"explanation": "ユーザスタックポインタ USP（ユーザモードの A7）の現在値を A0 へロングワード転送。例外処理などでユーザスタック位置を参照するのに使う（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "MOVETOUSP",
@@ -164,7 +164,7 @@
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "MOVE.L An,USP", "opcode": "010011100110 0 RRR", "bytes": 2}],
       "src": "book",
-      "example": {"code": ["move.l a0,usp"],"explanation": "この例では アドレスレジスタの内容をユーザモードの A7 である USP へ設定。スーパーバイザモードの A7 は SSP を指す。サイズは .L のみ（スーパーバイザモード専用）。"}
+      "example": {"code": ["move.l a0,usp"],"explanation": "A0 の値をユーザスタックポインタ USP へ設定し、ユーザモード復帰後のスタック位置を切り替える（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "EXG",
@@ -175,7 +175,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 6}],
       "encodings": [{"syntax": "EXG Dn,Dm", "opcode": "1100 NNN 1 01000 MMM", "bytes": 2}, {"syntax": "EXG An,Am", "opcode": "1100 NNN 1 01001 MMM", "bytes": 2}, {"syntax": "EXG Dn,Am", "opcode": "1100 NNN 1 10001 MMM", "bytes": 2}],
-      "example": {"code": ["exg d0,d1"],"explanation": "この例では レジスタ 32 ビット全体の交換（Dn/Dn、An/An、Dn/An）。"}
+      "example": {"code": ["exg d0,d1"],"explanation": "D0 と D1 の 32 ビット全体を一括で入れ替え。フラグは不変。一時レジスタなしで 2 レジスタの内容を交換できる。"}
     },
     {
       "mnemonic": "SWAP",
@@ -186,7 +186,7 @@
       "flags": ["‡", "‡", "0", "0", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "SWAP Dn", "opcode": "0100100001000 RRR", "bytes": 2}],
-      "example": {"code": ["swap d0"],"explanation": "この例では データレジスタの上位 16 ビットと下位 16 ビットを交換。"}
+      "example": {"code": ["swap d0"],"explanation": "D0 の上位ワード (bit31-16) と下位ワード (bit15-0) を入れ替え。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "CLR",
@@ -198,7 +198,7 @@
       "cycles": [{"cond": "CLR.L D0", "cycles": 6}, {"cond": "CLR.W (A0)", "cycles": 12}],
       "encodings": [{"syntax": "CLR size,ea", "opcode": "01000010 ss MMM RRR", "length": "可変"}],
       "notes": "MC68000 ではメモリをクリアする際、書き込み前に対象を読み出す。読み出しに副作用のある I/O レジスタでは注意する。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["clr.w (a0)"],"explanation": "この例では オペランドを 0 にクリアする（.B/.W/.L）。N=0, Z=1。"}
+      "example": {"code": ["clr.w (a0)"],"explanation": "(A0) のワードに 0 を書き込み N=0・Z=1・V=0・C=0。MC68000 では書き込み前に対象を読み出すため I/O レジスタでは読み出し副作用に注意。"}
     },
     {
       "mnemonic": "ADD",
@@ -210,7 +210,7 @@
       "cycles": [{"cond": "ADD.W D0,D1", "cycles": 4}, {"cond": "ADD.L D0,D1", "cycles": 8}, {"cond": "ADD.W (A0),D0", "cycles": 8}, {"cond": "ADD.W D0,(A0)", "cycles": 12}],
       "encodings": [{"syntax": "ADD ea,Dn", "opcode": "1101 DDD 0 ss MMM RRR", "length": "可変"}, {"syntax": "ADD Dn,ea", "opcode": "1101 DDD 1 ss MMM RRR", "length": "可変"}],
       "notes": "即値演算には ADDI/SUBI を使用できる。EA から Dn への形式は PC 相対も指定できる。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["add.w (a0),d0"],"explanation": "この例では 加算（.B/.W/.L）。X/C はキャリー、V はオーバーフロー。"}
+      "example": {"code": ["add.w (a0),d0"],"explanation": "D0 = D0 + (A0)（16 ビット）。N/V/Z/X/C を更新。"}
     },
     {
       "mnemonic": "ADDA",
@@ -233,7 +233,7 @@
       "cycles": [{"cond": "ADDI.W #n,D0", "cycles": 8}, {"cond": "ADDI.L #n,D0", "cycles": 16}],
       "encodings": [{"syntax": "ADDI #imm,ea", "opcode": "00000110 ss MMM RRR imm", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["addi.w #1,(a0)"],"explanation": "この例では 即値加算（.B/.W/.L）。"}
+      "example": {"code": ["addi.w #1,(a0)"],"explanation": "(A0) = (A0) + 1（16 ビット、メモリ上のカウンタ加算）。N/V/Z/X/C を更新。"}
     },
     {
       "mnemonic": "ADDQ",
@@ -246,7 +246,7 @@
       "encodings": [{"syntax": "ADDQ #count,ea", "opcode": "0101 QQQ 0 ss MMM RRR", "length": "可変"}],
       "notes": "レジスタに対する ADDQ は 4/8 クロック。ADDQ #1,A0 でフラグは更新されない（アドレスレジスタ宛はフラグ不変）。 サイズフィールド ss は .B=00、.W=01、.L=10。 QQQ=000 は即値 8 を表す。",
       "src": "book",
-      "example": {"code": ["addq.w #1,(a0)"],"explanation": "この例では 小さい即値（1〜8）の高速加算。ADDI より短くて速い。An 宛は .B 不可、.W/.L で全 32 ビットが演算対象、フラグは変化しない。"}
+      "example": {"code": ["addq.w #1,(a0)"],"explanation": "(A0) = (A0) + 1（16 ビット）。即値 1〜8 専用の 2 バイト命令でメモリカウンタを高速加算し N/V/Z/X/C を更新。"}
     },
     {
       "mnemonic": "ADDX",
@@ -258,7 +258,7 @@
       "cycles": [{"cond": "ADDX.W D1,D0", "cycles": 4}, {"cond": "ADDX.L -(A0),-(A1)", "cycles": 30}],
       "encodings": [{"syntax": "ADDX Dn,Dm", "opcode": "1101 DDD 1 ss 00 0 RRR", "bytes": 2}, {"syntax": "ADDX -(An),-(Am)", "opcode": "1101 DDD 1 ss 00 1 RRR", "bytes": 2}],
       "notes": "メモリ形式ではソースとデスティネーションの両方がプリデクリメント。多倍長結果のゼロ判定には演算前に Z=1 を設定する。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["addx.w d0,d1"],"explanation": "この例では X 込み加算（多倍長演算用）。Z は結果が非 0 のときだけ 0 にクリア（1 には立たない）。"}
+      "example": {"code": ["addx.w d0,d1"],"explanation": "D1 = D1 + D0 + X（16 ビット）。多倍長加算の桁上げ伝播用で、Z は結果が非 0 のときだけ 0 にクリアされる。"}
     },
     {
       "mnemonic": "SUB",
@@ -270,7 +270,7 @@
       "cycles": [{"cond": "SUB.W D0,D1", "cycles": 4}, {"cond": "SUB.L D0,D1", "cycles": 8}],
       "encodings": [{"syntax": "SUB ea,Dn", "opcode": "1001 DDD 0 ss MMM RRR", "length": "可変"}, {"syntax": "SUB Dn,ea", "opcode": "1001 DDD 1 ss MMM RRR", "length": "可変"}],
       "notes": "即値演算には ADDI/SUBI を使用できる。EA から Dn への形式は PC 相対も指定できる。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["sub.w (a0),d0"],"explanation": "この例では 減算（.B/.W/.L）。dst = dst - src。"}
+      "example": {"code": ["sub.w (a0),d0"],"explanation": "D0 = D0 - (A0)（16 ビット）。N/V/Z/X/C を更新。"}
     },
     {
       "mnemonic": "SUBA",
@@ -293,7 +293,7 @@
       "cycles": [{"cond": "SUBI.W #n,D0", "cycles": 8}, {"cond": "SUBI.L #n,D0", "cycles": 16}],
       "encodings": [{"syntax": "SUBI #imm,ea", "opcode": "00000100 ss MMM RRR imm", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["subi.w #1,(a0)"],"explanation": "この例では 即値減算（.B/.W/.L）。"}
+      "example": {"code": ["subi.w #1,(a0)"],"explanation": "(A0) = (A0) - 1（16 ビット、メモリ上のカウンタ減算）。N/V/Z/X/C を更新。"}
     },
     {
       "mnemonic": "SUBQ",
@@ -305,7 +305,7 @@
       "cycles": [{"cond": "SUBQ.L #1,D0", "cycles": 8}],
       "encodings": [{"syntax": "SUBQ #count,ea", "opcode": "0101 QQQ 1 ss MMM RRR", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。 QQQ=000 は即値 8 を表す。",
-      "example": {"code": ["subq.w #1,(a0)"],"explanation": "この例では 小さい即値（1〜8）の高速減算。An 宛は .B 不可、.W/.L のいずれも全 32 ビットを演算し CCR は変化しない。"}
+      "example": {"code": ["subq.w #1,(a0)"],"explanation": "(A0) = (A0) - 1（16 ビット）。即値 1〜8 の高速減算で N/V/Z/X/C を更新。"}
     },
     {
       "mnemonic": "SUBX",
@@ -317,7 +317,7 @@
       "cycles": [{"cond": "SUBX.W D1,D0", "cycles": 4}, {"cond": "SUBX.L -(A0),-(A1)", "cycles": 30}],
       "encodings": [{"syntax": "SUBX Dn,Dm", "opcode": "1001 DDD 1 ss 00 0 RRR", "bytes": 2}, {"syntax": "SUBX -(An),-(Am)", "opcode": "1001 DDD 1 ss 00 1 RRR", "bytes": 2}],
       "notes": "メモリ形式ではソースとデスティネーションの両方がプリデクリメント。多倍長結果のゼロ判定には演算前に Z=1 を設定する。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["subx.w d0,d1"],"explanation": "この例では X 込み減算（多倍長演算用）。Z はクリアのみ（非 0 で 0 になり、1 には立たない）。"}
+      "example": {"code": ["subx.w d0,d1"],"explanation": "D1 = D1 - D0 - X（16 ビット）。多倍長減算用で、Z はクリアのみ（結果 0 でも 1 には立たない）。"}
     },
     {
       "mnemonic": "NEG",
@@ -329,7 +329,7 @@
       "cycles": [{"cond": "NEG.W D0", "cycles": 4}],
       "encodings": [{"syntax": "NEG size,ea", "opcode": "01000100 ss MMM RRR", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["neg.w (a0)"],"explanation": "この例では 符号反転（dst = 0 - dst、.B/.W/.L）。"}
+      "example": {"code": ["neg.w (a0)"],"explanation": "(A0) = 0 - (A0)（16 ビットの符号反転）。N/V/Z/X/C を更新。"}
     },
     {
       "mnemonic": "NEGX",
@@ -341,7 +341,7 @@
       "cycles": [{"cond": "NEGX.W D0", "cycles": 4}],
       "encodings": [{"syntax": "NEGX size,ea", "opcode": "01000000 ss MMM RRR", "length": "可変"}],
       "notes": "多倍長結果のゼロ判定には演算前に Z=1 を設定する。X は C と同じ値になる。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["negx.w (a0)"],"explanation": "この例では 0 からオペランドと X を減算する（.B/.W/.L）。結果が非ゼロなら Z をクリアし、ゼロなら Z を保持する。"}
+      "example": {"code": ["negx.w (a0)"],"explanation": "(A0) = 0 - (A0) - X（16 ビット）。多倍長符号反転の下位ワード処理用で、結果が非ゼロなら Z をクリアしゼロなら保持。"}
     },
     {
       "mnemonic": "NBCD",
@@ -353,7 +353,7 @@
       "cycles": [{"cond": "NBCD.B D0", "cycles": 6}],
       "encodings": [{"syntax": "NBCD ea", "opcode": "0100100000 MMM RRR", "length": "可変"}],
       "notes": "packed BCD のバイト演算。多倍長演算では Z を開始前に 1 にし、結果が非ゼロなら 0 にクリアする。N/V は未定義。X は C と同じ値になる。",
-      "example": {"code": ["nbcd (a0)"],"explanation": "この例では BCD の符号反転（dst = 0 - dst - X、10 進補正込み）。Z はクリアのみ。"}
+      "example": {"code": ["nbcd (a0)"],"explanation": "(A0) = 0 - (A0) - X をパック BCD（2 桁 10 進）で計算。Z はクリアのみ、N/V は不定。"}
     },
     {
       "mnemonic": "ABCD",
@@ -365,7 +365,7 @@
       "cycles": [{"cond": "ABCD.B D1,D0", "cycles": 6}, {"cond": "ABCD.B -(A0),-(A1)", "cycles": 18}],
       "encodings": [{"syntax": "ABCD Dn,Dm", "opcode": "1100 DDD 10000 0 RRR", "bytes": 2}, {"syntax": "ABCD -(An),-(Am)", "opcode": "1100 DDD 10000 1 RRR", "bytes": 2}],
       "notes": "packed BCD のバイト演算。多倍長演算では Z を開始前に 1 にし、結果が非ゼロなら 0 にクリアする。N/V は未定義。X は C と同じ値になる。",
-      "example": {"code": ["abcd d0,d1"],"explanation": "この例では BCD 加算（X 込み）。Z はクリアのみ。多倍長 BCD 演算用。"}
+      "example": {"code": ["abcd d0,d1"],"explanation": "D1 = D1 + D0 + X をパック BCD（2 桁 10 進）で計算。Z はクリアのみで多倍長 BCD 加算の桁伝播に使う。"}
     },
     {
       "mnemonic": "SBCD",
@@ -377,7 +377,7 @@
       "cycles": [{"cond": "SBCD.B D1,D0", "cycles": 6}],
       "encodings": [{"syntax": "SBCD Dn,Dm", "opcode": "1000 DDD 10000 0 RRR", "bytes": 2}, {"syntax": "SBCD -(An),-(Am)", "opcode": "1000 DDD 10000 1 RRR", "bytes": 2}],
       "notes": "packed BCD のバイト演算。多倍長演算では Z を開始前に 1 にし、結果が非ゼロなら 0 にクリアする。N/V は未定義。X は C と同じ値になる。",
-      "example": {"code": ["sbcd d0,d1"],"explanation": "この例では BCD 減算（X 込み）。Z はクリアのみ。"}
+      "example": {"code": ["sbcd d0,d1"],"explanation": "D1 = D1 - D0 - X をパック BCD（2 桁 10 進）で計算。Z はクリアのみ。"}
     },
     {
       "mnemonic": "MULU",
@@ -389,7 +389,7 @@
       "cycles": [{"cond": "MULU.W Dm,Dn（オペランド依存）", "cycles": "38〜70"}],
       "encodings": [{"syntax": "MULU.W ea,Dn", "opcode": "1100 DDD 011 MMM RRR", "length": "可変"}],
       "notes": "ソースと Dn の下位ワードを乗算し、32 ビットの積を Dn 全体に格納する。実行時間はソース値と実効アドレスに依存する。",
-      "example": {"code": ["mulu.w (a0),d0"],"explanation": "この例では 符号なし 16×16 → 32 ビット乗算（.W のみ）。積を 32 ビット全体に格納する。"}
+      "example": {"code": ["mulu.w (a0),d0"],"explanation": "D0 の下位ワード × (A0) の符号なし 16×16 乗算を実行し 32 ビットの積を D0 全体へ格納。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "MULS",
@@ -401,7 +401,7 @@
       "cycles": [{"cond": "MULS.W Dm,Dn（オペランド依存）", "cycles": "38〜70"}],
       "encodings": [{"syntax": "MULS.W ea,Dn", "opcode": "1100 DDD 111 MMM RRR", "length": "可変"}],
       "notes": "ソースと Dn の下位ワードを乗算し、32 ビットの積を Dn 全体に格納する。実行時間はソース値と実効アドレスに依存する。",
-      "example": {"code": ["muls.w (a0),d0"],"explanation": "この例では 符号付き 16×16 → 32 ビット乗算（.W のみ）。"}
+      "example": {"code": ["muls.w (a0),d0"],"explanation": "D0 の下位ワード × (A0) の符号付き 16×16 乗算を実行し 32 ビットの積を D0 全体へ格納。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "DIVU",
@@ -413,7 +413,7 @@
       "cycles": [{"cond": "DIVU.W Dm,Dn（通常除算の最大）", "cycles": 140}],
       "encodings": [{"syntax": "DIVU.W ea,Dn", "opcode": "1000 DDD 011 MMM RRR", "length": "可変"}],
       "notes": "Dn の 32 ビット被除数を 16 ビットのソースで除算し、商を下位ワード、剰余を上位ワードに格納する。正常終了時の N/Z は 16 ビットの商に基づく。商が 16 ビットに収まらない場合は V=1、Dn は不変で N/Z は未定義。除数 0 は例外ベクタ 5。",
-      "example": {"code": ["divu.w (a0),d0"],"explanation": "この例では 符号なし 32 ÷ 16 → 商(下位16) 剰余(上位16)。V=1 でオーバーフロー検出、割算零はトラップ（例外ベクタ 5）。"}
+      "example": {"code": ["divu.w (a0),d0"],"explanation": "D0 の 32 ビットを (A0) の 16 ビット符号なし値で除算し、商を D0 の下位ワード、剰余を上位ワードへ格納。除数 0 は例外ベクタ 5。"}
     },
     {
       "mnemonic": "DIVS",
@@ -425,7 +425,7 @@
       "cycles": [{"cond": "DIVS.W Dm,Dn（通常除算の最大）", "cycles": 158}],
       "encodings": [{"syntax": "DIVS.W ea,Dn", "opcode": "1000 DDD 111 MMM RRR", "length": "可変"}],
       "notes": "Dn の 32 ビット被除数を 16 ビットのソースで除算し、商を下位ワード、剰余を上位ワードに格納する。正常終了時の N/Z は 16 ビットの商に基づく。商が 16 ビットに収まらない場合は V=1、Dn は不変で N/Z は未定義。除数 0 は例外ベクタ 5。商は 0 方向へ丸め、剰余の符号は被除数と同じ。",
-      "example": {"code": ["divs.w (a0),d0"],"explanation": "この例では 符号付き 32 ÷ 16。商/剰余は符号付き。V/C の挙動は DIVU と同じ。"}
+      "example": {"code": ["divs.w (a0),d0"],"explanation": "D0 の 32 ビットを (A0) の 16 ビット符号付き値で除算し、商を D0 の下位ワード、剰余（被除数と同一符号）を上位ワードへ格納。"}
     },
     {
       "mnemonic": "AND",
@@ -437,7 +437,7 @@
       "cycles": [{"cond": "AND.W D0,D1", "cycles": 4}, {"cond": "AND.L D0,D1", "cycles": 8}],
       "encodings": [{"syntax": "AND ea,Dn", "opcode": "1100 DDD 0 ss MMM RRR", "length": "可変"}, {"syntax": "AND Dn,ea", "opcode": "1100 DDD 1 ss MMM RRR", "length": "可変"}],
       "notes": "アドレスレジスタ直接は指定できない。即値の論理演算には ANDI/ORI を使う。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["and.w (a0),d0"],"explanation": "この例では 論理積（.B/.W/.L）。V/C は常に 0、X は不変。"}
+      "example": {"code": ["and.w (a0),d0"],"explanation": "D0 = D0 & (A0)（16 ビットのマスク処理）。N/Z 更新、V/C は 0、X 不変。"}
     },
     {
       "mnemonic": "ANDI",
@@ -449,7 +449,7 @@
       "cycles": [{"cond": "ANDI.W #n,D0", "cycles": 8}, {"cond": "ANDI.L #n,D0", "cycles": 16}],
       "encodings": [{"syntax": "ANDI #imm,ea", "opcode": "00000010 ss MMM RRR imm", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["andi.w #1,(a0)"],"explanation": "この例では 即値との論理積。CCR を対象とする形式は ANDITOCCR を参照。"}
+      "example": {"code": ["andi.w #1,(a0)"],"explanation": "(A0) = (A0) & 1（16 ビット）で bit0 以外をクリア。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "OR",
@@ -461,7 +461,7 @@
       "cycles": [{"cond": "OR.W D0,D1", "cycles": 4}, {"cond": "OR.L D0,D1", "cycles": 8}],
       "encodings": [{"syntax": "OR ea,Dn", "opcode": "1000 DDD 0 ss MMM RRR", "length": "可変"}, {"syntax": "OR Dn,ea", "opcode": "1000 DDD 1 ss MMM RRR", "length": "可変"}],
       "notes": "アドレスレジスタ直接は指定できない。即値の論理演算には ANDI/ORI を使う。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["or.w (a0),d0"],"explanation": "この例では 論理和（.B/.W/.L）。V/C は常に 0。"}
+      "example": {"code": ["or.w (a0),d0"],"explanation": "D0 = D0 | (A0)（16 ビットのビット合成）。N/Z 更新、V/C は 0、X 不変。"}
     },
     {
       "mnemonic": "ORI",
@@ -473,7 +473,7 @@
       "cycles": [{"cond": "ORI.W #n,D0", "cycles": 8}, {"cond": "ORI.L #n,D0", "cycles": 16}],
       "encodings": [{"syntax": "ORI #imm,ea", "opcode": "00000000 ss MMM RRR imm", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["ori.w #1,(a0)"],"explanation": "この例では 即値との論理和。CCR を対象とする形式は ORITOCCR を参照。"}
+      "example": {"code": ["ori.w #1,(a0)"],"explanation": "(A0) = (A0) | 1（16 ビット）で bit0 をセット。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "EOR",
@@ -485,7 +485,7 @@
       "cycles": [{"cond": "EOR.W D0,D1", "cycles": 4}, {"cond": "EOR.L D0,D1", "cycles": 8}],
       "encodings": [{"syntax": "EOR Dn,ea", "opcode": "1011 DDD 1 ss MMM RRR", "length": "可変"}],
       "notes": "ソースはデータレジスタ。即値には EORI を使う。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["eor.w d0,(a0)"],"explanation": "この例では 排他的論理和（.B/.W/.L）。V/C は常に 0。"}
+      "example": {"code": ["eor.w d0,(a0)"],"explanation": "(A0) = (A0) ^ D0（16 ビット、メモリ上の排他的論理和）。ソースはデータレジスタのみ、N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "EORI",
@@ -497,7 +497,7 @@
       "cycles": [{"cond": "EORI.W #n,D0", "cycles": 8}, {"cond": "EORI.L #n,D0", "cycles": 16}],
       "encodings": [{"syntax": "EORI #imm,ea", "opcode": "00001010 ss MMM RRR imm", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["eori.w #1,(a0)"],"explanation": "この例では 即値との排他的論理和。CCR を対象とする形式は EORITOCCR を参照。"}
+      "example": {"code": ["eori.w #1,(a0)"],"explanation": "(A0) = (A0) ^ 1（16 ビット）で bit0 を反転。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "ANDITOCCR",
@@ -509,7 +509,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ANDI.B #d,CCR", "opcode": "00000010 00 111100 00000000 dddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["andi.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 0 ならクリア）。特権命令ではない。"}
+      "example": {"code": ["andi.b #1,ccr"],"explanation": "CCR = CCR & $01 で bit0 に対応する C フラグのみ保持し X/N/Z/V をクリア。"}
     },
     {
       "mnemonic": "ORITOCCR",
@@ -521,7 +521,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ORI.B #d,CCR", "opcode": "00000000 00 111100 00000000 dddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["ori.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 1 ならセット）。特権命令ではない。"}
+      "example": {"code": ["ori.b #1,ccr"],"explanation": "CCR = CCR | $01 で bit0 に対応する C フラグのみをセットし他のフラグは不変。"}
     },
     {
       "mnemonic": "EORITOCCR",
@@ -533,7 +533,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "EORI.B #d,CCR", "opcode": "00001010 00 111100 00000000 dddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["eori.b #1,ccr"],"explanation": "この例では CCR の X/N/Z/V/C を即値との論理演算で変更する（対応ビットが 1 なら反転）。特権命令ではない。"}
+      "example": {"code": ["eori.b #1,ccr"],"explanation": "CCR = CCR ^ $01 で bit0 に対応する C フラグのみを反転し他のフラグは不変。"}
     },
     {
       "mnemonic": "ANDITOSR",
@@ -545,7 +545,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ANDI.W #d,SR", "opcode": "00000010 01 111100 dddddddddddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["andi.w #1,sr"],"explanation": "この例では SR と即値の論理積。T/S/割り込みマスクを含む SR の個別ビットをクリアするのに便利（スーパーバイザモード専用）。"}
+      "example": {"code": ["andi.w #1,sr"],"explanation": "SR = SR & $0001 で C のみ保持し T/S/割り込みマスク (I2-I0) をクリア。S=0 になるためユーザモードへ移行する（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "ORITOSR",
@@ -557,7 +557,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "ORI.W #d,SR", "opcode": "00000000 01 111100 dddddddddddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["ori.w #1,sr"],"explanation": "この例では SR と即値の論理和。T/S/割り込みマスクを含む SR の個別ビットをセットするのに便利（スーパーバイザモード専用）。"}
+      "example": {"code": ["ori.w #1,sr"],"explanation": "SR = SR | $0001 で C フラグのみをセットし T/S/割り込みマスクを含む他のビットは不変（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "EORITOSR",
@@ -569,7 +569,7 @@
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "EORI.W #d,SR", "opcode": "00001010 01 111100 dddddddddddddddd", "bytes": 4}],
       "src": "book",
-      "example": {"code": ["eori.w #1,sr"],"explanation": "この例では SR と即値の排他的論理和。T/S/割り込みマスクを含む SR の個別ビットを反転するのに便利（スーパーバイザモード専用）。"}
+      "example": {"code": ["eori.w #1,sr"],"explanation": "SR = SR ^ $0001 で C フラグのみを反転し T/S/割り込みマスクを含む他のビットは不変（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "NOT",
@@ -581,7 +581,7 @@
       "cycles": [{"cond": "NOT.W D0", "cycles": 4}],
       "encodings": [{"syntax": "NOT size,ea", "opcode": "01000110 ss MMM RRR", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["not.w (a0)"],"explanation": "この例では ビット反転（1の補数、.B/.W/.L）。"}
+      "example": {"code": ["not.w (a0)"],"explanation": "(A0) = ~(A0)（16 ビット全ビット反転）。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "EXT",
@@ -592,7 +592,7 @@
       "flags": ["‡", "‡", "0", "0", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "EXT.W Dn", "opcode": "0100100010000 RRR", "bytes": 2}, {"syntax": "EXT.L Dn", "opcode": "0100100011000 RRR", "bytes": 2}],
-      "example": {"code": ["ext.w d0"],"explanation": "この例では EXT.W は Dn 下位バイトをワードへ符号拡張し上位ワードを保持する。EXT.L は下位ワードをロングワードへ符号拡張する。"}
+      "example": {"code": ["ext.w d0"],"explanation": "D0 の下位バイトの bit7 を bit8-15 へ複製してワードへ符号拡張（上位ワードは不変）。N/Z 更新、V/C は 0。"}
     },
     {
       "mnemonic": "TST",
@@ -604,7 +604,7 @@
       "cycles": [{"cond": "TST.W D0", "cycles": 4}, {"cond": "TST.L (A0)", "cycles": 12}],
       "encodings": [{"syntax": "TST size,ea", "opcode": "01001010 ss MMM RRR", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["tst.w (a0)"],"explanation": "この例では オペランドの判定（dst - 0 のフラグのみ反映）。X は不変。"}
+      "example": {"code": ["tst.w (a0)"],"explanation": "(A0) のワードから 0 を減算したフラグのみを設定（N=負・Z=零判定、V/C は 0）。オペランドと X は不変。"}
     },
     {
       "mnemonic": "TAS",
@@ -617,7 +617,7 @@
       "encodings": [{"syntax": "TAS dst", "opcode": "0100101011 MMM RRR", "length": "可変"}],
       "notes": "オペランドはバイトのみ。メモリ共有による同期には、システムが不可分なリード・モディファイ・ライトサイクルをサポートする必要がある。Dn を対象とする場合はメモリのバスサイクルを伴わない。",
       "src": "book",
-      "example": {"code": ["tas d1"],"explanation": "この例では バイトのテスト・アンド・セット。N/Z にテスト結果を反映し、最上位ビット (bit7) を 1 にセット。メモリに対してはリード・モディファイ・ライトサイクルを使う。"}
+      "example": {"code": ["tas d1"],"explanation": "D1 の下位バイトをテストして N/Z に反映し、bit7 を 1 にセットして D1 へ書き戻す。レジスタ宛なのでメモリのリード・モディファイ・ライトバスサイクルは発生しない。"}
     },
     {
       "mnemonic": "CMP",
@@ -629,7 +629,7 @@
       "cycles": [{"cond": "CMP.W D0,D1", "cycles": 4}, {"cond": "CMP.L (A0),D0", "cycles": 14}],
       "encodings": [{"syntax": "CMP ea,Dn", "opcode": "1011 DDD 0 ss MMM RRR", "length": "可変"}],
       "notes": "即値比較は CMPI も使用できる。比較結果は格納せず、X は変化しない。 サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["cmp.w (a0),d0"],"explanation": "この例では 比較（dst - src のフラグのみ反映）。BHi/Bge 等の分岐で使う。X は不変。"}
+      "example": {"code": ["cmp.w (a0),d0"],"explanation": "D0 - (A0) を計算し N/Z/V/C に反映（D0 は不変、X も不変）。直後の BNE/BHI/BLS などの分岐条件に使う。"}
     },
     {
       "mnemonic": "CMPA",
@@ -652,7 +652,7 @@
       "cycles": [{"cond": "CMPI.W #n,D0", "cycles": 8}, {"cond": "CMPI.L #n,D0", "cycles": 14}],
       "encodings": [{"syntax": "CMPI #imm,ea", "opcode": "00001100 ss MMM RRR imm", "length": "可変"}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["cmpi.w #1,(a0)"],"explanation": "この例では 即値との比較。"}
+      "example": {"code": ["cmpi.w #1,(a0)"],"explanation": "(A0) - 1 を計算し N/Z/V/C に反映（メモリ内容は不変）。ループ終端値などの即値比較に使う。"}
     },
     {
       "mnemonic": "CMPM",
@@ -664,7 +664,7 @@
       "cycles": [{"cond": "CMPM.W (A0)+,(A1)+", "cycles": 12}],
       "encodings": [{"syntax": "CMPM (An)+,(Am)+", "opcode": "1011 DDD 1 ss 001 RRR", "bytes": 2}],
       "notes": "サイズフィールド ss は .B=00、.W=01、.L=10。",
-      "example": {"code": ["cmpm.w (a0)+,(a1)+"],"explanation": "この例では 両オペランドをポストインクリメントで読み、転送先から転送元を減算した結果をフラグに反映する（.B/.W/.L）。"}
+      "example": {"code": ["cmpm.w (a0)+,(a1)+"],"explanation": "(A1) - (A0) を計算し N/Z/V/C に反映し、A0 と A1 を各 2 バイト進める。ポインタ対で表を順次比較するのに使う。"}
     },
     {
       "mnemonic": "ASL",
@@ -676,7 +676,7 @@
       "cycles": [{"cond": "ASL.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "ASL.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "ASL.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "ASL #count,Dn", "opcode": "1110 CCC 1 ss 0 00 RRR", "bytes": 2}, {"syntax": "ASL Dm,Dn", "opcode": "1110 CCC 1 ss 1 00 RRR", "bytes": 2}, {"syntax": "ASL.W ea", "opcode": "1110 0001 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき C=0、X は不変。V はシフト中に符号ビットが一度でも変化すれば 1。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["asl.w #1,d0"],"explanation": "この例では 算術左シフト。V はシフト中に符号ビットが変化した場合に 1。回数が 1 以上なら C/X は最後に押し出されたビット。"}
+      "example": {"code": ["asl.w #1,d0"],"explanation": "D0 のワードを 1 ビット左へシフト（bit0 に 0 を挿入、押し出された bit15 は C/X へ）。1 ビットで ×2 相当、N/Z/V 更新。"}
     },
     {
       "mnemonic": "ASR",
@@ -688,7 +688,7 @@
       "cycles": [{"cond": "ASR.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "ASR.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "ASR.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "ASR #count,Dn", "opcode": "1110 CCC 0 ss 0 00 RRR", "bytes": 2}, {"syntax": "ASR Dm,Dn", "opcode": "1110 CCC 0 ss 1 00 RRR", "bytes": 2}, {"syntax": "ASR.W ea", "opcode": "1110 0000 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき C=0、X は不変。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["asr.w #1,d0"],"explanation": "この例では 算術右シフト（符号ビット保持）。回数が 1 以上なら C/X は最後に押し出されたビット。V は常に 0。"}
+      "example": {"code": ["asr.w #1,d0"],"explanation": "D0 のワードを 1 ビット右へシフト（bit15 の符号を保持、押し出された bit0 は C/X へ）。符号付き ÷2 相当、V=0。"}
     },
     {
       "mnemonic": "LSL",
@@ -700,7 +700,7 @@
       "cycles": [{"cond": "LSL.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "LSL.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "LSL.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "LSL #count,Dn", "opcode": "1110 CCC 1 ss 0 01 RRR", "bytes": 2}, {"syntax": "LSL Dm,Dn", "opcode": "1110 CCC 1 ss 1 01 RRR", "bytes": 2}, {"syntax": "LSL.W ea", "opcode": "1110 0011 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき C=0、X は不変。ASL とデータ結果は同じだが、V は常に 0。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["lsl.w #1,d0"],"explanation": "この例では 論理左シフト（下位ビットは 0）。データ結果は ASL と同じで、V は常に 0。"}
+      "example": {"code": ["lsl.w #1,d0"],"explanation": "D0 のワードを 1 ビット左へシフト（bit0 に 0 を挿入、押し出された bit15 は C/X へ）。データ結果は ASL と同じで V は常に 0。"}
     },
     {
       "mnemonic": "LSR",
@@ -712,7 +712,7 @@
       "cycles": [{"cond": "LSR.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "LSR.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "LSR.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "LSR #count,Dn", "opcode": "1110 CCC 0 ss 0 01 RRR", "bytes": 2}, {"syntax": "LSR Dm,Dn", "opcode": "1110 CCC 0 ss 1 01 RRR", "bytes": 2}, {"syntax": "LSR.W ea", "opcode": "1110 0010 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき C=0、X は不変。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["lsr.w #1,d0"],"explanation": "この例では 論理右シフト（上位ビットは 0）。符号なし ÷2 相当。"}
+      "example": {"code": ["lsr.w #1,d0"],"explanation": "D0 のワードを 1 ビット右へシフト（bit15 に 0 を挿入、押し出された bit0 は C/X へ）。符号なし ÷2 相当、V=0。"}
     },
     {
       "mnemonic": "ROL",
@@ -724,7 +724,7 @@
       "cycles": [{"cond": "ROL.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "ROL.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "ROL.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "ROL #count,Dn", "opcode": "1110 CCC 1 ss 0 11 RRR", "bytes": 2}, {"syntax": "ROL Dm,Dn", "opcode": "1110 CCC 1 ss 1 11 RRR", "bytes": 2}, {"syntax": "ROL.W ea", "opcode": "1110 0111 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき C=0、X は不変。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["rol.w #1,d0"],"explanation": "この例では 左ローテート（ビット内で循環、回数が 1 以上なら C は最後のビット、X は不変）。V は常に 0。"}
+      "example": {"code": ["rol.w #1,d0"],"explanation": "D0 のワードを 1 ビット左回転（bit15 を bit0 へ戻し C にもコピー）。X は不変、V=0。"}
     },
     {
       "mnemonic": "ROR",
@@ -736,7 +736,7 @@
       "cycles": [{"cond": "ROR.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "ROR.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "ROR.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "ROR #count,Dn", "opcode": "1110 CCC 0 ss 0 11 RRR", "bytes": 2}, {"syntax": "ROR Dm,Dn", "opcode": "1110 CCC 0 ss 1 11 RRR", "bytes": 2}, {"syntax": "ROR.W ea", "opcode": "1110 0110 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき C=0、X は不変。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["ror.w #1,d0"],"explanation": "この例では 右ローテート（回数が 1 以上なら C は最後のビット、X は不変）。ビットフィールドの回転に使う。"}
+      "example": {"code": ["ror.w #1,d0"],"explanation": "D0 のワードを 1 ビット右回転（bit0 を bit15 へ戻し C にもコピー）。X は不変、V=0。"}
     },
     {
       "mnemonic": "ROXL",
@@ -748,7 +748,7 @@
       "cycles": [{"cond": "ROXL.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "ROXL.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "ROXL.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "ROXL #count,Dn", "opcode": "1110 CCC 1 ss 0 10 RRR", "bytes": 2}, {"syntax": "ROXL Dm,Dn", "opcode": "1110 CCC 1 ss 1 10 RRR", "bytes": 2}, {"syntax": "ROXL.W ea", "opcode": "1110 0101 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき X は不変で C は元の X をコピーする。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["roxl.w #1,d0"],"explanation": "この例では X 込み左ローテート（9/17/33 ビット循環）。多倍長シフトの連結に使う。C/X 同期。"}
+      "example": {"code": ["roxl.w #1,d0"],"explanation": "D0 のワードと X の計 17 ビットを 1 ビット左回転（bit15 → X → bit0）。多倍長左シフトのワード間連結に使う。"}
     },
     {
       "mnemonic": "ROXR",
@@ -760,7 +760,7 @@
       "cycles": [{"cond": "ROXR.B/.W #n または Dm,Dn", "cycles": "6+2n"}, {"cond": "ROXR.L #n または Dm,Dn", "cycles": "8+2n"}, {"cond": "ROXR.W (An)", "cycles": 12}],
       "encodings": [{"syntax": "ROXR #count,Dn", "opcode": "1110 CCC 0 ss 0 10 RRR", "bytes": 2}, {"syntax": "ROXR Dm,Dn", "opcode": "1110 CCC 0 ss 1 10 RRR", "bytes": 2}, {"syntax": "ROXR.W ea", "opcode": "1110 0100 11 MMM RRR", "length": "可変"}],
       "notes": "即値回数は 1〜8。レジスタ指定では下位 6 ビット（0〜63）を使う。メモリ形式はワードサイズ・1 回に固定。回数 0 のとき X は不変で C は元の X をコピーする。 サイズフィールド ss は .B=00、.W=01、.L=10。即値カウント CCC=000 は 8 を表す。",
-      "example": {"code": ["roxr.w #1,d0"],"explanation": "この例では X 込み右ローテート。多倍長右シフトの連結に使う。"}
+      "example": {"code": ["roxr.w #1,d0"],"explanation": "D0 のワードと X の計 17 ビットを 1 ビット右回転（bit0 → X → bit15）。多倍長右シフトのワード間連結に使う。"}
     },
     {
       "mnemonic": "BTST",
@@ -772,7 +772,7 @@
       "cycles": [{"cond": "BTST #n,D0", "cycles": 10}, {"cond": "BTST #n,(A0)", "cycles": 12}],
       "encodings": [{"syntax": "BTST Dn,ea", "opcode": "0000 NNN 1 00 MMM RRR", "length": "可変"}, {"syntax": "BTST #imm,ea", "opcode": "00001000 00 MMM RRR imm16", "length": "可変"}],
       "notes": "ビット番号は Dn または即値で指定する。対象が Dn なら 32 の剰余、メモリなら 8 の剰余を使う。Z は変更前の対象ビットが 0 のとき 1。",
-      "example": {"code": ["btst d0,(a0)"],"explanation": "この例では ビットテスト（.B/.L）。Z フラグのみ更新（指定ビットが 0 で Z=1）。"}
+      "example": {"code": ["btst d0,(a0)"],"explanation": "(A0) のバイトの D0 番（mod 8）ビットをテストし 0 なら Z=1。対象ビットと Z 以外のフラグは不変。"}
     },
     {
       "mnemonic": "BSET",
@@ -784,7 +784,7 @@
       "cycles": [{"cond": "BSET #n,D0（最大）", "cycles": 12}, {"cond": "BSET #n,(A0)", "cycles": 16}],
       "encodings": [{"syntax": "BSET Dn,ea", "opcode": "0000 NNN 1 11 MMM RRR", "length": "可変"}, {"syntax": "BSET #imm,ea", "opcode": "00001000 11 MMM RRR imm16", "length": "可変"}],
       "notes": "ビット番号は Dn または即値で指定する。対象が Dn なら 32 の剰余、メモリなら 8 の剰余を使う。Z は変更前の対象ビットが 0 のとき 1。対象はデータ可変で、PC 相対には書き込めない。",
-      "example": {"code": ["bset d0,(a0)"],"explanation": "この例では 指定ビットの変更前の値を Z で示し、そのビットを 1 にセットする。"}
+      "example": {"code": ["bset d0,(a0)"],"explanation": "(A0) のバイトの D0 番（mod 8）ビットの元の値を Z に反映し、そのビットを 1 にセットして (A0) へ書き戻す。"}
     },
     {
       "mnemonic": "BCLR",
@@ -796,7 +796,7 @@
       "cycles": [{"cond": "BCLR #n,D0（最大）", "cycles": 14}, {"cond": "BCLR #n,(A0)", "cycles": 16}],
       "encodings": [{"syntax": "BCLR Dn,ea", "opcode": "0000 NNN 1 10 MMM RRR", "length": "可変"}, {"syntax": "BCLR #imm,ea", "opcode": "00001000 10 MMM RRR imm16", "length": "可変"}],
       "notes": "ビット番号は Dn または即値で指定する。対象が Dn なら 32 の剰余、メモリなら 8 の剰余を使う。Z は変更前の対象ビットが 0 のとき 1。対象はデータ可変で、PC 相対には書き込めない。",
-      "example": {"code": ["bclr d0,(a0)"],"explanation": "この例では ビットテスト後にそのビットを 0 にクリア。"}
+      "example": {"code": ["bclr d0,(a0)"],"explanation": "(A0) のバイトの D0 番（mod 8）ビットの元の値を Z に反映し、そのビットを 0 にクリアして書き戻す。"}
     },
     {
       "mnemonic": "BCHG",
@@ -808,7 +808,7 @@
       "cycles": [{"cond": "BCHG #n,D0（最大）", "cycles": 12}, {"cond": "BCHG #n,(A0)", "cycles": 16}],
       "encodings": [{"syntax": "BCHG Dn,ea", "opcode": "0000 NNN 1 01 MMM RRR", "length": "可変"}, {"syntax": "BCHG #imm,ea", "opcode": "00001000 01 MMM RRR imm16", "length": "可変"}],
       "notes": "ビット番号は Dn または即値で指定する。対象が Dn なら 32 の剰余、メモリなら 8 の剰余を使う。Z は変更前の対象ビットが 0 のとき 1。対象はデータ可変で、PC 相対には書き込めない。",
-      "example": {"code": ["bchg d0,(a0)"],"explanation": "この例では ビットテスト後にそのビットを反転。"}
+      "example": {"code": ["bchg d0,(a0)"],"explanation": "(A0) のバイトの D0 番（mod 8）ビットの元の値を Z に反映し、そのビットを反転して書き戻す。"}
     },
     {
       "mnemonic": "BRA",
@@ -820,7 +820,7 @@
       "cycles": [{"cond": "BRA.S", "cycles": 10}, {"cond": "BRA.W", "cycles": 10}],
       "encodings": [{"syntax": "BRA.S disp8", "opcode": "01100000 disp8", "bytes": 2}, {"syntax": "BRA.W disp16", "opcode": "01100000 00000000 disp16", "bytes": 4}],
       "notes": "変位の基準は命令先頭 + 2。短形式の変位 0 はワード拡張を示す。MC68000 に 32 ビット変位形式はない。",
-      "example": {"code": ["bra.s 2"],"explanation": "この例では 無条件相対分岐（短形式: -128〜+127、ワード形式: -32768〜+32767 バイト）。短形式の変位 0 は拡張ワードの識別に使われる。"}
+      "example": {"code": ["bra.s 2"],"explanation": "無条件に 2 バイト先（直後の 16 ビット命令 1 個をスキップする位置）へ分岐。変位は次の命令アドレス (PC+2) が基準。"}
     },
     {
       "mnemonic": "BSR",
@@ -832,7 +832,7 @@
       "cycles": [{"cond": "BSR.S / BSR.W（MC68000）", "cycles": 18}],
       "encodings": [{"syntax": "BSR.S disp8", "opcode": "01100001 disp8", "bytes": 2}, {"syntax": "BSR.W disp16", "opcode": "01100001 00000000 disp16", "bytes": 4}],
       "notes": "変位は命令先頭 + 2 を基準とする。短形式の変位 0 はワード拡張を示す。MC68000 に 32 ビット変位形式はない。",
-      "example": {"code": ["bsr.s 2"],"explanation": "この例では 次の命令のアドレスをスタックへ積み、PC 相対アドレスへ分岐する。"}
+      "example": {"code": ["bsr.s 2"],"explanation": "戻りアドレス（次の命令のアドレス）をスタックへプッシュし 2 バイト先へ分岐。RTS でプッシュしたアドレスへ戻る。"}
     },
     {
       "mnemonic": "Bcc",
@@ -844,7 +844,7 @@
       "cycles": [{"cond": "不成立（.S）", "cycles": 8}, {"cond": "不成立（.W）", "cycles": 12}, {"cond": "成立（.S）", "cycles": 10}],
       "encodings": [{"syntax": "Bcc.S disp8", "opcode": "0110 cccc disp8", "bytes": 2}, {"syntax": "Bcc.W disp16", "opcode": "0110 cccc 00000000 disp16", "bytes": 4}],
       "notes": "変位の基準は命令先頭 + 2。短形式の変位 0 はワード拡張を示す。MC68000 に 32 ビット変位形式はない。EQ/NE は Z=1/0、CC/CS は C=0/1、PL/MI は N=0/1、VC/VS は V=0/1。HI は C=0 かつ Z=0、LS は C=1 または Z=1、GE は N=V、LT は N≠V、GT は Z=0 かつ N=V、LE は Z=1 または N≠V。",
-      "example": {"code": ["beq.s target","target:"],"explanation": "この例では 条件付き相対分岐。条件は eq/ne、hi/ls、cc/cs、ge/lt、gt/le、vc/vs、pl/mi。短形式は -128〜+127、ワード形式は -32768〜+32767 バイト。短形式の変位 0 は拡張ワードを示す。"}
+      "example": {"code": ["beq.s target","target:"],"explanation": "Z=1 のとき target へ分岐し Z=0 なら直後の命令へ進む。変位は次の命令アドレス (PC+2) が基準の符号付き 8 ビット。"}
     },
     {
       "mnemonic": "DBcc",
@@ -856,7 +856,7 @@
       "cycles": [{"cond": "不成立・分岐", "cycles": 10}, {"cond": "不成立・ループ終了", "cycles": 14}, {"cond": "成立（脱出）", "cycles": 12}],
       "encodings": [{"syntax": "DBcc Dn,disp16", "opcode": "0101 cccc 11001 RRR disp16", "bytes": 4}],
       "notes": "Dn の上位 16 ビットは変化しない。変位は符号付き 16 ビットで、基準は命令先頭 + 2。DBRA は条件が常に偽の DBF の別名。DBT は条件が常に真で、減算せず直後へ進む。",
-      "example": {"code": ["dbeq d0,target","target:"],"explanation": "この例では 条件成立なら何も減算せず次へ進む。不成立なら Dn の下位ワードを減算し、結果が $FFFF でなければ分岐する。"}
+      "example": {"code": ["dbeq d0,target","target:"],"explanation": "Z=0（不成立）の間は D0 の下位ワードを減算し $FFFF でなければ target へ分岐。Z=1（成立）になると減算せず直後へ進む。"}
     },
     {
       "mnemonic": "Scc",
@@ -868,7 +868,7 @@
       "cycles": [{"cond": "SNE.B D0（条件不成立）", "cycles": 4}, {"cond": "SNE.B D0（条件成立）", "cycles": 6}, {"cond": "(An) または (An)+ 宛", "cycles": 12}, {"cond": "d16(An) 宛", "cycles": 16}],
       "encodings": [{"syntax": "Scc ea", "opcode": "0101 cccc 11 MMM RRR", "length": "可変"}],
       "notes": "条件コード T は常に真、F は常に偽。その他の条件は Bcc と共通。",
-      "example": {"code": ["seq (a0)"],"explanation": "この例では 条件成立なら dst を $FF（真）に、不成立なら $00 にセット（.B のみ）。"}
+      "example": {"code": ["seq (a0)"],"explanation": "Z=1 なら (A0) のバイトに $FF を、Z=0 なら $00 を書き込む。フラグは一切不変。"}
     },
     {
       "mnemonic": "JSR",
@@ -879,7 +879,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "JSR (A0)", "cycles": 16}],
       "encodings": [{"syntax": "JSR ea", "opcode": "0100111010 MMM RRR", "length": "可変"}],
-      "example": {"code": ["jsr (a0)"],"explanation": "この例では 実効アドレスへのサブルーチンコール（戻りアドレスをスタックに退避）。"}
+      "example": {"code": ["jsr (a0)"],"explanation": "戻りアドレス（次の命令のアドレス）をスタックへプッシュし A0 の番地へ転送。フラグは不変。"}
     },
     {
       "mnemonic": "JMP",
@@ -890,7 +890,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "JMP (A0)", "cycles": 8}],
       "encodings": [{"syntax": "JMP ea", "opcode": "0100111011 MMM RRR", "length": "可変"}],
-      "example": {"code": ["jmp (a0)"],"explanation": "この例では 実効アドレスへの無条件ジャンプ（戻りアドレス退避なし）。"}
+      "example": {"code": ["jmp (a0)"],"explanation": "A0 の番地へ無条件ジャンプ（戻りアドレスの退避なし）。フラグは不変。"}
     },
     {
       "mnemonic": "RTS",
@@ -901,7 +901,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 16}],
       "encodings": [{"syntax": "RTS", "opcode": "4E75", "bytes": 2}],
-      "example": {"code": ["rts"],"explanation": "この例では スタックから戻りアドレスを POP して復帰。"}
+      "example": {"code": ["rts"],"explanation": "スタックトップ (A7) のロングワードを PC へポップしてサブルーチンから復帰（A7 は 4 増加）。"}
     },
     {
       "mnemonic": "RTR",
@@ -912,7 +912,7 @@
       "flags": ["‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "RTR", "opcode": "4E77", "bytes": 2}],
-      "example": {"code": ["rtr"],"explanation": "この例では 現在のスタックから CCR 用ワードと戻りアドレスを順に取り出す。SR の上位バイトは変化しない。"}
+      "example": {"code": ["rtr"],"explanation": "スタックから CCR 用のワードを先にポップしてフラグを復帰し、続くロングワードを PC へポップ。SR の上位バイトは不変。"}
     },
     {
       "mnemonic": "TRAP",
@@ -924,7 +924,7 @@
       "cycles": [{"cond": "常時", "cycles": 34}],
       "encodings": [{"syntax": "TRAP #vector", "opcode": "010011100100 VVVV", "bytes": 2}],
       "notes": "即値 n は 0〜15。例外ベクタ番号は 32+n。",
-      "example": {"code": ["trap #1"],"explanation": "この例では ソフトウェア例外（ベクタ 32+n）を発生させる。OS コールの入口。"}
+      "example": {"code": ["trap #1"],"explanation": "例外ベクタ 33 (32+n、n=1) を発生させ PC と SR をスーパーバイザスタックへ退避。OS コールの入口として使う。"}
     },
     {
       "mnemonic": "TRAPV",
@@ -959,7 +959,7 @@
       "flags": ["‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 20}],
       "encodings": [{"syntax": "RTE", "opcode": "4E73", "bytes": 2}],
-      "example": {"code": ["rte"],"explanation": "この例では 例外からの復帰。スタックから SR と PC を復帰（スーパーバイザモード専用）。"}
+      "example": {"code": ["rte"],"explanation": "例外スタックから SR（ワード）と PC（ロングワード）をこの順にポップして復帰。復帰した SR の S ビットで動作モードも復元（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "STOP",
@@ -971,7 +971,7 @@
       "flags": ["‡", "‡", "‡", "‡", "‡"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "STOP #imm16", "opcode": "4E72 imm16", "bytes": 4}],
-      "example": {"code": ["stop #1"],"explanation": "この例では SR を即値に設定して CPU の命令実行を停止する（スーパーバイザモード専用）。"}
+      "example": {"code": ["stop #1"],"explanation": "SR に $0001 を書き込み（割り込みマスク 000）命令フェッチを停止。任意レベルの割り込みまたはリセットで再開する（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "RESET",
@@ -984,7 +984,7 @@
       "encodings": [{"syntax": "RESET", "opcode": "0100111001110000", "bytes": 2}],
       "notes": "リセットラインを 124 クロックパルスの間駆動する。",
       "src": "book",
-      "example": {"code": ["reset"],"explanation": "この例では リセット端子をアサートして外部デバイスを初期化。内部レジスタと SR は不変で次の命令から実行を継続（スーパーバイザモード専用）。"}
+      "example": {"code": ["reset"],"explanation": "リセット線を 124 クロック分アサートして外部デバイスを初期化。PC・汎用レジスタ・SR は不変で次の命令から実行継続（スーパーバイザモード専用）。"}
     },
     {
       "mnemonic": "NOP",
@@ -995,7 +995,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "常時", "cycles": 4}],
       "encodings": [{"syntax": "NOP", "opcode": "4E71", "bytes": 2}],
-      "example": {"code": ["nop"],"explanation": "この例では 何もしない命令。"}
+      "example": {"code": ["nop"],"explanation": "何もしない（レジスタ・フラグ・スタックはすべて不変）。4 クロックを消費し PC だけ次の命令へ進む。"}
     },
     {
       "mnemonic": "ILLEGAL",
@@ -1006,7 +1006,7 @@
       "flags": ["-", "-", "-", "-", "-"],
       "cycles": [{"cond": "例外処理", "cycles": 34}],
       "encodings": [{"syntax": "ILLEGAL", "opcode": "4AFC", "bytes": 2}],
-      "example": {"code": ["illegal"],"explanation": "この例では 未定義命令例外（ベクタ番号 4、ベクタ表アドレス $10）を意図的に発生させる。"}
+      "example": {"code": ["illegal"],"explanation": "未定義の opcode $AFC を意図的に実行し例外（ベクタ番号 4、ベクタ表アドレス $10）を発生させる。"}
     },
     {
       "mnemonic": "DBRA",
@@ -1033,7 +1033,7 @@
         }
       ],
       "src": "note",
-      "example": {"code": ["dbra d0,target","target:"],"explanation": "この例では Dn の下位ワードを減算し、結果が $FFFF でなければ相対分岐する。DBF と同じ命令。"}
+      "example": {"code": ["dbra d0,target","target:"],"explanation": "D0 の下位ワードを 1 減算し $FFFF（-1）でなければ target へ分岐。初期値 n-1 で n 回のループを作る定石。"}
     }
   ]
 }
