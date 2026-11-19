@@ -14,13 +14,21 @@ CALL nn — Z80（サブルーチン）
 
 オペコード:
   CALL nn: CD nn(下位) nn(上位)  (3 バイト)
-  CALL cc,nn: C4/CC/D4/DC/E4/EC/F4/FC nn nn  (3 バイト)
+  CALL NZ,nn: C4 nn(下位) nn(上位)  (3 バイト)
+  CALL Z,nn: CC nn(下位) nn(上位)  (3 バイト)
+  CALL NC,nn: D4 nn(下位) nn(上位)  (3 バイト)
+  CALL C,nn: DC nn(下位) nn(上位)  (3 バイト)
+  CALL PO,nn: E4 nn(下位) nn(上位)  (3 バイト)
+  CALL PE,nn: EC nn(下位) nn(上位)  (3 バイト)
+  CALL P,nn: F4 nn(下位) nn(上位)  (3 バイト)
+  CALL M,nn: FC nn(下位) nn(上位)  (3 バイト)
 
 使用例:
   call 0x4000
+  call c, 0x4000
 
 解説:
-  次の命令のアドレスをスタックへ退避し、PC = 0x4000 へサブルーチンコールする。
+  1 行目は無条件コール。2 行目は C=1 のときだけコールし、不成立なら次の命令へ（条件 cc は nz/z/nc/c/po/pe/p/m）。次の命令アドレスをスタックへ退避してから PC = 0x4000。
 
 備考:
   戻りアドレスは上位バイトから PUSH される（SP は 2 減算）。

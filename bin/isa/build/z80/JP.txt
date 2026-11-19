@@ -14,16 +14,25 @@ JP nn / cc,nn / (HL/IX/IY) — Z80（分岐）
 
 オペコード:
   JP nn: C3 nn(下位) nn(上位)  (3 バイト)
-  JP cc,nn: C2/CA/D2/DA/E2/EA/F2/FA nn nn  (3 バイト)
+  JP NZ,nn: C2 nn(下位) nn(上位)  (3 バイト)
+  JP Z,nn: CA nn(下位) nn(上位)  (3 バイト)
+  JP NC,nn: D2 nn(下位) nn(上位)  (3 バイト)
+  JP C,nn: DA nn(下位) nn(上位)  (3 バイト)
+  JP PO,nn: E2 nn(下位) nn(上位)  (3 バイト)
+  JP PE,nn: EA nn(下位) nn(上位)  (3 バイト)
+  JP P,nn: F2 nn(下位) nn(上位)  (3 バイト)
+  JP M,nn: FA nn(下位) nn(上位)  (3 バイト)
   JP (HL): E9  (1 バイト)
   JP (IX): DD E9  (2 バイト)
   JP (IY): FD E9  (2 バイト)
 
 使用例:
   jp 0x4000
+  jp z, done
+  jp (hl)
 
 解説:
-  PC に 0x4000 を設定して無条件ジャンプする。
+  1 行目は PC = 0x4000 への無条件ジャンプ。2 行目は Z=1 のとき done へ（条件 cc は nz/z/nc/c/po/pe/p/m の 8 種）。3 行目は HL の値をそのまま PC へ入れるレジスタ間接で、ジャンプテーブルの遷移先計算に使う。
 
 備考:
   cc: NZ=000 Z=001 NC=010 C=011 PO=100 PE=101 P=110 M=111。JP (HL)/(IX)/(IY) は各レジスタの値へ直接ジャンプし、メモリからアドレスを読み出さない。

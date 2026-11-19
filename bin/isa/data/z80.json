@@ -639,10 +639,10 @@
       "addressing": ["絶対分岐", "レジスタ間接"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "JP nn / JP cc,nn（条件成立・不成立とも）", "cycles": 10}, {"cond": "JP (HL)", "cycles": 4}, {"cond": "JP (IX/IY)", "cycles": 8}],
-      "encodings": [{"syntax": "JP nn", "opcode": "C3 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP cc,nn", "opcode": "C2/CA/D2/DA/E2/EA/F2/FA nn nn", "bytes": 3}, {"syntax": "JP (HL)", "opcode": "E9", "bytes": 1}, {"syntax": "JP (IX)", "opcode": "DD E9", "bytes": 2}, {"syntax": "JP (IY)", "opcode": "FD E9", "bytes": 2}],
+      "encodings": [{"syntax": "JP nn", "opcode": "C3 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP NZ,nn", "opcode": "C2 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP Z,nn", "opcode": "CA nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP NC,nn", "opcode": "D2 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP C,nn", "opcode": "DA nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP PO,nn", "opcode": "E2 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP PE,nn", "opcode": "EA nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP P,nn", "opcode": "F2 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP M,nn", "opcode": "FA nn(下位) nn(上位)", "bytes": 3}, {"syntax": "JP (HL)", "opcode": "E9", "bytes": 1}, {"syntax": "JP (IX)", "opcode": "DD E9", "bytes": 2}, {"syntax": "JP (IY)", "opcode": "FD E9", "bytes": 2}],
       "notes": "cc: NZ=000 Z=001 NC=010 C=011 PO=100 PE=101 P=110 M=111。JP (HL)/(IX)/(IY) は各レジスタの値へ直接ジャンプし、メモリからアドレスを読み出さない。\n",
       "src": "book",
-      "example": {"code": ["jp 0x4000"],"explanation": "PC に 0x4000 を設定して無条件ジャンプする。"}
+      "example": {"code": ["jp 0x4000", "jp z, done", "jp (hl)"],"explanation": "1 行目は PC = 0x4000 への無条件ジャンプ。2 行目は Z=1 のとき done へ（条件 cc は nz/z/nc/c/po/pe/p/m の 8 種）。3 行目は HL の値をそのまま PC へ入れるレジスタ間接で、ジャンプテーブルの遷移先計算に使う。"}
     },
     {
       "mnemonic": "JR",
@@ -655,7 +655,7 @@
       "encodings": [{"syntax": "JR d", "opcode": "18 dd", "bytes": 2}, {"syntax": "JR NZ,d", "opcode": "20 dd", "bytes": 2}, {"syntax": "JR Z,d", "opcode": "28 dd", "bytes": 2}, {"syntax": "JR NC,d", "opcode": "30 dd", "bytes": 2}, {"syntax": "JR C,d", "opcode": "38 dd", "bytes": 2}],
       "notes": "dd は次の命令アドレスからの符号付きオフセット（dd=0 で次の命令）。\n",
       "src": "book",
-      "example": {"code": ["jr 2"],"explanation": "次の命令アドレス + 2 の位置へ無条件に相対ジャンプする。"}
+      "example": {"code": ["jr nz, loop", "jr 2"],"explanation": "1 行目は Z=0 のとき loop へ戻る（条件は nz/z/nc/c の 4 種のみ）。2 行目は無条件で次の命令アドレス +2 へ。変位はどちらも次の命令アドレス基準の -128〜+127。"}
     },
     {
       "mnemonic": "DJNZ",
@@ -678,10 +678,10 @@
       "addressing": ["絶対分岐", "スタック"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "CALL nn（無条件）", "cycles": 17}, {"cond": "CALL cc,nn 成立", "cycles": 17}, {"cond": "CALL cc,nn 不成立", "cycles": 10}],
-      "encodings": [{"syntax": "CALL nn", "opcode": "CD nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL cc,nn", "opcode": "C4/CC/D4/DC/E4/EC/F4/FC nn nn", "bytes": 3}],
+      "encodings": [{"syntax": "CALL nn", "opcode": "CD nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL NZ,nn", "opcode": "C4 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL Z,nn", "opcode": "CC nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL NC,nn", "opcode": "D4 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL C,nn", "opcode": "DC nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL PO,nn", "opcode": "E4 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL PE,nn", "opcode": "EC nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL P,nn", "opcode": "F4 nn(下位) nn(上位)", "bytes": 3}, {"syntax": "CALL M,nn", "opcode": "FC nn(下位) nn(上位)", "bytes": 3}],
       "notes": "戻りアドレスは上位バイトから PUSH される（SP は 2 減算）。\n",
       "src": "book",
-      "example": {"code": ["call 0x4000"],"explanation": "次の命令のアドレスをスタックへ退避し、PC = 0x4000 へサブルーチンコールする。"}
+      "example": {"code": ["call 0x4000", "call c, 0x4000"],"explanation": "1 行目は無条件コール。2 行目は C=1 のときだけコールし、不成立なら次の命令へ（条件 cc は nz/z/nc/c/po/pe/p/m）。次の命令アドレスをスタックへ退避してから PC = 0x4000。"}
     },
     {
       "mnemonic": "RET",
@@ -691,10 +691,10 @@
       "addressing": ["スタック"],
       "flags": ["-", "-", "-", "-", "-", "-"],
       "cycles": [{"cond": "RET（無条件）", "cycles": 10}, {"cond": "RET cc 成立", "cycles": 11}, {"cond": "RET cc 不成立", "cycles": 5}],
-      "encodings": [{"syntax": "RET", "opcode": "C9", "bytes": 1}, {"syntax": "RET cc", "opcode": "C0/C8/D0/D8/E0/E8/F0/F8", "bytes": 1}],
+      "encodings": [{"syntax": "RET", "opcode": "C9", "bytes": 1}, {"syntax": "RET NZ", "opcode": "C0", "bytes": 1}, {"syntax": "RET Z", "opcode": "C8", "bytes": 1}, {"syntax": "RET NC", "opcode": "D0", "bytes": 1}, {"syntax": "RET C", "opcode": "D8", "bytes": 1}, {"syntax": "RET PO", "opcode": "E0", "bytes": 1}, {"syntax": "RET PE", "opcode": "E8", "bytes": 1}, {"syntax": "RET P", "opcode": "F0", "bytes": 1}, {"syntax": "RET M", "opcode": "F8", "bytes": 1}],
       "notes": "RETI（ED 4D）/RETN（ED 45）は割り込みからの復帰用。\n",
       "src": "book",
-      "example": {"code": ["ret"],"explanation": "スタックから戻りアドレスを取り出して PC に設定し、サブルーチンから復帰する。"}
+      "example": {"code": ["ret", "ret z"],"explanation": "1 行目の RET は無条件復帰（10 クロック）。2 行目の RET z は Z=1 のときだけ復帰し、Z=0 なら呼び出し元の次の命令へ続行する条件付き復帰（成立 11 / 不成立 5 クロック）で、サブルーチンの途中抜け（早期リターン）に使う。復帰するときはスタックから戻りアドレスを POP して PC へ設定し、不成立時はスタックに触らない。条件 cc は nz/z/nc/c/po/pe/p/m。"}
     },
     {
       "mnemonic": "RETI",
