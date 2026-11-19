@@ -1,11 +1,12 @@
-# --- Single-sector examples (ELF32 + linker, 512 bytes) ---
-SINGLE = s01_hello s02_registers s03_stack s04_loops \
+# --- 全シナリオ (ELF32 経由: nasm -f elf32 → ld.lld -T linker.ld → .bin) ---
+# s00 は学習用の自由課題ファイル (番号規約外)。debug でソース表示するため登録。
+# s103/s104 はマルチセクタ (2 セクタ = 1024 バイト) だが同じ ELF 経由でビルドする。
+#   セクタ 2 は .text 内オフセット 512 (= 0x7E00) に times パディングで置かれ、
+#   旧 -f bin (ORG 指定) 方式とバイト同一の .bin が生成される。
+SCENARIOS = s00 s01_hello s02_registers s03_stack s04_loops \
          s05_strings s06_serial_in s07_subroutines s08_hardware \
          s09_branching s10_bitwise s11_memory s12_minishell \
-         s13_copybench s101_segments s102_vectors
-
-# --- Multi-sector examples (flat binary, -f bin) ---
-MULTI = s103_multisector s104_protected
+         s13_copybench s101_segments s102_vectors s103_multisector s104_protected
 
 AS      = nasm
 # リンカ: LLVM lld を使用。brainux(ARM ホスト) のシステム ld は elf_i386 を扱えず
@@ -69,20 +70,13 @@ format:
 	done
 
 all:
-	@for name in $(SINGLE); do \
-		echo "=== $$name [1 sector] ==="; \
+	@for name in $(SCENARIOS); do \
+		echo "=== $$name ==="; \
 		$(AS) $(ASFLAGS) -l $$name.lst -o $$name.o $$name.asm || exit 1; \
 		$(LK) $(LKFLAGS) -o $$name.bin $$name.o || exit 1; \
 		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null || exit 1; \
 		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null || exit 1; \
 		rm -f $$name.o || exit 1; \
-		echo "  OK ($$(wc -c < $$name.bin) bytes)"; \
-	done
-	@for name in $(MULTI); do \
-		echo "=== $$name [multi] ==="; \
-		$(AS) -f bin -l $$name.lst -o $$name.bin $$name.asm || exit 1; \
-		dd if=/dev/zero of=$$name.img bs=512 count=2880 2>/dev/null || exit 1; \
-		dd if=$$name.bin of=$$name.img conv=notrunc 2>/dev/null || exit 1; \
 		echo "  OK ($$(wc -c < $$name.bin) bytes)"; \
 	done
 	@for name in $(CSCENARIOS); do \
@@ -118,7 +112,7 @@ build-c:
 run:
 	@if [ -f $(COMMON_C)/$(S).c ]; then \
 	  $(MAKE) --no-print-directory build-c S=$(S); \
-	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	elif echo "$(SCENARIOS)" | grep -qw "$(S)"; then \
 	  $(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
 	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
 	  rm -f $(S).o; \
@@ -131,7 +125,7 @@ run:
 
 # Run all scenarios through QEMU
 runall: all
-	@for name in $(SINGLE) $(MULTI); do \
+	@for name in $(SCENARIOS); do \
 		echo ""; \
 		echo "=== $$name ==="; \
 		if [ "$$name" = "s06_serial_in" ] || [ "$$name" = "s12_minishell" ]; then \
@@ -164,7 +158,7 @@ dump32:
 debug:
 	@if [ -f $(COMMON_C)/$(S).c ]; then \
 	  $(MAKE) --no-print-directory build-c S=$(S); \
-	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	elif echo "$(SCENARIOS)" | grep -qw "$(S)"; then \
 	  $(AS) $(ASFLAGS) -g -F dwarf -l $(S).lst \
         -o $(S).o $(S).asm && \
 	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
@@ -213,7 +207,7 @@ debug:
 trace:
 	@if [ -f $(COMMON_C)/$(S).c ]; then \
 	  $(MAKE) --no-print-directory build-c S=$(S); \
-	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	elif echo "$(SCENARIOS)" | grep -qw "$(S)"; then \
 	  $(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
 	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
 	  rm -f $(S).o; \
@@ -248,7 +242,7 @@ cycles:
 icount:
 	@if [ -f $(COMMON_C)/$(S).c ]; then \
 	  $(MAKE) --no-print-directory build-c S=$(S); \
-	elif echo "$(SINGLE)" | grep -qw "$(S)"; then \
+	elif echo "$(SCENARIOS)" | grep -qw "$(S)"; then \
 	  $(AS) $(ASFLAGS) -l $(S).lst -o $(S).o $(S).asm && \
 	  $(LK) $(LKFLAGS) -o $(S).bin $(S).o && \
 	  rm -f $(S).o; \

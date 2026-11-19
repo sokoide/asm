@@ -13,16 +13,23 @@
 ; Structure:
 ;   Sector 1: 16-bit boot + GDT + mode switch
 ;   Sector 2: 32-bit protected mode code
+;
+; Build: nasm -f elf32 + ld.lld -T linker.ld (0x7C00 配置, binary 出力)
+;   (他の SINGLE シナリオと同じ ELF 経由。セクタ 2 は times パディングで
+;    .text 内オフセット 512 = 0x7E00 に置かれる。make debug は DWARF 付き
+;    .elf も生成し、gdb の layout src / list でソース表示ができる)
 
 cpu 386
 bits 16
-org 0x7C00
+global _start
+
+section .text
 
 ; ============================================================
 ; SECTOR 1: Boot -> Protected Mode transition
 ; ============================================================
 
-start:
+_start:
 	xor     ax, ax
 	mov     ds, ax
 	mov     es, ax
