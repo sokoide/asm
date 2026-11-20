@@ -18,7 +18,8 @@ BUILD_C = ../../../build/$(CTAG)
 AS      = clang
 LD      = ld.lld
 CC      = clang
-ASFLAGS = --target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -c -nostdlib
+# -g: DWARF 行情報を生成 (gdb の TUI layout src / list で .s ソースを表示するため)
+ASFLAGS = --target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -g -c -nostdlib
 # C シナリオ用: ASFLAGS と同じターゲット設定で -S 生成 (-c/-nostdlib は除外)
 CFLAGS  = --target=riscv64-unknown-elf -march=rv64im -mabi=lp64 -g -O0
 LDFLAGS = -T linker.ld -nostdlib

@@ -18,7 +18,8 @@ BUILD_C = ../../../build/$(CTAG)
 AS      = clang
 LD      = ld.lld
 CC      = clang
-ASFLAGS = --target=aarch64-none-elf -c -nostdlib
+# -g: DWARF 行情報を生成 (gdb の TUI layout src / list で .s ソースを表示するため)
+ASFLAGS = --target=aarch64-none-elf -g -c -nostdlib
 # C シナリオ用: ASFLAGS と同じターゲット設定で -S 生成 (-c/-nostdlib は除外)
 CFLAGS  = --target=aarch64-none-elf -g -O0
 LDFLAGS = -T linker.ld -nostdlib

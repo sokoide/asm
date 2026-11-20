@@ -21,7 +21,8 @@ AS      = $(shell which m68k-elf-as m68k-linux-gnu-as 2>/dev/null | head -1)
 LD      = $(shell which m68k-elf-ld m68k-linux-gnu-ld 2>/dev/null | head -1)
 OD      = $(shell which m68k-elf-objdump m68k-linux-gnu-objdump 2>/dev/null | head -1)
 CC      = $(shell which m68k-elf-gcc m68k-linux-gnu-gcc 2>/dev/null | head -1)
-ASFLAGS = -m68000
+# -g: DWARF 行情報を生成 (gdb の TUI layout src / list で .s ソースを表示するため)
+ASFLAGS = -m68000 -g
 # C シナリオ用: -m68000 は QEMU (-cpu m68000) の命令セットに合わせるため
 CFLAGS  = -g -O0 -m68000
 LDFLAGS = -T linker.ld

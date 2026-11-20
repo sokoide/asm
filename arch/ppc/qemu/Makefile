@@ -18,7 +18,8 @@ BUILD_C = ../../../build/$(CTAG)
 AS      = clang
 LD      = ld.lld
 CC      = clang
-ASFLAGS = --target=powerpc-none-elf -c -nostdlib
+# -g: DWARF 行情報を生成 (gdb の TUI layout src / list で .s ソースを表示するため)
+ASFLAGS = --target=powerpc-none-elf -g -c -nostdlib
 # C シナリオ用: ASFLAGS と同じターゲット設定で -S 生成 (-c/-nostdlib は除外)。
 # -fno-asynchronous-unwind-tables: .eh_frame を出させない (linker.ld にマップされず
 # orphan セクションが 0x0 番地に置かれて .text の配置がずれるため。bare-metal では不要)
