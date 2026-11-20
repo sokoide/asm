@@ -4408,7 +4408,7 @@
       "encodings": [{"syntax": "macchw rT,rA,rB", "opcode": "000100 rT rA rB OE 010101100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["macchw %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。積を元の rT に加算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["macchw %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 上位16ビット、符号付き 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "MACCHWS",
@@ -4433,7 +4433,7 @@
       "encodings": [{"syntax": "macchws rT,rA,rB", "opcode": "000100 rT rA rB OE 011101100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["macchws %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。積を元の rT に加算し、符号付き 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["macchws %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 上位16ビット、符号付き 16×16) を符号付き 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MACCHWSU",
@@ -4458,7 +4458,7 @@
       "encodings": [{"syntax": "macchwsu rT,rA,rB", "opcode": "000100 rT rA rB OE 011001100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["macchwsu %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号なしで乗算。積を元の rT に加算し、符号なし 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["macchwsu %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 上位16ビット、符号付き 16×16) を符号なし 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MACCHWU",
@@ -4483,7 +4483,7 @@
       "encodings": [{"syntax": "macchwu rT,rA,rB", "opcode": "000100 rT rA rB OE 010001100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["macchwu %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号なしで乗算。積を元の rT に加算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["macchwu %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 上位16ビット、符号なし 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "NMACCHW",
@@ -4508,7 +4508,7 @@
       "encodings": [{"syntax": "nmacchw rT,rA,rB", "opcode": "000100 rT rA rB OE 010101110 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["nmacchw %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。元の rT から積を減算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["nmacchw %r3,%r5,%r6"],"explanation": "r3 = r3 - (r5 下位16ビット × r6 上位16ビット、符号付き 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "NMACCHWS",
@@ -4533,7 +4533,7 @@
       "encodings": [{"syntax": "nmacchws rT,rA,rB", "opcode": "000100 rT rA rB OE 011101110 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["nmacchws %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。元の rT から積を減算し、符号付き 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["nmacchws %r3,%r5,%r6"],"explanation": "r3 = r3 - (r5 下位16ビット × r6 上位16ビット、符号付き 16×16) を符号付き 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MULCHW",
@@ -4558,7 +4558,7 @@
       "encodings": [{"syntax": "mulchw rT,rA,rB", "opcode": "000100 rT rA rB 0010101000 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
       "src": "book",
-      "example": {"code": ["mulchw %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号付きで乗算。32 ビット積を格納する。"}
+      "example": {"code": ["mulchw %r3,%r5,%r6"],"explanation": "r3 = r5 下位16ビット × r6 上位16ビット (符号付き 16×16) の 32 ビット積。"}
     },
     {
       "mnemonic": "MULCHWU",
@@ -4583,7 +4583,7 @@
       "encodings": [{"syntax": "mulchwu rT,rA,rB", "opcode": "000100 rT rA rB 0010001000 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
       "src": "book",
-      "example": {"code": ["mulchwu %r3,%r5,%r6"],"explanation": "この例では rA 下位 16 ビットと rB 上位 16 ビットを符号なしで乗算。32 ビット積を格納する。"}
+      "example": {"code": ["mulchwu %r3,%r5,%r6"],"explanation": "r3 = r5 下位16ビット × r6 上位16ビット (符号なし 16×16) の 32 ビット積。"}
     },
     {
       "mnemonic": "MACHHW",
@@ -4608,7 +4608,7 @@
       "encodings": [{"syntax": "machhw rT,rA,rB", "opcode": "000100 rT rA rB OE 000101100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["machhw %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["machhw %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 上位16ビット × r6 上位16ビット、符号付き 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "MACHHWS",
@@ -4633,7 +4633,7 @@
       "encodings": [{"syntax": "machhws rT,rA,rB", "opcode": "000100 rT rA rB OE 001101100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["machhws %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、符号付き 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["machhws %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 上位16ビット × r6 上位16ビット、符号付き 16×16) を符号付き 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MACHHWSU",
@@ -4658,7 +4658,7 @@
       "encodings": [{"syntax": "machhwsu rT,rA,rB", "opcode": "000100 rT rA rB OE 001001100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["machhwsu %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、符号なし 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["machhwsu %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 上位16ビット × r6 上位16ビット、符号付き 16×16) を符号なし 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MACHHWU",
@@ -4683,7 +4683,7 @@
       "encodings": [{"syntax": "machhwu rT,rA,rB", "opcode": "000100 rT rA rB OE 000001100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["machhwu %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["machhwu %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 上位16ビット × r6 上位16ビット、符号なし 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "NMACHHW",
@@ -4708,7 +4708,7 @@
       "encodings": [{"syntax": "nmachhw rT,rA,rB", "opcode": "000100 rT rA rB OE 000101110 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["nmachhw %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["nmachhw %r3,%r5,%r6"],"explanation": "r3 = r3 - (r5 上位16ビット × r6 上位16ビット、符号付き 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "NMACHHWS",
@@ -4733,7 +4733,7 @@
       "encodings": [{"syntax": "nmachhws rT,rA,rB", "opcode": "000100 rT rA rB OE 001101110 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["nmachhws %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、符号付き 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["nmachhws %r3,%r5,%r6"],"explanation": "r3 = r3 - (r5 上位16ビット × r6 上位16ビット、符号付き 16×16) を符号付き 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MULHHW",
@@ -4758,7 +4758,7 @@
       "encodings": [{"syntax": "mulhhw rT,rA,rB", "opcode": "000100 rT rA rB 0000101000 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
       "src": "book",
-      "example": {"code": ["mulhhw %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号付きで乗算。32 ビット積を格納する。"}
+      "example": {"code": ["mulhhw %r3,%r5,%r6"],"explanation": "r3 = r5 上位16ビット × r6 上位16ビット (符号付き 16×16) の 32 ビット積。"}
     },
     {
       "mnemonic": "MULHHWU",
@@ -4783,7 +4783,7 @@
       "encodings": [{"syntax": "mulhhwu rT,rA,rB", "opcode": "000100 rT rA rB 0000001000 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
       "src": "book",
-      "example": {"code": ["mulhhwu %r3,%r5,%r6"],"explanation": "この例では rA と rB の上位 16 ビット同士を符号なしで乗算。32 ビット積を格納する。"}
+      "example": {"code": ["mulhhwu %r3,%r5,%r6"],"explanation": "r3 = r5 上位16ビット × r6 上位16ビット (符号なし 16×16) の 32 ビット積。"}
     },
     {
       "mnemonic": "MACLHW",
@@ -4808,7 +4808,7 @@
       "encodings": [{"syntax": "maclhw rT,rA,rB", "opcode": "000100 rT rA rB OE 110101100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["maclhw %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["maclhw %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 下位16ビット、符号付き 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "MACLHWS",
@@ -4833,7 +4833,7 @@
       "encodings": [{"syntax": "maclhws rT,rA,rB", "opcode": "000100 rT rA rB OE 111101100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["maclhws %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号付きで乗算。積を元の rT に加算し、符号付き 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["maclhws %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 下位16ビット、符号付き 16×16) を符号付き 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MACLHWSU",
@@ -4858,7 +4858,7 @@
       "encodings": [{"syntax": "maclhwsu rT,rA,rB", "opcode": "000100 rT rA rB OE 111001100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["maclhwsu %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、符号なし 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["maclhwsu %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 下位16ビット、符号付き 16×16) を符号なし 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MACLHWU",
@@ -4883,7 +4883,7 @@
       "encodings": [{"syntax": "maclhwu rT,rA,rB", "opcode": "000100 rT rA rB OE 110001100 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["maclhwu %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号なしで乗算。積を元の rT に加算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["maclhwu %r3,%r5,%r6"],"explanation": "r3 = r3 + (r5 下位16ビット × r6 下位16ビット、符号なし 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "NMACLHW",
@@ -4908,7 +4908,7 @@
       "encodings": [{"syntax": "nmaclhw rT,rA,rB", "opcode": "000100 rT rA rB OE 110101110 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["nmaclhw %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、下位 32 ビットを保持する。"}
+      "example": {"code": ["nmaclhw %r3,%r5,%r6"],"explanation": "r3 = r3 - (r5 下位16ビット × r6 下位16ビット、符号付き 16×16)。下位 32 ビットのみ保持。"}
     },
     {
       "mnemonic": "NMACLHWS",
@@ -4933,7 +4933,7 @@
       "encodings": [{"syntax": "nmaclhws rT,rA,rB", "opcode": "000100 rT rA rB OE 111101110 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。o 形式は XER[OV/SO] も更新する。",
       "src": "book",
-      "example": {"code": ["nmaclhws %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号付きで乗算。元の rT から積を減算し、符号付き 32 ビットの範囲に飽和する。"}
+      "example": {"code": ["nmaclhws %r3,%r5,%r6"],"explanation": "r3 = r3 - (r5 下位16ビット × r6 下位16ビット、符号付き 16×16) を符号付き 32 ビットに飽和。"}
     },
     {
       "mnemonic": "MULLHW",
@@ -4958,7 +4958,7 @@
       "encodings": [{"syntax": "mullhw rT,rA,rB", "opcode": "000100 rT rA rB 0110101000 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
       "src": "book",
-      "example": {"code": ["mullhw %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号付きで乗算。32 ビット積を格納する。"}
+      "example": {"code": ["mullhw %r3,%r5,%r6"],"explanation": "r3 = r5 下位16ビット × r6 下位16ビット (符号付き 16×16) の 32 ビット積。"}
     },
     {
       "mnemonic": "MULLHWU",
@@ -4983,7 +4983,7 @@
       "encodings": [{"syntax": "mullhwu rT,rA,rB", "opcode": "000100 rT rA rB 0110001000 Rc", "bytes": 4}],
       "notes": "PPC440 の実装依存命令であり、Book E のすべての実装で使えるわけではない。記録形式（.）は CR0 を更新する。",
       "src": "book",
-      "example": {"code": ["mullhwu %r3,%r5,%r6"],"explanation": "この例では rA と rB の下位 16 ビット同士を符号なしで乗算。32 ビット積を格納する。"}
+      "example": {"code": ["mullhwu %r3,%r5,%r6"],"explanation": "r3 = r5 下位16ビット × r6 下位16ビット (符号なし 16×16) の 32 ビット積。"}
     },
     {
       "mnemonic": "MBAR",
@@ -5082,7 +5082,7 @@
       "mnemonic": "DLMZB",
       "operands": "rA, rS, rB",
       "category": "論理",
-      "summary": "rS:rB の 8 バイトを上位から検索し、最初のゼロバイト位置を 1〜8 で rA と XER[TBC] に設定する。",
+      "summary": "rS:rB の 8 バイトを最上位バイトから走査し、最初のゼロバイトの位置を 1〜8 (ゼロバイトがなければ 8) で rA と XER[25:31] に設定する。",
       "addressing": [
         "レジスタ"
       ],
@@ -5107,7 +5107,7 @@
       ],
       "notes": "ゼロバイトがない場合も 8。記録形式では CR0 に最初の 4 バイト内、後半 4 バイト内、未検出を示す。PPC440 実装依存命令。",
       "src": "book",
-      "example": {"code": ["dlmzb %r5, %r4, %r6"],"explanation": "この例では rS:rB の 8 バイトを上位から検索し、最初のゼロバイト位置を 1〜8 で rA と XER[TBC] に設定する。"}
+      "example": {"code": ["dlmzb %r5, %r4, %r6"],"explanation": "r4:r6 の 8 バイトを最上位バイトから走査し、最初のゼロバイトの位置を r5 と XER[25:31] に設定する (ゼロバイトがなければ 8)。例えば r4 = 0x41000000 なら上位から 2 バイト目が最初のゼロなので r5 = 2。"}
     },
     {
       "mnemonic": "MFDCR",

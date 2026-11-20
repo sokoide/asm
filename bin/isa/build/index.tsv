@@ -493,7 +493,7 @@ ppc	DCCCI	キャッシュ	データキャッシュを無効化する PPC440x5 �
 ppc	DCREAD	キャッシュ	指定されたキャッシュ位置のデータワードを rT に、タグ情報を診断レジスタに読み出す。
 ppc	DIVW	算術	符号付き 32÷32 → 商（rT）。剰余は提供されない（divw→mullw→subf で計算）。
 ppc	DIVWU	算術	符号なし 32÷32 → 商（rT）。
-ppc	DLMZB	論理	rS:rB の 8 バイトを上位から検索し、最初のゼロバイト位置を 1〜8 で rA と XER[TBC] に設定する。
+ppc	DLMZB	論理	rS:rB の 8 バイトを最上位バイトから走査し、最初のゼロバイトの位置を 1〜8 (ゼロバイトがなければ 8) で rA と XER[25:31] に設定する。
 ppc	EIEIO	システム制御	I/O などのストレージアクセスに順序を与える（Enforce In-Order Execution of I/O）。
 ppc	EQV	論理	同値（XNOR）。
 ppc	EXTSB	算術	バイトをワードへ符号拡張する。
