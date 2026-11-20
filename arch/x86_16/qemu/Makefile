@@ -185,7 +185,7 @@ debug:
 	  if ! kill -0 $$QPID 2>/dev/null; then \
 	    echo "ERROR: QEMU が終了している (gdbstub に接続できません)"; exit 1; \
 	  fi; \
-	  $(GDB) -q $(S).elf \
+	  $(GDB) -q -tui $(S).elf \
 	    -x debug.gdb \
 	    -ex 'set pagination off' \
 	    -ex 'target remote 127.0.0.1:$(GDB_PORT)' \
@@ -193,7 +193,10 @@ debug:
 	    -ex 'break *0x7c00' \
 	    -ex 'continue' \
 	    -ex 'set disassemble-next-line on' \
-	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc / regs16 ---\n"'; status=$$?; \
+	    -ex 'layout src' \
+	    -ex 'layout regs' \
+	    -ex 'focus cmd' \
+	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc / regs16 / layout asm ---\n"'; status=$$?; \
 	  kill $$QPID 2>/dev/null || true; exit $$status
 
 # 実行トレース: make trace S=s01_hello

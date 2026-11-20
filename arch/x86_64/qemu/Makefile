@@ -185,14 +185,17 @@ debug: boot.o linkcheck
 	  if ! kill -0 $$QPID 2>/dev/null; then \
 	    echo "ERROR: QEMU が終了している (gdbstub に接続できません)"; exit 1; \
 	  fi; \
-	  $(GDB) -q $(S).elf \
+	  $(GDB) -q -tui $(S).elf \
 	    -x debug.gdb \
 	    -ex 'set pagination off' \
 	    -ex 'target remote 127.0.0.1:$(GDB_PORT)' \
 	    -ex 'hbreak *_start' \
 	    -ex 'continue' \
 	    -ex 'set disassembly-flavor intel' \
-	    -ex 'set disassemble-next-line on'; status=$$?; \
+	    -ex 'set disassemble-next-line on' \
+	    -ex 'layout src' \
+	    -ex 'layout regs' \
+	    -ex 'focus cmd'; status=$$?; \
 	  kill $$QPID 2>/dev/null || true; exit $$status
 
 # 実行トレース: make trace S=s04_loops

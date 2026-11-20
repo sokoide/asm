@@ -49,7 +49,7 @@ make trace S=s01_hello
 make icount S=s01_hello
 ```
 
-`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。x86_16 はシンボルを持たないフラットバイナリだが、gdb の i8086 モードで 0x7C00 に自動ブレークする。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
+`make debug` では gdb の `si`（1 命令ステップ）/ `c`（続行）/ `b *ADDR`（ブレークポイント）/ `info registers` / `x/5i $pc` で観察する（gdb が必要: `brew install gdb`、ポートは `GDB_PORT` で変更可）。gdb は TUI モードで起動し、`layout src` + `layout regs`（ソース + レジスタ）の画面が自動で開く（`layout asm` で逆アセンブルに切替）。UART 出力はステップ実行の進行に応じて同じターミナルに表示される。x86_16 は `.elf` に DWARF を持つため gdb の i8086 モードで 0x7C00 に自動ブレークし、ソース行も表示される。`make cycles` は QEMU TCG がサイクル精度のエミュレーションではないため `unsupported` を表示し、実行命令数は `make icount` で計測する。
 
 `make debug` は、gdb 起動時に `debug.gdb` を `-x` で明示的に読み込む（`.gdbinit` の自動ロードは使わない）。`debug.gdb` には以下の設定と `regs16`/`regs32` マクロが定義されている。ターゲット記述には、このディレクトリにある `i8086.xml` と、その参照先の `i386-32bit.xml` を使う。
 

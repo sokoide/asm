@@ -130,12 +130,15 @@ debug: build
 	    sleep 0.1; i=$$((i+1)); done; \
 	  if [ $$ready -ne 1 ] || ! kill -0 $$QPID 2>/dev/null; then \
 	    echo "ERROR: QEMU の gdbstub に接続できません"; exit 1; fi; \
-	  $(GDB) -q $(S).elf \
+	  $(GDB) -q -tui $(S).elf \
 	    -x debug.gdb \
 	    -ex 'set pagination off' \
 	    -ex 'target remote 127.0.0.1:$(GDB_PORT)' \
 	    -ex 'set disassemble-next-line on' \
-	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc ---\n"'; \
+	    -ex 'layout src' \
+	    -ex 'layout regs' \
+	    -ex 'focus cmd' \
+	    -ex 'printf "\n--- si: ステップ / c: continue / info registers / x/5i $$pc / layout asm ---\n"'; \
 	  status=$$?; exit $$status
 
 # 実行トレース: make trace S=s01_hello
