@@ -79,6 +79,31 @@ struct Sym {
 };
 static Sym* Syms;
 
+/* Source listing loaded from ca65 -l .lst files (<program>.lst and
+** helpers.lst), kept in file order for source-context display mirroring
+** the QEMU gdb TUI source window. Each listing offset is segment-local;
+** the run address is resolved per segment by anchoring on an exported
+** label (base = symbol address - label's listing offset), which stays
+** correct when several object files share one linker segment. Segments
+** without an exported label fall back to the map's segment start.
+*/
+typedef struct SrcLine SrcLine;
+struct SrcLine {
+    unsigned    Offs;       /* listing offset within its segment */
+    unsigned    Addr;       /* resolved run address (when HasAddr) */
+    unsigned    SegIdx;     /* index into Segments, or SRC_NO_SEG */
+    unsigned    HasAddr  :1;
+    unsigned    HasBytes :1;
+    char        Text[240];  /* source text after the bytes column */
+    SrcLine*    Next;
+};
+#define SRC_MAX_SEGS 16
+#define SRC_NO_SEG   255
+static struct { char Name[32]; unsigned Start; } Segments[SRC_MAX_SEGS];
+static unsigned SegCount;
+static SrcLine* SrcLines;
+static SrcLine* SrcLinesTail;
+
 /* Run configuration */
 static unsigned char     DbgSPAddr;
 static unsigned long long MaxCyclesLimit;
@@ -202,9 +227,11 @@ static void SymAdd (const char* Name, unsigned Addr)
 
 
 static void DbgLoadSymbols (const char* ProgramFile)
-/* Load symbols from the linker map (<program>.map), if present. Only the
-** "Exports list by name/value" sections are parsed; their lines hold
-** name-address-type pairs ("_main 000229 RLA ...", several per line).
+/* Load symbols and the segment list from the linker map (<program>.map),
+** if present. The "Exports list by name/value" sections hold name-address-
+** type pairs ("_main 000229 RLA ...", several per line); the "Segment
+** list" section holds "Name Start End Size Align" rows used to resolve
+** listing offsets to run addresses.
 */
 {
     char        Path[1024];
@@ -213,6 +240,7 @@ static void DbgLoadSymbols (const char* ProgramFile)
     const char* Dot   = strrchr (ProgramFile, '.');
     const char* Slash = strrchr (ProgramFile, '/');
     int         InExports = 0;
+    int         InSegs = 0;
 
     if (Dot != 0 && (Slash == 0 || Dot > Slash)) {
         snprintf (Path, sizeof (Path), "%.*s.map", (int) (Dot - ProgramFile), ProgramFile);
@@ -228,10 +256,30 @@ static void DbgLoadSymbols (const char* ProgramFile)
         const char* Tok;
         if (strncmp (Line, "Exports list by", 15) == 0) {
             InExports = 1;
+            InSegs = 0;
             continue;
         }
         if (strncmp (Line, "Imports list", 12) == 0) {
             InExports = 0;
+            continue;
+        }
+        if (strncmp (Line, "Segment list:", 13) == 0) {
+            InSegs = 1;
+            InExports = 0;
+            continue;
+        }
+        if (InSegs) {
+            /* "NAME  SSSSSS  EEEEEE  ZZZZZZ  AAAAAA" (header dashes fail) */
+            char Name[32];
+            unsigned Start;
+            char Sep;
+            int  N = sscanf (Line, "%31s %6x%c", Name, &Start, &Sep);
+            if (N >= 2 && strlen (Name) > 0 && SegCount < SRC_MAX_SEGS &&
+                strcmp (Name, "Name") != 0 && Name[0] != '-') {
+                strcpy (Segments[SegCount].Name, Name);
+                Segments[SegCount].Start = Start;
+                ++SegCount;
+            }
             continue;
         }
         if (!InExports) {
@@ -277,6 +325,251 @@ static int ResolveArg (const char* S, unsigned* Addr)
         }
     }
     return 0;
+}
+
+
+
+static int SymLookup (const char* Name, unsigned* Addr)
+/* Find an exported symbol by exact name. Return 0 when absent. */
+{
+    Sym* S;
+    for (S = Syms; S != 0; S = S->Next) {
+        if (strcmp (S->Name, Name) == 0) {
+            *Addr = S->Addr;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static unsigned SegFind (const char* Name)
+/* Segment index for Name from the map, or SRC_NO_SEG. */
+{
+    unsigned I;
+    for (I = 0; I < SegCount; ++I) {
+        if (strcmp (Segments[I].Name, Name) == 0) {
+            return I;
+        }
+    }
+    return SRC_NO_SEG;
+}
+
+static void SrcAppend (SrcLine* S)
+/* Append to the file-ordered listing list. */
+{
+    if (SrcLinesTail == 0) {
+        SrcLines = S;
+    } else {
+        SrcLinesTail->Next = S;
+    }
+    SrcLinesTail = S;
+}
+
+static void DbgLoadListing (const char* Path)
+/* Parse one ca65 listing file and resolve its offsets to run addresses.
+** Rows look like "000000r 1  A9 rr      lda #<x": segment offset, 'r',
+** file number, emitted bytes (two hex digits or the "rr" placeholder)
+** and the source text. A .segment directive switches the segment used
+** for the rows that follow.
+*/
+{
+    FILE*       F = fopen (Path, "r");
+    char        Line[1024];
+    unsigned    CurSeg = SRC_NO_SEG;
+    SrcLine*    First = SrcLinesTail;     /* tail before this file */
+
+    if (F == 0) {
+        return;
+    }
+    while (fgets (Line, sizeof (Line), F) != 0) {
+        unsigned    Offs;
+        char        Rel;
+        const char* P;
+        char*       T;
+        int         HasBytes = 0;
+        SrcLine*    S;
+
+        if (sscanf (Line, "%6x%c", &Offs, &Rel) != 2) {
+            continue;
+        }
+        if (Rel != 'r' && Rel != 'R') {
+            continue;
+        }
+        P = Line;
+        while (isxdigit ((unsigned char) *P)) {
+            ++P;                          /* offset column */
+        }
+        ++P;                              /* relocation flag */
+        while (isspace ((unsigned char) *P)) {
+            ++P;
+        }
+        while (isdigit ((unsigned char) *P)) {
+            ++P;                          /* file-number column */
+        }
+        while (isspace ((unsigned char) *P)) {
+            ++P;
+        }
+        /* Skip emitted bytes: two hex digits or the "rr" placeholder. */
+        {
+            const char* Q = P;
+            for (;;) {
+                const char* Tok = Q;
+                while (*Q != '\0' && *Q != ' ' && *Q != '\t') {
+                    ++Q;
+                }
+                if (Q - Tok == 2 &&
+                    ((isxdigit ((unsigned char) Tok[0]) && isxdigit ((unsigned char) Tok[1])) ||
+                     (Tok[0] == 'r' && Tok[1] == 'r'))) {
+                    HasBytes = 1;
+                    while (*Q == ' ' || *Q == '\t') {
+                        ++Q;
+                    }
+                    continue;
+                }
+                Q = Tok;      /* not an emitted byte: rewind to its start */
+                break;
+            }
+            P = Q;
+        }
+        while (*P == ' ' || *P == '\t') {
+            ++P;
+        }
+        S = calloc (1, sizeof (*S));
+        if (S == 0) {
+            fclose (F);
+            return;
+        }
+        S->Offs = Offs;
+        S->SegIdx = CurSeg;
+        S->HasBytes = (unsigned) HasBytes;
+        for (T = S->Text; *P != '\0' && *P != '\n' && *P != '\r' &&
+                        T < S->Text + sizeof (S->Text) - 1; ++P) {
+            *T++ = (*P == '\t') ? ' ' : *P;
+        }
+        *T = '\0';
+        while (T > S->Text && T[-1] == ' ') {
+            *--T = '\0';
+        }
+        SrcAppend (S);
+        /* A .segment directive switches the segment for the NEXT row. */
+        if (strncmp (S->Text, ".segment", 8) == 0) {
+            const char* Q1 = strchr (S->Text, '"');
+            const char* Q2 = (Q1 != 0) ? strchr (Q1 + 1, '"') : 0;
+            if (Q2 != 0) {
+                char Name[32];
+                size_t Len = Q2 - Q1 - 1;
+                if (Len >= sizeof (Name)) {
+                    Len = sizeof (Name) - 1;
+                }
+                memcpy (Name, Q1 + 1, Len);
+                Name[Len] = '\0';
+                CurSeg = SegFind (Name);
+            }
+        }
+    }
+    fclose (F);
+    /* Resolve run addresses per segment, using only the rows added by
+    ** this file: anchor on the first exported label of the segment
+    ** (base = symbol address - listing offset), falling back to the
+    ** map's segment start.
+    */
+    {
+        unsigned Seg;
+        SrcLine* S;
+        SrcLine* From = (First != 0) ? First->Next : SrcLines;
+        for (Seg = 0; Seg < SegCount; ++Seg) {
+            unsigned Base = Segments[Seg].Start;
+            for (S = From; S != 0; S = S->Next) {
+                char     Lbl[64];
+                unsigned A;
+                if (S->SegIdx != Seg) {
+                    continue;
+                }
+                if (sscanf (S->Text, "%63[a-zA-Z_0-9]:", Lbl) == 1 &&
+                    SymLookup (Lbl, &A) && A >= S->Offs) {
+                    Base = A - S->Offs;
+                    break;
+                }
+            }
+            for (S = From; S != 0; S = S->Next) {
+                if (S->SegIdx == Seg) {
+                    S->Addr = Base + S->Offs;
+                    S->HasAddr = 1;
+                }
+            }
+        }
+    }
+}
+
+static void DbgLoadSource (const char* ProgramFile)
+/* Load <program>.lst and helpers.lst (when present). */
+{
+    char        Path[1024];
+    char        Dir[1024];
+    const char* Dot   = strrchr (ProgramFile, '.');
+    const char* Slash = strrchr (ProgramFile, '/');
+    size_t      DirLen;
+
+    if (Dot != 0 && (Slash == 0 || Dot > Slash)) {
+        snprintf (Path, sizeof (Path), "%.*s.lst", (int) (Dot - ProgramFile), ProgramFile);
+    } else {
+        snprintf (Path, sizeof (Path), "%s.lst", ProgramFile);
+    }
+    DbgLoadListing (Path);
+
+    DirLen = (Slash != 0) ? (size_t) (Slash + 1 - ProgramFile) : 0;
+    if (DirLen < sizeof (Dir)) {
+        memcpy (Dir, ProgramFile, DirLen);
+        Dir[DirLen] = '\0';
+        snprintf (Path, sizeof (Path), "%shelpers.lst", Dir);
+        DbgLoadListing (Path);
+    }
+}
+
+static SrcLine* SrcLineForAddr (unsigned Addr)
+/* Exact-match lookup of a byte-bearing listing row at Addr. */
+{
+    SrcLine* S;
+    for (S = SrcLines; S != 0; S = S->Next) {
+        if (S->HasAddr && S->HasBytes && S->Addr == Addr) {
+            return S;
+        }
+    }
+    return 0;
+}
+
+static int SrcWindow (unsigned Addr, int Before, int After)
+/* Print the listing rows around Addr like the TUI source window.
+** Returns the number of rows printed (0 = no source at Addr).
+*/
+{
+    SrcLine* Cur = SrcLineForAddr (Addr);
+    SrcLine* S;
+    int      Pos = 0, Start, I;
+
+    if (Cur == 0) {
+        return 0;
+    }
+    for (S = SrcLines; S != Cur; S = S->Next) {
+        ++Pos;
+    }
+    Start = Pos - Before;
+    if (Start < 0) {
+        Start = 0;
+    }
+    S = SrcLines;
+    for (I = 0; I < Start && S != 0; ++I) {
+        S = S->Next;
+    }
+    for (I = Start; S != 0 && I <= Pos + After; ++I) {
+        if (S->HasAddr) {
+            printf ("%04X %s %s\n", S->Addr, (S == Cur) ? "◀" : " ", S->Text);
+        } else {
+            printf ("      %s %s\n", (S == Cur) ? "◀" : " ", S->Text);
+        }
+        S = S->Next;
+    }
+    return 1;
 }
 
 
@@ -374,7 +667,23 @@ static void ShowStep (CPURegs Prev, unsigned Cycles, uint64_t PrevNmi, uint64_t 
     } else if (Prev.PC >= PARAVIRT_BASE) {
         printf ("  *** paravirt $%04X ***\n", Prev.PC);
     } else {
-        DisasmLine (Prev.PC, 0);
+        SrcLine* Src = SrcLineForAddr (Prev.PC);
+        if (Src != 0) {
+            /* Listing row found: show the source text with real bytes. */
+            unsigned Len = TraceInsnLen (Prev.PC);
+            unsigned I;
+            printf ("%04X  ", Prev.PC);
+            for (I = 0; I < 3; ++I) {
+                if (I < Len) {
+                    printf ("%02X ", MemReadByte ((Prev.PC + I) & 0xFFFF));
+                } else {
+                    fputs ("   ", stdout);
+                }
+            }
+            printf (" %s\n", Src->Text);
+        } else {
+            DisasmLine (Prev.PC, 0);
+        }
     }
 
     /* Register diffs */
@@ -411,10 +720,13 @@ static void ShowStep (CPURegs Prev, unsigned Cycles, uint64_t PrevNmi, uint64_t 
     }
 
     /* Source window at the new PC (skipped once the program has exited:
-    ** the paravirt exit leaves the PC meaningless.
+    ** the paravirt exit leaves the PC meaningless. Falls back to the
+    ** disassembly window when no listing row matches (e.g. in crt0).
     */
     if (DbgExitCode < 0) {
-        DisasmWindow (Regs.PC, 3);
+        if (SrcWindow (Regs.PC, 1, 3) == 0) {
+            DisasmWindow (Regs.PC, 3);
+        }
     }
 }
 
@@ -576,10 +888,11 @@ void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr, const char* Prog
     strcpy (LastCmd, "s");
     if (ProgramFile != 0) {
         DbgLoadSymbols (ProgramFile);
+        DbgLoadSource (ProgramFile);
     }
 
     printf ("sim65i debugger — commands: s=step  n=next(JSR)  c=continue  "
-            "b ADDR|SYM=breakpoint  r=regs  d [ADDR|SYM]=disasm  x ADDR|SYM=mem  q=quit\n");
+            "b ADDR|SYM=breakpoint  r=regs  d [ADDR|SYM]=disasm  src [ADDR|SYM]=source  x ADDR|SYM=mem  q=quit\n");
 
     while (1) {
         char* Word;
@@ -630,13 +943,20 @@ void DebuggerRun (unsigned long long MaxCycles, uint8_t SPAddr, const char* Prog
             DumpRegs ();
         } else if (strcmp (Word, "d") == 0 || strcmp (Word, "disasm") == 0) {
             DisasmCmd (Arg1, Arg2);
+        } else if (strcmp (Word, "src") == 0 || strcmp (Word, "source") == 0) {
+            unsigned Addr = Regs.PC;
+            if (Arg1 != 0 && !ResolveArg (Arg1, &Addr)) {
+                printf ("bad address or symbol '%s'\n", Arg1);
+            } else if (SrcWindow (Addr, 3, 3) == 0) {
+                puts ("no source line at this address (.lst not found or segment unresolved)");
+            }
         } else if (strcmp (Word, "x") == 0 || strcmp (Word, "mem") == 0) {
             HexDump (Arg1, Arg2);
         } else if (strcmp (Word, "q") == 0 || strcmp (Word, "quit") == 0) {
             return;
         } else if (strcmp (Word, "h") == 0 || strcmp (Word, "?") == 0 || strcmp (Word, "help") == 0) {
             puts ("s=step  n=next(JSR)  c=continue  b ADDR|SYM=breakpoint  r=regs  "
-                  "d [ADDR|SYM] [N]=disasm  x ADDR|SYM [N]=mem  q=quit  "
+                  "d [ADDR|SYM] [N]=disasm  src [ADDR|SYM]=source  x ADDR|SYM [N]=mem  q=quit  "
                   "(empty line repeats last command)");
         } else {
             printf ("unknown command '%s' (h for help)\n", Word);
