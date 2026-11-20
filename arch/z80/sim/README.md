@@ -110,6 +110,7 @@ C シナリオ（`make debug S=c01` / `S=c02`）は z80asm の `.lst` を持た�
 | `b ADDR\|SYM` | アドレス ADDR またはシンボル名（`b print_str`）にブレークポイント設定。シンボルはビルド時に出力される `.lbl`（z80asm `--label=`）から読み込む |
 | `r`        | 全レジスタ表示                           |
 | `d [ADDR\|SYM]` | 逆アセンブル表示                    |
+| `src [ADDR\|SYM]` | ソース文脈表示（ADDR 周辺の `.lst` 行を前後 3 行、ラベル・コメント行込み、現在位置に `◀`）。ステップ実行後の「次の命令」表示もこのソース文脈形式で、QEMU 系 gdb TUI の `layout src` 相当 |
 | `x ADDR\|SYM`   | ADDR からメモリダンプ               |
 | `q`        | 終了                                     |
 

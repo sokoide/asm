@@ -172,6 +172,35 @@ func (d *Debugger) window(pc uint16, n int) {
 	}
 }
 
+// sourceWindow prints the listing source context around pc (label/comment
+// lines included), like the QEMU gdb TUI source window.
+func (d *Debugger) sourceWindow(pc uint16, before, after int) {
+	for _, ln := range d.lst.SourceWindow(pc, before, after) {
+		fmt.Println(ln)
+	}
+}
+
+// source implements the "src" command: source context around addr (or PC).
+func (d *Debugger) source(args []string) {
+	addr := d.z.pc
+	if len(args) > 0 {
+		a, ok := d.resolveAddr(args[0])
+		if !ok {
+			fmt.Printf("bad address or symbol %q\n", args[0])
+			return
+		}
+		addr = a
+	}
+	lines := d.lst.SourceWindow(addr, 3, 3)
+	if len(lines) == 0 {
+		fmt.Println("no listing available (assemble with -l to get .lst)")
+		return
+	}
+	for _, ln := range lines {
+		fmt.Println(ln)
+	}
+}
+
 // showStep prints the just-executed instruction, its register/flag diffs
 // and the next few instructions.
 func (d *Debugger) showStep(prev regState) {
@@ -194,7 +223,7 @@ func (d *Debugger) showStep(prev regState) {
 		fmt.Println("   stopped: " + z.stopReason())
 		return
 	}
-	d.window(z.pc, 3)
+	d.sourceWindow(z.pc, 1, 3)
 }
 
 func (d *Debugger) run() {
@@ -207,9 +236,9 @@ func (d *Debugger) run() {
 	if len(d.syms) > 0 {
 		fmt.Printf("%d symbols loaded (from .lbl)\n", len(d.syms))
 	}
-	fmt.Println("commands: s=step  n=next(call)  c=continue  b ADDR|SYM=breakpoint  r=regs  d [ADDR|SYM]=disasm  x ADDR|SYM=mem  q=quit")
+	fmt.Println("commands: s=step  n=next(call)  c=continue  b ADDR|SYM=breakpoint  r=regs  d [ADDR|SYM]=disasm  src [ADDR|SYM]=source  x ADDR|SYM=mem  q=quit")
 	fmt.Println()
-	d.window(z.pc, 5)
+	d.sourceWindow(z.pc, 3, 5)
 
 	prev := snapshot(z)
 	lastCmd := "s"
@@ -249,12 +278,14 @@ func (d *Debugger) run() {
 			d.dumpRegs()
 		case "d", "disasm":
 			d.disasm(args)
+		case "src", "source":
+			d.source(args)
 		case "x", "mem":
 			d.hexdump(args)
 		case "q", "quit":
 			return
 		case "h", "?", "help":
-			fmt.Println("s=step  n=next(call)  c=continue  b ADDR|SYM  r=regs  d [ADDR|SYM] [N]  x ADDR|SYM  q=quit")
+			fmt.Println("s=step  n=next(call)  c=continue  b ADDR|SYM  r=regs  d [ADDR|SYM] [N]  src [ADDR|SYM]  x ADDR|SYM  q=quit")
 		default:
 			fmt.Printf("unknown command %q (h for help)\n", strings.Fields(line)[0])
 		}
@@ -291,7 +322,7 @@ func (d *Debugger) stepOver(prev *regState) {
 	} else {
 		fmt.Printf("stepped over call at %04X; now before:\n", callStart)
 	}
-	d.window(z.pc, 3)
+	d.sourceWindow(z.pc, 1, 3)
 	*prev = snapshot(z)
 }
 
@@ -327,7 +358,7 @@ func (d *Debugger) continueAll(prev *regState) {
 		}
 		if d.bps[z.pc] {
 			fmt.Printf("breakpoint at %s\n", z.disasmLine(z.pc, d.lst, true))
-			d.window(z.pc, 3)
+			d.sourceWindow(z.pc, 1, 3)
 			*prev = snapshot(z)
 			return
 		}
@@ -337,7 +368,7 @@ func (d *Debugger) continueAll(prev *regState) {
 		steps++
 	}
 	fmt.Printf("stopped after %d instructions: %s\n", steps, z.stopReason())
-	d.window(z.pc, 3)
+	d.sourceWindow(z.pc, 1, 3)
 	*prev = snapshot(z)
 }
 

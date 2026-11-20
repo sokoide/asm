@@ -24,12 +24,23 @@ type Insn struct {
 	Addr  uint16
 	Bytes []byte
 	Text  string
+	line  int // index into Listing.lines (source context)
+}
+
+// lstLine is one physical listing line kept in file order, including lines
+// without emitted bytes (labels, comments, defm data) for source display.
+type lstLine struct {
+	addr    uint16
+	hasAddr bool
+	text    string // source text after the address/bytes columns
+	ins     *Insn  // non-nil when this line emitted instruction bytes
 }
 
 // Listing is the address-sorted instruction map built from a .lst file.
 type Listing struct {
 	insns  []*Insn
 	byAddr map[uint16]*Insn
+	lines  []lstLine
 }
 
 func isHexByte(s string) bool {
@@ -68,27 +79,49 @@ func hexAddr(s string) (uint16, bool) {
 // parseListingLine extracts one listing entry, or nil for lines without
 // emitted bytes (headers, comments, labels).
 func parseListingLine(line string) *Insn {
+	_, _, ins := splitListingLine(line)
+	return ins
+}
+
+// splitListingLine breaks a listing line into its address, source text and
+// (when bytes were emitted) an Insn. Lines not starting with a 4-digit hex
+// address report hasAddr=false. The source text keeps the assembler's
+// original spacing except for the leading address/bytes columns; the ".."
+// marker used by z80asm for non-expanded data is dropped.
+func splitListingLine(line string) (addr uint16, text string, ins *Insn) {
 	line = strings.TrimRight(line, " \t\r\n")
 	if len(line) < 4 {
-		return nil
+		return 0, line, nil
 	}
 	addr, ok := hexAddr(line[:4])
 	if !ok {
-		return nil
+		return 0, line, nil
 	}
-	fields := strings.Fields(line[4:])
+	rest := line[4:]
 
 	// Consume leading 2-digit hex tokens (max 4: longest Z80 encoding).
 	var bytes []byte
-	for len(fields) > 0 && len(bytes) < 4 && isHexByte(fields[0]) {
-		b, _ := hexAddr("00" + fields[0])
+	for len(bytes) < 4 {
+		rest = strings.TrimLeft(rest, " \t")
+		tok := rest
+		if i := strings.IndexAny(rest, " \t"); i >= 0 {
+			tok = rest[:i]
+		}
+		if !isHexByte(tok) {
+			break
+		}
+		b, _ := hexAddr("00" + tok)
 		bytes = append(bytes, byte(b))
-		fields = fields[1:]
+		rest = rest[len(tok):]
 	}
+	src := strings.TrimLeft(rest, " \t")
+	src = strings.TrimPrefix(src, "..")
+	src = strings.TrimLeft(src, " \t")
 	if len(bytes) == 0 {
-		return nil // label or comment line: nothing emitted
+		return addr, src, nil // label, comment or data line: no instruction
 	}
-	return &Insn{Addr: addr, Bytes: bytes, Text: strings.Join(fields, " ")}
+	fields := strings.Fields(src)
+	return addr, src, &Insn{Addr: addr, Bytes: bytes, Text: strings.Join(fields, " ")}
 }
 
 // loadListing reads a z80asm .lst file. Missing file returns (nil, nil).
@@ -102,17 +135,36 @@ func loadListing(path string) (*Listing, error) {
 	}
 	l := &Listing{byAddr: map[uint16]*Insn{}}
 	for _, line := range strings.Split(string(data), "\n") {
-		ins := parseListingLine(line)
-		if ins == nil {
+		if strings.TrimSpace(line) == "" {
 			continue
 		}
-		l.byAddr[ins.Addr] = ins
-		l.insns = append(l.insns, ins)
+		addr, text, ins := splitListingLine(line)
+		hasAddr := startsWithAddr(line)
+		if !hasAddr && text == "" {
+			continue
+		}
+		if ins != nil {
+			ins.line = len(l.lines)
+			l.byAddr[ins.Addr] = ins
+			l.insns = append(l.insns, ins)
+		}
+		l.lines = append(l.lines, lstLine{addr: addr, hasAddr: hasAddr, text: text, ins: ins})
 	}
 	sort.SliceStable(l.insns, func(i, j int) bool {
 		return l.insns[i].Addr < l.insns[j].Addr
 	})
 	return l, nil
+}
+
+// startsWithAddr reports whether the raw listing line begins with a 4-digit
+// hex address (used to keep comment lines placed at address 0000).
+func startsWithAddr(line string) bool {
+	line = strings.TrimRight(line, " \t\r\n")
+	if len(line) < 4 {
+		return false
+	}
+	_, ok := hexAddr(line[:4])
+	return ok
 }
 
 // indexAt returns the index of the instruction at or before addr.
@@ -152,6 +204,43 @@ func (l *Listing) Window(addr uint16, n int) []*Insn {
 	var out []*Insn
 	for ; i < len(l.insns) && len(out) < n; i++ {
 		out = append(out, l.insns[i])
+	}
+	return out
+}
+
+// SourceWindow returns listing lines around the instruction containing
+// addr (up to before lines above and after lines below), including label,
+// comment and data lines, mirroring the QEMU gdb TUI source window. The
+// line holding addr is marked with "<". Returns nil without a listing.
+func (l *Listing) SourceWindow(addr uint16, before, after int) []string {
+	if l == nil || len(l.insns) == 0 {
+		return nil
+	}
+	i := l.indexAt(addr)
+	if i < 0 {
+		i = 0
+	}
+	li := l.insns[i].line
+	lo := li - before
+	if lo < 0 {
+		lo = 0
+	}
+	hi := li + after
+	if hi >= len(l.lines) {
+		hi = len(l.lines) - 1
+	}
+	var out []string
+	for k := lo; k <= hi; k++ {
+		ll := l.lines[k]
+		loc := "    "
+		if ll.hasAddr {
+			loc = fmt.Sprintf("%04X", ll.addr)
+		}
+		marker := "  "
+		if ll.ins != nil && ll.ins.Addr == addr {
+			marker = "◀ "
+		}
+		out = append(out, fmt.Sprintf("%s %s%s", loc, marker, ll.text))
 	}
 	return out
 }
