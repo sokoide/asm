@@ -13,10 +13,10 @@ cmplw（拡張ニーモニック）→ CMPL crfT, L, rA, rB — PowerPC（比較
   比較命令の第 2 オペランド L で幅を選ぶ。cmplw は L=0（ワード）を明示する形式。
 
 使用例:
-  cmplw crT,4,5
+  cmplw %cr0, %r4, %r5      # r4 と r5 を符号なし 32 ビット比較し cr0 を更新
 
 解説:
-  r4 と r5 を符号なし比較し結果を crT に設定する（cmpl crT,0,4,5 の簡記）。
+  r4 と r5 を符号なし比較し結果を cr0 に設定する（cmpl 0,0,4,5 の簡記）。
 
 元命令: isa ppc CMPL
 符号なし（logical）比較。拡張形式 cmplw。

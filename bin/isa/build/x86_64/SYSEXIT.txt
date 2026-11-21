@@ -14,10 +14,11 @@ SYSENTER でカーネルに入った後、CPL 0 から CPL 3 へ制御を戻す�
   SYSEXIT: 0F 35  (2 バイト)
 
 使用例:
-  sysexit
+  ; RDX にユーザー空間の戻り先 RIP、RCX にユーザー空間の RSP を設定済み（CPL=0）
+  sysexit                   ; CPL 0 から CPL 3 へ高速復帰
 
 解説:
-  この例では SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。
+  SYSENTER でカーネルに入った後、CPL 0 から CPL 3 へ制御を戻す高速な特権遷移命令（戻り先 IP は RDX、SP は RCX から設定）。
 
 備考:
   リアルアドレス／仮想8086モード以外で実行可能だが、CPL 0 が必要。OSがレジスタに用意した命令ポインタ・スタックポインタと IA32_SYSENTER_CS MSR から計算したセグメントでCPL 3へ移行する。SYSENTERが保存した戻り先から復帰する命令ではない。EFLAGS/RFLAGSは変更しない。

@@ -22,11 +22,13 @@ JMP dst — 8086（分岐）
   JMP m16:16（far 間接）: FF /5  (長さ可変)
 
 使用例:
-  jmp target
-  target:
+  jmp  skip
+  mov  ax, 0xFFFF           ; 分岐するため実行されない
+  skip:
+  xor  ax, ax
 
 解説:
-  target へ無条件ジャンプ（IP を書き換え）。
+  途中の処理を飛ばして skip へ無条件ジャンプする（IP を書き換え、far ジャンプでは CS:IP を書き換える）。
 
 備考:
   far は CS:IP を書き換える。

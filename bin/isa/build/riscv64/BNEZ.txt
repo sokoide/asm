@@ -10,11 +10,13 @@ rs != 0 なら PC 相対オフセットへ分岐する疑似命令。
   ISA では規定されない: 実装依存
 
 使用例:
-  bnez t1, target
-  target:
+  li   t1, 4
+  loop:
+    addi t1, t1, -1         # カウンタを 1 減算
+    bnez t1, loop           # t1 != 0 のあいだ loop へ戻る
 
 解説:
-  t1 != 0 なら target へ分岐する。bne t1, zero, offset と等価。
+  t1 != 0 なら loop へ分岐する（bne t1, zero, loop に展開される疑似命令）。カウントダウンループの定番。
 
 備考:
   BNE rs, x0, offset に展開される。カウンタループの定番。

@@ -14,11 +14,12 @@ RCX を 1 減算し、0 以外かつ ZF=1 のとき rel8 へ分岐する。LOOPZ
   LOOPE rel8: E1 cb  (2 バイト)
 
 使用例:
-  loope target
-  target:
+  search_eq:
+    cmpsb                   ; [rsi] と [rdi] を比較（一致で ZF=1）
+    loope search_eq         ; RCX を 1 減算し、RCX != 0 かつ ZF=1 なら継続
 
 解説:
-  RCX を 1 減算し、RCX != 0 かつ ZF = 1 のときだけ target へ分岐する（LOOPZ と同じ、アドレスサイズ 32 では ECX）。
+  RCX を 1 減算し、RCX != 0 かつ ZF = 1 のときだけ search_eq へ分岐する（LOOPZ と同じ）。
 
 備考:
   cmps/scas と組み合わせて一致の連なりをたどる。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。

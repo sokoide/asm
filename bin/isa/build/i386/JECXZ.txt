@@ -15,11 +15,14 @@ ECX が 0 のときだけ rel8 へ分岐する。
   JECXZ rel8（32bit アドレスサイズ既定）: E3 cb  (2 バイト)
 
 使用例:
-  jecxz target
-  target:
+  jecxz loop_end            ; ECX == 0 ならループ本体をスキップ
+  loop_body:
+    dec ecx
+    jnz loop_body
+  loop_end:
 
 解説:
-  ECX=0 のときだけ target へジャンプする。
+  ECX=0 のときだけループ本体をスキップして loop_end へジャンプする（フラグは無関係）。ループ前ガードに使う。
 
 備考:
   32 ビットアドレスサイズでは E3、16 ビットアドレスサイズでは 67 E3。分岐先は short のみ。

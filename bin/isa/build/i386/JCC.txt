@@ -16,11 +16,13 @@ Jcc label — 80386（分岐）
   Jcc rel16/32（32bit モード）: 66 0F 80+cc cw / 0F 80+cc cd  (長さ可変)
 
 使用例:
-  jz target
-  target:
+  cmp  eax, ebx
+  jz   equal                ; eax == ebx（ZF=1）ならインクリメントをスキップ
+  inc  eax                  ; eax != ebx のときだけ実行
+  equal:
 
 解説:
-  ZF=1 のときだけ target へジャンプし、成立しなければ次の命令へ進む。
+  ZF=1 のときだけ後続処理をスキップして equal へジャンプし、不成立なら次の命令へ進む。
 
 備考:
   cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。

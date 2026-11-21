@@ -14,10 +14,12 @@ EAX を符号拡張して EDX:EAX に展開する（EDX に符号ビットを満
   CDQ: 99  (1 バイト)
 
 使用例:
-  cdq
+  mov   eax, -100           ; 32 ビット被除数 -100
+  cdq                       ; EDX:EAX = 64 ビット符号拡張値（EDX = 0xFFFFFFFF）
+  idiv  ecx                 ; EDX:EAX ÷ ECX → EAX = 商, EDX = 剰余
 
 解説:
-  この例では EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。
+  EAX の符号ビット（bit31）を EDX 全体に複製し、32 ビット IDIV（EDX:EAX ÷ src）用の 64 ビット符号拡張被除数を作る。
 
 備考:
   32 ビット符号付き除算では EDX:EAX を作る。64 ビットの RDX:RAX を作る場合は CQO を使う。

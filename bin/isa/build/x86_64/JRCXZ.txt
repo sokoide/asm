@@ -14,11 +14,14 @@ RCX が 0 のときだけ rel8 へ分岐する（64ビットモード専用）�
   JRCXZ rel8: E3 cb  (2 バイト)
 
 使用例:
-  jrcxz target
-  target:
+  jrcxz loop_end            ; RCX == 0 ならループ本体をスキップ
+  loop_body:
+    dec   rcx
+    jnz   loop_body
+  loop_end:
 
 解説:
-  RCX = 0 のときだけ target（rel8）へ分岐する。
+  RCX = 0 のときだけループ本体をスキップして loop_end（rel8）へ分岐する（64 ビットモード専用）。
 
 備考:
   アドレスサイズ 32 では JECXZ（67 プレフィックス）。分岐先は short のみ。

@@ -17,11 +17,12 @@ N = 0（正または 0）なら相対分岐する。
 
 使用例:
   lda #$7F
-  bpl nonnegative
-  nonnegative: nop
+  bpl nonnegative ; bit7=0（N=0）ならスキップ
+  sta $21         ; bit7=1 のときだけ保存
+  nonnegative:
 
 解説:
-  A に bit7=0 の値を読み込んだ後、N=0 なので nonnegative へ分岐する。
+  A に bit7=0 の値を読み込んだ後、N=0 なので後続処理をスキップして nonnegative へ分岐する。
 
 備考:
   変位は次の命令のアドレスを基準とする符号付き 8 ビット値（-128〜+127）。追加サイクルのページ境界判定も次の命令と分岐先で行う。

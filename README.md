@@ -236,11 +236,13 @@ make clean
 # 各プラットフォームのディレクトリで（6502 は ca65 形式、m68k は m68k 形式で整形）
 make format
 
-# 全アーキ + Markdown (textlint + markdownlint) をまとめて整形
+# 全アーキ + bin/isa/data/*.json + Markdown (textlint + markdownlint) をまとめて整形
 make -C <repo root> format
 ```
 
 前提: `nvim` と上記の nvim 設定（`asm.lua`）が存在すること。asm.lua が見つからない場合は `ASM_LUA=...` で別パスを指定できる。
+
+`bin/isa/data/*.json` も nvim の保存時整形と同一ロジック（conform の `json` チェーン: prettierd → prettier → jq、設定は `~/.prettierrc.json`）で整形する。headless nvim (`nvim --headless +"e <file>" +w +qa!`) を実行するだけで、nvim で `:w` したときと同じ結果になる。内容（パース結果）は変えない。
 
 ## デバッグガイド
 

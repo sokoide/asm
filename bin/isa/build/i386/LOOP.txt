@@ -14,11 +14,13 @@ CX（32bit アドレスサイズなら ECX）を 1 減算し、0 でなければ
   LOOP rel8: E2 cb  (2 バイト)
 
 使用例:
-  loop target
-  target:
+  mov ecx, 4
+  loop_start:
+    inc eax                 ; 4 回繰り返される処理
+    loop loop_start         ; ecx を 1 減算し、0 でなければ loop_start へ戻る
 
 解説:
-  ecx を 1 減算し、0 でなければ target へジャンプする（16bit アドレスサイズでは cx）。
+  ecx を 1 減算し、0 でなければ loop_start へ戻る（16bit アドレスサイズでは cx）。フラグは変更しない。
 
 備考:
   アドレスサイズで CX または ECX を選び、フラグを変更しない。DEC と JNZ の組み合わせはフラグを変更する点が異なる。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。

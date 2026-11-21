@@ -12,10 +12,10 @@ subis（拡張ニーモニック）→ ADDIS rT, rA, s16 — PowerPC（算術）
   シフト付き即値減算（Subtract Immediate Shifted）
 
 使用例:
-  subis 3,4,s16
+  subis %r3, %r4, 1         # r3 = r4 - (1 << 16)
 
 解説:
-  r3 = r4 - (s16 << 16) を計算する（addis r3,r4,-s16 の簡記）。
+  r3 = r4 - (1 << 16) を計算する（addis r3,r4,-1 の簡記）。
 
 元命令: isa ppc ADDIS
 rT = (rA|0) + (s16 << 16)。rA=0 で lis（上位ハーフ即値ロード）。

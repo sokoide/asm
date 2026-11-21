@@ -1,15 +1,6 @@
 {
   "arch": "x86_16",
-  "flagNames": [
-    "O",
-    "D",
-    "I",
-    "S",
-    "Z",
-    "A",
-    "P",
-    "C"
-  ],
+  "flagNames": ["O", "D", "I", "S", "Z", "A", "P", "C"],
   "instructions": [
     {
       "mnemonic": "MOV",
@@ -22,16 +13,7 @@
         "直接メモリ",
         "レジスタ間接 [BX+SI+disp]"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -65,36 +47,51 @@
           "opcode": "1011wrrr ib/iw",
           "length": "可変"
         },
-        {"syntax": "MOV reg/mem,reg", "opcode": "1000100w /r", "length": "可変"},
-        {"syntax": "MOV reg/mem,imm", "opcode": "1100011w /0 ib/iw", "length": "可変"},
-        {"syntax": "MOV reg/mem16,Sreg", "opcode": "8C /r", "length": "可変"},
-        {"syntax": "MOV Sreg,reg/mem16", "opcode": "8E /r", "length": "可変"},
-        {"syntax": "MOV AL/AX,[moffs16]", "opcode": "A0/A1 off16", "bytes": 3},
-        {"syntax": "MOV [moffs16],AL/AX", "opcode": "A2/A3 off16", "bytes": 3}
+        {
+          "syntax": "MOV reg/mem,reg",
+          "opcode": "1000100w /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOV reg/mem,imm",
+          "opcode": "1100011w /0 ib/iw",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOV reg/mem16,Sreg",
+          "opcode": "8C /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOV Sreg,reg/mem16",
+          "opcode": "8E /r",
+          "length": "可変"
+        },
+        {
+          "syntax": "MOV AL/AX,[moffs16]",
+          "opcode": "A0/A1 off16",
+          "bytes": 3
+        },
+        {
+          "syntax": "MOV [moffs16],AL/AX",
+          "opcode": "A2/A3 off16",
+          "bytes": 3
+        }
       ],
       "notes": "メモリ形式の多くは実効アドレス計算時間 EA が加算される。AL/AX と直接アドレス間の専用形式は 10 クロック。セグメントレジスタへ即値を直接転送できず、CS は MOV の転送先に指定できない。セグメントオーバーライドプレフィックス（26/2E/36/3E）で 2 クロック加算。",
       "src": "book",
-      "example": {"code": ["mov ax, bx"],"explanation": "BX の 1 ワード（2 バイト）を AX へコピー（AX = BX）。フラグは一切変化しない。"}
+      "example": {
+        "code": ["mov ax, bx"],
+        "explanation": "BX の 1 ワード（2 バイト）を AX へコピー（AX = BX）。フラグは一切変化しない。"
+      }
     },
     {
       "mnemonic": "XCHG",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "2 つのオペランドを交換する（8/16 ビット）。",
-      "addressing": [
-        "レジスタ",
-        "レジスタ↔メモリ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "レジスタ↔メモリ"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "XCHG AX,r16",
@@ -115,30 +112,26 @@
           "opcode": "90+r",
           "bytes": 1
         },
-        {"syntax": "XCHG reg/mem,reg", "opcode": "1000011w /r", "length": "可変"}
+        {
+          "syntax": "XCHG reg/mem,reg",
+          "opcode": "1000011w /r",
+          "length": "可変"
+        }
       ],
       "notes": "XCHG AX,reg（オペコード 90〜97）は 1 バイト。",
       "src": "book",
-      "example": {"code": ["xchg ax, bx"],"explanation": "AX と BX の 1 ワードを交換（AX = 元の BX、BX = 元の AX）。フラグは一切変化しない。"}
+      "example": {
+        "code": ["xchg ax, bx"],
+        "explanation": "AX と BX の 1 ワードを交換（AX = 元の BX、BX = 元の AX）。フラグは一切変化しない。"
+      }
     },
     {
       "mnemonic": "LEA",
       "operands": "reg, mem",
       "category": "アドレス計算",
       "summary": "メモリオペランドの実効アドレスを計算してレジスタに入れる（メモリを読まない）。",
-      "addressing": [
-        "レジスタ間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -154,26 +147,18 @@
       ],
       "notes": "[BX+SI+disp] のような計算を 1 命令で済ませる技巧にも使われる。8086 のクロック表では 2+EA と数える。",
       "src": "book",
-      "example": {"code": ["lea ax, [si+4]"],"explanation": "実効アドレス SI+4 を計算して AX へ代入（AX = SI+4）。メモリ [SI+4] は読まない。"}
+      "example": {
+        "code": ["lea ax, [si+4]"],
+        "explanation": "実効アドレス SI+4 を計算して AX へ代入（AX = SI+4）。メモリ [SI+4] は読まない。"
+      }
     },
     {
       "mnemonic": "LDS",
       "operands": "reg, mem",
       "category": "データ転送",
       "summary": "メモリからオフセット（reg）とセグメント（DS）を一括ロードする（far ポインタ用）。",
-      "addressing": [
-        "メモリ (mem32)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["メモリ (mem32)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -189,26 +174,18 @@
       ],
       "notes": "LES は ES 版（C4 /r）。",
       "src": "book",
-      "example": {"code": ["lds ax, [bx]"],"explanation": "DS:BX の 1 ワードを AX へ、DS:BX+2 の 1 ワードを DS へロード（far ポインタの一括ロード）。"}
+      "example": {
+        "code": ["lds ax, [bx]"],
+        "explanation": "DS:BX の 1 ワードを AX へ、DS:BX+2 の 1 ワードを DS へロード（far ポインタの一括ロード）。"
+      }
     },
     {
       "mnemonic": "LES",
       "operands": "reg, mem",
       "category": "データ転送",
       "summary": "メモリからオフセット（reg）とセグメント（ES）を一括ロードする（far ポインタ用）。",
-      "addressing": [
-        "メモリ (mem32)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["メモリ (mem32)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -224,26 +201,18 @@
       ],
       "notes": "LDS（C5 /r）は DS 版。",
       "src": "book",
-      "example": {"code": ["les ax, [bx]"],"explanation": "DS:BX の 1 ワードを AX へ、DS:BX+2 の 1 ワードを ES へロード（far ポインタの一括ロード）。"}
+      "example": {
+        "code": ["les ax, [bx]"],
+        "explanation": "DS:BX の 1 ワードを AX へ、DS:BX+2 の 1 ワードを ES へロード（far ポインタの一括ロード）。"
+      }
     },
     {
       "mnemonic": "XLAT",
       "operands": "",
       "category": "データ転送",
       "summary": "テーブル変換。AL = [BX+AL]。256 バイト変換テーブル引き。",
-      "addressing": [
-        "レジスタ間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -259,28 +228,24 @@
       ],
       "notes": "BX にテーブル先頭、AL にインデックス。",
       "src": "book",
-      "example": {"code": ["xlat"],"explanation": "この例では テーブル変換。AL = [BX+AL]。256 バイト変換テーブル引き。"}
+      "example": {
+        "code": [
+          "mov  bx, table            ; 256 バイト変換テーブルの先頭オフセット",
+          "mov  al, 3                ; テーブルの 3 番目を指定",
+          "xlat                      ; AL = DS:[BX+AL] = 9（1 バイト変換）",
+          "table:",
+          "  db   0,1,4,9,16,25,36,49      ; 256 バイト変換テーブル（先頭のみ示す）"
+        ],
+        "explanation": "DS:[BX+AL] の 1 バイトを読み込んで AL に格納する（AL = mem[BX+AL]）。文字コード変換など 256 バイトのルックアップテーブル引きに使う。"
+      }
     },
     {
       "mnemonic": "PUSH",
       "operands": "src",
       "category": "スタック",
       "summary": "16 ビット値をスタックに退避（SP を -2 して書き込む）。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "セグメントレジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "メモリ", "セグメントレジスタ"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "reg",
@@ -314,28 +279,18 @@
       ],
       "notes": "8086 は PUSH SP で SP を 2 減算した新しい値を退避する。80186 以降は減算前の SP を退避する。",
       "src": "book",
-      "example": {"code": ["push ax"],"explanation": "SP を 2 減算し、SS:SP 番地に AX の 1 ワードを退避。"}
+      "example": {
+        "code": ["push ax"],
+        "explanation": "SP を 2 減算し、SS:SP 番地に AX の 1 ワードを退避。"
+      }
     },
     {
       "mnemonic": "POP",
       "operands": "dst",
       "category": "スタック",
       "summary": "スタックから 16 ビット値を復帰（読み込んでから SP を +2）。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "セグメントレジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "メモリ", "セグメントレジスタ"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "reg",
@@ -369,26 +324,18 @@
       ],
       "notes": "POP CS は公式命令として存在しない（8086 固有の非公式挙動を除く）。POP SP では最終的な SP はスタックから読み出した値になる。",
       "src": "book",
-      "example": {"code": ["pop ax"],"explanation": "SS:SP 番地の 1 ワードを AX へ読み出し、SP を 2 加算。"}
+      "example": {
+        "code": ["pop ax"],
+        "explanation": "SS:SP 番地の 1 ワードを AX へ読み出し、SP を 2 加算。"
+      }
     },
     {
       "mnemonic": "PUSHF",
       "operands": "",
       "category": "フラグ操作",
       "summary": "フラグレジスタ FLAGS をスタックに退避。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -403,26 +350,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["pushf"],"explanation": "SP を 2 減算し、FLAGS（1 ワード）を SS:SP 番地へ退避。"}
+      "example": {
+        "code": ["pushf"],
+        "explanation": "SP を 2 減算し、FLAGS（1 ワード）を SS:SP 番地へ退避。"
+      }
     },
     {
       "mnemonic": "POPF",
       "operands": "",
       "category": "フラグ操作",
       "summary": "スタックから FLAGS を復帰（全フラグ上書き）。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -437,26 +376,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["popf"],"explanation": "SS:SP 番地の FLAGS 値を復帰し、SP を 2 加算（全フラグ上書き）。"}
+      "example": {
+        "code": ["popf"],
+        "explanation": "SS:SP 番地の FLAGS 値を復帰し、SP を 2 加算（全フラグ上書き）。"
+      }
     },
     {
       "mnemonic": "LAHF",
       "operands": "",
       "category": "フラグ操作",
       "summary": "FLAGS の下位バイト（SF ZF AF PF CF）を AH にコピー。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -472,26 +403,20 @@
       ],
       "notes": "8080 互換の命令。OF DF IF TF は含まれない。",
       "src": "book",
-      "example": {"code": ["lahf"],"explanation": "この例では FLAGS の下位バイト（SF ZF AF PF CF）を AH にコピー。"}
+      "example": {
+        "code": [
+          "lahf                      ; AH = FLAGS の下位バイト（SF ZF 0 AF 0 PF 1 CF）"
+        ],
+        "explanation": "FLAGS の下位バイト（SF, ZF, AF, PF, CF）を AH レジスタへコピーする（OF/DF/IF/TF は含まれない）。"
+      }
     },
     {
       "mnemonic": "SAHF",
       "operands": "",
       "category": "フラグ操作",
       "summary": "AH の内容で FLAGS の下位バイト（SF ZF AF PF CF）を設定。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -506,28 +431,21 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sahf"],"explanation": "この例では AH の内容で FLAGS の下位バイト（SF ZF AF PF CF）を設定。"}
+      "example": {
+        "code": [
+          "fnstsw ax                 ; x87（80287 以降）のステータスワードを AX へ取得",
+          "sahf                      ; AH の条件ビットを FLAGS の SF/ZF/AF/PF/CF へ反映"
+        ],
+        "explanation": "AH の内容で FLAGS の下位バイト（SF, ZF, AF, PF, CF）を設定する。x87 FPU の比較結果を条件分岐へ橋渡しする定石（8087 は FSTSW AX を持たずメモリ経由となる）。"
+      }
     },
     {
       "mnemonic": "ADD",
       "operands": "dst, src",
       "category": "算術",
       "summary": "加算。dst = dst + src。全フラグ更新。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -565,28 +483,18 @@
       ],
       "notes": "EA はメモリオペランド実効アドレスの加算クロック。",
       "src": "book",
-      "example": {"code": ["add ax, bx"],"explanation": "AX = AX + BX を計算し、OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["add ax, bx"],
+        "explanation": "AX = AX + BX を計算し、OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "ADC",
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み加算。dst = dst + src + CF。多倍長演算用。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -609,28 +517,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["adc ax, bx"],"explanation": "AX = AX + BX + CF（キャリー込み加算）。OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["adc ax, bx"],
+        "explanation": "AX = AX + BX + CF（キャリー込み加算）。OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "SUB",
       "operands": "dst, src",
       "category": "算術",
       "summary": "減算。dst = dst - src。全フラグ更新。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -649,28 +547,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sub ax, bx"],"explanation": "AX = AX - BX を計算し、OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["sub ax, bx"],
+        "explanation": "AX = AX - BX を計算し、OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "SBB",
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み減算（borrow）。dst = dst - src - CF。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -689,27 +577,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sbb ax, bx"],"explanation": "AX = AX - BX - CF（キャリー込み減算）。OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["sbb ax, bx"],
+        "explanation": "AX = AX - BX - CF（キャリー込み減算）。OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "INC",
       "operands": "dst",
       "category": "算術",
       "summary": "1 加算（CF は不変）。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "-"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
       "cycles": [
         {
           "cond": "reg16",
@@ -743,27 +622,18 @@
       ],
       "notes": "CF が変わらないためループカウンタに使える。",
       "src": "book",
-      "example": {"code": ["inc ax"],"explanation": "AX = AX + 1（CF は不変）。OF/SF/ZF/AF/PF を更新。"}
+      "example": {
+        "code": ["inc ax"],
+        "explanation": "AX = AX + 1（CF は不変）。OF/SF/ZF/AF/PF を更新。"
+      }
     },
     {
       "mnemonic": "DEC",
       "operands": "dst",
       "category": "算術",
       "summary": "1 減算（CF は不変）。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "-"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
       "cycles": [
         {
           "cond": "reg16",
@@ -796,27 +666,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["dec ax"],"explanation": "AX = AX - 1（CF は不変）。OF/SF/ZF/AF/PF を更新。"}
+      "example": {
+        "code": ["dec ax"],
+        "explanation": "AX = AX - 1（CF は不変）。OF/SF/ZF/AF/PF を更新。"
+      }
     },
     {
       "mnemonic": "NEG",
       "operands": "dst",
       "category": "算術",
       "summary": "符号反転（dst = 0 - dst）。dst=0 以外のとき CF=1。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg",
@@ -836,28 +697,18 @@
       ],
       "notes": "0x8000 の NEG はオーバーフロー（OF=1）で値は 0x8000 のまま。",
       "src": "book",
-      "example": {"code": ["neg ax"],"explanation": "AX = 0 - AX（符号反転）。AX≠0 のとき CF=1。"}
+      "example": {
+        "code": ["neg ax"],
+        "explanation": "AX = 0 - AX（符号反転）。AX≠0 のとき CF=1。"
+      }
     },
     {
       "mnemonic": "CMP",
       "operands": "dst, src",
       "category": "比較",
       "summary": "比較（dst - src のフラグのみ反映、dst は不変）。JA/JB/JG/JL 等の分岐の前提。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -886,27 +737,18 @@
       ],
       "notes": "結果を書き戻さないため SUB より mem,reg が速い（9+EA）。",
       "src": "book",
-      "example": {"code": ["cmp ax, bx"],"explanation": "AX - BX を計算しフラグのみ更新（AX は不変）。OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["cmp ax, bx"],
+        "explanation": "AX - BX を計算しフラグのみ更新（AX は不変）。OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "MUL",
       "operands": "src",
       "category": "算術",
       "summary": "符号なし乗算。8ビット: AX = AL×src、16ビット: DX:AX = AX×src。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["‡", "-", "-", "U", "U", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "8ビット reg",
@@ -916,8 +758,14 @@
           "cond": "16ビット reg",
           "cycles": "118〜133"
         },
-        {"cond": "8ビット mem", "cycles": "76〜83+EA"},
-        {"cond": "16ビット mem", "cycles": "124〜139+EA"}
+        {
+          "cond": "8ビット mem",
+          "cycles": "76〜83+EA"
+        },
+        {
+          "cond": "16ビット mem",
+          "cycles": "124〜139+EA"
+        }
       ],
       "encodings": [
         {
@@ -933,27 +781,18 @@
       ],
       "notes": "CF=OF=1 は上位半分が非 0（結果がオーバーフロー）を示す。S/Z/A/P は未定義。",
       "src": "book",
-      "example": {"code": ["mul bx"],"explanation": "DX:AX = AX × BX（符号なし 1 ワード乗算）。上位半分 DX が非 0 のとき CF=OF=1。"}
+      "example": {
+        "code": ["mul bx"],
+        "explanation": "DX:AX = AX × BX（符号なし 1 ワード乗算）。上位半分 DX が非 0 のとき CF=OF=1。"
+      }
     },
     {
       "mnemonic": "IMUL",
       "operands": "src",
       "category": "算術",
       "summary": "符号付き乗算。8ビット: AX = AL×src、16ビット: DX:AX = AX×src。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["‡", "-", "-", "U", "U", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "8ビット reg",
@@ -963,8 +802,14 @@
           "cond": "16ビット reg",
           "cycles": "128〜154"
         },
-        {"cond": "8ビット mem", "cycles": "86〜104+EA"},
-        {"cond": "16ビット mem", "cycles": "134〜160+EA"}
+        {
+          "cond": "8ビット mem",
+          "cycles": "86〜104+EA"
+        },
+        {
+          "cond": "16ビット mem",
+          "cycles": "134〜160+EA"
+        }
       ],
       "encodings": [
         {
@@ -980,27 +825,18 @@
       ],
       "notes": "CF=OF=1 は下位半分を符号拡張した値が積全体と一致しない（桁あふれ）ことを示す。",
       "src": "book",
-      "example": {"code": ["imul bx"],"explanation": "DX:AX = AX × BX（符号付き 1 ワード乗算）。積が AX に収まらないとき CF=OF=1。"}
+      "example": {
+        "code": ["imul bx"],
+        "explanation": "DX:AX = AX × BX（符号付き 1 ワード乗算）。積が AX に収まらないとき CF=OF=1。"
+      }
     },
     {
       "mnemonic": "DIV",
       "operands": "src",
       "category": "算術",
       "summary": "符号なし除算。16÷8: AL=商 AH=剰余、32÷16: AX=商 DX=剰余。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "U"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["U", "-", "-", "U", "U", "U", "U", "U"],
       "cycles": [
         {
           "cond": "8ビット reg",
@@ -1010,8 +846,14 @@
           "cond": "16ビット reg",
           "cycles": "144〜162"
         },
-        {"cond": "8ビット mem", "cycles": "86〜96+EA"},
-        {"cond": "16ビット mem", "cycles": "150〜168+EA"}
+        {
+          "cond": "8ビット mem",
+          "cycles": "86〜96+EA"
+        },
+        {
+          "cond": "16ビット mem",
+          "cycles": "150〜168+EA"
+        }
       ],
       "encodings": [
         {
@@ -1027,27 +869,18 @@
       ],
       "notes": "商がオーバーフローまたは除算零のときは INT 0（例外ベクタ 0）が発生。",
       "src": "book",
-      "example": {"code": ["div bx"],"explanation": "DX:AX ÷ BX（符号なし 1 ワード除算）を計算し、商を AX、剰余を DX へ。"}
+      "example": {
+        "code": ["div bx"],
+        "explanation": "DX:AX ÷ BX（符号なし 1 ワード除算）を計算し、商を AX、剰余を DX へ。"
+      }
     },
     {
       "mnemonic": "IDIV",
       "operands": "src",
       "category": "算術",
       "summary": "符号付き除算。商の丸めは 0 方向。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "U"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["U", "-", "-", "U", "U", "U", "U", "U"],
       "cycles": [
         {
           "cond": "8ビット reg",
@@ -1057,8 +890,14 @@
           "cond": "16ビット reg",
           "cycles": "165〜184"
         },
-        {"cond": "8ビット mem", "cycles": "107〜118+EA"},
-        {"cond": "16ビット mem", "cycles": "171〜190+EA"}
+        {
+          "cond": "8ビット mem",
+          "cycles": "107〜118+EA"
+        },
+        {
+          "cond": "16ビット mem",
+          "cycles": "171〜190+EA"
+        }
       ],
       "encodings": [
         {
@@ -1074,26 +913,18 @@
       ],
       "notes": "割算零・商の範囲外は INT 0。8086/8088 の許容商は 8 ビット版が -127〜127、16 ビット版が -32767〜32767。-128 / -32768 は後世代と異なり範囲外。",
       "src": "book",
-      "example": {"code": ["idiv bx"],"explanation": "DX:AX ÷ BX（符号付き 1 ワード除算）を計算し、商を AX、剰余を DX へ。丸めは 0 方向。"}
+      "example": {
+        "code": ["idiv bx"],
+        "explanation": "DX:AX ÷ BX（符号付き 1 ワード除算）を計算し、商を AX、剰余を DX へ。丸めは 0 方向。"
+      }
     },
     {
       "mnemonic": "CBW",
       "operands": "",
       "category": "算術",
       "summary": "AL の符号拡張を AX に入れる（8→16 ビット）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -1109,26 +940,21 @@
       ],
       "notes": "符号付き 8 ビット値を AX に拡張する。IMUL/IDIV の準備で使うことがある。",
       "src": "book",
-      "example": {"code": ["cbw"],"explanation": "この例では AL の符号拡張を AX に入れる（8→16 ビット）。"}
+      "example": {
+        "code": [
+          "mov  al, -5               ; AL = 0xFB（符号付き -5）",
+          "cbw                       ; AX = 0xFFFB（16 ビット -5 へ符号拡張）"
+        ],
+        "explanation": "AL の符号ビット（bit7）を AH 全体に複製し、8 ビット符号付き値を 16 ビット（AX）へ符号拡張する。16÷8 ビット IDIV の前処理に使う。"
+      }
     },
     {
       "mnemonic": "CWD",
       "operands": "",
       "category": "算術",
       "summary": "AX の符号拡張を DX に入れる（16→32 ビット）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -1143,26 +969,21 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cwd"],"explanation": "この例では AX の符号拡張を DX に入れる（16→32 ビット）。"}
+      "example": {
+        "code": [
+          "mov  ax, -100             ; AX = 0xFF9C（符号付き -100）",
+          "cwd                       ; DX:AX = 0xFFFFFF9C（32 ビット -100 へ符号拡張）"
+        ],
+        "explanation": "AX の符号ビット（bit15）を DX 全体に複製し、32 ビット符号付き値 DX:AX を作る。16 ビット IDIV（DX:AX ÷ src）の前処理に必須。"
+      }
     },
     {
       "mnemonic": "DAA",
       "operands": "",
       "category": "BCD",
       "summary": "加算後の BCD 補正（AL をパック BCD に補正）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["U", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -1178,26 +999,22 @@
       ],
       "notes": "ADD/ADC 直後に使用。",
       "src": "book",
-      "example": {"code": ["daa"],"explanation": "この例では 加算後の BCD 補正（AL をパック BCD に補正）。"}
+      "example": {
+        "code": [
+          "mov  al, 0x28             ; パック BCD 28",
+          "add  al, 0x15             ; 2 進加算すると AL = 0x3D",
+          "daa                       ; パック BCD 補正 → AL = 0x43（28 + 15 = 43）"
+        ],
+        "explanation": "ADD/ADC の直後に実行し、AL の 2 進加算結果をパック BCD（2 桁 10 進数）に補正する。"
+      }
     },
     {
       "mnemonic": "DAS",
       "operands": "",
       "category": "BCD",
       "summary": "減算後の BCD 補正。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["U", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -1213,26 +1030,18 @@
       ],
       "notes": "SUB/SBB 直後に使用。",
       "src": "book",
-      "example": {"code": ["das"],"explanation": "減算後の AL をパック BCD に補正。"}
+      "example": {
+        "code": ["das"],
+        "explanation": "減算後の AL をパック BCD に補正。"
+      }
     },
     {
       "mnemonic": "AAA",
       "operands": "",
       "category": "BCD",
       "summary": "加算後の ASCII 補正（非パック BCD）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "U",
-        "‡",
-        "U",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["U", "-", "-", "U", "U", "‡", "U", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -1247,26 +1056,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["aaa"],"explanation": "AX を非パック BCD に補正（繰り上がりで AL+6・AH+1、AF/CF をセット）し、AL の上位ニブルを 0 に。"}
+      "example": {
+        "code": ["aaa"],
+        "explanation": "AX を非パック BCD に補正（繰り上がりで AL+6・AH+1、AF/CF をセット）し、AL の上位ニブルを 0 に。"
+      }
     },
     {
       "mnemonic": "AAS",
       "operands": "",
       "category": "BCD",
       "summary": "減算後の ASCII 補正（非パック BCD）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "U",
-        "‡",
-        "U",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["U", "-", "-", "U", "U", "‡", "U", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -1281,26 +1082,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["aas"],"explanation": "AX を非パック BCD に補正（繰り下がりで AL-6・AH-1、AF/CF をセット）し、AL の上位ニブルを 0 に。"}
+      "example": {
+        "code": ["aas"],
+        "explanation": "AX を非パック BCD に補正（繰り下がりで AL-6・AH-1、AF/CF をセット）し、AL の上位ニブルを 0 に。"
+      }
     },
     {
       "mnemonic": "AAM",
       "operands": "",
       "category": "BCD",
       "summary": "乗算後の ASCII 補正（AX = AL÷10 で AH=商 AL=剰余）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "U"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["U", "-", "-", "‡", "‡", "U", "‡", "U"],
       "cycles": [
         {
           "cond": "常時",
@@ -1316,26 +1109,23 @@
       ],
       "notes": "AAM imm8 は AL を imm8 で除算する。8086 では命令の即値を任意に変更でき、標準的な10進補正では 0A を使う。",
       "src": "book",
-      "example": {"code": ["aam"],"explanation": "この例では 乗算後の ASCII 補正（AX = AL÷10 で AH=商 AL=剰余）。"}
+      "example": {
+        "code": [
+          "mov  al, 7",
+          "mov  bl, 8",
+          "mul  bl                   ; AX = 56（0x0038）",
+          "aam                       ; AH = 5（商）, AL = 6（剰余）へ非パック BCD 化"
+        ],
+        "explanation": "AL を 10 で除算し、商を AH、剰余を AL に格納する（AX = 56 → AH=5, AL=6）。非パック BCD 乗算後の桁分離や 2 桁 10 進変換に使う。"
+      }
     },
     {
       "mnemonic": "AAD",
       "operands": "",
       "category": "BCD",
       "summary": "除算前の ASCII 補正（AL = AH×10+AL、AH=0）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "U"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["U", "-", "-", "‡", "‡", "U", "‡", "U"],
       "cycles": [
         {
           "cond": "常時",
@@ -1350,28 +1140,21 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["aad"],"explanation": "この例では 除算前の ASCII 補正（AL = AH×10+AL、AH=0）。"}
+      "example": {
+        "code": [
+          "mov  ax, 0x0506           ; 非パック BCD の 56（AH=5, AL=6）",
+          "aad                       ; AL = AH*10 + AL = 56（0x38）, AH = 0"
+        ],
+        "explanation": "除算前に非パック BCD 2 桁（AH=十の位, AL=一の位）を AL = AH×10 + AL の 2 進数へ変換し、AH を 0 にする。"
+      }
     },
     {
       "mnemonic": "AND",
       "operands": "dst, src",
       "category": "論理",
       "summary": "論理積。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -1395,28 +1178,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["and ax, bx"],"explanation": "AX = AX AND BX（ビットごとの論理積）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"}
+      "example": {
+        "code": ["and ax, bx"],
+        "explanation": "AX = AX AND BX（ビットごとの論理積）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"
+      }
     },
     {
       "mnemonic": "OR",
       "operands": "dst, src",
       "category": "論理",
       "summary": "論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -1441,28 +1214,18 @@
       ],
       "notes": "OR AX,AX で値を保ったままフラグ更新。",
       "src": "book",
-      "example": {"code": ["or ax, bx"],"explanation": "AX = AX OR BX（ビットごとの論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"}
+      "example": {
+        "code": ["or ax, bx"],
+        "explanation": "AX = AX OR BX（ビットごとの論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"
+      }
     },
     {
       "mnemonic": "XOR",
       "operands": "dst, src",
       "category": "論理",
       "summary": "排他的論理和。CF=OF=0 にクリア、S/Z/P 更新、AF は未定義。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -1487,27 +1250,18 @@
       ],
       "notes": "XOR AX,AX は AX を 0 にし、演算結果に応じてフラグを更新する。命令長は 2 バイト。",
       "src": "book",
-      "example": {"code": ["xor ax, bx"],"explanation": "AX = AX XOR BX（ビットごとの排他的論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"}
+      "example": {
+        "code": ["xor ax, bx"],
+        "explanation": "AX = AX XOR BX（ビットごとの排他的論理和）。CF=OF=0、SF/ZF/PF を更新、AF は未定義。"
+      }
     },
     {
       "mnemonic": "NOT",
       "operands": "dst",
       "category": "論理",
       "summary": "ビット反転（1の補数）。フラグは一切変化しない。",
-      "addressing": [
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "メモリ"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "reg",
@@ -1526,28 +1280,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["not ax"],"explanation": "AX の全ビットを反転（AX = NOT AX）。フラグは一切変化しない。"}
+      "example": {
+        "code": ["not ax"],
+        "explanation": "AX の全ビットを反転（AX = NOT AX）。フラグは一切変化しない。"
+      }
     },
     {
       "mnemonic": "TEST",
       "operands": "dst, src",
       "category": "比較",
       "summary": "AND のフラグのみ反映（dst は不変）。ビットテスト用。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "即値"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "メモリ", "即値"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "reg,reg",
@@ -1591,29 +1335,18 @@
       ],
       "notes": "結果を書き戻さないため mem,reg は 9+EA と AND より速い。",
       "src": "book",
-      "example": {"code": ["test ax, bx"],"explanation": "AX AND BX を計算しフラグのみ更新（AX は不変）。CF=OF=0、SF/ZF/PF を更新。"}
+      "example": {
+        "code": ["test ax, bx"],
+        "explanation": "AX AND BX を計算しフラグのみ更新（AX は不変）。CF=OF=0、SF/ZF/PF を更新。"
+      }
     },
     {
       "mnemonic": "SHL",
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "左論理シフト（SAL と同一）。最上位ビットを CF に送り、下位に 0 を詰める。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "1ビット",
-        "CL カウント"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,1",
@@ -1646,29 +1379,18 @@
       ],
       "notes": "回数 0 ではフラグ不変。1 回の OF は定義され、複数回では未定義。8086 は CL を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["shl ax, 1"],"explanation": "AX を 1 ビット左へシフト（bit15 → CF、bit0 に 0 を詰める）。"}
+      "example": {
+        "code": ["shl ax, 1"],
+        "explanation": "AX を 1 ビット左へシフト（bit15 → CF、bit0 に 0 を詰める）。"
+      }
     },
     {
       "mnemonic": "SHR",
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "右論理シフト。bit0 → CF、上位に 0。符号なし ÷2 相当。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "1ビット",
-        "CL カウント"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,1",
@@ -1701,29 +1423,18 @@
       ],
       "notes": "回数 0 ではフラグ不変。1 回の OF は定義され、複数回では未定義。8086 は CL を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["shr ax, 1"],"explanation": "AX を 1 ビット右へシフト（bit0 → CF、bit15 に 0 を詰める）。符号なし ÷2 相当。"}
+      "example": {
+        "code": ["shr ax, 1"],
+        "explanation": "AX を 1 ビット右へシフト（bit0 → CF、bit15 に 0 を詰める）。符号なし ÷2 相当。"
+      }
     },
     {
       "mnemonic": "SAR",
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "右算術シフト（符号ビット保持）。bit0 → CF。符号付き ÷2 相当。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "1ビット",
-        "CL カウント"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "reg,1",
@@ -1756,29 +1467,18 @@
       ],
       "notes": "1 ビットシフトでは OF=0。複数ビット時の OF は未定義。回数 0 ではフラグ不変。8086 は CL を 5 ビットにマスクしない。負の奇数は負の無限大方向に丸めるため、0 方向へ丸める IDIV とは異なる。",
       "src": "book",
-      "example": {"code": ["sar ax, 1"],"explanation": "AX を 1 ビット右へ算術シフト（bit0 → CF、bit15 は符号を保持）。符号付き ÷2 相当。"}
+      "example": {
+        "code": ["sar ax, 1"],
+        "explanation": "AX を 1 ビット右へ算術シフト（bit0 → CF、bit15 は符号を保持）。符号付き ÷2 相当。"
+      }
     },
     {
       "mnemonic": "ROL",
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "左ローテート。元の最上位ビットが最下位ビットと CF に入る（8/16 ビット内循環）。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "1ビット",
-        "CL カウント"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "reg,1",
@@ -1811,29 +1511,18 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["rol ax, 1"],"explanation": "AX を 1 ビット左へ回転（元の bit15 を bit0 と CF へ）。"}
+      "example": {
+        "code": ["rol ax, 1"],
+        "explanation": "AX を 1 ビット左へ回転（元の bit15 を bit0 と CF へ）。"
+      }
     },
     {
       "mnemonic": "ROR",
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "右ローテート。元の最下位ビットが最上位ビットと CF に入る（8/16 ビット内循環）。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "1ビット",
-        "CL カウント"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "reg,1",
@@ -1866,29 +1555,18 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["ror ax, 1"],"explanation": "AX を 1 ビット右へ回転（元の bit0 を bit15 と CF へ）。"}
+      "example": {
+        "code": ["ror ax, 1"],
+        "explanation": "AX を 1 ビット右へ回転（元の bit0 を bit15 と CF へ）。"
+      }
     },
     {
       "mnemonic": "RCL",
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "キャリー込み左ローテート（9/17 ビット循環）。多倍長シフト用。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "1ビット",
-        "CL カウント"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "reg,1",
@@ -1921,29 +1599,18 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["rcl ax, 1"],"explanation": "CF を含めて AX を 1 ビット左へ回転（bit15 → CF、元の CF → bit0）。"}
+      "example": {
+        "code": ["rcl ax, 1"],
+        "explanation": "CF を含めて AX を 1 ビット左へ回転（bit15 → CF、元の CF → bit0）。"
+      }
     },
     {
       "mnemonic": "RCR",
       "operands": "dst, 1/CL",
       "category": "シフト",
       "summary": "キャリー込み右ローテート（9/17 ビット循環）。",
-      "addressing": [
-        "レジスタ",
-        "メモリ",
-        "1ビット",
-        "CL カウント"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "メモリ", "1ビット", "CL カウント"],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "reg,1",
@@ -1976,28 +1643,18 @@
       ],
       "notes": "回転回数 0 ならフラグ不変、1 なら OF は定義され、2 以上なら OF は未定義。8086 は CL の回数を 5 ビットにマスクしない。",
       "src": "book",
-      "example": {"code": ["rcr ax, 1"],"explanation": "CF を含めて AX を 1 ビット右へ回転（bit0 → CF、元の CF → bit15）。"}
+      "example": {
+        "code": ["rcr ax, 1"],
+        "explanation": "CF を含めて AX を 1 ビット右へ回転（bit0 → CF、元の CF → bit15）。"
+      }
     },
     {
       "mnemonic": "JMP",
       "operands": "dst",
       "category": "分岐",
       "summary": "無条件ジャンプ（short/near/far、レジスタ間接・メモリ間接）。",
-      "addressing": [
-        "相対(short/near)",
-        "絶対(far)",
-        "間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対(short/near)", "絶対(far)", "間接"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "short/near",
@@ -2036,31 +1693,36 @@
           "opcode": "EA off seg",
           "bytes": 5
         },
-        {"syntax": "JMP r/m16（near 間接）", "opcode": "FF /4", "length": "可変"},
-        {"syntax": "JMP m16:16（far 間接）", "opcode": "FF /5", "length": "可変"}
+        {
+          "syntax": "JMP r/m16（near 間接）",
+          "opcode": "FF /4",
+          "length": "可変"
+        },
+        {
+          "syntax": "JMP m16:16（far 間接）",
+          "opcode": "FF /5",
+          "length": "可変"
+        }
       ],
       "notes": "far は CS:IP を書き換える。",
       "src": "book",
-      "example": {"code": ["jmp target","target:"],"explanation": "target へ無条件ジャンプ（IP を書き換え）。"}
+      "example": {
+        "code": [
+          "jmp  skip",
+          "mov  ax, 0xFFFF           ; 分岐するため実行されない",
+          "skip:",
+          "xor  ax, ax"
+        ],
+        "explanation": "途中の処理を飛ばして skip へ無条件ジャンプする（IP を書き換え、far ジャンプでは CS:IP を書き換える）。"
+      }
     },
     {
       "mnemonic": "Jcc",
       "operands": "short",
       "category": "分岐",
       "summary": "条件付き相対分岐（次の命令から -128〜+127 バイト）。条件コード一式（JA/JB/JE/JG/JL/JS/JZ と否定形 16 種）。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "不成立",
@@ -2080,26 +1742,23 @@
       ],
       "notes": "70 JO, 71 JNO, 72 JB/JNAE, 73 JAE/JNB, 74 JE/JZ, 75 JNE/JNZ, 76 JBE/JNA, 77 JA/JNBE, 78 JS, 79 JNS, 7A JP/JPE, 7B JNP/JPO, 7C JL/JNGE, 7D JGE/JNL, 7E JLE/JNG, 7F JG/JNLE（8086 の一覧）。符号付き比較は JG/JGE/JL/JLE、符号なしは JA/JAE/JB/JBE。",
       "src": "book",
-      "example": {"code": ["jz target","target:"],"explanation": "ZF=1 のとき target へ相対分岐（次の命令から -128〜+127 バイト以内）。"}
+      "example": {
+        "code": [
+          "cmp  ax, bx",
+          "jz   equal                ; ax == bx（ZF=1）ならインクリメントをスキップ",
+          "inc  ax                   ; ax != bx のときだけ実行",
+          "equal:"
+        ],
+        "explanation": "ZF=1 のとき後続処理をスキップして equal へ相対分岐し、ZF=0 なら次の命令へ進む（次の命令から -128〜+127 バイト以内）。"
+      }
     },
     {
       "mnemonic": "LOOP",
       "operands": "short",
       "category": "分岐",
       "summary": "CX を -1 し、CX≠0 なら相対分岐（カウンタループ）。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "分岐",
@@ -2119,26 +1778,23 @@
       ],
       "notes": "CX 減算はフラグに影響しない。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loop target","target:"],"explanation": "CX を -1 し、CX≠0 の間 target へ相対分岐。"}
+      "example": {
+        "code": [
+          "mov  cx, 4",
+          "loop_start:",
+          "  inc  ax                 ; 4 回繰り返される処理",
+          "  loop loop_start         ; CX を -1 し、CX != 0 の間 loop_start へ戻る"
+        ],
+        "explanation": "CX を -1 し、CX≠0 の間 loop_start へ相対分岐する（FLAGS は不変）。"
+      }
     },
     {
       "mnemonic": "LOOPE",
       "operands": "short",
       "category": "分岐",
       "summary": "CX を -1 し、ZF=1 かつ CX≠0 なら相対分岐。LOOPZ と同じ。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "分岐",
@@ -2158,26 +1814,22 @@
       ],
       "notes": "cmps/scas と組み合わせ、一致が続く間ループする。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loope target","target:"],"explanation": "CX を -1 し、ZF=1 かつ CX≠0 のとき target へ相対分岐。"}
+      "example": {
+        "code": [
+          "search_eq:",
+          "  cmpsb                   ; DS:SI と ES:DI を比較（一致で ZF=1）",
+          "  loope search_eq         ; CX を -1 し、ZF=1 かつ CX != 0 なら継続"
+        ],
+        "explanation": "CX を -1 し、ZF=1 かつ CX≠0 の間 search_eq へ相対分岐する（LOOPZ と同じ）。"
+      }
     },
     {
       "mnemonic": "LOOPNE",
       "operands": "short",
       "category": "分岐",
       "summary": "CX を -1 し、ZF=0 かつ CX≠0 なら相対分岐。LOOPNZ と同じ。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "分岐",
@@ -2197,26 +1849,22 @@
       ],
       "notes": "cmps/scas と組み合わせ、不一致を見つけたら抜ける。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loopne target","target:"],"explanation": "CX を -1 し、ZF=0 かつ CX≠0 のとき target へ相対分岐。"}
+      "example": {
+        "code": [
+          "search_ne:",
+          "  scasb                   ; AL と ES:DI を比較（一致で ZF=1）",
+          "  loopne search_ne        ; CX を -1 し、ZF=0 かつ CX != 0 なら継続"
+        ],
+        "explanation": "CX を -1 し、ZF=0 かつ CX≠0 の間 search_ne へ相対分岐する（LOOPNZ と同じ）。"
+      }
     },
     {
       "mnemonic": "JCXZ",
       "operands": "short",
       "category": "分岐",
       "summary": "CX = 0 のときだけ相対分岐（ループ事前脱出）。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CX≠0",
@@ -2235,28 +1883,24 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["jcxz target","target:"],"explanation": "CX=0 のときだけ target へ相対分岐（CX 自体は変化しない）。"}
+      "example": {
+        "code": [
+          "jcxz loop_end             ; CX == 0 ならループ本体をスキップ",
+          "loop_body:",
+          "  dec  cx",
+          "  jnz  loop_body",
+          "loop_end:"
+        ],
+        "explanation": "CX=0 のときだけループ本体をスキップして loop_end へ相対分岐する（CX と FLAGS は変化しない）。"
+      }
     },
     {
       "mnemonic": "CALL",
       "operands": "dst",
       "category": "サブルーチン",
       "summary": "サブルーチンコール（near/far、間接）。戻りアドレスをスタックに退避。",
-      "addressing": [
-        "相対(near)",
-        "絶対(far)",
-        "間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対(near)", "絶対(far)", "間接"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "near",
@@ -2290,31 +1934,37 @@
           "opcode": "9A off seg",
           "bytes": 5
         },
-        {"syntax": "CALL r/m16（near 間接）", "opcode": "FF /2", "length": "可変"},
-        {"syntax": "CALL m16:16（far 間接）", "opcode": "FF /3", "length": "可変"}
+        {
+          "syntax": "CALL r/m16（near 間接）",
+          "opcode": "FF /2",
+          "length": "可変"
+        },
+        {
+          "syntax": "CALL m16:16（far 間接）",
+          "opcode": "FF /3",
+          "length": "可変"
+        }
       ],
       "notes": "far call は CS と IP の両方を退避。",
       "src": "book",
-      "example": {"code": ["call target","target:"],"explanation": "次の命令のアドレス（IP）をスタックへ退避し、target へジャンプ。"}
+      "example": {
+        "code": [
+          "call callee               ; 次の命令の IP をスタックへ退避して呼び出し",
+          "mov  bx, ax               ; RET 後にここへ戻る",
+          "callee:",
+          "  mov  ax, 42",
+          "  ret"
+        ],
+        "explanation": "次の命令のアドレス（IP）をスタックへ退避し、callee へジャンプする。callee 末尾の RET でスタックから IP を戻す。"
+      }
     },
     {
       "mnemonic": "RET",
       "operands": "[imm]",
       "category": "サブルーチン",
       "summary": "サブルーチン復帰。RET imm は復帰後に SP をさらに加算（引数破棄）。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "near",
@@ -2356,26 +2006,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["ret"],"explanation": "スタック先頭の戻りアドレスを IP へ復帰して呼び出し元へ戻る（SP を 2 加算）。"}
+      "example": {
+        "code": ["ret"],
+        "explanation": "スタック先頭の戻りアドレスを IP へ復帰して呼び出し元へ戻る（SP を 2 加算）。"
+      }
     },
     {
       "mnemonic": "MOVSB",
       "operands": "",
       "category": "文字列",
       "summary": "DS:SI の指す 1 バイトを ES:DI へ転送し、DF に応じて SI/DI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(SI/DI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(SI/DI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "1回",
@@ -2395,26 +2037,21 @@
       ],
       "notes": "ソースは DS:SI（セグメント上書き可）、転送先は常に ES:DI。REP MOVSB 100 バイト = 9+17×100 = 1709 クロック。",
       "src": "book",
-      "example": {"code": ["movsb"],"explanation": "この例では DS:SI の指す 1 バイトを ES:DI へ転送し、DF に応じて SI/DI を ±1 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "movsb                     ; ES:[DI] = DS:[SI], SI++, DI++"
+        ],
+        "explanation": "DS:SI の指す 1 バイトを ES:DI へ転送し、DF=0 なら SI/DI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "MOVSW",
       "operands": "",
       "category": "文字列",
       "summary": "DS:SI の指す 2 バイト（1 ワード）を ES:DI へ転送し、DF に応じて SI/DI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(SI/DI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(SI/DI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "1回",
@@ -2434,26 +2071,21 @@
       ],
       "notes": "ソースは DS:SI（セグメント上書き可）、転送先は常に ES:DI。REP MOVSW でワード単位のブロックコピー。",
       "src": "book",
-      "example": {"code": ["movsw"],"explanation": "この例では DS:SI の指す 2 バイト（1 ワード）を ES:DI へ転送し、DF に応じて SI/DI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "movsw                     ; ES:[DI] = DS:[SI]（2 バイト）, SI+=2, DI+=2"
+        ],
+        "explanation": "DS:SI の指す 2 バイト（1 ワード）を ES:DI へ転送し、DF=0 なら SI/DI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "LODSB",
       "operands": "",
       "category": "文字列",
       "summary": "DS:SI の指す 1 バイトを AL へロードし、DF に応じて SI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(SI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(SI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "1回",
@@ -2473,26 +2105,21 @@
       ],
       "notes": "REP を付けても最後の 1 要素しか残らないため単独使用が基本。",
       "src": "book",
-      "example": {"code": ["lodsb"],"explanation": "この例では DS:SI の指す 1 バイトを AL へロードし、DF に応じて SI を ±1 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "lodsb                     ; AL = DS:[SI], SI++"
+        ],
+        "explanation": "DS:SI の指す 1 バイトを AL へロードし、DF=0 なら SI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "LODSW",
       "operands": "",
       "category": "文字列",
       "summary": "DS:SI の指す 2 バイト（1 ワード）を AX へロードし、DF に応じて SI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(SI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(SI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "1回",
@@ -2512,26 +2139,21 @@
       ],
       "notes": "REP を付けても最後の 1 要素しか残らないため単独使用が基本。",
       "src": "book",
-      "example": {"code": ["lodsw"],"explanation": "この例では DS:SI の指す 2 バイト（1 ワード）を AX へロードし、DF に応じて SI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "lodsw                     ; AX = DS:[SI]（2 バイト）, SI+=2"
+        ],
+        "explanation": "DS:SI の指す 2 バイト（1 ワード）を AX へロードし、DF=0 なら SI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "STOSB",
       "operands": "",
       "category": "文字列",
       "summary": "AL の値を ES:DI の指す 1 バイトへ格納し、DF に応じて DI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(DI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(DI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "1回",
@@ -2551,26 +2173,21 @@
       ],
       "notes": "REP STOSB でメモリの初期化（memset 相当）。",
       "src": "book",
-      "example": {"code": ["stosb"],"explanation": "この例では AL の値を ES:DI の指す 1 バイトへ格納し、DF に応じて DI を ±1 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "stosb                     ; ES:[DI] = AL, DI++"
+        ],
+        "explanation": "AL の値を ES:DI の指す 1 バイトへ格納し、DF=0 なら DI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "STOSW",
       "operands": "",
       "category": "文字列",
       "summary": "AX の値を ES:DI の指す 2 バイト（1 ワード）へ格納し、DF に応じて DI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(DI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(DI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "1回",
@@ -2590,26 +2207,21 @@
       ],
       "notes": "REP STOSW でワード単位のメモリ初期化。",
       "src": "book",
-      "example": {"code": ["stosw"],"explanation": "この例では AX の値を ES:DI の指す 2 バイト（1 ワード）へ格納し、DF に応じて DI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "stosw                     ; ES:[DI] = AX（2 バイト）, DI+=2"
+        ],
+        "explanation": "AX の値を ES:DI の指す 2 バイト（1 ワード）へ格納し、DF=0 なら DI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "CMPSB",
       "operands": "",
       "category": "文字列",
       "summary": "DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(SI/DI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(SI/DI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "1回",
@@ -2629,26 +2241,21 @@
       ],
       "notes": "REPE/REPNE と組み合わせてブロック比較。",
       "src": "book",
-      "example": {"code": ["cmpsb"],"explanation": "この例では DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±1 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "cmpsb                     ; DS:[SI] - ES:[DI] でフラグ更新, SI++, DI++"
+        ],
+        "explanation": "DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）し、DF=0 なら SI/DI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "CMPSW",
       "operands": "",
       "category": "文字列",
       "summary": "DS:SI と ES:DI の指す 2 バイト（1 ワード）を比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(SI/DI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(SI/DI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "1回",
@@ -2668,26 +2275,21 @@
       ],
       "notes": "REPE/REPNE と組み合わせてワード単位のブロック比較。",
       "src": "book",
-      "example": {"code": ["cmpsw"],"explanation": "この例では DS:SI と ES:DI の指す 2 バイト（1 ワード）を比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "cmpsw                     ; DS:[SI] - ES:[DI]（2 バイト）でフラグ更新, SI+=2, DI+=2"
+        ],
+        "explanation": "DS:SI と ES:DI の指す 2 バイト（1 ワード）を比較（SUB と同じフラグ更新）し、DF=0 なら SI/DI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "SCASB",
       "operands": "",
       "category": "文字列",
       "summary": "AL と ES:DI の指す 1 バイトを比較（フラグのみ更新）し、DF に応じて DI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(DI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(DI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "1回",
@@ -2707,26 +2309,21 @@
       ],
       "notes": "REPNE SCASB で特定バイトの検索（memchr 相当）。",
       "src": "book",
-      "example": {"code": ["scasb"],"explanation": "この例では AL と ES:DI の指す 1 バイトを比較（フラグのみ更新）し、DF に応じて DI を ±1 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "scasb                     ; AL - ES:[DI] でフラグ更新, DI++"
+        ],
+        "explanation": "AL と ES:DI の指す 1 バイトを比較（フラグのみ更新）し、DF=0 なら DI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "SCASW",
       "operands": "",
       "category": "文字列",
       "summary": "AX と ES:DI の指す 2 バイト（1 ワード）を比較（フラグのみ更新）し、DF に応じて DI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(DI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(DI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "1回",
@@ -2746,26 +2343,21 @@
       ],
       "notes": "REPE/REPNE と組み合わせてワード単位の走査。",
       "src": "book",
-      "example": {"code": ["scasw"],"explanation": "この例では AX と ES:DI の指す 2 バイト（1 ワード）を比較（フラグのみ更新）し、DF に応じて DI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld                       ; DF=0（増加方向）に設定",
+          "scasw                     ; AX - ES:[DI]（2 バイト）でフラグ更新, DI+=2"
+        ],
+        "explanation": "AX と ES:DI の指す 2 バイト（1 ワード）を比較（フラグのみ更新）し、DF=0 なら DI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "REP",
       "operands": "",
       "category": "文字列",
       "summary": "後続の文字列命令を CX≠0 の間繰り返すプレフィックス（反復ごとに CX を -1）。movs/stos 用。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "プレフィックス",
@@ -2781,26 +2373,18 @@
       ],
       "notes": "REP/REPE/REPZ は同一オペコード F3 で 1 回の指定のみ有効。繰り返し中の実クロックは下位の文字列命令の REP 時レートに従う。",
       "src": "book",
-      "example": {"code": ["rep movsb"],"explanation": "CX≠0 の間 movsb（DS:SI の 1 バイト → ES:DI）を繰り返し、反復ごとに CX を -1。"}
+      "example": {
+        "code": ["rep movsb"],
+        "explanation": "CX≠0 の間 movsb（DS:SI の 1 バイト → ES:DI）を繰り返し、反復ごとに CX を -1。"
+      }
     },
     {
       "mnemonic": "REPE",
       "operands": "",
       "category": "文字列",
       "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=1 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "プレフィックス",
@@ -2816,26 +2400,18 @@
       ],
       "notes": "各反復後に CX=0 または ZF=0 で終了する。初期 CX=0 なら比較せず ZF も変わらない。",
       "src": "book",
-      "example": {"code": ["repe cmpsb"],"explanation": "CX≠0 の間 cmpsb（DS:SI と ES:DI の 1 バイト比較）を繰り返し、ZF=0 または CX=0 で終了。"}
+      "example": {
+        "code": ["repe cmpsb"],
+        "explanation": "CX≠0 の間 cmpsb（DS:SI と ES:DI の 1 バイト比較）を繰り返し、ZF=0 または CX=0 で終了。"
+      }
     },
     {
       "mnemonic": "REPNE",
       "operands": "",
       "category": "文字列",
       "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=0 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "プレフィックス",
@@ -2851,26 +2427,18 @@
       ],
       "notes": "各反復後に CX=0 または ZF=1 で終了する。初期 CX=0 なら比較せず ZF も変わらない。",
       "src": "book",
-      "example": {"code": ["repne scasb"],"explanation": "CX≠0 の間 scasb（AL と ES:DI の 1 バイト比較）を繰り返し、ZF=1 または CX=0 で終了。"}
+      "example": {
+        "code": ["repne scasb"],
+        "explanation": "CX≠0 の間 scasb（AL と ES:DI の 1 バイト比較）を繰り返し、ZF=1 または CX=0 で終了。"
+      }
     },
     {
       "mnemonic": "IN",
       "operands": "AL/AX, imm8/DX",
       "category": "I/O",
       "summary": "I/O ポートから入力。ポート番号は 8 ビット即値または DX 間接（16 ビット）。",
-      "addressing": [
-        "I/O"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["I/O"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "AL,imm8",
@@ -2892,31 +2460,31 @@
           "opcode": "EC",
           "bytes": 1
         },
-        {"syntax": "IN AX,imm8", "opcode": "E5 ib", "bytes": 2},
-        {"syntax": "IN AX,DX", "opcode": "ED", "bytes": 1}
+        {
+          "syntax": "IN AX,imm8",
+          "opcode": "E5 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "IN AX,DX",
+          "opcode": "ED",
+          "bytes": 1
+        }
       ],
       "notes": "I/O ポート番号は 16 ビット。即値形式はポート番号 0〜255 に限られる。",
       "src": "book",
-      "example": {"code": ["in al, dx"],"explanation": "DX が指す I/O ポートから 1 バイトを入力し AL へ入れる。"}
+      "example": {
+        "code": ["in al, dx"],
+        "explanation": "DX が指す I/O ポートから 1 バイトを入力し AL へ入れる。"
+      }
     },
     {
       "mnemonic": "OUT",
       "operands": "imm8/DX, AL/AX",
       "category": "I/O",
       "summary": "I/O ポートへ出力。",
-      "addressing": [
-        "I/O"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["I/O"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "imm8,AL",
@@ -2938,30 +2506,30 @@
           "opcode": "EE",
           "bytes": 1
         },
-        {"syntax": "OUT imm8,AX", "opcode": "E7 ib", "bytes": 2},
-        {"syntax": "OUT DX,AX", "opcode": "EF", "bytes": 1}
+        {
+          "syntax": "OUT imm8,AX",
+          "opcode": "E7 ib",
+          "bytes": 2
+        },
+        {
+          "syntax": "OUT DX,AX",
+          "opcode": "EF",
+          "bytes": 1
+        }
       ],
       "src": "book",
-      "example": {"code": ["out dx, al"],"explanation": "AL の 1 バイトを DX が指す I/O ポートへ出力。"}
+      "example": {
+        "code": ["out dx, al"],
+        "explanation": "AL の 1 バイトを DX が指す I/O ポートへ出力。"
+      }
     },
     {
       "mnemonic": "CLC",
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグを 0 にクリア。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "0"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "0"],
       "cycles": [
         {
           "cond": "常時",
@@ -2976,26 +2544,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["clc"],"explanation": "キャリーフラグをクリア（CF = 0）。"}
+      "example": {
+        "code": ["clc"],
+        "explanation": "キャリーフラグをクリア（CF = 0）。"
+      }
     },
     {
       "mnemonic": "STC",
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグを 1 にセット。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "1"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "1"],
       "cycles": [
         {
           "cond": "常時",
@@ -3010,26 +2570,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["stc"],"explanation": "キャリーフラグをセット（CF = 1）。"}
+      "example": {
+        "code": ["stc"],
+        "explanation": "キャリーフラグをセット（CF = 1）。"
+      }
     },
     {
       "mnemonic": "CMC",
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグを反転。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -3044,26 +2596,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cmc"],"explanation": "キャリーフラグを反転（CF を 0↔1）。"}
+      "example": {
+        "code": ["cmc"],
+        "explanation": "キャリーフラグを反転（CF を 0↔1）。"
+      }
     },
     {
       "mnemonic": "CLD",
       "operands": "",
       "category": "フラグ操作",
       "summary": "方向フラグ DF を 0（文字列操作で SI/DI を増加）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "0",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "0", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -3078,26 +2622,21 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cld"],"explanation": "この例では 方向フラグ DF を 0（文字列操作で SI/DI を増加）。"}
+      "example": {
+        "code": [
+          "cld                       ; DF = 0（文字列命令で SI/DI を増加方向へ進める）",
+          "rep movsb"
+        ],
+        "explanation": "方向フラグ DF を 0 にクリアし、MOVS/STOS/LODS/CMPS/SCAS で SI/DI がアドレス増加方向へ進むようにする。"
+      }
     },
     {
       "mnemonic": "STD",
       "operands": "",
       "category": "フラグ操作",
       "summary": "方向フラグ DF を 1（文字列操作で SI/DI を減少）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "1",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "1", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -3112,26 +2651,22 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["std"],"explanation": "この例では 方向フラグ DF を 1（文字列操作で SI/DI を減少）。"}
+      "example": {
+        "code": [
+          "std                       ; DF = 1（文字列命令で SI/DI を減少方向へ進める）",
+          "rep movsb                 ; 末尾から先頭へ向かう後方コピー",
+          "cld                       ; 完了後は DF = 0 に戻すのが作法"
+        ],
+        "explanation": "方向フラグ DF を 1 にセットし、文字列命令で SI/DI がアドレス減少方向へ進むようにする（領域が重なる後方コピーで使用）。"
+      }
     },
     {
       "mnemonic": "CLI",
       "operands": "",
       "category": "フラグ操作",
       "summary": "割り込みフラグ IF を 0 にしてマスク可能割り込みを禁止する。8086 には特権レベルはない。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "0",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -3146,26 +2681,22 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cli"],"explanation": "この例では 割り込みフラグ IF を 0 にしてマスク可能割り込みを禁止する。8086 には特権レベルはない。"}
+      "example": {
+        "code": [
+          "cli                       ; IF = 0（マスク可能割り込みを禁止）",
+          "; クリティカルセクション（共有データや割り込みベクタの書き換え）",
+          "sti                       ; IF = 1（割り込み許可に戻す）"
+        ],
+        "explanation": "割り込みフラグ IF を 0 にしてマスク可能割り込み（INTR）を禁止する（NMI は禁止されない）。"
+      }
     },
     {
       "mnemonic": "STI",
       "operands": "",
       "category": "フラグ操作",
       "summary": "割り込みフラグ IF を 1（割り込み許可）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "1",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "1", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -3180,26 +2711,20 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sti"],"explanation": "この例では 割り込みフラグ IF を 1（割り込み許可）。"}
+      "example": {
+        "code": [
+          "sti                       ; IF = 1（次の命令完了後からマスク可能割り込みを許可）"
+        ],
+        "explanation": "割り込みフラグ IF を 1 にセットしてマスク可能割り込みを許可する。"
+      }
     },
     {
       "mnemonic": "INT",
       "operands": "imm8",
       "category": "システム制御",
       "summary": "ソフトウェア割り込み（ベクタ imm8）。FLAGS/CS/IP を退避してハンドラへ。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "0",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "タイプ 3（INT 3）",
@@ -3224,26 +2749,18 @@
       ],
       "notes": "退避時に IF=0、TF=0 にされる。DOS の INT 21h 等の OS API 入口。",
       "src": "book",
-      "example": {"code": ["int 0x10"],"explanation": "FLAGS/CS/IP をスタックへ退避し、ベクタ 0x10 のハンドラへジャンプ（IF=0、TF=0）。"}
+      "example": {
+        "code": ["int 0x10"],
+        "explanation": "FLAGS/CS/IP をスタックへ退避し、ベクタ 0x10 のハンドラへジャンプ（IF=0、TF=0）。"
+      }
     },
     {
       "mnemonic": "INTO",
       "operands": "",
       "category": "システム制御",
       "summary": "OF=1 のときだけオーバーフロー割り込み（ベクタ 4）を発生。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "‡", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "OF=0",
@@ -3263,26 +2780,21 @@
       ],
       "notes": "OF=1 で割り込みが発生したときだけ IF=0、TF=0 になる。",
       "src": "book",
-      "example": {"code": ["into"],"explanation": "この例では OF=1 のときだけオーバーフロー割り込み（ベクタ 4）を発生。"}
+      "example": {
+        "code": [
+          "add  ax, bx               ; 符号付きオーバーフロー発生で OF=1",
+          "into                      ; OF=1 のときだけ割り込みベクタ 4 を発生"
+        ],
+        "explanation": "OF=1 のときだけオーバーフロー割り込み（ベクタ 4）を発生させ、OF=0 なら何もせず次の命令へ進む。"
+      }
     },
     {
       "mnemonic": "IRET",
       "operands": "",
       "category": "システム制御",
       "summary": "割り込みからの復帰。IP/CS/FLAGS をスタックから復帰。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "常時",
@@ -3297,26 +2809,21 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["iret"],"explanation": "この例では 割り込みからの復帰。IP/CS/FLAGS をスタックから復帰。"}
+      "example": {
+        "code": [
+          "; 割り込みハンドラの末尾",
+          "iret                      ; スタックから IP, CS, FLAGS を順にポップして復帰"
+        ],
+        "explanation": "割り込みハンドラの末尾で実行し、スタックから IP・CS・FLAGS を順に復帰して元の処理へ戻る。"
+      }
     },
     {
       "mnemonic": "HLT",
       "operands": "",
       "category": "システム制御",
       "summary": "CPU を停止状態にする（割り込みで再開）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -3331,26 +2838,22 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["hlt"],"explanation": "この例では CPU を停止状態にする（割り込みで再開）。"}
+      "example": {
+        "code": [
+          "idle:",
+          "  hlt                     ; 割り込みまたはリセットまで CPU を停止",
+          "  jmp idle"
+        ],
+        "explanation": "CPU を停止状態にし、有効な割り込み・NMI またはリセットで再開する。"
+      }
     },
     {
       "mnemonic": "NOP",
       "operands": "",
       "category": "システム制御",
       "summary": "何もしない（XCHG AX,AX と同じオペコード）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -3366,26 +2869,20 @@
       ],
       "notes": "アライメント調整のパディングに使う。",
       "src": "book",
-      "example": {"code": ["nop"],"explanation": "この例では 何もしない（XCHG AX,AX と同じオペコード）。"}
+      "example": {
+        "code": [
+          "nop                       ; 1 バイトの何もしない命令（0x90 = XCHG AX, AX）"
+        ],
+        "explanation": "何もしない（0x90 = XCHG AX, AX と同じオペコード）。レジスタ・メモリ・フラグを変えず 3 クロック消費する。"
+      }
     },
     {
       "mnemonic": "WAIT",
       "operands": "",
       "category": "システム制御",
       "summary": "TEST 入力が所定の状態になるまで待機する。8087 の処理完了との同期に使う。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "常時",
@@ -3401,26 +2898,22 @@
       ],
       "notes": "待機の有無は外部 TEST 入力に依存する。クロックはテスト待ち回数 n で 3+5n。",
       "src": "book",
-      "example": {"code": ["wait"],"explanation": "この例では TEST 入力が所定の状態になるまで待機する。8087 の処理完了との同期に使う。"}
+      "example": {
+        "code": [
+          "status_word: dw 0             ; FPU ステータスの受け口",
+          "fstsw [status_word]       ; 8087 FPU のステータスをメモリへ書込み",
+          "wait                      ; 8087 の処理完了（TEST ピン）まで CPU を待機"
+        ],
+        "explanation": "外部 TEST 入力が所定の状態になるまで待機し、8087 数値コプロセッサの処理完了と CPU のメモリアクセスを同期する。"
+      }
     },
     {
       "mnemonic": "LOCK",
       "operands": "",
       "category": "システム制御",
       "summary": "次の命令のバスをロックするプレフィックス（マルチプロセッサ同期用）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "プレフィックス",
@@ -3436,28 +2929,18 @@
       ],
       "notes": "XCHG や ADD [mem],reg など RMW 命令に付けるのが本来の用法。",
       "src": "book",
-      "example": {"code": ["lock add word [bx], 1"],"explanation": "続く add word [bx],1 のメモリ更新中にバスをロックし、他プロセッサのアクセスを禁止。"}
+      "example": {
+        "code": ["lock add word [bx], 1"],
+        "explanation": "続く add word [bx],1 のメモリ更新中にバスをロックし、他プロセッサのアクセスを禁止。"
+      }
     },
     {
       "mnemonic": "ESC",
       "operands": "exop, reg/mem",
       "category": "システム制御",
       "summary": "コプロセッサへのエスケープ。上位 5 ビットが 11011 のオペコードを FPU 命令として解釈させ、メモリオペランドを読み出して破棄し、外部プロセッサがバス上の値を取得できる。",
-      "addressing": [
-        "即値（exop 0〜63）",
-        "レジスタ",
-        "メモリ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値（exop 0〜63）", "レジスタ", "メモリ"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "reg",
@@ -3477,26 +2960,18 @@
       ],
       "notes": "8087 用のエスケープ枠。8087 がなくてもメモリ形式は読み出しバスサイクルを発生させるため、メモリマップド I/O には副作用がありうる。exop はコプロセッサ命令内にエンコードされる 0〜63 の数値。",
       "src": "book",
-      "example": {"code": ["esc 0, [bx]"],"explanation": "DS:[BX] の 1 ワード読み出しサイクルを発生させ（値は破棄）、コプロセッサ命令 exop=0 として 8087 へ渡す。"}
+      "example": {
+        "code": ["esc 0, [bx]"],
+        "explanation": "DS:[BX] の 1 ワード読み出しサイクルを発生させ（値は破棄）、コプロセッサ命令 exop=0 として 8087 へ渡す。"
+      }
     },
     {
       "mnemonic": "SEG",
       "operands": "",
       "category": "システム制御",
       "summary": "セグメントオーバーライドプレフィックス。CS:/DS:/ES:/SS: を後続の 1 命令に前置し、既定のセグメント参照を明示的に差し替える。",
-      "addressing": [
-        "プレフィックス"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["プレフィックス"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "プレフィックス",
@@ -3527,7 +3002,10 @@
       ],
       "notes": "例: MOV AX, ES:[BX]。DS 既定のメモリ参照を SS（BP 実効アドレス時の既定）以外へ変える用途が中心。string 命令の ES:DI 側のように既定でセグメントが決まっているオペランドには効果がない。",
       "src": "book",
-      "example": {"code": ["mov ax, [cs:bx]"],"explanation": "既定 DS のメモリ参照 [bx] を CS 基準に読み替え、CS:BX の 1 ワードを AX へロード。"}
+      "example": {
+        "code": ["mov ax, [cs:bx]"],
+        "explanation": "既定 DS のメモリ参照 [bx] を CS 基準に読み替え、CS:BX の 1 ワードを AX へロード。"
+      }
     }
   ]
 }

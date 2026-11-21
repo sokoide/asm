@@ -12,11 +12,13 @@ LS 条件コード（cond=1001）を指定した条件付き相対分岐。
   LS 条件コード（cond=1001）を指定した条件付き相対分岐。
 
 使用例:
-  b.ls target
-  target:
+  cmp w0, w1
+  b.ls lower_same           // 符号なし w0 <= w1（C=0 または Z=1）ならスキップ
+  sub w0, w0, w1
+  lower_same:
 
 解説:
-  LS（C=0 または Z=1、符号なし比較の以下）成立なら target へ分岐し、不成立なら次の命令へ進む。
+  LS（C=0 または Z=1、符号なし比較の以下）成立なら後続処理をスキップして lower_same へ分岐する。
 
 元命令: isa arm64 B.COND
 条件付き相対分岐（B.cond）。条件コード接尾辞により B.EQ／B.NE／B.CS（B.HS）／B.CC（B.LO）／B.MI／B.PL／B.VS／B.VC／B.HI／B.LS／B.GE／B.LT／B.GT／B.LE／B.AL／B.NV として記述する。
@@ -28,11 +30,13 @@ LS 条件コード（cond=1001）を指定した条件付き相対分岐。
   B.cond label: 01010100 imm19 0 cond  (4 バイト)
 
 使用例:
-  b.eq target
-  target:
+  cmp  w0, #10
+  b.eq equal                // w0 == 10（Z=1）なら加算をスキップ
+  add  w0, w0, #1           // w0 != 10 のときだけ実行
+  equal:
 
 解説:
-  EQ 成立なら target へ分岐し、不成立なら次の命令へ進む。
+  EQ（Z=1）成立なら加算処理をスキップして equal へ分岐し、不成立なら次の命令へ進む。
 
 備考:
   条件コード cond は4ビット。EQ=0000, NE=0001, CS/HS=0010, CC/LO=0011, MI=0100, PL=0101, VS=0110, VC=0111, HI=1000, LS=1001, GE=1010, LT=1011, GT=1100, LE=1101, AL=1110, NV=1111。変位は命令アドレス基準で4バイト単位。アセンブラ表記は b.eq label など。CLIでは B.COND を検索し、この条件一覧を参照する。

@@ -14,10 +14,11 @@ AH の内容を EFLAGS の下位バイト（SF/ZF/AF/PF/CF）へ書き込む。
   SAHF: 9E  (1 バイト)
 
 使用例:
-  sahf
+  fnstsw ax                 ; FPU ステータスワードを AX へ取得
+  sahf                      ; AH の条件ビットを EFLAGS の SF/ZF/AF/PF/CF へ反映
 
 解説:
-  この例では AH の内容を EFLAGS の下位バイト（SF/ZF/AF/PF/CF）へ書き込む。
+  AH の内容を EFLAGS の下位バイト（SF, ZF, AF, PF, CF）へ書き込む。x87 FPU の比較結果（FSTSW AX）を条件分岐命令に橋渡しする定番イディオム。
 
 備考:
   数値コプロセッサの FSTSW AX 結果をフラグへ反映して条件分岐する用法がある。

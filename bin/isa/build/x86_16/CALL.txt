@@ -21,11 +21,14 @@ CALL dst — 8086（サブルーチン）
   CALL m16:16（far 間接）: FF /3  (長さ可変)
 
 使用例:
-  call target
-  target:
+  call callee               ; 次の命令の IP をスタックへ退避して呼び出し
+  mov  bx, ax               ; RET 後にここへ戻る
+  callee:
+    mov  ax, 42
+    ret
 
 解説:
-  次の命令のアドレス（IP）をスタックへ退避し、target へジャンプ。
+  次の命令のアドレス（IP）をスタックへ退避し、callee へジャンプする。callee 末尾の RET でスタックから IP を戻す。
 
 備考:
   far call は CS と IP の両方を退避。

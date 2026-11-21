@@ -15,11 +15,12 @@ CX を -1 し、ZF=1 かつ CX≠0 なら相対分岐。LOOPZ と同じ。
   LOOPE rel8: E1 rel8  (2 バイト)
 
 使用例:
-  loope target
-  target:
+  search_eq:
+    cmpsb                   ; DS:SI と ES:DI を比較（一致で ZF=1）
+    loope search_eq         ; CX を -1 し、ZF=1 かつ CX != 0 なら継続
 
 解説:
-  CX を -1 し、ZF=1 かつ CX≠0 のとき target へ相対分岐。
+  CX を -1 し、ZF=1 かつ CX≠0 の間 search_eq へ相対分岐する（LOOPZ と同じ）。
 
 備考:
   cmps/scas と組み合わせ、一致が続く間ループする。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。

@@ -14,9 +14,10 @@ AH の内容で FLAGS の下位バイト（SF ZF AF PF CF）を設定。
   SAHF: 9E  (1 バイト)
 
 使用例:
-  sahf
+  fnstsw ax                 ; x87（80287 以降）のステータスワードを AX へ取得
+  sahf                      ; AH の条件ビットを FLAGS の SF/ZF/AF/PF/CF へ反映
 
 解説:
-  この例では AH の内容で FLAGS の下位バイト（SF ZF AF PF CF）を設定。
+  AH の内容で FLAGS の下位バイト（SF, ZF, AF, PF, CF）を設定する。x87 FPU の比較結果を条件分岐へ橋渡しする定石（8087 は FSTSW AX を持たずメモリ経由となる）。
 
 （根拠: book）

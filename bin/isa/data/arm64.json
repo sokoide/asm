@@ -1,11 +1,6 @@
 {
   "arch": "arm64",
-  "flagNames": [
-    "N",
-    "Z",
-    "C",
-    "V"
-  ],
+  "flagNames": ["N", "Z", "C", "V"],
   "instructions": [
     {
       "mnemonic": "MOV",
@@ -17,12 +12,7 @@
         "即値（16ビット符号なし）",
         "即値 #pattern（論理ビットマスク）"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -49,22 +39,18 @@
       ],
       "notes": "MOV 即値は MOVZ/MOVN または論理即値 ORR の別名で、単一命令で表現できる定数に制限される。任意の 64 ビット定数には MOVZ/MOVN と MOVK の組合せなどを使う。",
       "src": "book",
-      "example": {"code": ["mov w0, #0x12"],"explanation": "即値 #0x12 を w0 に転送する（w0 = 0x12）。"}
+      "example": {
+        "code": ["mov w0, #0x12"],
+        "explanation": "即値 #0x12 を w0 に転送する（w0 = 0x12）。"
+      }
     },
     {
       "mnemonic": "MOVZ",
       "operands": "dst, #imm16{, LSL #shift}",
       "category": "データ転送",
       "summary": "16 ビット即値を指定シフト位置に配置し、残りを 0 でクリアする。",
-      "addressing": [
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -80,22 +66,18 @@
       ],
       "notes": "W レジスタは shift 0/16、X レジスタは 0/16/32/48。64 ビット即値の組み立てに使う。 sf=0 は W レジスタ、sf=1 は X レジスタ。hw は 16 ビット単位のシフト量を表す（W は 0〜1、X は 0〜3）。",
       "src": "book",
-      "example": {"code": ["movz x0,#0x1234,lsl #16"],"explanation": "即値 #0x1234 を 16 ビット左シフトして x0 に書き込み、残りのビットを 0 にする（x0 = 0x12340000）。"}
+      "example": {
+        "code": ["movz x0,#0x1234,lsl #16"],
+        "explanation": "即値 #0x1234 を 16 ビット左シフトして x0 に書き込み、残りのビットを 0 にする（x0 = 0x12340000）。"
+      }
     },
     {
       "mnemonic": "MOVN",
       "operands": "dst, #imm16{, LSL #shift}",
       "category": "データ転送",
       "summary": "16 ビット即値を反転（NOT）して配置し、残りを 1 で満たす。-1 に近い即値の生成用。",
-      "addressing": [
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -111,22 +93,18 @@
       ],
       "notes": "sf=0 は W レジスタ、sf=1 は X レジスタ。hw は 16 ビット単位のシフト量を表す（W は 0〜1、X は 0〜3）。",
       "src": "book",
-      "example": {"code": ["movn x0,#0x1234,lsl #16"],"explanation": "即値 #0x1234 を 16 ビット左シフトしてビット反転し、残りを 1 で満たして x0 に書き込む（x0 = 0xFFFFFFFFEDCBFFFF）。"}
+      "example": {
+        "code": ["movn x0,#0x1234,lsl #16"],
+        "explanation": "即値 #0x1234 を 16 ビット左シフトしてビット反転し、残りを 1 で満たして x0 に書き込む（x0 = 0xFFFFFFFFEDCBFFFF）。"
+      }
     },
     {
       "mnemonic": "MOVK",
       "operands": "dst, #imm16{, LSL #shift}",
       "category": "データ転送",
       "summary": "16 ビット即値を指定シフト位置に上書き（他のビットは保持）。64 ビット即値の組み立て用。",
-      "addressing": [
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -142,23 +120,21 @@
       ],
       "notes": "MOVZ と MOVK の組合せが 64 ビット即値ロードの定番（adr/litpool に次ぐ方法）。 sf=0 は W レジスタ、sf=1 は X レジスタ。hw は 16 ビット単位のシフト量を表す（W は 0〜1、X は 0〜3）。",
       "src": "book",
-      "example": {"code": ["movk x0,#0x1234,lsl #16"],"explanation": "x0 のビット 31〜16 を即値 #0x1234 で上書きし、他のビットは保持する。"}
+      "example": {
+        "code": [
+          "movz x0, #0x5678          // x0 = 0x0000000000005678",
+          "movk x0, #0x1234, lsl #16 // x0 = 0x0000000012345678（下位 16 ビットは保持）"
+        ],
+        "explanation": "下位ビットを保持したまま x0 のビット 31〜16 を即値 #0x1234 で上書きする。MOVZ と MOVK を組み合わせることで任意の 32/64 ビット定数を組み立てられる。"
+      }
     },
     {
       "mnemonic": "MVN",
       "operands": "dst, src{, shift}",
       "category": "論理",
       "summary": "ソースをビット反転してデスティネーションに転送する（dst = NOT src）。",
-      "addressing": [
-        "レジスタ",
-        "シフト付きレジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "シフト付きレジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -172,7 +148,10 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["mvn x0,x2"],"explanation": "x2 の全ビットを反転して x0 に入れる（x0 = ~x2）。"}
+      "example": {
+        "code": ["mvn x0,x2"],
+        "explanation": "x2 の全ビットを反転して x0 に入れる（x0 = ~x2）。"
+      }
     },
     {
       "mnemonic": "LDR",
@@ -188,12 +167,7 @@
         "後インデックス [Xn], #imm",
         "擬似命令 LDR Xd,=constant"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -254,7 +228,10 @@
       ],
       "notes": "符号拡張版は LDRSB/LDRSH/LDRSW。32 ビット LDR Wt は上位ビットを 0 クリア。 符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。 リテラル形式の imm19 は符号付き 4 バイト単位の PC 相対変位。",
       "src": "book",
-      "example": {"code": ["ldr w0,[x1,#4]"],"explanation": "x1+4 番地のメモリから 4 バイトを取り出し w0 へ入れる（w0 = mem[x1+4]）。"}
+      "example": {
+        "code": ["ldr w0,[x1,#4]"],
+        "explanation": "x1+4 番地のメモリから 4 バイトを取り出し w0 へ入れる（w0 = mem[x1+4]）。"
+      }
     },
     {
       "mnemonic": "STR",
@@ -268,12 +245,7 @@
         "前インデックス [Xn, #imm]!",
         "後インデックス [Xn], #imm"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -324,7 +296,10 @@
       ],
       "notes": "スタック保存に STP を使う例がある。性能は実装や配置に依存する。W レジスタからのストアは下位 32 ビット、X レジスタからは 64 ビットを書き込む。 符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。",
       "src": "book",
-      "example": {"code": ["str w0,[x1,#4]"],"explanation": "w0 の 4 バイトを x1+4 番地のメモリへストアする（mem[x1+4] = w0）。"}
+      "example": {
+        "code": ["str w0,[x1,#4]"],
+        "explanation": "w0 の 4 バイトを x1+4 番地のメモリへストアする（mem[x1+4] = w0）。"
+      }
     },
     {
       "mnemonic": "LDP",
@@ -336,12 +311,7 @@
         "前インデックス [Xn|SP, #imm]!",
         "後インデックス [Xn|SP], #imm"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -382,7 +352,10 @@
       ],
       "notes": "SP 更新とレジスタ復帰を LDP X29,X30,[SP],#16 のような 1 命令で行える。 汎用 W レジスタ対ではオフセットは 4 の倍数で -256〜252、X レジスタ対では 8 の倍数で -512〜504。レジスタオフセットは指定できない。 imm7 は符号付きで、W ペアは 4 バイト、X ペアは 8 バイト単位の変位を表す。",
       "src": "book",
-      "example": {"code": ["ldp w0,w2,[x1,#8]"],"explanation": "x1+8 番地の 4 バイトを w0 へ、続く 4 バイトを w2 へロードする（w0 = mem[x1+8]、w2 = mem[x1+12]）。"}
+      "example": {
+        "code": ["ldp w0,w2,[x1,#8]"],
+        "explanation": "x1+8 番地の 4 バイトを w0 へ、続く 4 バイトを w2 へロードする（w0 = mem[x1+8]、w2 = mem[x1+12]）。"
+      }
     },
     {
       "mnemonic": "STP",
@@ -394,12 +367,7 @@
         "前インデックス [Xn|SP, #imm]!",
         "後インデックス [Xn|SP], #imm"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -440,22 +408,18 @@
       ],
       "notes": "STP X29,X30,[SP,#-16]! がフレーム確保の定番。 汎用 W レジスタ対ではオフセットは 4 の倍数で -256〜252、X レジスタ対では 8 の倍数で -512〜504。レジスタオフセットは指定できない。 imm7 は符号付きで、W ペアは 4 バイト、X ペアは 8 バイト単位の変位を表す。",
       "src": "book",
-      "example": {"code": ["stp w0,w2,[x1,#8]"],"explanation": "w0 の 4 バイトを x1+8 番地へ、w2 の 4 バイトを x1+12 番地へストアする（mem[x1+8] = w0、mem[x1+12] = w2）。"}
+      "example": {
+        "code": ["stp w0,w2,[x1,#8]"],
+        "explanation": "w0 の 4 バイトを x1+8 番地へ、w2 の 4 バイトを x1+12 番地へストアする（mem[x1+8] = w0、mem[x1+12] = w2）。"
+      }
     },
     {
       "mnemonic": "LDRB",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "1 バイトロード（上位ビット 0 クリア）。符号拡張版は LDRSB。",
-      "addressing": [
-        "レジスタベースのアドレッシングモード（PC 相対を除く）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタベースのアドレッシングモード（PC 相対を除く）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -486,22 +450,18 @@
       ],
       "notes": "符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。",
       "src": "book",
-      "example": {"code": ["ldrb w0,[x1,#4]"],"explanation": "x1+4 番地の 1 バイトをゼロ拡張して w0 へロードする（w0 = mem[x1+4] & 0xFF）。"}
+      "example": {
+        "code": ["ldrb w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 1 バイトをゼロ拡張して w0 へロードする（w0 = mem[x1+4] & 0xFF）。"
+      }
     },
     {
       "mnemonic": "STRB",
       "operands": "src, [base{, #imm}]",
       "category": "データ転送",
       "summary": "1 バイトストア（下位 8 ビットのみ書く）。",
-      "addressing": [
-        "レジスタベースのアドレッシングモード（PC 相対を除く）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタベースのアドレッシングモード（PC 相対を除く）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -532,22 +492,18 @@
       ],
       "notes": "符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。",
       "src": "book",
-      "example": {"code": ["strb w0,[x1,#4]"],"explanation": "w0 の下位 1 バイトを x1+4 番地へストアする（mem[x1+4] = w0 & 0xFF）。"}
+      "example": {
+        "code": ["strb w0,[x1,#4]"],
+        "explanation": "w0 の下位 1 バイトを x1+4 番地へストアする（mem[x1+4] = w0 & 0xFF）。"
+      }
     },
     {
       "mnemonic": "LDRH",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "2 バイト（ハーフワード）ロード。符号拡張版は LDRSH。",
-      "addressing": [
-        "レジスタベースのアドレッシングモード（PC 相対を除く）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタベースのアドレッシングモード（PC 相対を除く）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -578,22 +534,18 @@
       ],
       "notes": "符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。",
       "src": "book",
-      "example": {"code": ["ldrh w0,[x1,#4]"],"explanation": "x1+4 番地の 2 バイトをゼロ拡張して w0 へロードする（w0 = mem[x1+4] & 0xFFFF）。"}
+      "example": {
+        "code": ["ldrh w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 2 バイトをゼロ拡張して w0 へロードする（w0 = mem[x1+4] & 0xFFFF）。"
+      }
     },
     {
       "mnemonic": "STRH",
       "operands": "src, [base{, #imm}]",
       "category": "データ転送",
       "summary": "2 バイト（ハーフワード）ストア。",
-      "addressing": [
-        "レジスタベースのアドレッシングモード（PC 相対を除く）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタベースのアドレッシングモード（PC 相対を除く）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -624,7 +576,10 @@
       ],
       "notes": "符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。",
       "src": "book",
-      "example": {"code": ["strh w0,[x1,#4]"],"explanation": "w0 の下位 2 バイトを x1+4 番地へストアする（mem[x1+4] = w0 & 0xFFFF）。"}
+      "example": {
+        "code": ["strh w0,[x1,#4]"],
+        "explanation": "w0 の下位 2 バイトを x1+4 番地へストアする（mem[x1+4] = w0 & 0xFFFF）。"
+      }
     },
     {
       "mnemonic": "LDRSW",
@@ -637,12 +592,7 @@
         "レジスタオフセット",
         "PC 相対（ラベル）"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -678,22 +628,18 @@
       ],
       "notes": "符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。 リテラル形式の imm19 は符号付き 4 バイト単位の PC 相対変位。",
       "src": "book",
-      "example": {"code": ["ldrsw x0,[x1,#4]"],"explanation": "x1+4 番地の 4 バイトを符号拡張して x0 へロードする（x0 = 符号拡張(mem[x1+4])）。"}
+      "example": {
+        "code": ["ldrsw x0,[x1,#4]"],
+        "explanation": "x1+4 番地の 4 バイトを符号拡張して x0 へロードする（x0 = 符号拡張(mem[x1+4])）。"
+      }
     },
     {
       "mnemonic": "LDRSB",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "1 バイトを符号拡張してロード（8 ビット → 32/64）。W レジスタ指定なら 32 ビットへ、X レジスタ指定なら 64 ビットへ符号拡張する。",
-      "addressing": [
-        "レジスタベースのアドレッシングモード（PC 相対を除く）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタベースのアドレッシングモード（PC 相対を除く）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -744,22 +690,18 @@
       ],
       "notes": "PC 相対（ラベル）は使えない（LDR/LDRSW のみ）。ゼロ拡張版は LDRB。 符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。",
       "src": "book",
-      "example": {"code": ["ldrsb w0,[x1,#4]"],"explanation": "x1+4 番地の 1 バイトを符号拡張して w0 へロードする（8 → 32 ビット）。"}
+      "example": {
+        "code": ["ldrsb w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 1 バイトを符号拡張して w0 へロードする（8 → 32 ビット）。"
+      }
     },
     {
       "mnemonic": "LDRSH",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "2 バイト（ハーフワード）を符号拡張してロード（16 ビット → 32/64）。",
-      "addressing": [
-        "レジスタベースのアドレッシングモード（PC 相対を除く）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタベースのアドレッシングモード（PC 相対を除く）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -810,22 +752,18 @@
       ],
       "notes": "ゼロ拡張版は LDRH。スケール付きインデックス（[Xn, Wi, sxtw #1] など）ではスケール係数 0/1 が指定できる。 符号なし即値形式の imm12 はアクセス幅でスケールする。前／後インデックスの imm9 は符号付きバイト単位。レジスタオフセットの option は拡張方式、S はアクセス幅に応じた左シフトを指定する。",
       "src": "book",
-      "example": {"code": ["ldrsh w0,[x1,#4]"],"explanation": "x1+4 番地の 2 バイトを符号拡張して w0 へロードする（16 → 32 ビット）。"}
+      "example": {
+        "code": ["ldrsh w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 2 バイトを符号拡張して w0 へロードする（16 → 32 ビット）。"
+      }
     },
     {
       "mnemonic": "LDUR",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "スケールなし（unscaled）間接＋オフセットのロードを明示指定。LDR の表記からこの形式を選択するアセンブラもある。",
-      "addressing": [
-        "スケールなし間接＋オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スケールなし間接＋オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -846,22 +784,18 @@
       ],
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
       "src": "book",
-      "example": {"code": ["ldur w0,[x1,#4]"],"explanation": "x1+4 番地のメモリから 4 バイトを取り出し w0 へ入れる（w0 = mem[x1+4]）。スケールなし形式を明示する命令。"}
+      "example": {
+        "code": ["ldur w0,[x1,#4]"],
+        "explanation": "x1+4 番地のメモリから 4 バイトを取り出し w0 へ入れる（w0 = mem[x1+4]）。スケールなし形式を明示する命令。"
+      }
     },
     {
       "mnemonic": "STUR",
       "operands": "src, [base{, #imm}]",
       "category": "データ転送",
       "summary": "スケールなし（unscaled）間接＋オフセットのストアを明示指定。",
-      "addressing": [
-        "スケールなし間接＋オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スケールなし間接＋オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -882,22 +816,18 @@
       ],
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
       "src": "book",
-      "example": {"code": ["stur w0,[x1,#4]"],"explanation": "w0 の 4 バイトを x1+4 番地のメモリへストアする（mem[x1+4] = w0）。スケールなし形式を明示する命令。"}
+      "example": {
+        "code": ["stur w0,[x1,#4]"],
+        "explanation": "w0 の 4 バイトを x1+4 番地のメモリへストアする（mem[x1+4] = w0）。スケールなし形式を明示する命令。"
+      }
     },
     {
       "mnemonic": "ADRP",
       "operands": "dst64, label",
       "category": "アドレス計算",
       "summary": "命令のある 4 KiB ページを基準とする PC 相対のページアドレスを X レジスタに作る。",
-      "addressing": [
-        "PC 相対"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["PC 相対"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -913,22 +843,24 @@
       ],
       "notes": "基準ページから -4 GiB〜+4 GiB-4 KiB の 4 KiB 単位で指定する。下位 12 ビットは 0。ADRP と ADD などを組み合わせてページ内オフセットを加える。 immhi:immlo は符号付き 21 ビットのページ変位（4 KiB 単位）。",
       "src": "book",
-      "example": {"code": ["adrp x0,target","target:"],"explanation": "PC の 4 KiB ページを基準に target のページ先頭アドレスを計算し、x0 に入れる。"}
+      "example": {
+        "code": [
+          "adrp x0, target           // target が属する 4 KiB ページの先頭アドレスを取得",
+          "add  x0, x0, :lo12:target // ページ内オフセット（下位 12 ビット）を加算",
+          "ldrb w1, [x0]             // x0 = target の実効アドレス。先頭バイトをロード",
+          "target:",
+          "  .byte 0x41, 0x42, 0x43"
+        ],
+        "explanation": "PC の 4 KiB ページを基準に target のページ先頭アドレスを計算して x0 に入れる（下位 12 ビットは 0）。通常は ADD や LDR/STR の :lo12: 修飾子と組み合わせて ±4 GiB 範囲のシンボルを参照する。"
+      }
     },
     {
       "mnemonic": "ADR",
       "operands": "dst64, label",
       "category": "アドレス計算",
       "summary": "この命令のアドレスから -1,048,576〜+1,048,575 バイトの PC 相対アドレスを X レジスタに作る。",
-      "addressing": [
-        "PC 相対"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["PC 相対"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -944,7 +876,15 @@
       ],
       "notes": "immhi:immlo は符号付き 21 ビットのバイト変位。",
       "src": "book",
-      "example": {"code": ["adr x0,target","target:"],"explanation": "この命令のアドレスから target までの PC 相対差を計算し、target のアドレスを x0 に入れる。"}
+      "example": {
+        "code": [
+          "adr x0, target            // x0 = target の実行時アドレス（PC ± 1 MiB 以内）",
+          "ldr w1, [x0]",
+          "target:",
+          "  .word 0x12345678"
+        ],
+        "explanation": "この命令のアドレスから target までの PC 相対差を計算し、target のアドレスを x0 に入れる（メモリアクセスは行わない）。"
+      }
     },
     {
       "mnemonic": "ADD",
@@ -957,12 +897,7 @@
         "シフト付きレジスタ",
         "拡張レジスタ（uxtb/sxtw など）"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -988,7 +923,10 @@
       ],
       "notes": "フラグが必要なら ADDS。即値形式は 12 ビット即値をそのまま、または 12 ビット左シフトして使う。 即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["add x0,x1,#1,lsl #12"],"explanation": "x0 = x1 + (#1 を 12 ビット左シフトした値)。フラグは変化しない。"}
+      "example": {
+        "code": ["add x0,x1,#1,lsl #12"],
+        "explanation": "x0 = x1 + (#1 を 12 ビット左シフトした値)。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "ADDS",
@@ -1001,12 +939,7 @@
         "シフト付きレジスタ",
         "拡張レジスタ（uxtb/sxtw など）"
       ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1032,22 +965,18 @@
       ],
       "notes": "S 接尾辞はフラグを更新する。宛先が WZR/XZR の形は CMN の別名。 即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["adds x0,x1,#1,lsl #12"],"explanation": "x0 = x1 + (#1 を 12 ビット左シフトした値) とし、N/Z/C/V を更新する。"}
+      "example": {
+        "code": ["adds x0,x1,#1,lsl #12"],
+        "explanation": "x0 = x1 + (#1 を 12 ビット左シフトした値) とし、N/Z/C/V を更新する。"
+      }
     },
     {
       "mnemonic": "ADC",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "キャリー込み加算（dst = src1 + src2 + C）。多倍長演算の上位語に使う。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1063,22 +992,18 @@
       ],
       "notes": "128 ビット加算は ADDS + ADC。 sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["adc x0,x1,x2"],"explanation": "x0 = x1 + x2 + C（キャリー込み加算）。フラグは変化しない。"}
+      "example": {
+        "code": ["adc x0,x1,x2"],
+        "explanation": "x0 = x1 + x2 + C（キャリー込み加算）。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "ADCS",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "キャリー込み加算（dst = src1 + src2 + C）。フラグは ADDS と同じ方法で更新する。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1094,7 +1019,10 @@
       ],
       "notes": "sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["adcs x0,x1,x2"],"explanation": "x0 = x1 + x2 + C とし、N/Z/C/V を更新する。"}
+      "example": {
+        "code": ["adcs x0,x1,x2"],
+        "explanation": "x0 = x1 + x2 + C とし、N/Z/C/V を更新する。"
+      }
     },
     {
       "mnemonic": "SUB",
@@ -1107,12 +1035,7 @@
         "シフト付きレジスタ",
         "拡張レジスタ（uxtb/sxtw など）"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1138,7 +1061,10 @@
       ],
       "notes": "即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["sub x0,x1,#1,lsl #12"],"explanation": "x0 = x1 - (#1 を 12 ビット左シフトした値)。フラグは変化しない。"}
+      "example": {
+        "code": ["sub x0,x1,#1,lsl #12"],
+        "explanation": "x0 = x1 - (#1 を 12 ビット左シフトした値)。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "SUBS",
@@ -1151,12 +1077,7 @@
         "シフト付きレジスタ",
         "拡張レジスタ（uxtb/sxtw など）"
       ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1182,22 +1103,18 @@
       ],
       "notes": "CMP Xn,Xm は SUBS XZR,Xn,Xm の別名。 即値 sh=0 は無シフト、sh=1 は 12 ビット左シフト。シフト形式の shift は LSL=00、LSR=01、ASR=10。拡張形式の option は拡張方式、imm3 は左シフト 0〜4。SP を使えるオペランド位置は形式とフラグ更新の有無で異なる。",
       "src": "book",
-      "example": {"code": ["subs x0,x1,#1,lsl #12"],"explanation": "x0 = x1 - (#1 を 12 ビット左シフトした値) とし、N/Z/C/V を更新する（C は桁借りでクリア、V は符号付きオーバーフローでセット）。"}
+      "example": {
+        "code": ["subs x0,x1,#1,lsl #12"],
+        "explanation": "x0 = x1 - (#1 を 12 ビット左シフトした値) とし、N/Z/C/V を更新する（C は桁借りでクリア、V は符号付きオーバーフローでセット）。"
+      }
     },
     {
       "mnemonic": "SBC",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "キャリー込み減算（dst = src1 - src2 - (1 - C)）。多倍長減算の上位語に使う。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1213,22 +1130,18 @@
       ],
       "notes": "128 ビット減算は SUBS + SBC。 sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["sbc x0,x1,x2"],"explanation": "x0 = x1 - x2 - (1 - C)（キャリー込み減算）。フラグは変化しない。"}
+      "example": {
+        "code": ["sbc x0,x1,x2"],
+        "explanation": "x0 = x1 - x2 - (1 - C)（キャリー込み減算）。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "SBCS",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "キャリー込み減算（dst = src1 - src2 - (1 - C)、フラグ更新）。多倍長減算では LO を SUBS、上位を SBCS で処理する。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1244,22 +1157,18 @@
       ],
       "notes": "sf=0 は W レジスタ、sf=1 は X レジスタ。",
       "src": "book",
-      "example": {"code": ["sbcs x0,x1,x2"],"explanation": "x0 = x1 - x2 - (1 - C) とし、N/Z/C/V を更新する。"}
+      "example": {
+        "code": ["sbcs x0,x1,x2"],
+        "explanation": "x0 = x1 - x2 - (1 - C) とし、N/Z/C/V を更新する。"
+      }
     },
     {
       "mnemonic": "NEG",
       "operands": "dst, src",
       "category": "算術",
       "summary": "符号反転（dst = -src、2 の補数）。オペランドはレジスタのみ。フラグは変化しない。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1273,22 +1182,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["neg x0,x1"],"explanation": "x0 = 0 - x1（2 の補数で符号反転）。フラグは変化しない。"}
+      "example": {
+        "code": ["neg x0,x1"],
+        "explanation": "x0 = 0 - x1（2 の補数で符号反転）。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "NEGS",
       "operands": "dst, src",
       "category": "算術",
       "summary": "符号反転してフラグ更新。最小の負の値の符号反転は V をセットする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1303,22 +1208,18 @@
       ],
       "notes": "SUBS Wd,WZR,Wm または SUBS Xd,XZR,Xm の別名。多倍長の符号反転では下位語を NEGS、上位語を NGCS（または SBCS）で処理できる。",
       "src": "book",
-      "example": {"code": ["negs x0,x1"],"explanation": "x0 = 0 - x1 とし、N/Z/C/V を更新する。"}
+      "example": {
+        "code": ["negs x0,x1"],
+        "explanation": "x0 = 0 - x1 とし、N/Z/C/V を更新する。"
+      }
     },
     {
       "mnemonic": "MUL",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "乗算（下位 32/64 ビットのみ）。符号/符号なし共通（上位は捨てられるため）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1336,22 +1237,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["mul w0,w1,w2"],"explanation": "w0 = w1 × w2 の下位 32 ビット（上位は捨てられるので符号/符号なし共通）。"}
+      "example": {
+        "code": ["mul w0,w1,w2"],
+        "explanation": "w0 = w1 × w2 の下位 32 ビット（上位は捨てられるので符号/符号なし共通）。"
+      }
     },
     {
       "mnemonic": "MNEG",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "乗算して否定（dst = -src1*src2）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1369,22 +1266,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["mneg w0,w1,w2"],"explanation": "w0 = -(w1 × w2) の下位 32 ビット。"}
+      "example": {
+        "code": ["mneg w0,w1,w2"],
+        "explanation": "w0 = -(w1 × w2) の下位 32 ビット。"
+      }
     },
     {
       "mnemonic": "MADD",
       "operands": "dst, src1, src2, src3",
       "category": "算術",
       "summary": "乗算して加算（dst = src1 * src2 + src3）。積のオーバーフローは無視（下位 32/64 ビットのみ保持）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1400,22 +1293,18 @@
       ],
       "notes": "配列要素アドレス計算（i*size + j）に使える。A64 の整数乗算・積和命令は NZCV を更新しない。",
       "src": "book",
-      "example": {"code": ["madd x0,x1,x2,x3"],"explanation": "x0 = x1 × x2 + x3（下位 64 ビット、積の上位は無視）。"}
+      "example": {
+        "code": ["madd x0,x1,x2,x3"],
+        "explanation": "x0 = x1 × x2 + x3（下位 64 ビット、積の上位は無視）。"
+      }
     },
     {
       "mnemonic": "MSUB",
       "operands": "dst, src1, src2, src3",
       "category": "算術",
       "summary": "乗算して減算（dst = src3 - src1 * src2）。積のオーバーフローは無視。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1431,22 +1320,18 @@
       ],
       "notes": "除算後の剰余は UDIV/SDIV + MSUB で求める。",
       "src": "book",
-      "example": {"code": ["msub x0,x1,x2,x3"],"explanation": "x0 = x3 - x1 × x2（下位 64 ビット、積の上位は無視）。"}
+      "example": {
+        "code": ["msub x0,x1,x2,x3"],
+        "explanation": "x0 = x3 - x1 × x2（下位 64 ビット、積の上位は無視）。"
+      }
     },
     {
       "mnemonic": "SDIV",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "符号付き除算（0 除算は結果 0、剰余は MSUB で求める）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1462,22 +1347,18 @@
       ],
       "notes": "商は 0 方向に丸める。0 除算の商は 0。最小の負数を -1 で割る場合は同じ最小の負数を返す。算術例外を発生させず、NZCV も変えない。剰余は MSUB r,q,除数,被除数 で求められる。",
       "src": "book",
-      "example": {"code": ["sdiv x0,x1,x2"],"explanation": "x0 = x1 ÷ x2（符号付き、0 方向へ切り捨て）。x2 が 0 なら結果は 0。"}
+      "example": {
+        "code": ["sdiv x0,x1,x2"],
+        "explanation": "x0 = x1 ÷ x2（符号付き、0 方向へ切り捨て）。x2 が 0 なら結果は 0。"
+      }
     },
     {
       "mnemonic": "UDIV",
       "operands": "dst, src1, src2",
       "category": "算術",
       "summary": "符号なし除算（0 除算は結果 0）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1493,22 +1374,18 @@
       ],
       "notes": "0 除算の商は 0。算術例外を発生させず、NZCV も変えない。MSUB で被除数から商と除数の積を引けば剰余を得られる。",
       "src": "book",
-      "example": {"code": ["udiv x0,x1,x2"],"explanation": "x0 = x1 ÷ x2（符号なし）。x2 が 0 なら結果は 0。"}
+      "example": {
+        "code": ["udiv x0,x1,x2"],
+        "explanation": "x0 = x1 ÷ x2（符号なし）。x2 が 0 なら結果は 0。"
+      }
     },
     {
       "mnemonic": "SMULL",
       "operands": "dst64, src1w, src2w",
       "category": "算術",
       "summary": "符号付き 32×32 → 64 ビット乗算（全積）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1523,22 +1400,18 @@
       ],
       "notes": "SMULL は 32 ビット値同士の 64 ビット全積。64 ビット値同士の 128 ビット積の上位 64 ビットには SMULH を使う。",
       "src": "book",
-      "example": {"code": ["smull x0,w1,w2"],"explanation": "x0 = 符号付き (w1 × w2) の全積（32×32 → 64 ビット）。"}
+      "example": {
+        "code": ["smull x0,w1,w2"],
+        "explanation": "x0 = 符号付き (w1 × w2) の全積（32×32 → 64 ビット）。"
+      }
     },
     {
       "mnemonic": "UMULL",
       "operands": "dst64, src1w, src2w",
       "category": "算術",
       "summary": "符号なし 32×32 → 64 ビット乗算（全積）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1552,22 +1425,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["umull x0,w1,w2"],"explanation": "x0 = 符号なし (w1 × w2) の全積（32×32 → 64 ビット）。"}
+      "example": {
+        "code": ["umull x0,w1,w2"],
+        "explanation": "x0 = 符号なし (w1 × w2) の全積（32×32 → 64 ビット）。"
+      }
     },
     {
       "mnemonic": "SMULH",
       "operands": "dst64, src1, src2",
       "category": "算術",
       "summary": "符号付き 64×64 乗算の上位 64 ビット（積を算術右シフト 64 した値）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1583,22 +1452,18 @@
       ],
       "notes": "MUL（下位 64 ビット）と組み合わせれば完全な 128 ビット積が得られる。",
       "src": "book",
-      "example": {"code": ["smulh x0,x1,x2"],"explanation": "x0 = 符号付き (x1 × x2) の上位 64 ビット。"}
+      "example": {
+        "code": ["smulh x0,x1,x2"],
+        "explanation": "x0 = 符号付き (x1 × x2) の上位 64 ビット。"
+      }
     },
     {
       "mnemonic": "UMULH",
       "operands": "dst64, src1, src2",
       "category": "算術",
       "summary": "符号なし 64×64 乗算の上位 64 ビット。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1614,22 +1479,18 @@
       ],
       "notes": "10 進変換の ×10 オーバーフロー検出などに使う。",
       "src": "book",
-      "example": {"code": ["umulh x0,x1,x2"],"explanation": "x0 = 符号なし (x1 × x2) の上位 64 ビット。"}
+      "example": {
+        "code": ["umulh x0,x1,x2"],
+        "explanation": "x0 = 符号なし (x1 × x2) の上位 64 ビット。"
+      }
     },
     {
       "mnemonic": "SMADDL",
       "operands": "dst64, src1w, src2w, src3",
       "category": "算術",
       "summary": "符号付き 32×32 → 64 ビット乗算に 64 ビット値を加算（dst = (src1w * src2w) + src3）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1644,22 +1505,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["smaddl x0,w1,w2,x3"],"explanation": "x0 = x3 + 符号付き (w1 × w2)（32×32 → 64 ビットの全積を加算）。"}
+      "example": {
+        "code": ["smaddl x0,w1,w2,x3"],
+        "explanation": "x0 = x3 + 符号付き (w1 × w2)（32×32 → 64 ビットの全積を加算）。"
+      }
     },
     {
       "mnemonic": "UMADDL",
       "operands": "dst64, src1w, src2w, src3",
       "category": "算術",
       "summary": "符号なし 32×32 → 64 ビット乗算に 64 ビット値を加算。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1674,22 +1531,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["umaddl x0,w1,w2,x3"],"explanation": "x0 = x3 + 符号なし (w1 × w2)（32×32 → 64 ビットの全積を加算）。"}
+      "example": {
+        "code": ["umaddl x0,w1,w2,x3"],
+        "explanation": "x0 = x3 + 符号なし (w1 × w2)（32×32 → 64 ビットの全積を加算）。"
+      }
     },
     {
       "mnemonic": "SMSUBL",
       "operands": "dst64, src1w, src2w, src3",
       "category": "算術",
       "summary": "64 ビット値から符号付き 32×32 ビット積を減算（dst = src3 - (src1w * src2w)）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1704,22 +1557,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["smsubl x0,w1,w2,x3"],"explanation": "x0 = x3 - 符号付き (w1 × w2)（64 ビット値から全積を減算）。"}
+      "example": {
+        "code": ["smsubl x0,w1,w2,x3"],
+        "explanation": "x0 = x3 - 符号付き (w1 × w2)（64 ビット値から全積を減算）。"
+      }
     },
     {
       "mnemonic": "UMSUBL",
       "operands": "dst64, src1w, src2w, src3",
       "category": "算術",
       "summary": "64 ビット値から符号なし 32×32 ビット積を減算（dst = src3 - (src1w * src2w)）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1734,22 +1583,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["umsubl x0,w1,w2,x3"],"explanation": "x0 = x3 - 符号なし (w1 × w2)（64 ビット値から全積を減算）。"}
+      "example": {
+        "code": ["umsubl x0,w1,w2,x3"],
+        "explanation": "x0 = x3 - 符号なし (w1 × w2)（64 ビット値から全積を減算）。"
+      }
     },
     {
       "mnemonic": "SMNEGL",
       "operands": "dst64, src1w, src2w",
       "category": "算術",
       "summary": "符号付き 32×32 → 64 ビット乗算の否定（dst = -(src1w * src2w)）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1763,22 +1608,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["smnegl x0,w1,w2"],"explanation": "x0 = -(符号付き w1 × w2)（32×32 → 64 ビットの全積の否定）。"}
+      "example": {
+        "code": ["smnegl x0,w1,w2"],
+        "explanation": "x0 = -(符号付き w1 × w2)（32×32 → 64 ビットの全積の否定）。"
+      }
     },
     {
       "mnemonic": "UMNEGL",
       "operands": "dst64, src1w, src2w",
       "category": "算術",
       "summary": "符号なし 32×32 → 64 ビット乗算の否定。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1792,7 +1633,10 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["umnegl x0,w1,w2"],"explanation": "x0 = -(符号なし w1 × w2)（32×32 → 64 ビットの全積の否定）。"}
+      "example": {
+        "code": ["umnegl x0,w1,w2"],
+        "explanation": "x0 = -(符号なし w1 × w2)（32×32 → 64 ビットの全積の否定）。"
+      }
     },
     {
       "mnemonic": "AND",
@@ -1804,12 +1648,7 @@
         "即値 #pattern（論理ビットマスク）",
         "シフト付きレジスタ"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1830,7 +1669,10 @@
       ],
       "notes": "即値は特殊なビットマスクエンコーディングのみ。 sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["and x0,x1,x2,lsl #2"],"explanation": "x0 = x1 & (x2 << 2)。フラグは変化しない。"}
+      "example": {
+        "code": ["and x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 & (x2 << 2)。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "ANDS",
@@ -1842,12 +1684,7 @@
         "即値 #pattern（論理ビットマスク）",
         "シフト付きレジスタ"
       ],
-      "flags": [
-        "‡",
-        "‡",
-        "0",
-        "0"
-      ],
+      "flags": ["‡", "‡", "0", "0"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1868,7 +1705,10 @@
       ],
       "notes": "TST Xn,Xm は ANDS XZR,Xn,Xm の別名。 sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["ands x0,x1,x2,lsl #2"],"explanation": "x0 = x1 & (x2 << 2) とし、N/Z を更新、C/V をクリアする。"}
+      "example": {
+        "code": ["ands x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 & (x2 << 2) とし、N/Z を更新、C/V をクリアする。"
+      }
     },
     {
       "mnemonic": "ORR",
@@ -1880,12 +1720,7 @@
         "即値 #pattern（論理ビットマスク）",
         "シフト付きレジスタ"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1906,23 +1741,18 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["orr x0,x1,x2,lsl #2"],"explanation": "x0 = x1 | (x2 << 2)。"}
+      "example": {
+        "code": ["orr x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 | (x2 << 2)。"
+      }
     },
     {
       "mnemonic": "ORN",
       "operands": "dst, src1, src2",
       "category": "論理",
       "summary": "OR NOT。ソースの 0 ビット位置に対応するデスティネーションのビットを 1 にセットできる。それ以外は ORR と同様。",
-      "addressing": [
-        "レジスタ",
-        "シフト付きレジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "シフト付きレジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1938,7 +1768,10 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["orn x0,x1,x2,lsl #2"],"explanation": "x0 = x1 | ~(x2 << 2)。"}
+      "example": {
+        "code": ["orn x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 | ~(x2 << 2)。"
+      }
     },
     {
       "mnemonic": "EOR",
@@ -1950,12 +1783,7 @@
         "即値 #pattern（論理ビットマスク）",
         "シフト付きレジスタ"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -1976,23 +1804,18 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。 即値形式の N/immr/imms はビットマスクを符号化する。",
       "src": "book",
-      "example": {"code": ["eor x0,x1,x2,lsl #2"],"explanation": "x0 = x1 ^ (x2 << 2)。"}
+      "example": {
+        "code": ["eor x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 ^ (x2 << 2)。"
+      }
     },
     {
       "mnemonic": "EON",
       "operands": "dst, src1, src2",
       "category": "論理",
       "summary": "EOR NOT（dst = src1 EOR NOT src2）。ソースの 0 ビット位置に対応するデスティネーションのビットを反転できる。それ以外は EOR と同様。",
-      "addressing": [
-        "レジスタ",
-        "シフト付きレジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "シフト付きレジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2008,23 +1831,18 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["eon x0,x1,x2,lsl #2"],"explanation": "x0 = x1 ^ ~(x2 << 2)。"}
+      "example": {
+        "code": ["eon x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 ^ ~(x2 << 2)。"
+      }
     },
     {
       "mnemonic": "BIC",
       "operands": "dst, src1, src2",
       "category": "論理",
       "summary": "ビットクリア（dst = src1 AND NOT src2）。ソースに 1 がある位置のデスティネーションビットをクリアする。S 付きは BICS。",
-      "addressing": [
-        "レジスタ",
-        "シフト付きレジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "シフト付きレジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2040,23 +1858,18 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["bic x0,x1,x2,lsl #2"],"explanation": "x0 = x1 & ~(x2 << 2)（x2 の 1 ビット位置に対応する x0 のビットをクリア）。"}
+      "example": {
+        "code": ["bic x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 & ~(x2 << 2)（x2 の 1 ビット位置に対応する x0 のビットをクリア）。"
+      }
     },
     {
       "mnemonic": "BICS",
       "operands": "dst, src1, src2",
       "category": "論理",
       "summary": "ビットクリア。残った値に基づいて N/Z をセットする。",
-      "addressing": [
-        "レジスタ",
-        "シフト付きレジスタ"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "0",
-        "0"
-      ],
+      "addressing": ["レジスタ", "シフト付きレジスタ"],
+      "flags": ["‡", "‡", "0", "0"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2072,23 +1885,18 @@
       ],
       "notes": "sf=0 は W、sf=1 は X。レジスタ形式の shift は LSL=00、LSR=01、ASR=10、ROR=11。",
       "src": "book",
-      "example": {"code": ["bics x0,x1,x2,lsl #2"],"explanation": "x0 = x1 & ~(x2 << 2) とし、N/Z を更新、C/V をクリアする。"}
+      "example": {
+        "code": ["bics x0,x1,x2,lsl #2"],
+        "explanation": "x0 = x1 & ~(x2 << 2) とし、N/Z を更新、C/V をクリアする。"
+      }
     },
     {
       "mnemonic": "LSL",
       "operands": "dst, src, count（即値またはレジスタ）",
       "category": "シフト",
       "summary": "左論理シフト。count はレジスタまたは 0〜31/0〜63 の即値。",
-      "addressing": [
-        "即値（0〜31/0〜63）",
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値（0〜31/0〜63）", "レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2109,23 +1917,18 @@
       ],
       "notes": "即値回数は W 形式で 0〜31、X 形式で 0〜63。レジスタ回数はそれぞれ 32 または 64 で剰余を取る。",
       "src": "book",
-      "example": {"code": ["lsl w0,w1,#2"],"explanation": "w0 = w1 を 2 ビット左論理シフトした値（空いた下位ビットは 0）。"}
+      "example": {
+        "code": ["lsl w0,w1,#2"],
+        "explanation": "w0 = w1 を 2 ビット左論理シフトした値（空いた下位ビットは 0）。"
+      }
     },
     {
       "mnemonic": "LSR",
       "operands": "dst, src, count（即値またはレジスタ）",
       "category": "シフト",
       "summary": "右論理シフト。空いた上位ビットに 0 を詰め、符号なしの値を 2 の count 乗で除算する。",
-      "addressing": [
-        "即値（0〜31/0〜63）",
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値（0〜31/0〜63）", "レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2146,23 +1949,18 @@
       ],
       "notes": "即値回数は W 形式で 0〜31、X 形式で 0〜63。レジスタ回数はそれぞれ 32 または 64 で剰余を取る。",
       "src": "book",
-      "example": {"code": ["lsr w0,w1,#2"],"explanation": "w0 = w1 を 2 ビット右論理シフトした値（空いた上位ビットは 0）。"}
+      "example": {
+        "code": ["lsr w0,w1,#2"],
+        "explanation": "w0 = w1 を 2 ビット右論理シフトした値（空いた上位ビットは 0）。"
+      }
     },
     {
       "mnemonic": "ASR",
       "operands": "dst, src, count（即値またはレジスタ）",
       "category": "シフト",
       "summary": "右算術シフト。上位に符号ビットを詰め、符号付きの値を 2 の count 乗で除算して負の無限大方向へ丸める。",
-      "addressing": [
-        "即値（0〜31/0〜63）",
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値（0〜31/0〜63）", "レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2183,23 +1981,18 @@
       ],
       "notes": "即値回数は W 形式で 0〜31、X 形式で 0〜63。レジスタ回数はそれぞれ 32 または 64 で剰余を取る。",
       "src": "book",
-      "example": {"code": ["asr w0,w1,#2"],"explanation": "w0 = w1 を 2 ビット右算術シフトした値（空いた上位ビットは符号ビット）。"}
+      "example": {
+        "code": ["asr w0,w1,#2"],
+        "explanation": "w0 = w1 を 2 ビット右算術シフトした値（空いた上位ビットは符号ビット）。"
+      }
     },
     {
       "mnemonic": "ROR",
       "operands": "dst, src, count（即値またはレジスタ）",
       "category": "シフト",
       "summary": "右ローテート（左ローテート命令は存在しない）。",
-      "addressing": [
-        "即値（0〜31/0〜63）",
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値（0〜31/0〜63）", "レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2220,22 +2013,18 @@
       ],
       "notes": "即値回数は W 形式で 0〜31、X 形式で 0〜63。レジスタ回数はそれぞれ 32 または 64 で剰余を取る。",
       "src": "book",
-      "example": {"code": ["ror w0,w1,#2"],"explanation": "w0 = w1 を 2 ビット右ローテートした値。"}
+      "example": {
+        "code": ["ror w0,w1,#2"],
+        "explanation": "w0 = w1 を 2 ビット右ローテートした値。"
+      }
     },
     {
       "mnemonic": "RBIT",
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "ビット順の完全逆転（32 ビットでは 0↔31、1↔30、…。64 ビットでは 0↔63、1↔62、…）。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2251,22 +2040,18 @@
       ],
       "notes": "RBIT + CLZ で最初のセットビット位置を求められる。",
       "src": "book",
-      "example": {"code": ["rbit x0,x1"],"explanation": "x1 のビット順を完全に逆転して x0 に入れる（ビット 0↔63、1↔62、…）。"}
+      "example": {
+        "code": ["rbit x0,x1"],
+        "explanation": "x1 のビット順を完全に逆転して x0 に入れる（ビット 0↔63、1↔62、…）。"
+      }
     },
     {
       "mnemonic": "REV16",
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "各 16 ビットハーフワード内の 2 バイトを入れ替え（32 ビットで 2 組、64 ビットで 4 組）。ビッグエンディアン 16 ビット値の変換用。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2281,22 +2066,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["rev16 x0,x1"],"explanation": "x1 の各 16 ビット内で 2 バイトを入れ替えて x0 に入れる（64 ビットレジスタで 4 組）。"}
+      "example": {
+        "code": ["rev16 x0,x1"],
+        "explanation": "x1 の各 16 ビット内で 2 バイトを入れ替えて x0 に入れる（64 ビットレジスタで 4 組）。"
+      }
     },
     {
       "mnemonic": "REV32",
       "operands": "dst64, src64",
       "category": "シフト/ビット",
       "summary": "64 ビットレジスタの各 32 ビットワード内で 4 バイトを入れ替え。ビッグエンディアン 32 ビット値の変換用。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2311,22 +2092,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["rev32 x0,x1"],"explanation": "x1 の各 32 ビット内で 4 バイトを入れ替えて x0 に入れる（64 ビットレジスタで 2 語）。"}
+      "example": {
+        "code": ["rev32 x0,x1"],
+        "explanation": "x1 の各 32 ビット内で 4 バイトを入れ替えて x0 に入れる（64 ビットレジスタで 2 語）。"
+      }
     },
     {
       "mnemonic": "REV",
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "32 ビットまたは 64 ビットレジスタのバイト順を完全逆転する。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2347,22 +2124,18 @@
       ],
       "notes": "32 ビットは REV Wd,Wn、64 ビットは REV Xd,Xn。",
       "src": "book",
-      "example": {"code": ["rev w0,w1"],"explanation": "w1 の 4 バイトを逆順に並べ替えて w0 に入れる（32 ビットのバイトスワップ）。"}
+      "example": {
+        "code": ["rev w0,w1"],
+        "explanation": "w1 の 4 バイトを逆順に並べ替えて w0 に入れる（32 ビットのバイトスワップ）。"
+      }
     },
     {
       "mnemonic": "CLZ",
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "先行する 0 ビットの数を数える（符号ビットを含む）。最初のセットビット探索の専用命令。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2378,22 +2151,18 @@
       ],
       "notes": "先行する 1 の数は値を反転（MVN）してから CLZ。下位側の探索は RBIT してから CLZ。",
       "src": "book",
-      "example": {"code": ["clz x0,x1"],"explanation": "x1 の上位から連続する 0 ビットの数を x0 に入れる（x1 が全 0 なら 64）。"}
+      "example": {
+        "code": ["clz x0,x1"],
+        "explanation": "x1 の上位から連続する 0 ビットの数を x0 に入れる（x1 が全 0 なら 64）。"
+      }
     },
     {
       "mnemonic": "CLS",
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "先行する符号ビット（HO ビットと一致するビット）の数を数える。符号（HO）ビット自体はカウントに含まない。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2408,23 +2177,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cls x0,x1"],"explanation": "x1 の上位から符号ビットに続く同一ビットの数を x0 に入れる（x1 が全 0 か全 1 なら 63）。"}
+      "example": {
+        "code": ["cls x0,x1"],
+        "explanation": "x1 の上位から符号ビットに続く同一ビットの数を x0 に入れる（x1 が全 0 か全 1 なら 63）。"
+      }
     },
     {
       "mnemonic": "UBFX",
       "operands": "dst, src, #lsb, #len",
       "category": "シフト/ビット",
       "summary": "ビットフィールド抽出（src のビット位置 lsb から len ビットを取り出し dst のビット 0 から格納、上位は 0）。",
-      "addressing": [
-        "レジスタ",
-        "即値（lsb/len）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（lsb/len）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2438,23 +2202,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["ubfx x0,x1,#0,#8"],"explanation": "x1 のビット #0 から 8 ビットを取り出し、x0 のビット 0 から格納する（x0 の上位は 0）。"}
+      "example": {
+        "code": ["ubfx x0,x1,#0,#8"],
+        "explanation": "x1 のビット #0 から 8 ビットを取り出し、x0 のビット 0 から格納する（x0 の上位は 0）。"
+      }
     },
     {
       "mnemonic": "UBFIZ",
       "operands": "dst, src, #posn, #len",
       "category": "シフト/ビット",
       "summary": "src の下位 len ビットを dst のビット位置 posn へ配置し、他のビットを 0 にする。",
-      "addressing": [
-        "レジスタ",
-        "即値（posn/len）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（posn/len）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2468,23 +2227,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["ubfiz x0,x1,#0,#8"],"explanation": "x1 の下位 8 ビットを x0 のビット位置 #0 へ配置し、他のビットを 0 にする。"}
+      "example": {
+        "code": ["ubfiz x0,x1,#0,#8"],
+        "explanation": "x1 の下位 8 ビットを x0 のビット位置 #0 へ配置し、他のビットを 0 にする。"
+      }
     },
     {
       "mnemonic": "UBFM",
       "operands": "dst, src, #immr, #imms",
       "category": "シフト/ビット",
       "summary": "符号なしビットフィールド移動。src を回転し即値から生成するマスクで抽出・配置して、残りのビットを 0 にする。",
-      "addressing": [
-        "レジスタ",
-        "即値（immr/imms）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（immr/imms）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2500,23 +2254,18 @@
       ],
       "notes": "LSL/LSR/UBFX/UBFIZ など多くの別名の基礎。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。",
       "src": "book",
-      "example": {"code": ["ubfm x0,x1,#1,#7"],"explanation": "x1 のビット #7〜#1 を x0 のビット 6〜0 に配置し、残りのビットを 0 にする。"}
+      "example": {
+        "code": ["ubfm x0,x1,#1,#7"],
+        "explanation": "x1 のビット #7〜#1 を x0 のビット 6〜0 に配置し、残りのビットを 0 にする。"
+      }
     },
     {
       "mnemonic": "SBFM",
       "operands": "dst, src, #immr, #imms",
       "category": "シフト/ビット",
       "summary": "符号付きビットフィールド移動。指定されたビット列を抽出または配置し、上位を符号拡張する。",
-      "addressing": [
-        "レジスタ",
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2531,23 +2280,18 @@
         }
       ],
       "notes": "ASR 即値、SBFX、SBFIZ、SXTB/SXTH/SXTW の基本命令。imms と immr の大小関係で抽出または左詰めの形式になる。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。",
-      "example": {"code": ["sbfm x0,x1,#1,#7"],"explanation": "x1 のビット #7〜#1 を x0 のビット 6〜0 に配置し、上位を符号拡張する。"}
+      "example": {
+        "code": ["sbfm x0,x1,#1,#7"],
+        "explanation": "x1 のビット #7〜#1 を x0 のビット 6〜0 に配置し、上位を符号拡張する。"
+      }
     },
     {
       "mnemonic": "SBFX",
       "operands": "dst, src, #lsb, #width",
       "category": "シフト/ビット",
       "summary": "src の lsb から width ビットを抽出し、上位を符号拡張して dst に格納する。",
-      "addressing": [
-        "レジスタ",
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2561,23 +2305,18 @@
         }
       ],
       "notes": "lsb は 0 以上、width は 1 以上で、lsb+width はレジスタ幅以下。",
-      "example": {"code": ["sbfx x0,x1,#0,#8"],"explanation": "x1 のビット #0 から 8 ビットを取り出し、符号拡張して x0 に入れる。"}
+      "example": {
+        "code": ["sbfx x0,x1,#0,#8"],
+        "explanation": "x1 のビット #0 から 8 ビットを取り出し、符号拡張して x0 に入れる。"
+      }
     },
     {
       "mnemonic": "SBFIZ",
       "operands": "dst, src, #lsb, #width",
       "category": "シフト/ビット",
       "summary": "src の下位 width ビットを lsb 位置へ配置し、その上位を符号拡張、下位を 0 にする。",
-      "addressing": [
-        "レジスタ",
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2591,23 +2330,18 @@
         }
       ],
       "notes": "lsb は 0 以上、width は 1 以上で、lsb+width はレジスタ幅以下。32 ビット形式は 64 を 32 に置き換える。",
-      "example": {"code": ["sbfiz x0,x1,#0,#8"],"explanation": "x1 の下位 8 ビットを x0 のビット位置 #0 へ配置し、その上位を符号拡張する。"}
+      "example": {
+        "code": ["sbfiz x0,x1,#0,#8"],
+        "explanation": "x1 の下位 8 ビットを x0 のビット位置 #0 へ配置し、その上位を符号拡張する。"
+      }
     },
     {
       "mnemonic": "BFI",
       "operands": "dst, src, #posn, #len",
       "category": "シフト/ビット",
       "summary": "ビットフィールド挿入（src の下位 len ビットを dst のビット位置 posn から挿入、dst の他のビットは保持）。posn+len はレジスタサイズ以下。",
-      "addressing": [
-        "レジスタ",
-        "即値（posn/len）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（posn/len）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2621,23 +2355,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["bfi x0,x1,#0,#8"],"explanation": "x1 の下位 8 ビットを x0 のビット位置 #0 から挿入し、他の x0 のビットは保持する。"}
+      "example": {
+        "code": ["bfi x0,x1,#0,#8"],
+        "explanation": "x1 の下位 8 ビットを x0 のビット位置 #0 から挿入し、他の x0 のビットは保持する。"
+      }
     },
     {
       "mnemonic": "BFC",
       "operands": "dst, #posn, #len",
       "category": "シフト/ビット",
       "summary": "ビットフィールドクリア（dst のビット位置 posn から len ビットを 0 にする。len=1 で個別ビットのクリア）。",
-      "addressing": [
-        "レジスタ",
-        "即値（posn/len）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（posn/len）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2652,23 +2381,18 @@
       ],
       "notes": "BFM の別名であり、Armv8-A の A64 基本命令を使用する。",
       "src": "book",
-      "example": {"code": ["bfc x0,#0,#8"],"explanation": "x0 のビット位置 #0 から 8 ビットを 0 にクリアする（他のビットは保持）。"}
+      "example": {
+        "code": ["bfc x0,#0,#8"],
+        "explanation": "x0 のビット位置 #0 から 8 ビットを 0 にクリアする（他のビットは保持）。"
+      }
     },
     {
       "mnemonic": "BFXIL",
       "operands": "dst, src, #posn, #len",
       "category": "シフト/ビット",
       "summary": "ビットフィールド抽出して下位へ挿入（src のビット位置 posn から len ビットを取り出し dst の LO ビット位置へコピー）。",
-      "addressing": [
-        "レジスタ",
-        "即値（posn/len）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（posn/len）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2682,23 +2406,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["bfxil x0,x1,#0,#8"],"explanation": "x1 のビット #0 から 8 ビットを取り出し、x0 の下位 8 ビットへ挿入する（x0 の上位は保持）。"}
+      "example": {
+        "code": ["bfxil x0,x1,#0,#8"],
+        "explanation": "x1 のビット #0 から 8 ビットを取り出し、x0 の下位 8 ビットへ挿入する（x0 の上位は保持）。"
+      }
     },
     {
       "mnemonic": "BFM",
       "operands": "dst, src, #rotate, #bitposn",
       "category": "シフト/ビット",
       "summary": "ビットフィールド移動。src を即値で右回転し、即値から生成したマスクに対応するビットを dst に挿入する。マスク外の dst ビットは保持する。",
-      "addressing": [
-        "レジスタ",
-        "即値（rotate/bitposn）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（rotate/bitposn）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2714,23 +2433,18 @@
       ],
       "notes": "BFI/BFC/BFXIL はすべてこの命令の別名。通常は別名を使う。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式では immr/imms の上位ビットは 0。",
       "src": "book",
-      "example": {"code": ["bfm x0,x1,#1,#7"],"explanation": "x1 のビット #7〜#1 を x0 のビット 6〜0 に挿入し、x0 の他のビットは保持する。"}
+      "example": {
+        "code": ["bfm x0,x1,#1,#7"],
+        "explanation": "x1 のビット #7〜#1 を x0 のビット 6〜0 に挿入し、x0 の他のビットは保持する。"
+      }
     },
     {
       "mnemonic": "EXTR",
       "operands": "dst, src1, src2, #posn",
       "category": "シフト/ビット",
       "summary": "2 レジスタ連結（src1:src2）からビット位置 posn を起点にビット列を抽出する（レジスタペアにまたがる抽出）。",
-      "addressing": [
-        "レジスタ",
-        "即値（posn）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値（posn）"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2746,23 +2460,18 @@
       ],
       "notes": "ROR（即値）は src1=src2 に同じレジスタを指定した EXTR の別名。EXTR 自体は C フラグを入力にも出力にも使わない。 sf=0 は W、sf=1 は X。N は sf と同値で、32 ビット形式ではシフト量の上位ビットは 0。",
       "src": "book",
-      "example": {"code": ["extr x0,x1,x2,#0"],"explanation": "x1 を上位、x2 を下位として連結した 128 ビット値を #0 ビット右回転し、下位 64 ビットを x0 に入れる。"}
+      "example": {
+        "code": ["extr x0,x1,x2,#0"],
+        "explanation": "x1 を上位、x2 を下位として連結した 128 ビット値を #0 ビット右回転し、下位 64 ビットを x0 に入れる。"
+      }
     },
     {
       "mnemonic": "CMP",
       "operands": "src1, src2",
       "category": "比較",
       "summary": "比較（subs の WZR/XZR デスティネーション形のエイリアス。減算結果に従いフラグを設定）。条件分岐/CSEL の前提。",
-      "addressing": [
-        "レジスタ",
-        "即値（12 ビット、必要に応じて LSL #12）"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値（12 ビット、必要に応じて LSL #12）"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2777,23 +2486,18 @@
       ],
       "notes": "符号付き比較は B.GE/B.LT/B.GT/B.LE、符号なしは B.HS/B.LO/B.HI/B.LS。",
       "src": "book",
-      "example": {"code": ["cmp x1,x2"],"explanation": "x1 - x2 を計算し、結果を捨てて N/Z/C/V を更新する（SUBS xzr 形の別名）。"}
+      "example": {
+        "code": ["cmp x1,x2"],
+        "explanation": "x1 - x2 を計算し、結果を捨てて N/Z/C/V を更新する（SUBS xzr 形の別名）。"
+      }
     },
     {
       "mnemonic": "CMN",
       "operands": "src1, src2",
       "category": "比較",
       "summary": "第 1 オペランドと第 2 オペランドを加算し、結果を捨ててフラグを更新する。ADDS の WZR/XZR 宛先形の別名。",
-      "addressing": [
-        "レジスタ",
-        "即値（12 ビット、必要に応じて LSL #12）"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値（12 ビット、必要に応じて LSL #12）"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2808,23 +2512,18 @@
       ],
       "notes": "加算のキャリーを設定するため、一般に第 2 オペランドを否定して CMP した場合と C フラグまで同じとは限らない。",
       "src": "book",
-      "example": {"code": ["cmn x1,x2"],"explanation": "x1 + x2 を計算し、結果を捨てて N/Z/C/V を更新する（ADDS xzr 形の別名）。"}
+      "example": {
+        "code": ["cmn x1,x2"],
+        "explanation": "x1 + x2 を計算し、結果を捨てて N/Z/C/V を更新する（ADDS xzr 形の別名）。"
+      }
     },
     {
       "mnemonic": "TST",
       "operands": "src1, src2",
       "category": "比較",
       "summary": "ビットテスト（ands の WZR/XZR デスティネーション形のエイリアス。N/Z を更新し C/V をクリア）。Z が「共通ビットがすべて 0」を示す。",
-      "addressing": [
-        "レジスタ",
-        "即値 #pattern（論理ビットマスク）"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "0",
-        "0"
-      ],
+      "addressing": ["レジスタ", "即値 #pattern（論理ビットマスク）"],
+      "flags": ["‡", "‡", "0", "0"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2838,23 +2537,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["tst x1,x2"],"explanation": "x1 & x2 を計算し、結果を捨てて N/Z を更新、C/V をクリアする（ANDS xzr 形の別名）。"}
+      "example": {
+        "code": ["tst x1,x2"],
+        "explanation": "x1 & x2 を計算し、結果を捨てて N/Z を更新、C/V をクリアする（ANDS xzr 形の別名）。"
+      }
     },
     {
       "mnemonic": "CCMP",
       "operands": "src1, src2, #nzcv, cond",
       "category": "比較",
       "summary": "条件付き比較。cond 成立なら src1 と src2 を比較（減算）してフラグ更新、不成立なら 4 ビット即値 #nzcv を NZCV へ直接書込む。分岐なしで複雑なブール式を評価するのに使う。",
-      "addressing": [
-        "レジスタ",
-        "即値（0〜31、5 ビット）"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値（0〜31、5 ビット）"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2875,23 +2569,18 @@
       ],
       "notes": "#nzcv の bit3=N、bit2=Z、bit1=C、bit0=V。条件不成立時の即値は、後続の条件判定が目的の真偽になるよう選ぶ。",
       "src": "book",
-      "example": {"code": ["ccmp x1,x2,#3,eq"],"explanation": "EQ 成立なら x1 - x2 を計算して N/Z/C/V を更新、不成立なら NZCV に即値 #3 を書き込む。"}
+      "example": {
+        "code": ["ccmp x1,x2,#3,eq"],
+        "explanation": "EQ 成立なら x1 - x2 を計算して N/Z/C/V を更新、不成立なら NZCV に即値 #3 を書き込む。"
+      }
     },
     {
       "mnemonic": "CCMN",
       "operands": "src1, src2, #nzcv, cond",
       "category": "比較",
       "summary": "条件付き比較（加算比較）。cond 成立なら src1 + src2 の比較としてフラグ更新、不成立なら #nzcv を NZCV へ直接書込む。",
-      "addressing": [
-        "レジスタ",
-        "即値（0〜31、5 ビット）"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値（0〜31、5 ビット）"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2912,22 +2601,18 @@
       ],
       "notes": "第 2 オペランドはレジスタまたは 0〜31 の即値。条件不成立時は #nzcv の bit3〜0 を N/Z/C/V に書き込む。",
       "src": "book",
-      "example": {"code": ["ccmn x1,x2,#3,eq"],"explanation": "EQ 成立なら x1 + x2 を計算して N/Z/C/V を更新、不成立なら NZCV に即値 #3 を書き込む。"}
+      "example": {
+        "code": ["ccmn x1,x2,#3,eq"],
+        "explanation": "EQ 成立なら x1 + x2 を計算して N/Z/C/V を更新、不成立なら NZCV に即値 #3 を書き込む。"
+      }
     },
     {
       "mnemonic": "CSEL",
       "operands": "dst, src1, src2, cond",
       "category": "分岐",
       "summary": "cond が成立なら src1、不成立なら src2 を dst にコピーする。フラグは変更しない。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2943,22 +2628,18 @@
       ],
       "notes": "CSINC・CSINV・CSNEG は条件不成立時に第 2 ソースを変換する別命令。CSET などはそれらの別名。 sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
       "src": "book",
-      "example": {"code": ["csel x0,x1,x2,eq"],"explanation": "EQ 成立なら x0 = x1、不成立なら x0 = x2。フラグは変化しない。"}
+      "example": {
+        "code": ["csel x0,x1,x2,eq"],
+        "explanation": "EQ 成立なら x0 = x1、不成立なら x0 = x2。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "CSINC",
       "operands": "dst, src1, src2, cond",
       "category": "分岐",
       "summary": "条件成立なら src1、不成立なら src2+1 を選択。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -2974,22 +2655,18 @@
       ],
       "notes": "CSET Xd,cond は CSINC Xd,XZR,XZR,inv(cond) に展開。 sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
       "src": "book",
-      "example": {"code": ["csinc x0,x1,x2,eq"],"explanation": "EQ 成立なら x0 = x1、不成立なら x0 = x2 + 1。フラグは変化しない。"}
+      "example": {
+        "code": ["csinc x0,x1,x2,eq"],
+        "explanation": "EQ 成立なら x0 = x1、不成立なら x0 = x2 + 1。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "CSET",
       "operands": "dst, cond",
       "category": "分岐",
       "summary": "条件成立なら 1、不成立なら 0 をセットする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3004,22 +2681,18 @@
       ],
       "notes": "CSINC の両ソースをゼロレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["cset x0,eq"],"explanation": "EQ 成立なら x0 = 1、不成立なら x0 = 0。"}
+      "example": {
+        "code": ["cset x0,eq"],
+        "explanation": "EQ 成立なら x0 = 1、不成立なら x0 = 0。"
+      }
     },
     {
       "mnemonic": "CSETM",
       "operands": "dst, cond",
       "category": "分岐",
       "summary": "条件成立なら全ビット 1、不成立なら 0 をセットする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3034,22 +2707,18 @@
       ],
       "notes": "CSINV の両ソースをゼロレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["csetm x0,eq"],"explanation": "EQ 成立なら x0 の全ビットを 1、不成立なら 0 にする。"}
+      "example": {
+        "code": ["csetm x0,eq"],
+        "explanation": "EQ 成立なら x0 の全ビットを 1、不成立なら 0 にする。"
+      }
     },
     {
       "mnemonic": "CSINV",
       "operands": "dst, src1, src2, cond",
       "category": "分岐",
       "summary": "条件選択 + 反転。cond 成立なら src1、不成立なら NOT src2 を dst へコピーする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3065,22 +2734,18 @@
       ],
       "src": "book",
       "notes": "sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
-      "example": {"code": ["csinv x0,x1,x2,eq"],"explanation": "EQ 成立なら x0 = x1、不成立なら x0 = ~x2。フラグは変化しない。"}
+      "example": {
+        "code": ["csinv x0,x1,x2,eq"],
+        "explanation": "EQ 成立なら x0 = x1、不成立なら x0 = ~x2。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "CSNEG",
       "operands": "dst, src1, src2, cond",
       "category": "分岐",
       "summary": "条件選択 + 符号反転。cond 成立なら src1、不成立なら -src2 を dst へコピーする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3096,22 +2761,18 @@
       ],
       "src": "book",
       "notes": "sf=0 は W、sf=1 は X。cond は 4 ビットの条件コード。",
-      "example": {"code": ["csneg x0,x1,x2,eq"],"explanation": "EQ 成立なら x0 = x1、不成立なら x0 = -x2。フラグは変化しない。"}
+      "example": {
+        "code": ["csneg x0,x1,x2,eq"],
+        "explanation": "EQ 成立なら x0 = x1、不成立なら x0 = -x2。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "CINC",
       "operands": "dst, src, cond",
       "category": "分岐",
       "summary": "条件成立なら src+1、不成立なら src をセットする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3126,22 +2787,18 @@
       ],
       "notes": "CSINC の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["cinc x0,x1,eq"],"explanation": "EQ 成立なら x0 = x1 + 1、不成立なら x0 = x1。"}
+      "example": {
+        "code": ["cinc x0,x1,eq"],
+        "explanation": "EQ 成立なら x0 = x1 + 1、不成立なら x0 = x1。"
+      }
     },
     {
       "mnemonic": "CINV",
       "operands": "dst, src, cond",
       "category": "分岐",
       "summary": "条件成立なら NOT src、不成立なら src をセットする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3156,22 +2813,18 @@
       ],
       "notes": "CSINV の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["cinv x0,x1,eq"],"explanation": "EQ 成立なら x0 = ~x1、不成立なら x0 = x1。"}
+      "example": {
+        "code": ["cinv x0,x1,eq"],
+        "explanation": "EQ 成立なら x0 = ~x1、不成立なら x0 = x1。"
+      }
     },
     {
       "mnemonic": "CNEG",
       "operands": "dst, src, cond",
       "category": "分岐",
       "summary": "条件成立なら -src、不成立なら src をセットする。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3186,22 +2839,18 @@
       ],
       "notes": "CSNEG の 2 つのソースを同じレジスタとし、条件を反転した別名。W 形式もある。",
       "src": "book",
-      "example": {"code": ["cneg x0,x1,eq"],"explanation": "EQ 成立なら x0 = -x1、不成立なら x0 = x1。"}
+      "example": {
+        "code": ["cneg x0,x1,eq"],
+        "explanation": "EQ 成立なら x0 = -x1、不成立なら x0 = x1。"
+      }
     },
     {
       "mnemonic": "B",
       "operands": "label",
       "category": "分岐",
       "summary": "無条件相対分岐。この命令のアドレスから -134,217,728〜+134,217,724 バイトを指定できる。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3216,22 +2865,23 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["b target","target:"],"explanation": "target へ無条件分岐する。"}
+      "example": {
+        "code": [
+          "b   skip",
+          "mov w0, #0xFF             // 分岐するため実行されない",
+          "skip:",
+          "mov w0, #0x00"
+        ],
+        "explanation": "途中の処理を飛ばして skip へ無条件に相対分岐する。LR（x30）は更新しない。"
+      }
     },
     {
       "mnemonic": "B.COND",
       "operands": "label",
       "category": "分岐",
       "summary": "条件付き相対分岐（B.cond）。条件コード接尾辞により B.EQ／B.NE／B.CS（B.HS）／B.CC（B.LO）／B.MI／B.PL／B.VS／B.VC／B.HI／B.LS／B.GE／B.LT／B.GT／B.LE／B.AL／B.NV として記述する。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3246,22 +2896,23 @@
         }
       ],
       "notes": "条件コード cond は4ビット。EQ=0000, NE=0001, CS/HS=0010, CC/LO=0011, MI=0100, PL=0101, VS=0110, VC=0111, HI=1000, LS=1001, GE=1010, LT=1011, GT=1100, LE=1101, AL=1110, NV=1111。変位は命令アドレス基準で4バイト単位。アセンブラ表記は b.eq label など。CLIでは B.COND を検索し、この条件一覧を参照する。",
-      "example": {"code": ["b.eq target","target:"],"explanation": "EQ 成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp  w0, #10",
+          "b.eq equal                // w0 == 10（Z=1）なら加算をスキップ",
+          "add  w0, w0, #1           // w0 != 10 のときだけ実行",
+          "equal:"
+        ],
+        "explanation": "EQ（Z=1）成立なら加算処理をスキップして equal へ分岐し、不成立なら次の命令へ進む。"
+      }
     },
     {
       "mnemonic": "BL",
       "operands": "label",
       "category": "サブルーチン",
       "summary": "相対サブルーチン呼び出し。次の命令のアドレスを X30（LR）に保存する。分岐範囲は B と同じ。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3277,22 +2928,26 @@
       ],
       "notes": "BL は X30 を上書きする。呼び出し元の戻り先が必要な関数は、別の呼び出し前に LR を保存する。",
       "src": "book",
-      "example": {"code": ["bl target","target:"],"explanation": "次の命令のアドレスを x30 に保存し、target へ分岐する。"}
+      "example": {
+        "code": [
+          "bl  callee                // x30 に戻り先（次の命令）を保存して呼び出し",
+          "mov w1, w0                // callee の RET でここへ戻る",
+          "b   done                  // callee へフォールスルーしない",
+          "callee:",
+          "  mov w0, #42",
+          "  ret",
+          "done:"
+        ],
+        "explanation": "次の命令のアドレスを x30（LR）に保存し、callee へ分岐する。callee 末尾の RET が x30 のアドレスへ戻る。"
+      }
     },
     {
       "mnemonic": "BR",
       "operands": "Xn",
       "category": "分岐",
       "summary": "レジスタ間接ジャンプ（Xn のアドレスへ）。",
-      "addressing": [
-        "レジスタ間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3307,22 +2962,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["br x1"],"explanation": "x1 に格納されたアドレスへ分岐する。"}
+      "example": {
+        "code": ["br x1"],
+        "explanation": "x1 に格納されたアドレスへ分岐する。"
+      }
     },
     {
       "mnemonic": "BLR",
       "operands": "Xn",
       "category": "サブルーチン",
       "summary": "レジスタ間接サブルーチン呼び出し。次の命令のアドレスを X30（LR）に保存する。",
-      "addressing": [
-        "レジスタ間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3337,22 +2988,27 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["blr x1"],"explanation": "次の命令のアドレスを x30 に保存し、x1 のアドレスへ分岐する。"}
+      "example": {
+        "code": [
+          "adr x1, callee            // 呼び出し先アドレスを x1 に取得",
+          "blr x1                    // x30 に戻り先を保存し、x1 のアドレスを呼び出し",
+          "mov w1, w0                // callee の RET でここへ戻る",
+          "b   done                  // callee へフォールスルーしない",
+          "callee:",
+          "  mov w0, #42",
+          "  ret",
+          "done:"
+        ],
+        "explanation": "次の命令のアドレスを x30（LR）に保存し、x1 に格納されたアドレスへ間接呼び出しする。関数ポインタや仮想関数テーブルの呼び出しに使う。"
+      }
     },
     {
       "mnemonic": "RET",
       "operands": "{Xn}",
       "category": "サブルーチン",
       "summary": "サブルーチン復帰。指定された X レジスタのアドレスへ分岐する。省略時は X30（LR）。",
-      "addressing": [
-        "レジスタ間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3367,22 +3023,22 @@
       ],
       "notes": "RET Xn で戻り先を指定できる。",
       "src": "book",
-      "example": {"code": ["ret"],"explanation": "x30 に格納されたアドレスへ分岐してサブルーチンから復帰する。"}
+      "example": {
+        "code": [
+          "callee:",
+          "  mov w0, #42",
+          "  ret                     // x30（LR）に保存された呼び出し元へ復帰"
+        ],
+        "explanation": "x30（LR）に格納されたアドレスへ分岐してサブルーチンから復帰する（RET Xn で別レジスタの指定も可能）。"
+      }
     },
     {
       "mnemonic": "CBZ",
       "operands": "src, label",
       "category": "分岐",
       "summary": "src が 0 なら相対分岐する。NZCV は変更しない。範囲は命令アドレスから -1,048,576〜+1,048,572 バイト。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3398,22 +3054,22 @@
       ],
       "notes": "NZCV を変更しないため、先行する比較のフラグを保持できる。 sf=0 は Wt、sf=1 は Xt。imm19 は符号付きで 4 バイト単位。",
       "src": "book",
-      "example": {"code": ["cbz x0,target","target:"],"explanation": "x0 が 0 なら target へ分岐し、0 以外なら次の命令へ進む。フラグは変化しない。"}
+      "example": {
+        "code": [
+          "cbz x0, is_zero           // x0 == 0 なら加算をスキップ（フラグ不変）",
+          "add x1, x1, x0            // x0 != 0 のときだけ実行",
+          "is_zero:"
+        ],
+        "explanation": "x0 が 0 なら後続処理をスキップして is_zero へ分岐し、0 以外なら次の命令へ進む。CMP 不要で NZCV フラグも変更しない。"
+      }
     },
     {
       "mnemonic": "CBNZ",
       "operands": "src, label",
       "category": "分岐",
       "summary": "src が 0 でなければ相対分岐する。NZCV は変更しない。範囲は命令アドレスから -1,048,576〜+1,048,572 バイト。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3429,22 +3085,23 @@
       ],
       "notes": "sf=0 は Wt、sf=1 は Xt。imm19 は符号付きで 4 バイト単位。",
       "src": "book",
-      "example": {"code": ["cbnz x0,target","target:"],"explanation": "x0 が 0 以外なら target へ分岐し、0 なら次の命令へ進む。フラグは変化しない。"}
+      "example": {
+        "code": [
+          "mov x0, #4",
+          "loop:",
+          "  subs x0, x0, #1         // カウンタを 1 減算",
+          "  cbnz x0, loop           // x0 != 0 のあいだ loop へ戻る"
+        ],
+        "explanation": "x0 が 0 以外なら loop へ分岐し、0 になったらループを抜ける。NZCV フラグは変更しない。"
+      }
     },
     {
       "mnemonic": "TBZ",
       "operands": "src, #bit, label",
       "category": "分岐",
       "summary": "指定ビットが 0 なら相対分岐する。NZCV は変更しない。範囲は命令アドレスから -32,768〜+32,764 バイト。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3460,22 +3117,22 @@
       ],
       "notes": "ビット番号は W レジスタ指定なら 0〜31、X レジスタ指定なら 0〜63。 b5:b40 は 6 ビットのビット番号。imm14 は符号付きで 4 バイト単位。",
       "src": "book",
-      "example": {"code": ["tbz x0,#3,target","target:"],"explanation": "x0 のビット #3 が 0 なら target へ分岐し、1 なら次の命令へ進む。フラグは変化しない。"}
+      "example": {
+        "code": [
+          "tbz w0, #3, bit3_clear    // bit3 == 0 なら処理をスキップ（フラグ不変）",
+          "mov w1, #1                // bit3 == 1 のときだけ実行",
+          "bit3_clear:"
+        ],
+        "explanation": "w0 のビット #3 が 0 なら後続処理をスキップして bit3_clear へ分岐し、1 なら次の命令へ進む。フラグレジスタを変更せず単一ビットをテスト分岐できる。"
+      }
     },
     {
       "mnemonic": "TBNZ",
       "operands": "src, #bit, label",
       "category": "分岐",
       "summary": "指定ビットが 1 なら相対分岐する。NZCV は変更しない。範囲は命令アドレスから -32,768〜+32,764 バイト。",
-      "addressing": [
-        "相対分岐"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3491,22 +3148,22 @@
       ],
       "notes": "ビット番号は W レジスタ指定なら 0〜31、X レジスタ指定なら 0〜63。 b5:b40 は 6 ビットのビット番号。imm14 は符号付きで 4 バイト単位。",
       "src": "book",
-      "example": {"code": ["tbnz x0,#3,target","target:"],"explanation": "x0 のビット #3 が 1 なら target へ分岐し、0 なら次の命令へ進む。フラグは変化しない。"}
+      "example": {
+        "code": [
+          "tbnz w0, #3, bit3_set     // bit3 == 1 なら処理をスキップ（フラグ不変）",
+          "mov  w1, #0               // bit3 == 0 のときだけ実行",
+          "bit3_set:"
+        ],
+        "explanation": "w0 のビット #3 が 1 なら後続処理をスキップして bit3_set へ分岐し、0 なら次の命令へ進む。フラグレジスタを変更せず単一ビットをテスト分岐できる。"
+      }
     },
     {
       "mnemonic": "SXTB",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "符号拡張（8 ビット → 32/64）。SXTH（16）、SXTW（32→64）もある。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3522,22 +3179,18 @@
       ],
       "notes": "符号なし拡張は UXTB/UXTH（32 ビット幅まで）。",
       "src": "book",
-      "example": {"code": ["sxtb w0,w1"],"explanation": "w1 の下位 8 ビットを符号拡張して w0 に入れる（8 → 32 ビット）。"}
+      "example": {
+        "code": ["sxtb w0,w1"],
+        "explanation": "w1 の下位 8 ビットを符号拡張して w0 に入れる（8 → 32 ビット）。"
+      }
     },
     {
       "mnemonic": "SXTW",
       "operands": "dst64, srcw",
       "category": "データ転送",
       "summary": "32 ビットを 64 ビットへ符号拡張。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3553,22 +3206,18 @@
       ],
       "notes": "C の int → long 変換に相当。",
       "src": "book",
-      "example": {"code": ["sxtw x0,w1"],"explanation": "w1 の 32 ビット値を符号拡張して x0 に入れる（32 → 64 ビット）。"}
+      "example": {
+        "code": ["sxtw x0,w1"],
+        "explanation": "w1 の 32 ビット値を符号拡張して x0 に入れる（32 → 64 ビット）。"
+      }
     },
     {
       "mnemonic": "SXTH",
       "operands": "dst, srcw",
       "category": "データ転送",
       "summary": "符号拡張（16 ビット → 32/64）。ソースは常に 32 ビット（Wn）レジスタ。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3583,22 +3232,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["sxth w0,w1"],"explanation": "w1 の下位 16 ビットを符号拡張して w0 に入れる（16 → 32 ビット）。"}
+      "example": {
+        "code": ["sxth w0,w1"],
+        "explanation": "w1 の下位 16 ビットを符号拡張して w0 に入れる（16 → 32 ビット）。"
+      }
     },
     {
       "mnemonic": "UXTB",
       "operands": "dstw, srcw",
       "category": "データ転送",
       "summary": "下位 8 ビットを 32 ビットにゼロ拡張する。算術命令の拡張演算子（add w1, w1, w0, uxtb #0）としても使える。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3614,22 +3259,18 @@
       ],
       "notes": "UXTB Wd, Wn は UBFM Wd, Wn, #0, #7 の別名。Wd への書き込みは対応する Xd の上位 32 ビットも 0 にする。アセンブラによっては Xd 表記を Wd 表記と同じ命令に組み立てる。",
       "src": "book",
-      "example": {"code": ["uxtb w0,w1"],"explanation": "w1 の下位 8 ビットをゼロ拡張して w0 に入れる。"}
+      "example": {
+        "code": ["uxtb w0,w1"],
+        "explanation": "w1 の下位 8 ビットをゼロ拡張して w0 に入れる。"
+      }
     },
     {
       "mnemonic": "UXTH",
       "operands": "dstw, srcw",
       "category": "データ転送",
       "summary": "下位 16 ビットを 32 ビットにゼロ拡張する。算術命令の拡張演算子としても使える。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3645,22 +3286,18 @@
       ],
       "notes": "UXTH Wd, Wn は UBFM Wd, Wn, #0, #15 の別名。Wd への書き込みは対応する Xd の上位 32 ビットも 0 にする。アセンブラによっては Xd 表記を Wd 表記と同じ命令に組み立てる。",
       "src": "book",
-      "example": {"code": ["uxth w0,w1"],"explanation": "w1 の下位 16 ビットをゼロ拡張して w0 に入れる。"}
+      "example": {
+        "code": ["uxth w0,w1"],
+        "explanation": "w1 の下位 16 ビットをゼロ拡張して w0 に入れる。"
+      }
     },
     {
       "mnemonic": "UXTW",
       "operands": "dst64, srcw",
       "category": "データ転送",
       "summary": "ゼロ拡張（32 ビット → 64）。UXTW Xd, Wn は UBFM Xd, Xn, #0, #31 のアセンブラ別名。スケール付きインデックス（[Xn, Wi, uxtw]）の拡張演算子としても使う。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3675,22 +3312,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["uxtw x0,w1"],"explanation": "w1 の 32 ビット値をゼロ拡張して x0 に入れる（32 → 64 ビット）。"}
+      "example": {
+        "code": ["uxtw x0,w1"],
+        "explanation": "w1 の 32 ビット値をゼロ拡張して x0 に入れる（32 → 64 ビット）。"
+      }
     },
     {
       "mnemonic": "SVC",
       "operands": "#imm",
       "category": "システム制御",
       "summary": "スーパーバイザコール例外を発生させる。呼出番号や引数の規約は OS に依存する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3706,22 +3339,18 @@
       ],
       "notes": "即値は 0〜65535。例外先と使用可能性は例外レベル・設定に依存する。Linux AArch64 では通常 svc #0、呼出番号 X8、引数 X0〜X5 を使う。",
       "src": "book",
-      "example": {"code": ["svc #0x1234"],"explanation": "スーパーバイザコール例外を発生させる（即値 #0x1234 の意味は OS の呼出規約に依存）。"}
+      "example": {
+        "code": ["svc #0x1234"],
+        "explanation": "スーパーバイザコール例外を発生させる（即値 #0x1234 の意味は OS の呼出規約に依存）。"
+      }
     },
     {
       "mnemonic": "MSR",
       "operands": "sysreg, Xn または PSTATE フィールド, #imm",
       "category": "システム制御",
       "summary": "システムレジスタへの書込み。NZCV を指定すると PSTATE の条件コードビット（28〜31）をレジスタの対応ビットで更新する。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3742,22 +3371,18 @@
       ],
       "notes": "NZCV を書く形式では N/Z/C/V を更新する。他のシステムレジスタへの書き込みが NZCV を変更するとは限らない。レジスタごとにアクセス条件が異なる。",
       "src": "book",
-      "example": {"code": ["msr nzcv,x0"],"explanation": "x0 のビット 31〜28 の値をシステムレジスタ nzcv（条件フラグ N/Z/C/V）へ書き込む。"}
+      "example": {
+        "code": ["msr nzcv,x0"],
+        "explanation": "x0 のビット 31〜28 の値をシステムレジスタ nzcv（条件フラグ N/Z/C/V）へ書き込む。"
+      }
     },
     {
       "mnemonic": "MRS",
       "operands": "dst, sysreg",
       "category": "システム制御",
       "summary": "システムレジスタからの読出し。NZCV も MRS Xd,NZCV で読める。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3773,22 +3398,18 @@
       ],
       "notes": "ユーザモードからは読めるレジスタが制限される。",
       "src": "book",
-      "example": {"code": ["mrs x0,nzcv"],"explanation": "システムレジスタ nzcv を読み出して x0 のビット 31〜28 に入れる（N/Z/C/V の値が得られる）。"}
+      "example": {
+        "code": ["mrs x0,nzcv"],
+        "explanation": "システムレジスタ nzcv を読み出して x0 のビット 31〜28 に入れる（N/Z/C/V の値が得られる）。"
+      }
     },
     {
       "mnemonic": "NOP",
       "operands": "",
       "category": "システム制御",
       "summary": "何もしない（no-operation）。Gas は .text セクションのコードアライン調整のパディングにこの命令を使う。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3803,22 +3424,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["nop"],"explanation": "この例では 何もしない（no-operation）。Gas は .text セクションのコードアライン調整のパディングにこの命令を使う。"}
+      "example": {
+        "code": ["nop"],
+        "explanation": "何もしない（no-operation）。レジスタ・メモリ・フラグを一切変更せず、アセンブラのコードアライン調整パディングや命令パッチ領域に使われる。"
+      }
     },
     {
       "mnemonic": "NGC",
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリーを含む符号反転（dst = 0 - src - (1 - C)）。フラグは変化しない。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3837,22 +3454,18 @@
       ],
       "notes": "多倍長符号反転の上位語に使用できる。",
       "src": "note",
-      "example": {"code": ["ngc w0,w2"],"explanation": "w0 = 0 - w2 - (1 - C)（キャリー込みの符号反転）。フラグは変化しない。"}
+      "example": {
+        "code": ["ngc w0,w2"],
+        "explanation": "w0 = 0 - w2 - (1 - C)（キャリー込みの符号反転）。フラグは変化しない。"
+      }
     },
     {
       "mnemonic": "NGCS",
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリーを含む符号反転（dst = 0 - src - (1 - C)）。N/Z/C/V を更新する。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3871,22 +3484,18 @@
       ],
       "src": "note",
       "notes": "多倍長符号反転の上位語に使用できる。",
-      "example": {"code": ["ngcs w0,w2"],"explanation": "w0 = 0 - w2 - (1 - C) とし、N/Z/C/V を更新する。"}
+      "example": {
+        "code": ["ngcs w0,w2"],
+        "explanation": "w0 = 0 - w2 - (1 - C) とし、N/Z/C/V を更新する。"
+      }
     },
     {
       "mnemonic": "LDURB",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "1 バイトをゼロ拡張して W レジスタへロードする。",
-      "addressing": [
-        "符号付きスケールなし即値オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["符号付きスケールなし即値オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3902,22 +3511,18 @@
       ],
       "src": "note",
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
-      "example": {"code": ["ldurb w0,[x1,#4]"],"explanation": "x1+4 番地の 1 バイトをゼロ拡張して w0 へロードする（スケールなし形式）。"}
+      "example": {
+        "code": ["ldurb w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 1 バイトをゼロ拡張して w0 へロードする（スケールなし形式）。"
+      }
     },
     {
       "mnemonic": "LDURH",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "2 バイトをゼロ拡張して W レジスタへロードする。",
-      "addressing": [
-        "符号付きスケールなし即値オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["符号付きスケールなし即値オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3933,22 +3538,18 @@
       ],
       "src": "note",
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
-      "example": {"code": ["ldurh w0,[x1,#4]"],"explanation": "x1+4 番地の 2 バイトをゼロ拡張して w0 へロードする（スケールなし形式）。"}
+      "example": {
+        "code": ["ldurh w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 2 バイトをゼロ拡張して w0 へロードする（スケールなし形式）。"
+      }
     },
     {
       "mnemonic": "LDURSB",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "1 バイトを符号拡張して W または X レジスタへロードする。",
-      "addressing": [
-        "符号付きスケールなし即値オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["符号付きスケールなし即値オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -3969,22 +3570,18 @@
       ],
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
       "src": "note",
-      "example": {"code": ["ldursb w0,[x1,#4]"],"explanation": "x1+4 番地の 1 バイトを符号拡張して w0 へロードする（スケールなし形式）。"}
+      "example": {
+        "code": ["ldursb w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 1 バイトを符号拡張して w0 へロードする（スケールなし形式）。"
+      }
     },
     {
       "mnemonic": "LDURSH",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "2 バイトを符号拡張して W または X レジスタへロードする。",
-      "addressing": [
-        "符号付きスケールなし即値オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["符号付きスケールなし即値オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4005,22 +3602,18 @@
       ],
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
       "src": "note",
-      "example": {"code": ["ldursh w0,[x1,#4]"],"explanation": "x1+4 番地の 2 バイトを符号拡張して w0 へロードする（スケールなし形式）。"}
+      "example": {
+        "code": ["ldursh w0,[x1,#4]"],
+        "explanation": "x1+4 番地の 2 バイトを符号拡張して w0 へロードする（スケールなし形式）。"
+      }
     },
     {
       "mnemonic": "LDURSW",
       "operands": "dst, [base{, #imm}]",
       "category": "データ転送",
       "summary": "4 バイトを符号拡張して X レジスタへロードする。",
-      "addressing": [
-        "符号付きスケールなし即値オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["符号付きスケールなし即値オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4036,22 +3629,18 @@
       ],
       "src": "note",
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
-      "example": {"code": ["ldursw x0,[x1,#4]"],"explanation": "x1+4 番地の 4 バイトを符号拡張して x0 へロードする（スケールなし形式）。"}
+      "example": {
+        "code": ["ldursw x0,[x1,#4]"],
+        "explanation": "x1+4 番地の 4 バイトを符号拡張して x0 へロードする（スケールなし形式）。"
+      }
     },
     {
       "mnemonic": "STURB",
       "operands": "src, [base{, #imm}]",
       "category": "データ転送",
       "summary": "W レジスタの下位 1 バイトをストアする。",
-      "addressing": [
-        "符号付きスケールなし即値オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["符号付きスケールなし即値オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4067,22 +3656,18 @@
       ],
       "src": "note",
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
-      "example": {"code": ["sturb w0,[x1,#4]"],"explanation": "w0 の下位 1 バイトを x1+4 番地へストアする（スケールなし形式）。"}
+      "example": {
+        "code": ["sturb w0,[x1,#4]"],
+        "explanation": "w0 の下位 1 バイトを x1+4 番地へストアする（スケールなし形式）。"
+      }
     },
     {
       "mnemonic": "STURH",
       "operands": "src, [base{, #imm}]",
       "category": "データ転送",
       "summary": "W レジスタの下位 2 バイトをストアする。",
-      "addressing": [
-        "符号付きスケールなし即値オフセット"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["符号付きスケールなし即値オフセット"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4098,22 +3683,18 @@
       ],
       "src": "note",
       "notes": "オフセットはスケールしない符号付き 9 ビットのバイト単位（-256〜255）。ベースの書き戻しは行わない。",
-      "example": {"code": ["sturh w0,[x1,#4]"],"explanation": "w0 の下位 2 バイトを x1+4 番地へストアする（スケールなし形式）。"}
+      "example": {
+        "code": ["sturh w0,[x1,#4]"],
+        "explanation": "w0 の下位 2 バイトを x1+4 番地へストアする（スケールなし形式）。"
+      }
     },
     {
       "mnemonic": "LSLV",
       "operands": "dst, src, count_reg",
       "category": "シフト",
       "summary": "レジスタで指定した回数の左論理シフト。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4129,22 +3710,18 @@
       ],
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。LSL のレジスタ回数形式と同じ符号化。",
       "src": "note",
-      "example": {"code": ["lslv x0,x1,x2"],"explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ左論理シフトした値。"}
+      "example": {
+        "code": ["lslv x0,x1,x2"],
+        "explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ左論理シフトした値。"
+      }
     },
     {
       "mnemonic": "LSRV",
       "operands": "dst, src, count_reg",
       "category": "シフト",
       "summary": "レジスタで指定した回数の右論理シフト。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4160,22 +3737,18 @@
       ],
       "src": "note",
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。LSR のレジスタ回数形式と同じ符号化。",
-      "example": {"code": ["lsrv x0,x1,x2"],"explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ右論理シフトした値。"}
+      "example": {
+        "code": ["lsrv x0,x1,x2"],
+        "explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ右論理シフトした値。"
+      }
     },
     {
       "mnemonic": "ASRV",
       "operands": "dst, src, count_reg",
       "category": "シフト",
       "summary": "レジスタで指定した回数の右算術シフト。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4191,22 +3764,18 @@
       ],
       "src": "note",
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。ASR のレジスタ回数形式と同じ符号化。",
-      "example": {"code": ["asrv x0,x1,x2"],"explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ右算術シフトした値。"}
+      "example": {
+        "code": ["asrv x0,x1,x2"],
+        "explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ右算術シフトした値。"
+      }
     },
     {
       "mnemonic": "RORV",
       "operands": "dst, src, count_reg",
       "category": "シフト",
       "summary": "レジスタで指定した回数の右ローテート。",
-      "addressing": [
-        "レジスタ"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4222,22 +3791,18 @@
       ],
       "src": "note",
       "notes": "回数は W 形式で 32、X 形式で 64 の剰余。ROR のレジスタ回数形式と同じ符号化。",
-      "example": {"code": ["rorv x0,x1,x2"],"explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ右ローテートした値。"}
+      "example": {
+        "code": ["rorv x0,x1,x2"],
+        "explanation": "x0 = x1 を x2 の値（下位 6 ビット）だけ右ローテートした値。"
+      }
     },
     {
       "mnemonic": "HVC",
       "operands": "#imm",
       "category": "システム制御",
       "summary": "ハイパーバイザ呼び出し例外を要求する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4252,22 +3817,18 @@
       ],
       "src": "note",
       "notes": "即値は 0〜65535。実行可能性と例外のルーティングは例外レベルと制御設定に依存する。",
-      "example": {"code": ["hvc #0"],"explanation": "この例では ハイパーバイザ呼び出し例外を要求する。"}
+      "example": {
+        "code": ["hvc #0"],
+        "explanation": "EL1（OS カーネル）から EL2（ハイパーバイザ）へのハイパーバイザ呼び出し例外を要求する。即値 #0 はハイパーバイザの呼び出し規約に渡される。"
+      }
     },
     {
       "mnemonic": "SMC",
       "operands": "#imm",
       "category": "システム制御",
       "summary": "モニタ呼び出し例外を要求する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4282,22 +3843,18 @@
       ],
       "src": "note",
       "notes": "即値は 0〜65535。実行可能性と例外のルーティングは例外レベルと制御設定に依存する。",
-      "example": {"code": ["smc #0"],"explanation": "この例では モニタ呼び出し例外を要求する。"}
+      "example": {
+        "code": ["smc #0"],
+        "explanation": "EL1/EL2 から EL3（セキュアモニタ）へのモニタ呼び出し例外を要求する。TrustZone のセキュアワールド遷移などに使われる。"
+      }
     },
     {
       "mnemonic": "BRK",
       "operands": "#imm",
       "category": "システム制御",
       "summary": "ソフトウェアブレークポイント例外を発生させる。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4312,22 +3869,18 @@
       ],
       "src": "note",
       "notes": "即値は 0〜65535。",
-      "example": {"code": ["brk #0"],"explanation": "この例では ソフトウェアブレークポイント例外を発生させる。"}
+      "example": {
+        "code": ["brk #0"],
+        "explanation": "ソフトウェアブレークポイント例外を発生させる。デバッガのブレークポイントや、未到達コード・アサーション失敗時のトラップに使われる。"
+      }
     },
     {
       "mnemonic": "HLT",
       "operands": "#imm",
       "category": "システム制御",
       "summary": "デバッグまたは環境が定める停止処理を要求する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4342,22 +3895,18 @@
       ],
       "src": "note",
       "notes": "即値は 0〜65535。動作はデバッグ設定や実行環境に依存する。",
-      "example": {"code": ["hlt #0"],"explanation": "この例では デバッグまたは環境が定める停止処理を要求する。"}
+      "example": {
+        "code": ["hlt #0"],
+        "explanation": "外部デバッガ接続時にプロセッサをデバッグ停止状態へ遷移させる（未接続時は未定義命令例外）。"
+      }
     },
     {
       "mnemonic": "ERET",
       "operands": "",
       "category": "システム制御",
       "summary": "例外から復帰し、保存された状態と戻り先を復元する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4372,22 +3921,21 @@
       ],
       "src": "note",
       "notes": "現在の例外レベルの SPSR_ELx と ELR_ELx を使用する。復帰先の状態が不正な場合は例外復帰の制約を受ける。",
-      "example": {"code": ["eret"],"explanation": "この例では 例外から復帰し、保存された状態と戻り先を復元する。"}
+      "example": {
+        "code": [
+          "// ELR_EL1 に戻り先、SPSR_EL1 に復帰後 PSTATE を設定済み",
+          "eret"
+        ],
+        "explanation": "現在の例外レベルの ELR_ELx（戻り先 PC）と SPSR_ELx（PSTATE / NZCV）を同時に復元し、例外ハンドラから元の実行レベルへ復帰する。"
+      }
     },
     {
       "mnemonic": "DMB",
       "operands": "option",
       "category": "システム制御",
       "summary": "指定された範囲・アクセス種別に対してメモリアクセスの順序を制約する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4402,22 +3950,18 @@
       ],
       "src": "note",
       "notes": "例: ISH、ISHST、SY。必要な共有範囲とアクセス種別を選ぶ。DMB は指定アクセスの順序を制約し、DSB と同じ完了待ちを意味しない。",
-      "example": {"code": ["dmb sy"],"explanation": "sy（全システム範囲）を対象にメモリアクセスの順序を制約する。"}
+      "example": {
+        "code": ["dmb sy"],
+        "explanation": "sy（全システム範囲）を対象にメモリアクセスの順序を制約する。"
+      }
     },
     {
       "mnemonic": "DSB",
       "operands": "option",
       "category": "システム制御",
       "summary": "option に応じた先行メモリアクセスや保守操作を同期し、必要な完了を待って後続へ進む。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4432,22 +3976,18 @@
       ],
       "src": "note",
       "notes": "バリアの範囲と対象は option で指定する。",
-      "example": {"code": ["dsb sy"],"explanation": "sy（全システム範囲）を対象に、先行するメモリアクセスの完了を待ってから後続へ進む。"}
+      "example": {
+        "code": ["dsb sy"],
+        "explanation": "sy（全システム範囲）を対象に、先行するメモリアクセスの完了を待ってから後続へ進む。"
+      }
     },
     {
       "mnemonic": "ISB",
       "operands": "{SY}",
       "category": "システム制御",
       "summary": "命令実行のコンテキストを同期する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4462,22 +4002,21 @@
       ],
       "src": "note",
       "notes": "先行するシステム状態の変更を後続命令の実行に反映させる用途に使う。データメモリアクセスの順序制御や完了待ちを単独で代替するものではない。",
-      "example": {"code": ["isb"],"explanation": "この例では 命令実行のコンテキストを同期する。"}
+      "example": {
+        "code": [
+          "msr sctlr_el1, x0         // システム制御レジスタを更新",
+          "isb                       // パイプラインをフラッシュし設定変更を反映"
+        ],
+        "explanation": "命令実行のコンテキストを同期する。システムレジスタ書き換えや命令キャッシュ無効化の後で、後続命令が新しい状態でフェッチ・実行されるようにする。"
+      }
     },
     {
       "mnemonic": "WFE",
       "operands": "",
       "category": "システム制御",
       "summary": "イベント待ちのヒント。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4492,22 +4031,24 @@
       ],
       "src": "note",
       "notes": "実際の待機や解除は実装・イベント状態・制御設定に依存する。",
-      "example": {"code": ["wfe"],"explanation": "この例では イベント待ちのヒント。"}
+      "example": {
+        "code": [
+          "sevl                      // 初回ループを素通りさせるためローカルイベントをセット",
+          "spin:",
+          "  wfe                     // イベント発生まで低消費電力で待機",
+          "  ldaxr w1, [x0]          // ロック状態を再確認",
+          "  cbnz  w1, spin"
+        ],
+        "explanation": "スピンロック待ちなどで他コアからの SEV イベントが来るまで低消費電力状態で待機するヒント命令（イベント以外の要因で起きることもあるためループで条件を再確認する）。"
+      }
     },
     {
       "mnemonic": "WFI",
       "operands": "",
       "category": "システム制御",
       "summary": "割り込み待ちのヒント。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4522,22 +4063,22 @@
       ],
       "src": "note",
       "notes": "実際の待機や解除は実装・割り込み状態・制御設定に依存する。",
-      "example": {"code": ["wfi"],"explanation": "この例では 割り込み待ちのヒント。"}
+      "example": {
+        "code": [
+          "idle:",
+          "  wfi                     // 割り込み発生までコアを停止（アイドルループ）",
+          "  b idle"
+        ],
+        "explanation": "IRQ/FIQ などの割り込みが発生するまでコアを低消費電力状態で停止させるヒント命令。OS のアイドルスレッドで使われる。"
+      }
     },
     {
       "mnemonic": "SEV",
       "operands": "",
       "category": "システム制御",
       "summary": "イベントを送信する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4552,22 +4093,21 @@
       ],
       "src": "note",
       "notes": "待機中の PE の起床に利用する。",
-      "example": {"code": ["sev"],"explanation": "この例では イベントを送信する。"}
+      "example": {
+        "code": [
+          "stlr wzr, [x0]            // ロックを解放（release 順序）",
+          "sev                       // WFE で待機中の全コアへイベント通知"
+        ],
+        "explanation": "マルチコアシステム内の全 PE（コア）へイベント信号を送信し、WFE で待機中のスレッドを起床させる。"
+      }
     },
     {
       "mnemonic": "SEVL",
       "operands": "",
       "category": "システム制御",
       "summary": "ローカル PE にイベントを送る。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4582,22 +4122,21 @@
       ],
       "src": "note",
       "notes": "WFE と組み合わせる場合がある。",
-      "example": {"code": ["sevl"],"explanation": "この例では ローカル PE にイベントを送る。"}
+      "example": {
+        "code": [
+          "sevl                      // 自コアのイベントレジスタだけをセット",
+          "wfe                       // 直後の WFE は即座に通過する"
+        ],
+        "explanation": "自コア（ローカル PE）のみにイベントを送る。スピンロックループの直前に置き、最初の 1 回だけ WFE で寝ずにロック取得を試みるイディオムで使う。"
+      }
     },
     {
       "mnemonic": "YIELD",
       "operands": "",
       "category": "システム制御",
       "summary": "他の実行コンテキストへの資源譲渡を促すヒント。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4612,22 +4151,23 @@
       ],
       "src": "note",
       "notes": "実際の効果は実装に依存する。",
-      "example": {"code": ["yield"],"explanation": "この例では 他の実行コンテキストへの資源譲渡を促すヒント。"}
+      "example": {
+        "code": [
+          "spin:",
+          "  yield                   // 同一コア上の別ハードウェアスレッドへ実行資源を譲るヒント",
+          "  ldr w1, [x0]",
+          "  cbnz w1, spin"
+        ],
+        "explanation": "SMT（マルチスレッディング）実装において、スピン待ち中のスレッドが他のハードウェアスレッドへ実行資源を譲ることを促すヒント命令。"
+      }
     },
     {
       "mnemonic": "LDXR",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "32/64 ビットの排他ロード。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4648,22 +4188,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 排他モニタを設定し、対応する排他ストアで成功・失敗を判定する。",
       "src": "note",
-      "example": {"code": ["ldxr w0,[x1]"],"explanation": "x1 番地から 4 バイトを排他ロードで w0 へ入れる。"}
+      "example": {
+        "code": ["ldxr w0,[x1]"],
+        "explanation": "x1 番地から 4 バイトを排他ロードで w0 へ入れる。"
+      }
     },
     {
       "mnemonic": "LDXRB",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "8 ビットの排他ロード。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4679,22 +4215,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 排他モニタを設定し、対応する排他ストアで成功・失敗を判定する。",
       "src": "note",
-      "example": {"code": ["ldxrb w0,[x1]"],"explanation": "x1 番地の 1 バイトを排他ロードで w0 へ入れる。"}
+      "example": {
+        "code": ["ldxrb w0,[x1]"],
+        "explanation": "x1 番地の 1 バイトを排他ロードで w0 へ入れる。"
+      }
     },
     {
       "mnemonic": "LDXRH",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "16 ビットの排他ロード。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4710,22 +4242,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 排他モニタを設定し、対応する排他ストアで成功・失敗を判定する。",
       "src": "note",
-      "example": {"code": ["ldxrh w0,[x1]"],"explanation": "x1 番地の 2 バイトを排他ロードで w0 へ入れる。"}
+      "example": {
+        "code": ["ldxrh w0,[x1]"],
+        "explanation": "x1 番地の 2 バイトを排他ロードで w0 へ入れる。"
+      }
     },
     {
       "mnemonic": "LDAXR",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "32/64 ビットの排他ロード（acquire 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4746,22 +4274,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 排他モニタを設定し、対応する排他ストアで成功・失敗を判定する。 後続のメモリアクセスに acquire 順序を与える。",
       "src": "note",
-      "example": {"code": ["ldaxr w0,[x1]"],"explanation": "x1 番地から 4 バイトを acquire 順序の排他ロードで w0 へ入れる。"}
+      "example": {
+        "code": ["ldaxr w0,[x1]"],
+        "explanation": "x1 番地から 4 バイトを acquire 順序の排他ロードで w0 へ入れる。"
+      }
     },
     {
       "mnemonic": "LDAXRB",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "8 ビットの排他ロード（acquire 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4777,22 +4301,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 排他モニタを設定し、対応する排他ストアで成功・失敗を判定する。 後続のメモリアクセスに acquire 順序を与える。",
       "src": "note",
-      "example": {"code": ["ldaxrb w0,[x1]"],"explanation": "x1 番地の 1 バイトを acquire 順序の排他ロードで w0 へ入れる。"}
+      "example": {
+        "code": ["ldaxrb w0,[x1]"],
+        "explanation": "x1 番地の 1 バイトを acquire 順序の排他ロードで w0 へ入れる。"
+      }
     },
     {
       "mnemonic": "LDAXRH",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "16 ビットの排他ロード（acquire 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4808,22 +4328,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 排他モニタを設定し、対応する排他ストアで成功・失敗を判定する。 後続のメモリアクセスに acquire 順序を与える。",
       "src": "note",
-      "example": {"code": ["ldaxrh w0,[x1]"],"explanation": "x1 番地の 2 バイトを acquire 順序の排他ロードで w0 へ入れる。"}
+      "example": {
+        "code": ["ldaxrh w0,[x1]"],
+        "explanation": "x1 番地の 2 バイトを acquire 順序の排他ロードで w0 へ入れる。"
+      }
     },
     {
       "mnemonic": "STXR",
       "operands": "statusW, src, [base]",
       "category": "データ転送",
       "summary": "32/64 ビットの排他ストア。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4844,22 +4360,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 statusW は成功時 0、失敗時 1。失敗時はメモリを書き込まない。排他ストアは競合などにより失敗しうるため、通常は結果を確認して必要ならロードから再試行する。",
       "src": "note",
-      "example": {"code": ["stxr w3,w0,[x1]"],"explanation": "w0 の 4 バイトを x1 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stxr w3,w0,[x1]"],
+        "explanation": "w0 の 4 バイトを x1 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "STXRB",
       "operands": "statusW, src, [base]",
       "category": "データ転送",
       "summary": "8 ビットの排他ストア。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4875,22 +4387,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 statusW は成功時 0、失敗時 1。失敗時はメモリを書き込まない。",
       "src": "note",
-      "example": {"code": ["stxrb w3,w0,[x1]"],"explanation": "w0 の下位 1 バイトを x1 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stxrb w3,w0,[x1]"],
+        "explanation": "w0 の下位 1 バイトを x1 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "STXRH",
       "operands": "statusW, src, [base]",
       "category": "データ転送",
       "summary": "16 ビットの排他ストア。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4906,22 +4414,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 statusW は成功時 0、失敗時 1。失敗時はメモリを書き込まない。",
       "src": "note",
-      "example": {"code": ["stxrh w3,w0,[x1]"],"explanation": "w0 の下位 2 バイトを x1 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stxrh w3,w0,[x1]"],
+        "explanation": "w0 の下位 2 バイトを x1 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "STLXR",
       "operands": "statusW, src, [base]",
       "category": "データ転送",
       "summary": "32/64 ビットの排他ストア（release 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4942,22 +4446,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 statusW は成功時 0、失敗時 1。失敗時はメモリを書き込まない。 先行のメモリアクセスに release 順序を与える。排他ストアは競合などにより失敗しうるため、通常は結果を確認して必要ならロードから再試行する。",
       "src": "note",
-      "example": {"code": ["stlxr w3,w0,[x1]"],"explanation": "w0 の 4 バイトを x1 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stlxr w3,w0,[x1]"],
+        "explanation": "w0 の 4 バイトを x1 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "STLXRB",
       "operands": "statusW, src, [base]",
       "category": "データ転送",
       "summary": "8 ビットの排他ストア（release 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -4973,22 +4473,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 statusW は成功時 0、失敗時 1。失敗時はメモリを書き込まない。 先行のメモリアクセスに release 順序を与える。",
       "src": "note",
-      "example": {"code": ["stlxrb w3,w0,[x1]"],"explanation": "w0 の下位 1 バイトを x1 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stlxrb w3,w0,[x1]"],
+        "explanation": "w0 の下位 1 バイトを x1 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "STLXRH",
       "operands": "statusW, src, [base]",
       "category": "データ転送",
       "summary": "16 ビットの排他ストア（release 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5004,22 +4500,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 statusW は成功時 0、失敗時 1。失敗時はメモリを書き込まない。 先行のメモリアクセスに release 順序を与える。",
       "src": "note",
-      "example": {"code": ["stlxrh w3,w0,[x1]"],"explanation": "w0 の下位 2 バイトを x1 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stlxrh w3,w0,[x1]"],
+        "explanation": "w0 の下位 2 バイトを x1 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "LDAR",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "32/64 ビットのロード（acquire 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5040,22 +4532,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 後続のメモリアクセスに acquire 順序を与える。",
       "src": "note",
-      "example": {"code": ["ldar w0,[x1]"],"explanation": "x1 番地から 4 バイトを acquire 順序で w0 へロードする。"}
+      "example": {
+        "code": ["ldar w0,[x1]"],
+        "explanation": "x1 番地から 4 バイトを acquire 順序で w0 へロードする。"
+      }
     },
     {
       "mnemonic": "LDARB",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "8 ビットのロード（acquire 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5071,22 +4559,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 後続のメモリアクセスに acquire 順序を与える。",
       "src": "note",
-      "example": {"code": ["ldarb w0,[x1]"],"explanation": "x1 番地の 1 バイトを acquire 順序で w0 へロードする。"}
+      "example": {
+        "code": ["ldarb w0,[x1]"],
+        "explanation": "x1 番地の 1 バイトを acquire 順序で w0 へロードする。"
+      }
     },
     {
       "mnemonic": "LDARH",
       "operands": "dst, [base]",
       "category": "データ転送",
       "summary": "16 ビットのロード（acquire 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5102,22 +4586,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 後続のメモリアクセスに acquire 順序を与える。",
       "src": "note",
-      "example": {"code": ["ldarh w0,[x1]"],"explanation": "x1 番地の 2 バイトを acquire 順序で w0 へロードする。"}
+      "example": {
+        "code": ["ldarh w0,[x1]"],
+        "explanation": "x1 番地の 2 バイトを acquire 順序で w0 へロードする。"
+      }
     },
     {
       "mnemonic": "STLR",
       "operands": "src, [base]",
       "category": "データ転送",
       "summary": "32/64 ビットのストア（release 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5138,22 +4618,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 先行のメモリアクセスに release 順序を与える。",
       "src": "note",
-      "example": {"code": ["stlr w0,[x1]"],"explanation": "w0 の 4 バイトを x1 番地へ release 順序でストアする。"}
+      "example": {
+        "code": ["stlr w0,[x1]"],
+        "explanation": "w0 の 4 バイトを x1 番地へ release 順序でストアする。"
+      }
     },
     {
       "mnemonic": "STLRB",
       "operands": "src, [base]",
       "category": "データ転送",
       "summary": "8 ビットのストア（release 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5169,22 +4645,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 先行のメモリアクセスに release 順序を与える。",
       "src": "note",
-      "example": {"code": ["stlrb w0,[x1]"],"explanation": "w0 の下位 1 バイトを x1 番地へ release 順序でストアする。"}
+      "example": {
+        "code": ["stlrb w0,[x1]"],
+        "explanation": "w0 の下位 1 バイトを x1 番地へ release 順序でストアする。"
+      }
     },
     {
       "mnemonic": "STLRH",
       "operands": "src, [base]",
       "category": "データ転送",
       "summary": "16 ビットのストア（release 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5200,22 +4672,18 @@
       ],
       "notes": "アクセス幅に応じたアラインメントが必要。 先行のメモリアクセスに release 順序を与える。",
       "src": "note",
-      "example": {"code": ["stlrh w0,[x1]"],"explanation": "w0 の下位 2 バイトを x1 番地へ release 順序でストアする。"}
+      "example": {
+        "code": ["stlrh w0,[x1]"],
+        "explanation": "w0 の下位 2 バイトを x1 番地へ release 順序でストアする。"
+      }
     },
     {
       "mnemonic": "LDXP",
       "operands": "dst1, dst2, [base]",
       "category": "データ転送",
       "summary": "同じ幅の 2 レジスタを対象とする排他ロード。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5236,22 +4704,18 @@
       ],
       "notes": "対応する排他アクセスと対で使用する。",
       "src": "note",
-      "example": {"code": ["ldxp w0,w2,[x1]"],"explanation": "x1 番地の 4 バイトを w0 へ、続く 4 バイトを w2 へ排他ロードする。"}
+      "example": {
+        "code": ["ldxp w0,w2,[x1]"],
+        "explanation": "x1 番地の 4 バイトを w0 へ、続く 4 バイトを w2 へ排他ロードする。"
+      }
     },
     {
       "mnemonic": "LDAXP",
       "operands": "dst1, dst2, [base]",
       "category": "データ転送",
       "summary": "同じ幅の 2 レジスタを対象とする排他ロード（acquire 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5272,22 +4736,18 @@
       ],
       "notes": "対応する排他アクセスと対で使用する。",
       "src": "note",
-      "example": {"code": ["ldaxp w0,w2,[x1]"],"explanation": "x1 番地の 4 バイトを w0 へ、続く 4 バイトを w2 へ acquire 順序の排他ロードする。"}
+      "example": {
+        "code": ["ldaxp w0,w2,[x1]"],
+        "explanation": "x1 番地の 4 バイトを w0 へ、続く 4 バイトを w2 へ acquire 順序の排他ロードする。"
+      }
     },
     {
       "mnemonic": "STXP",
       "operands": "statusW, src1, src2, [base]",
       "category": "データ転送",
       "summary": "同じ幅の 2 レジスタを対象とする排他ストア。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5308,22 +4768,18 @@
       ],
       "notes": "対応する排他アクセスと対で使用する。成功時 statusW=0、失敗時 statusW=1。排他ストアは競合などにより失敗しうるため、通常は結果を確認して必要ならロードから再試行する。",
       "src": "note",
-      "example": {"code": ["stxp w3,w0,w2,[x1]"],"explanation": "w0 の 4 バイトを x1 番地へ、w2 の 4 バイトを x1+4 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stxp w3,w0,w2,[x1]"],
+        "explanation": "w0 の 4 バイトを x1 番地へ、w2 の 4 バイトを x1+4 番地へ排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "STLXP",
       "operands": "statusW, src1, src2, [base]",
       "category": "データ転送",
       "summary": "同じ幅の 2 レジスタを対象とする排他ストア（release 順序）。",
-      "addressing": [
-        "レジスタ間接 [Xn|SP]"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接 [Xn|SP]"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5344,22 +4800,18 @@
       ],
       "notes": "対応する排他アクセスと対で使用する。成功時 statusW=0、失敗時 statusW=1。",
       "src": "note",
-      "example": {"code": ["stlxp w3,w0,w2,[x1]"],"explanation": "w0 の 4 バイトを x1 番地へ、w2 の 4 バイトを x1+4 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"}
+      "example": {
+        "code": ["stlxp w3,w0,w2,[x1]"],
+        "explanation": "w0 の 4 バイトを x1 番地へ、w2 の 4 バイトを x1+4 番地へ release 順序の排他ストアし、成否（0=成功）を w3 に入れる。"
+      }
     },
     {
       "mnemonic": "CLREX",
       "operands": "{#imm}",
       "category": "データ転送",
       "summary": "ローカルの排他モニタを解除する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "ISA では規定されない",
@@ -5375,7 +4827,18 @@
       ],
       "notes": "即値は省略可能。排他アクセス列の中断時などに使う。",
       "src": "note",
-      "example": {"code": ["clrex #0"],"explanation": "この例では ローカルの排他モニタを解除する。"}
+      "example": {
+        "code": [
+          "ldxr  w0, [x1]            // 排他モニタを設定",
+          "cbnz  w0, abort           // 値が期待と違えば更新を中止",
+          "stxr  w2, w3, [x1]        // 新値 w3 の排他書き込みを試みる",
+          "b     done                // 成否は w2 で判定して先へ進む",
+          "abort:",
+          "  clrex                   // 不要になった排他モニタを明示的に解除",
+          "done:"
+        ],
+        "explanation": "LDXR/LDAXR で設定したローカルの排他モニタを解除する。排他ロード後に条件不一致などで STXR を行わず中断する場合のクリーンアップに使う。"
+      }
     }
   ],
   "aliases": [
@@ -5385,7 +4848,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0000, label",
       "summary": "EQ 条件コード（cond=0000）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.eq target","target:"],"explanation": "EQ（Z=1）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.eq equal                // w0 == w1（Z=1）なら加算をスキップ",
+          "add w0, w0, #1",
+          "equal:"
+        ],
+        "explanation": "EQ（Z=1）成立なら後続処理をスキップして equal へ分岐し、不成立なら次の命令へ進む。"
+      }
     },
     {
       "mnemonic": "b.ne",
@@ -5393,7 +4864,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0001, label",
       "summary": "NE 条件コード（cond=0001）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.ne target","target:"],"explanation": "NE（Z=0）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.ne not_equal            // w0 != w1（Z=0）なら処理をスキップ",
+          "mov w0, #0",
+          "not_equal:"
+        ],
+        "explanation": "NE（Z=0）成立なら後続処理をスキップして not_equal へ分岐し、不成立なら次の命令へ進む。"
+      }
     },
     {
       "mnemonic": "b.cs",
@@ -5401,7 +4880,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0010, label",
       "summary": "CS 条件コード（cond=0010）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.cs target","target:"],"explanation": "CS（C=1、符号なし比較の以上）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.cs above_eq             // 符号なし w0 >= w1（C=1）ならスキップ",
+          "mov w0, w1",
+          "above_eq:"
+        ],
+        "explanation": "CS（C=1、符号なし比較の以上）成立なら後続処理をスキップして above_eq へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.hs",
@@ -5409,7 +4896,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0010, label",
       "summary": "HS 条件コード（cond=0010）を指定した条件付き相対分岐。HSはCSの別名。",
-      "example": {"code": ["b.hs target","target:"],"explanation": "HS（C=1、符号なし比較の以上。CS の別名）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.hs above_eq             // 符号なし w0 >= w1（C=1、CS の別名）ならスキップ",
+          "mov w0, w1",
+          "above_eq:"
+        ],
+        "explanation": "HS（C=1、符号なし比較の以上。CS の別名）成立なら後続処理をスキップして above_eq へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.cc",
@@ -5417,7 +4912,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0011, label",
       "summary": "CC 条件コード（cond=0011）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.cc target","target:"],"explanation": "CC（C=0、符号なし比較の未満）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.cc below                // 符号なし w0 < w1（C=0）ならスキップ",
+          "sub w0, w0, w1",
+          "below:"
+        ],
+        "explanation": "CC（C=0、符号なし比較の未満）成立なら後続処理をスキップして below へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.lo",
@@ -5425,7 +4928,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0011, label",
       "summary": "LO 条件コード（cond=0011）を指定した条件付き相対分岐。LOはCCの別名。",
-      "example": {"code": ["b.lo target","target:"],"explanation": "LO（C=0、符号なし比較の未満。CC の別名）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.lo below                // 符号なし w0 < w1（C=0、CC の別名）ならスキップ",
+          "sub w0, w0, w1",
+          "below:"
+        ],
+        "explanation": "LO（C=0、符号なし比較の未満。CC の別名）成立なら後続処理をスキップして below へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.mi",
@@ -5433,7 +4944,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0100, label",
       "summary": "MI 条件コード（cond=0100）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.mi target","target:"],"explanation": "MI（N=1、負の値）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "subs w0, w0, #1",
+          "b.mi negative             // 結果が負（N=1）ならスキップ",
+          "add  w1, w1, #1",
+          "negative:"
+        ],
+        "explanation": "MI（N=1、負の値）成立なら後続処理をスキップして negative へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.pl",
@@ -5441,7 +4960,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0101, label",
       "summary": "PL 条件コード（cond=0101）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.pl target","target:"],"explanation": "PL（N=0、正または 0）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "subs w0, w0, #1",
+          "b.pl non_neg              // 結果が 0 以上（N=0）ならスキップ",
+          "mov  w0, #0",
+          "non_neg:"
+        ],
+        "explanation": "PL（N=0、正または 0）成立なら後続処理をスキップして non_neg へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.vs",
@@ -5449,7 +4976,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0110, label",
       "summary": "VS 条件コード（cond=0110）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.vs target","target:"],"explanation": "VS（V=1、符号付きオーバーフロー）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "adds w0, w0, w1",
+          "b.vs overflow             // 符号付きオーバーフロー（V=1）なら分岐",
+          "mov  w2, #0",
+          "overflow:"
+        ],
+        "explanation": "VS（V=1、符号付きオーバーフロー）成立なら後続処理をスキップして overflow へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.vc",
@@ -5457,7 +4992,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=0111, label",
       "summary": "VC 条件コード（cond=0111）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.vc target","target:"],"explanation": "VC（V=0、オーバーフローなし）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "adds w0, w0, w1",
+          "b.vc no_overflow          // オーバーフローなし（V=0）ならスキップ",
+          "mov  w0, #0x7FFFFFFF",
+          "no_overflow:"
+        ],
+        "explanation": "VC（V=0、オーバーフローなし）成立ならエラー処理をスキップして no_overflow へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.hi",
@@ -5465,7 +5008,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=1000, label",
       "summary": "HI 条件コード（cond=1000）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.hi target","target:"],"explanation": "HI（C=1 かつ Z=0、符号なし比較の超え）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.hi higher               // 符号なし w0 > w1（C=1 かつ Z=0）ならスキップ",
+          "mov w0, w1",
+          "higher:"
+        ],
+        "explanation": "HI（C=1 かつ Z=0、符号なし比較の超え）成立なら後続処理をスキップして higher へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.ls",
@@ -5473,7 +5024,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=1001, label",
       "summary": "LS 条件コード（cond=1001）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.ls target","target:"],"explanation": "LS（C=0 または Z=1、符号なし比較の以下）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.ls lower_same           // 符号なし w0 <= w1（C=0 または Z=1）ならスキップ",
+          "sub w0, w0, w1",
+          "lower_same:"
+        ],
+        "explanation": "LS（C=0 または Z=1、符号なし比較の以下）成立なら後続処理をスキップして lower_same へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.ge",
@@ -5481,7 +5040,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=1010, label",
       "summary": "GE 条件コード（cond=1010）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.ge target","target:"],"explanation": "GE（N=V、符号付き比較の以上）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.ge greater_eq           // 符号付き w0 >= w1（N=V）ならスキップ",
+          "mov w0, w1",
+          "greater_eq:"
+        ],
+        "explanation": "GE（N=V、符号付き比較の以上）成立なら後続処理をスキップして greater_eq へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.lt",
@@ -5489,7 +5056,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=1011, label",
       "summary": "LT 条件コード（cond=1011）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.lt target","target:"],"explanation": "LT（N≠V、符号付き比較の未満）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.lt less_than            // 符号付き w0 < w1（N!=V）ならスキップ",
+          "sub w0, w0, w1",
+          "less_than:"
+        ],
+        "explanation": "LT（N≠V、符号付き比較の未満）成立なら後続処理をスキップして less_than へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.gt",
@@ -5497,7 +5072,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=1100, label",
       "summary": "GT 条件コード（cond=1100）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.gt target","target:"],"explanation": "GT（Z=0 かつ N=V、符号付き比較の超え）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.gt greater              // 符号付き w0 > w1（Z=0 かつ N=V）ならスキップ",
+          "mov w0, w1",
+          "greater:"
+        ],
+        "explanation": "GT（Z=0 かつ N=V、符号付き比較の超え）成立なら後続処理をスキップして greater へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.le",
@@ -5505,7 +5088,15 @@
       "operands": "label",
       "equivalent": "B.COND cond=1101, label",
       "summary": "LE 条件コード（cond=1101）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.le target","target:"],"explanation": "LE（Z=1 または N≠V、符号付き比較の以下）成立なら target へ分岐し、不成立なら次の命令へ進む。"}
+      "example": {
+        "code": [
+          "cmp w0, w1",
+          "b.le less_eq              // 符号付き w0 <= w1（Z=1 または N!=V）ならスキップ",
+          "sub w0, w0, w1",
+          "less_eq:"
+        ],
+        "explanation": "LE（Z=1 または N≠V、符号付き比較の以下）成立なら後続処理をスキップして less_eq へ分岐する。"
+      }
     },
     {
       "mnemonic": "b.al",
@@ -5513,7 +5104,14 @@
       "operands": "label",
       "equivalent": "B.COND cond=1110, label",
       "summary": "AL 条件コード（cond=1110）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.al target","target:"],"explanation": "AL（常に成立）なので target へ無条件分岐する。"}
+      "example": {
+        "code": [
+          "b.al skip",
+          "mov  w0, #0xFF            // 実行されない",
+          "skip:"
+        ],
+        "explanation": "AL（常に成立）なので途中の命令をスキップして skip へ無条件分岐する。"
+      }
     },
     {
       "mnemonic": "b.nv",
@@ -5521,7 +5119,14 @@
       "operands": "label",
       "equivalent": "B.COND cond=1111, label",
       "summary": "NV 条件コード（cond=1111）を指定した条件付き相対分岐。",
-      "example": {"code": ["b.nv target","target:"],"explanation": "NV（cond=1111、ARMv8 では常に成立）なので target へ分岐する。"}
+      "example": {
+        "code": [
+          "b.nv skip",
+          "mov  w0, #0xFF            // 実行されない",
+          "skip:"
+        ],
+        "explanation": "NV（cond=1111、ARMv8 では常に成立）なので途中の命令をスキップして skip へ分岐する。"
+      }
     }
   ]
 }

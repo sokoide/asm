@@ -15,11 +15,13 @@ Jcc label — x86-64（分岐）
   Jcc rel32: 0F 80+cc cd  (6 バイト)
 
 使用例:
-  jz target
-  target:
+  cmp  rax, rbx
+  jz   equal                ; rax == rbx（ZF=1）ならインクリメントをスキップ
+  inc  rax                  ; rax != rbx のときだけ実行
+  equal:
 
 解説:
-  ZF = 1 のときだけ target へ分岐する（rel8/rel32 相対）。不成立なら次の命令へ直進する。
+  ZF = 1 のときだけ後続処理をスキップして equal へ分岐する（rel8/rel32 相対）。不成立なら次の命令へ直進する。
 
 備考:
   cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。

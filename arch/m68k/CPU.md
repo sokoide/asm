@@ -160,7 +160,7 @@ dbra dn, label    ; dn--, dn≠-1 なら label へ
 条件付きバリエーション：
 
 ```asm
-dbeq dn, label    ; dn--, dn≠-1 かつ条件成立なら label へ
+dbeq dn, label    ; 条件成立なら減算せず次へ脱出 / 不成立なら dn-- し dn≠-1 なら label へ
 dbne dn, label
 dbgt dn, label
 ...

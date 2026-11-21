@@ -12,10 +12,10 @@ crnot（拡張ニーモニック）→ CRNOR crbT, crbA, crbB — PowerPC（CR�
   コンディションレジスタビットの反転（Condition Register Not）
 
 使用例:
-  crnot 2,crbA
+  crnot 2, 6                # CR ビット 6 の反転を CR ビット 2 へ代入
 
 解説:
-  CR ビット crbA の反転を CR ビット 2 へ代入する（crnor 2,crbA,crbA の簡記）。
+  CR ビット 6 の反転を CR ビット 2 へ代入する（crnor 2,6,6 の簡記）。
 
 元命令: isa ppc CRNOR
 CR ビット同士の NOR。

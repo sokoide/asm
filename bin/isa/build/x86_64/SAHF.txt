@@ -14,10 +14,10 @@ AH の内容を RFLAGS の下位 8 ビット（SF/ZF/AF/PF/CF）へ書き込む�
   SAHF: 9E  (1 バイト)
 
 使用例:
-  sahf
+  sahf                      ; RFLAGS の下位 8 ビット（SF/ZF/AF/PF/CF）を AH の値で更新
 
 解説:
-  この例では AH の内容を RFLAGS の下位 8 ビット（SF/ZF/AF/PF/CF）へ書き込む。
+  AH の内容を RFLAGS の下位 8 ビット（SF, ZF, AF, PF, CF）へ書き込む。
 
 備考:
   bit1 は 1 固定、bit3/5 は 0 で書かれる。初期の x86-64 CPU の一部は未サポート。

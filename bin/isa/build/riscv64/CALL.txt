@@ -10,11 +10,16 @@ CALL [rd,] symbol — RISC-V 64（サブルーチン）
   ISA では規定されない: 実装依存
 
 使用例:
-  call target
-  target:
+  call callee               # ra に戻りアドレスを保存して callee を呼び出し
+  mv   t0, a0               # ret 後にここへ戻る
+  j    done                 # callee へフォールスルーしない
+  callee:
+    li a0, 42
+    ret
+  done:
 
 解説:
-  戻り先を ra に保存して target を呼び出す。通常は auipc ra + jalr ra に展開される。
+  戻り先（PC+4 / PC+8）を ra に設定して callee を呼び出す疑似命令（通常 auipc ra + jalr ra に展開される）。
 
 備考:
   通常は AUIPC ra + JALR ra に展開し、リンカが再配置を解決する。条件を満たすとリンク時に短い JAL に緩和されうる。rd を明示する形式もある。

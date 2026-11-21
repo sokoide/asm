@@ -14,11 +14,13 @@ ADR dst64, label — ARM64（アドレス計算）
   ADR Xd,label: 0 immlo 10000 immhi Rd  (4 バイト)
 
 使用例:
-  adr x0,target
+  adr x0, target            // x0 = target の実行時アドレス（PC ± 1 MiB 以内）
+  ldr w1, [x0]
   target:
+    .word 0x12345678
 
 解説:
-  この命令のアドレスから target までの PC 相対差を計算し、target のアドレスを x0 に入れる。
+  この命令のアドレスから target までの PC 相対差を計算し、target のアドレスを x0 に入れる（メモリアクセスは行わない）。
 
 備考:
   immhi:immlo は符号付き 21 ビットのバイト変位。

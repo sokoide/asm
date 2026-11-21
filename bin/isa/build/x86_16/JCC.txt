@@ -15,11 +15,13 @@ Jcc short — 8086（分岐）
   Jcc rel8: 70〜7F rel8  (2 バイト)
 
 使用例:
-  jz target
-  target:
+  cmp  ax, bx
+  jz   equal                ; ax == bx（ZF=1）ならインクリメントをスキップ
+  inc  ax                   ; ax != bx のときだけ実行
+  equal:
 
 解説:
-  ZF=1 のとき target へ相対分岐（次の命令から -128〜+127 バイト以内）。
+  ZF=1 のとき後続処理をスキップして equal へ相対分岐し、ZF=0 なら次の命令へ進む（次の命令から -128〜+127 バイト以内）。
 
 備考:
   70 JO, 71 JNO, 72 JB/JNAE, 73 JAE/JNB, 74 JE/JZ, 75 JNE/JNZ, 76 JBE/JNA, 77 JA/JNBE, 78 JS, 79 JNS, 7A JP/JPE, 7B JNP/JPO, 7C JL/JNGE, 7D JGE/JNL, 7E JLE/JNG, 7F JG/JNLE（8086 の一覧）。符号付き比較は JG/JGE/JL/JLE、符号なしは JA/JAE/JB/JBE。

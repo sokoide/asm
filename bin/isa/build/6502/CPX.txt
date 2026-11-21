@@ -20,10 +20,11 @@ X と src を比較。C=1 が符号なし比較で「X >= src」。
 使用例:
   ldx $20
   cpx #$10
-  bcs at_least
-  at_least: nop
+  bcs at_least   ; X >= $10（C=1）なら初期化をスキップ
+  ldx #$10       ; X < $10 のとき下限値に補正
+  at_least:
 
 解説:
-  X と $10 を符号なし比較し、X>=$10 なら at_least へ分岐する。
+  X と $10 を符号なし比較し、X >= $10 なら補正処理をスキップして at_least へ分岐する。
 
 （根拠: book）

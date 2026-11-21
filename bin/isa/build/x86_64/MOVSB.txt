@@ -14,10 +14,11 @@ RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI �
   MOVSB: A4  (1 バイト)
 
 使用例:
-  movsb
+  cld
+  movsb                     ; [rdi] = [rsi]（1 バイト）, rsi++, rdi++
 
 解説:
-  この例では RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI を ±1 する。
+  RSI の指す要素を RDI へ 1 バイト転送し、DF=0 なら RSI/RDI を +1、DF=1 なら -1 する。
 
 備考:
   転送方向は DF（cld=増加、std=減少）。Microsoft ABI はプロシージャ入口で DF=0 を要求する。

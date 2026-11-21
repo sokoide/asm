@@ -59,7 +59,7 @@ MD_LINT_IGNORES := --ignore "CLAUDE.md" --ignore "node_modules/**" \
 lint:
 	$(EXEC) textlint "**/*.md"
 
-# 各アーキテクチャの .s/.asm を整形し、Markdown も整形
+# 各アーキテクチャの .s/.asm を整形し、bin/isa/data/*.json と Markdown も整形
 # （サブディレクトリの format は nvim 保存時整形と同一ロジック。root README の
 #   「コード整形 (make format)」セクション参照）
 format:
@@ -67,6 +67,14 @@ format:
 	  echo "── format: $$d ──"; \
 	  $(MAKE) --no-print-directory -C $$d format || echo "  (スキップ: $$d)"; \
 	done
+	@echo "Formatting bin/isa/data/*.json using nvim (conform 保存時整形と同一)..."
+	@if command -v nvim >/dev/null 2>&1; then \
+	  for f in bin/isa/data/*.json; do \
+	    nvim --headless +"e $$f" +w +qa! || echo "  (失敗: $$f)"; \
+	  done; \
+	else \
+	  echo "  (スキップ: nvim がありません)"; \
+	fi
 	@echo "Formatting markdown files using $(RUNNER)..."
 	$(RUNNER) markdownlint-cli "**/*.md" $(MD_LINT_IGNORES) --fix
 	$(EXEC) textlint --fix "**/*.md"
@@ -78,7 +86,7 @@ help:
 	@echo "  make clean      全アーキテクチャのビルド成果物を削除"
 	@echo "  make debug/trace/cycles/icount  任意アーキのデバッグ/トレース/サイクル・命令数計測（A= と S= が必須）"
 	@echo "  make lint       Markdown を textlint でチェック"
-	@echo "  make format     全アーキの .s/.asm を asmfmt で整形 + Markdown を textlint + markdownlint で整形"
+	@echo "  make format     全アーキの .s/.asm + bin/isa/data/*.json + Markdown を整形"
 	@echo ""
 	@echo "個別アーキテクチャは各ディレクトリで実行してください。例:"
 	@echo "  cd arch/arm64/qemu && make runall   # 全シナリオ実行"

@@ -20,10 +20,11 @@ Y と src を比較。C=1 が符号なし比較で「Y >= src」。
 使用例:
   ldy $20
   cpy #$10
-  bne different
-  different: nop
+  bne different  ; Y != $10（Z=0）ならスキップ
+  lda #$01       ; Y == $10 のときだけ実行
+  different:
 
 解説:
-  Y と $10 を比較し、等しくなければ different へ分岐する。
+  Y と $10 を比較し、等しくなければ処理をスキップして different へ分岐する。
 
 （根拠: book）

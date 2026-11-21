@@ -10,11 +10,13 @@ TAIL symbol — RISC-V 32（サブルーチン）
   ISA では規定されない: 実装依存
 
 使用例:
-  tail target
-  target:
+  tail callee               # 戻り先 ra を上書きせず callee へ末尾ジャンプ
+  callee:
+    li a0, 42
+    ret                     # 元の呼び出し元へ直接戻る
 
 解説:
-  戻りアドレスを設定せず target へ末尾ジャンプする（通常 auipc x6 + jalr x0 に展開される疑似命令）。
+  戻りアドレス ra を新たに保存せず callee へ末尾呼び出しする疑似命令（通常 auipc t1 + jalr zero に展開される）。
 
 備考:
   通常は一時レジスタ x6 を使う AUIPC + JALR x0 に展開する。Zicfilp 有効時には x7 を使用する形式がある。リンカによる緩和がありうる。

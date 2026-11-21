@@ -14,11 +14,13 @@ src が 0 でなければ相対分岐する。NZCV は変更しない。範囲�
   CBNZ Rt,label: sf 011010 1 imm19 Rt  (4 バイト)
 
 使用例:
-  cbnz x0,target
-  target:
+  mov x0, #4
+  loop:
+    subs x0, x0, #1         // カウンタを 1 減算
+    cbnz x0, loop           // x0 != 0 のあいだ loop へ戻る
 
 解説:
-  x0 が 0 以外なら target へ分岐し、0 なら次の命令へ進む。フラグは変化しない。
+  x0 が 0 以外なら loop へ分岐し、0 になったらループを抜ける。NZCV フラグは変更しない。
 
 備考:
   sf=0 は Wt、sf=1 は Xt。imm19 は符号付きで 4 バイト単位。

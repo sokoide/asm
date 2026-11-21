@@ -13,10 +13,10 @@ insrwi（拡張ニーモニック）→ RLWIMI rA, rS, n, mB, mE — PowerPC（�
   end = start+nBits。rS の下位 nBits ビットを rA の bit start 以降に挿入する。
 
 使用例:
-  insrwi 4,4,nBits,start
+  insrwi %r4, %r5, 8, 8     # r5 の下位 8 ビットを r4 のビット 8〜15 へ挿入
 
 解説:
-  r4 の右端（下位）nBits ビットを、r4 の（MSB から数えて）start ビット目の位置へ挿入する（rlwimi r4,r4,(32-end)&31,start,end-1、end=start+nBits の簡記）。
+  r5 の右端（下位）8 ビットを、r4 の（MSB から数えて）8 ビット目の位置へ挿入する（rlwimi r4,r5,16,8,15 の簡記）。
 
 元命令: isa ppc RLWIMI
 左回転後にマスク部分だけ rA に挿入（Mask Insert）。既存ビットフィールドの置換用。
@@ -28,10 +28,10 @@ insrwi（拡張ニーモニック）→ RLWIMI rA, rS, n, mB, mE — PowerPC（�
   rlwimi[.] rA,rS,SH,MB,ME: 010100 rS rA SH MB ME Rc  (4 バイト)
 
 使用例:
-  rlwimi %r5,%r4,1,0,31
+  rlwimi %r5,%r4,8,16,23
 
 解説:
-  r4 を左へ 1 ビット回転した値のマスク範囲（ここでは全ビット）を r5 の元の値へ上書き挿入する（Mask Insert）。この例では r5 は回転値で完全に置き換わる。
+  r4 を左へ 8 ビット回転した値のマスク範囲（ビット 16〜23）だけを r5 に上書き挿入し、マスク外の r5 のビットは保持する（Mask Insert）。ビットフィールドの置換に使う。
 
 備考:
   ビット番号は最上位が 0。マスク内を回転後の値に置換し、マスク外は元の rA を保持する。MB>ME ではマスクが末尾と先頭にまたがる。

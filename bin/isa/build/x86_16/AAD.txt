@@ -14,9 +14,10 @@ AAD — 8086（BCD）
   AAD: D5 0A  (2 バイト)
 
 使用例:
-  aad
+  mov  ax, 0x0506           ; 非パック BCD の 56（AH=5, AL=6）
+  aad                       ; AL = AH*10 + AL = 56（0x38）, AH = 0
 
 解説:
-  この例では 除算前の ASCII 補正（AL = AH×10+AL、AH=0）。
+  除算前に非パック BCD 2 桁（AH=十の位, AL=一の位）を AL = AH×10 + AL の 2 進数へ変換し、AH を 0 にする。
 
 （根拠: book）

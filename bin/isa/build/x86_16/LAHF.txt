@@ -14,10 +14,10 @@ FLAGS の下位バイト（SF ZF AF PF CF）を AH にコピー。
   LAHF: 9F  (1 バイト)
 
 使用例:
-  lahf
+  lahf                      ; AH = FLAGS の下位バイト（SF ZF 0 AF 0 PF 1 CF）
 
 解説:
-  この例では FLAGS の下位バイト（SF ZF AF PF CF）を AH にコピー。
+  FLAGS の下位バイト（SF, ZF, AF, PF, CF）を AH レジスタへコピーする（OF/DF/IF/TF は含まれない）。
 
 備考:
   8080 互換の命令。OF DF IF TF は含まれない。

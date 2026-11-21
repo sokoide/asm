@@ -14,10 +14,11 @@ AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1
   STOSB: AA  (1 バイト)
 
 使用例:
-  stosb
+  cld
+  stosb                     ; [rdi] = AL, rdi++
 
 解説:
-  この例では AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1 する。
+  AL の値を RDI の指す 1 バイトへ格納し、DF=0 なら RDI を +1、DF=1 なら -1 する。
 
 備考:
   rep stosb でメモリ領域を一括フィル（memset 的用途）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。

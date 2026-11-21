@@ -13,11 +13,12 @@ bdz（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
   [l] 接尾でリンク（LR 更新）、[a] 接尾で絶対アドレス分岐。
 
 使用例:
-  bdz target
-  target:
+  bdz zero_done             # CTR を 1 減算し、0 になったら処理をスキップ
+  addi %r4, %r4, 1
+  zero_done:
 
 解説:
-  CTR を減算して 0 になったら target へ分岐する（bc 0x12,0,target の簡記）。
+  CTR を 1 減算して 0 になったら後続処理をスキップして zero_done へ分岐する（bc 0x12,0,zero_done の簡記）。
 
 元命令: isa ppc BC
 条件付き分岐（B-Form）。BO/BI の組合せで CTR 減算・CR ビットテストを制御する。
@@ -29,11 +30,13 @@ bdz（拡張ニーモニック）→ BC BO, BI, target — PowerPC（分岐）
   bc BO,BI,BD: 010000 BO BI BD AA LK  (4 バイト)
 
 使用例:
-  bc 12,2,target
-  target:
+  cmpwi %cr0, %r3, 10
+  bc    12, 2, equal        # BO=12（真で分岐）, BI=2（cr0[EQ]）→ r3 == 10 ならスキップ
+  addi  %r3, %r3, 1         # r3 != 10 のときだけ実行
+  equal:
 
 解説:
-  BO=12（CR ビット=1 で分岐）× BI=2（cr0 の EQ ビット）なので、cr0 の EQ=1 のとき target へ分岐する（beq 相当）。BO/BI の組合せで CTR 減算と CR テストを制御する。
+  BO=12（CR ビット=1 で分岐）× BI=2（cr0 の EQ ビット）により、cr0[EQ]=1 のとき後続処理をスキップして equal へ分岐する（beq の実体）。
 
 備考:
   相対分岐の範囲は命令アドレスから -32,768〜+32,764 バイト。BO=16 は CTR 減算後に非ゼロなら分岐、12 は CR 真、4 は CR 偽、20 は CTR 減算も CR 判定もしない無条件分岐。bdnz/bdz などは拡張形式。LK=1 の形式は、分岐の成否にかかわらず次命令のアドレスを LR に設定する。

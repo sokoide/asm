@@ -13,10 +13,10 @@ extrwi（拡張ニーモニック）→ RLWINM rA, rS, n, mB, mE — PowerPC（�
   rS の bit start から nBits ビットを取り出し右詰めする。
 
 使用例:
-  extrwi 4,4,nBits,start
+  extrwi %r4, %r4, 8, 8     # r4 のビット 8 から 8 ビットを取り出して右詰め
 
 解説:
-  r4 の（MSB から数えて）start ビット目から nBits ビットを取り出し右詰めにして r4 へ入れる（rlwinm r4,r4,(start+nBits)&31,32-nBits,31 の簡記）。
+  r4 の（MSB から数えて）8 ビット目から 8 ビットを取り出し右詰めにして r4 へ入れる（rlwinm r4,r4,16,24,31 の簡記）。
 
 元命令: isa ppc RLWINM
 左回転 n ビット後、マスク mB..mE で AND（Rotate Left Word Immediate then AND with Mask）。ビットフィールド抽出の万能命令。
@@ -28,10 +28,10 @@ extrwi（拡張ニーモニック）→ RLWINM rA, rS, n, mB, mE — PowerPC（�
   rlwinm[.] rA,rS,n,mB,mE: 0x15  (4 バイト)
 
 使用例:
-  rlwinm %r5,%r4,1,0,31
+  rlwinm %r5,%r4,24,24,31
 
 解説:
-  r4 を左へ 1 ビット回転し、マスク（MB=0〜ME=31 の全ビット）を AND して r5 へ入れる。この例はマスク全体なので純粋な 1 ビット左回転。
+  r4 を左へ 24 ビット回転（= 右へ 8 ビット回転）し、マスク（MB=24〜ME=31 の下位 8 ビット）で AND して r5 へ入れる。ビットフィールドの抽出・シフトを 1 命令で行う万能命令。
 
 備考:
   拡張形式には rotlwi/rotrwi、slwi/srwi、extrwi がある。ビット番号は最上位が 0。MB≤ME ならその範囲を、MB>ME なら末尾と先頭にまたがる範囲を残す。. 形式の CR0[LT] は結果の符号ビットであり、抽出したビットが常に LT に入るわけではない。

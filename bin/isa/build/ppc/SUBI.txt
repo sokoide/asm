@@ -12,10 +12,10 @@ subi（拡張ニーモニック）→ ADDI rT, rA, s16 — PowerPC（算術）
   即値減算（Subtract Immediate）
 
 使用例:
-  subi 3,4,s16
+  subi %r3, %r4, 16         # r3 = r4 - 16
 
 解説:
-  r3 = r4 - s16 を計算する（addi r3,r4,-s16 の簡記）。
+  r3 = r4 - 16 を計算する（addi r3,r4,-16 の簡記）。
 
 元命令: isa ppc ADDI
 rT = (rA|0) + 符号拡張即値。rA=0 で即値ロード（li）になる。

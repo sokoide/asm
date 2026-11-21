@@ -14,10 +14,11 @@ AL の符号拡張（8→16bit）で AX に転送する。
   CBW: 66 98  (2 バイト)
 
 使用例:
-  cbw
+  mov   al, -5              ; AL = 0xFB（8 ビット -5）
+  cbw                       ; AX = 0xFFFB（16 ビット -5 へ符号拡張）
 
 解説:
-  この例では AL の符号拡張（8→16bit）で AX に転送する。
+  AL の符号ビット（bit7）を AH 全体に複製し、8 ビット符号付き値を 16 ビット（AX）へ符号拡張する。
 
 備考:
   AX→EAX は CWDE、EAX→RAX は CDQE。AX→DX:AX の CWD は 16bit コード向け。

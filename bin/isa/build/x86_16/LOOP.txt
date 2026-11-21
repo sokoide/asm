@@ -15,11 +15,13 @@ CX を -1 し、CX≠0 なら相対分岐（カウンタループ）。
   LOOP rel8: E2 rel8  (2 バイト)
 
 使用例:
-  loop target
-  target:
+  mov  cx, 4
+  loop_start:
+    inc  ax                 ; 4 回繰り返される処理
+    loop loop_start         ; CX を -1 し、CX != 0 の間 loop_start へ戻る
 
 解説:
-  CX を -1 し、CX≠0 の間 target へ相対分岐。
+  CX を -1 し、CX≠0 の間 loop_start へ相対分岐する（FLAGS は不変）。
 
 備考:
   CX 減算はフラグに影響しない。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。

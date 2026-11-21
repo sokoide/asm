@@ -14,10 +14,10 @@ SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を�
   SYSENTER: 0F 34  (2 バイト)
 
 使用例:
-  sysenter
+  sysenter                  ; IA32_SYSENTER_CS/ESP/EIP MSR に従い Ring 0 へ高速遷移
 
 解説:
-  この例では SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。
+  SYSENTER 用 MSR（IA32_SYSENTER_CS/ESP/EIP）と OS の規約に従い、Ring 3 から Ring 0 へ高速な特権レベル遷移を行う。
 
 備考:
   リアルアドレスモード以外で実行可能。CPL 3 のユーザーコードからも呼び出せ、IA32_SYSENTER_CS/ESP/EIP MSR で設定したCPL 0 の入口へ移行する。EFLAGS.VM と IF をクリアする。戻り先やユーザー状態は保存しないため、復帰情報は呼出側・OS間の規約で扱う。

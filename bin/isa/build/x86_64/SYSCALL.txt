@@ -14,10 +14,12 @@ SYSCALL — x86-64（サブルーチン）
   SYSCALL: 0F 05  (2 バイト)
 
 使用例:
-  syscall
+  mov   eax, 60             ; システムコール番号（Linux x86-64: sys_exit = 60）
+  xor   edi, edi            ; 第 1 引数 rdi = 0（終了ステータス）
+  syscall                   ; RCX=次RIP, R11=RFLAGS を保存してカーネルへ遷移
 
 解説:
-  この例では 高速システムコール。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。
+  高速システムコール命令。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR に登録されたカーネルエントリへジャンプする。
 
 備考:
   RFLAGS は IA32_FMASK のビットが 1 の位置をクリアする（RFLAGS AND NOT IA32_FMASK）。IF を含む各フラグの変更は MSR 設定に依存する。

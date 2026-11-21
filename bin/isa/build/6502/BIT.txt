@@ -16,13 +16,16 @@ A と src のビットテスト。N = bit7、V = bit6、Z = (A AND src) が 0 �
   BIT abs: 2C  (3 バイト)
 
 使用例:
-  lda #$40
+  lda #$40       ; bit6 = 1 のテスト用データ
+  sta $20
+  lda #$00       ; A とは無関係に bit7/bit6 が取れる
   bit $20
-  bvs bit6_set
-  bit6_set: nop
+  bvs bit6_set   ; $20 の bit6 が 1 なので V=1 となり分岐
+  lda #$FF       ; bit6=0 のときだけ実行
+  bit6_set:
 
 解説:
-  メモリ値の bit6 が1なら V がセットされ、bit6_set へ分岐する。Z は A とメモリ値の AND 結果で決まる。
+  $20 の bit6 が 1 なので、A の値（$00）に関係なく V=1 となり bit6_set へ分岐する。Z は A AND $20 の結果（0 なので Z=1）で決まる。
 
 備考:
   I/O ステータスレジスタの上位 2 ビットを直接調べられるのが利点（N/V にオペランドのビットがそのまま入る）。

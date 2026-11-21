@@ -14,11 +14,16 @@ BL label — ARM64（サブルーチン）
   BL label: 100101 imm26  (4 バイト)
 
 使用例:
-  bl target
-  target:
+  bl  callee                // x30 に戻り先（次の命令）を保存して呼び出し
+  mov w1, w0                // callee の RET でここへ戻る
+  b   done                  // callee へフォールスルーしない
+  callee:
+    mov w0, #42
+    ret
+  done:
 
 解説:
-  次の命令のアドレスを x30 に保存し、target へ分岐する。
+  次の命令のアドレスを x30（LR）に保存し、callee へ分岐する。callee 末尾の RET が x30 のアドレスへ戻る。
 
 備考:
   BL は X30 を上書きする。呼び出し元の戻り先が必要な関数は、別の呼び出し前に LR を保存する。

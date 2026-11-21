@@ -14,11 +14,14 @@ ADRP dst64, label — ARM64（アドレス計算）
   ADRP Xd,label: 1 immlo 10000 immhi Rd  (4 バイト)
 
 使用例:
-  adrp x0,target
+  adrp x0, target           // target が属する 4 KiB ページの先頭アドレスを取得
+  add  x0, x0, :lo12:target // ページ内オフセット（下位 12 ビット）を加算
+  ldrb w1, [x0]             // x0 = target の実効アドレス。先頭バイトをロード
   target:
+    .byte 0x41, 0x42, 0x43
 
 解説:
-  PC の 4 KiB ページを基準に target のページ先頭アドレスを計算し、x0 に入れる。
+  PC の 4 KiB ページを基準に target のページ先頭アドレスを計算して x0 に入れる（下位 12 ビットは 0）。通常は ADD や LDR/STR の :lo12: 修飾子と組み合わせて ±4 GiB 範囲のシンボルを参照する。
 
 備考:
   基準ページから -4 GiB〜+4 GiB-4 KiB の 4 KiB 単位で指定する。下位 12 ビットは 0。ADRP と ADD などを組み合わせてページ内オフセットを加える。 immhi:immlo は符号付き 21 ビットのページ変位（4 KiB 単位）。

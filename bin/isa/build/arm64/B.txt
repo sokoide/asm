@@ -14,10 +14,12 @@ B label — ARM64（分岐）
   B label: 000101 imm26  (4 バイト)
 
 使用例:
-  b target
-  target:
+  b   skip
+  mov w0, #0xFF             // 分岐するため実行されない
+  skip:
+  mov w0, #0x00
 
 解説:
-  target へ無条件分岐する。
+  途中の処理を飛ばして skip へ無条件に相対分岐する。LR（x30）は更新しない。
 
 （根拠: book）

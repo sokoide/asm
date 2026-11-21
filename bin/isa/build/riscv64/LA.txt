@@ -10,11 +10,13 @@ LA rd, label — RISC-V 64（データ転送）
   ISA では規定されない: 実装依存
 
 使用例:
-  la t0, target
-  target:
+  la   t0, msg              # t0 = ラベル msg の実行時アドレス
+  lbu  t1, 0(t0)
+  msg:
+    .asciz "hello"
 
 解説:
-  ラベル target のアドレスを t0 へ設定する。通常は auipc + addi に展開される。
+  ラベル msg のアドレスを t0 へ設定する疑似命令（非 PIC では通常 auipc + addi に展開される）。
 
 備考:
   展開はアセンブラの PIC 設定とシンボルに依存する。非 PIC のローカルアドレスは通常 AUIPC+ADDI、PIC では GOT 経由の AUIPC+ロードを使う。

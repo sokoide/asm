@@ -1,15 +1,6 @@
 {
   "arch": "x86_64",
-  "flagNames": [
-    "O",
-    "D",
-    "I",
-    "S",
-    "Z",
-    "A",
-    "P",
-    "C"
-  ],
+  "flagNames": ["O", "D", "I", "S", "Z", "A", "P", "C"],
   "instructions": [
     {
       "mnemonic": "MOV",
@@ -22,16 +13,7 @@
         "間接(base+index×scale+disp)",
         "RIP相対"
       ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -62,27 +44,18 @@
       ],
       "notes": "mem→mem は直接転送できない（レジスタを経由）。\n64ビットメモリに書ける即値は imm32（符号拡張される）。imm64 を取れるのはレジスタへの転送のみ（よくある落とし穴）。\nREX プレフィックス使用時は AH/BH/CH/DH の上位8bit部分レジスタは使えない（SIL/DIL/BPL/SPL を使う）。",
       "src": "book",
-      "example": {"code": ["mov rax, rbx"],"explanation": "rbx の 8 バイトを rax へコピーする（rax = rbx）。"}
+      "example": {
+        "code": ["mov rax, rbx"],
+        "explanation": "rbx の 8 バイトを rax へコピーする（rax = rbx）。"
+      }
     },
     {
       "mnemonic": "MOVZX",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "ゼロ拡張転送。8/16ビットの src を上位ビット 0 埋めで 16/32/64ビットの dst に転送する。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -103,27 +76,18 @@
       ],
       "notes": "imm は取れない。32ビットレジスタへの転送は上位32bitが自動クリアされるため movzx edx, al と同義になる。",
       "src": "book",
-      "example": {"code": ["movzx rax, byte [rdi]"],"explanation": "rdi が指す 1 バイトを 0 拡張して rax へ転送する（rax の上位 56 ビットは 0）。"}
+      "example": {
+        "code": ["movzx rax, byte [rdi]"],
+        "explanation": "rdi が指す 1 バイトを 0 拡張して rax へ転送する（rax の上位 56 ビットは 0）。"
+      }
     },
     {
       "mnemonic": "MOVSX",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "符号拡張転送。8/16ビットの src を符号拡張して 16/32/64ビットの dst に転送する。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -144,27 +108,18 @@
       ],
       "notes": "32→64bit の符号拡張は専用命令 MOVSXD を使う。",
       "src": "book",
-      "example": {"code": ["movsx rax, byte [rdi]"],"explanation": "rdi が指す 1 バイトを符号拡張して rax へ転送する（上位 56 ビットは符号ビットで埋まる）。"}
+      "example": {
+        "code": ["movsx rax, byte [rdi]"],
+        "explanation": "rdi が指す 1 バイトを符号拡張して rax へ転送する（上位 56 ビットは符号ビットで埋まる）。"
+      }
     },
     {
       "mnemonic": "MOVSXD",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "32ビットの src を符号拡張して 64ビットの dst に転送する（64ビットモード専用）。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -180,27 +135,18 @@
       ],
       "notes": "MOVSXD は r/m32 の下位 32 ビットを読み、符号拡張して r64 に書く。レジスタソースでも同じで、`movsxd rax, ecx` は有効、64 ビットソース `rcx` は指定できない。GNU assembler では `movslq %ecx,%rax` と表記する。",
       "src": "book",
-      "example": {"code": ["movsxd rax, dword [rdi]"],"explanation": "rdi が指す 4 バイト（dword）を符号拡張して rax へ転送する（dword→qword 専用）。"}
+      "example": {
+        "code": ["movsxd rax, dword [rdi]"],
+        "explanation": "rdi が指す 4 バイト（dword）を符号拡張して rax へ転送する（dword→qword 専用）。"
+      }
     },
     {
       "mnemonic": "XCHG",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "2つのオペランドの内容を交換する。レジスタ同士またはレジスタとメモリ。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -221,27 +167,18 @@
       ],
       "notes": "90h は NOP の別名で、64 ビットモードでは 32 ビットレジスタ書き込みによる上位ゼロ拡張も行わない。66 90 はオペランドサイズプレフィックス付き NOP。\nメモリオペランドを含む場合は暗黙に LOCK され、アトミックに実行される。",
       "src": "book",
-      "example": {"code": ["xchg rax, rbx"],"explanation": "rax と rbx の内容を交換する（rax ↔ rbx）。"}
+      "example": {
+        "code": ["xchg rax, rbx"],
+        "explanation": "rax と rbx の内容を交換する（rax ↔ rbx）。"
+      }
     },
     {
       "mnemonic": "LEA",
       "operands": "reg, mem",
       "category": "データ転送",
       "summary": "メモリ参照式の実効アドレスを計算してレジスタに入れる。メモリアクセスは行わない。",
-      "addressing": [
-        "間接(base+index×scale+disp)",
-        "RIP相対"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["間接(base+index×scale+disp)", "RIP相対"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -257,26 +194,18 @@
       ],
       "notes": "[base + index×scale + disp] の計算を 1 命令で行えるため、乗算（scale=2/4/8）やアドレス演算のイディオムに使う。\nNASM 64ビットで `[msg]` は既定で絶対アドレス指定。RIP 相対にするには `default rel` を有効にするか `[rel msg]` と書く。",
       "src": "book",
-      "example": {"code": ["lea rax, [rsi+4]"],"explanation": "実効アドレス rsi+4 を計算して rax へ入れる（rax = rsi + 4）。メモリアクセスは行わない。"}
+      "example": {
+        "code": ["lea rax, [rsi+4]"],
+        "explanation": "実効アドレス rsi+4 を計算して rax へ入れる（rax = rsi + 4）。メモリアクセスは行わない。"
+      }
     },
     {
       "mnemonic": "XLAT",
       "operands": "",
       "category": "データ転送",
       "summary": "テーブル変換。AL = [RBX + AL]。RBX を 256 バイト変換テーブルの先頭として、AL をインデックスに 1 バイトを読み込み AL に格納する。",
-      "addressing": [
-        "レジスタ間接"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -292,26 +221,24 @@
       ],
       "notes": "AL の値はテーブルのインデックスとしてのみ使われる。8bit インデックスのためテーブルは最大 256 バイト。lea rbx, table でテーブル先頭を設定してから使う。",
       "src": "book",
-      "example": {"code": ["xlatb"],"explanation": "この例では テーブル変換。AL = [RBX + AL]。RBX を 256 バイト変換テーブルの先頭として、AL をインデックスに 1 バイトを読み込み AL に格納する。"}
+      "example": {
+        "code": [
+          "lea   rbx, [rel table]    ; 256 バイト変換テーブルの先頭アドレス",
+          "mov   al, 3               ; テーブルの 3 番目を指定",
+          "xlatb                     ; AL = [RBX + AL] = 9（1 バイト変換）",
+          "table:",
+          "  db   0,1,4,9,16,25,36,49      ; 256 バイト変換テーブル（先頭のみ示す）"
+        ],
+        "explanation": "RBX を 256 バイト変換テーブルの先頭、AL を符号なしインデックスとして [RBX + AL] の 1 バイトを読み込み AL に格納する。"
+      }
     },
     {
       "mnemonic": "CBW",
       "operands": "",
       "category": "データ転送",
       "summary": "AL の符号拡張（8→16bit）で AX に転送する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -327,26 +254,21 @@
       ],
       "notes": "AX→EAX は CWDE、EAX→RAX は CDQE。AX→DX:AX の CWD は 16bit コード向け。",
       "src": "book",
-      "example": {"code": ["cbw"],"explanation": "この例では AL の符号拡張（8→16bit）で AX に転送する。"}
+      "example": {
+        "code": [
+          "mov   al, -5              ; AL = 0xFB（8 ビット -5）",
+          "cbw                       ; AX = 0xFFFB（16 ビット -5 へ符号拡張）"
+        ],
+        "explanation": "AL の符号ビット（bit7）を AH 全体に複製し、8 ビット符号付き値を 16 ビット（AX）へ符号拡張する。"
+      }
     },
     {
       "mnemonic": "CWDE",
       "operands": "",
       "category": "データ転送",
       "summary": "AX の符号拡張（16→32bit）で EAX に転送する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -362,26 +284,21 @@
       ],
       "notes": "CDQE が 64bit 版（EAX→RAX）。",
       "src": "book",
-      "example": {"code": ["cwde"],"explanation": "この例では AX の符号拡張（16→32bit）で EAX に転送する。"}
+      "example": {
+        "code": [
+          "mov   ax, -5              ; AX = 0xFFFB（16 ビット -5）",
+          "cwde                      ; EAX = 0xFFFFFFFB（32 ビット -5 へ符号拡張、RAX 上位 32bit も 0 クリア）"
+        ],
+        "explanation": "AX の符号ビット（bit15）を EAX 上位 16 ビットへ複製し、16 ビット符号付き値を 32 ビット（EAX）へ符号拡張する。"
+      }
     },
     {
       "mnemonic": "CDQE",
       "operands": "",
       "category": "データ転送",
       "summary": "EAX の符号拡張（32→64bit）で RAX に転送する（64ビットモード専用）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -397,26 +314,21 @@
       ],
       "notes": "EAX を符号拡張して RAX を作る。64 ビット符号付き除算の被除数 RDX:RAX を準備する場合は CDQE ではなく CQO を使う。",
       "src": "book",
-      "example": {"code": ["cdqe"],"explanation": "この例では EAX の符号拡張（32→64bit）で RAX に転送する（64ビットモード専用）。"}
+      "example": {
+        "code": [
+          "mov   eax, -5             ; EAX = 0xFFFFFFFB（32 ビット -5）",
+          "cdqe                      ; RAX = 0xFFFFFFFFFFFFFFFB（64 ビット -5 へ符号拡張）"
+        ],
+        "explanation": "EAX の符号ビット（bit31）を RAX 上位 32 ビットへ複製し、32 ビット符号付き値を 64 ビット（RAX）へ符号拡張する（64 ビットモード専用）。"
+      }
     },
     {
       "mnemonic": "CDQ",
       "operands": "",
       "category": "データ転送",
       "summary": "EAX を符号拡張して EDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -432,26 +344,22 @@
       ],
       "notes": "32 ビット符号付き除算では EDX:EAX を作る。64 ビットの RDX:RAX を作る場合は CQO を使う。",
       "src": "book",
-      "example": {"code": ["cdq"],"explanation": "この例では EAX を符号拡張して RDX:EAX に展開する（EDX に符号ビットを満たす）。DIV/IDIV の前処理。"}
+      "example": {
+        "code": [
+          "mov   eax, -100           ; 32 ビット被除数 -100",
+          "cdq                       ; EDX:EAX = 64 ビット符号拡張値（EDX = 0xFFFFFFFF）",
+          "idiv  ecx                 ; EDX:EAX ÷ ECX → EAX = 商, EDX = 剰余"
+        ],
+        "explanation": "EAX の符号ビット（bit31）を EDX 全体に複製し、32 ビット IDIV（EDX:EAX ÷ src）用の 64 ビット符号拡張被除数を作る。"
+      }
     },
     {
       "mnemonic": "CQO",
       "operands": "",
       "category": "データ転送",
       "summary": "RAX を符号拡張して RDX:RAX に展開する（RDX に符号ビットを満たす）。64bit IDIV の前処理。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -467,26 +375,22 @@
       ],
       "notes": "符号なし除算では RDX=0 にする（xor edx, edx）。",
       "src": "book",
-      "example": {"code": ["cqo"],"explanation": "この例では RAX を符号拡張して RDX:RAX に展開する（RDX に符号ビットを満たす）。64bit IDIV の前処理。"}
+      "example": {
+        "code": [
+          "mov   rax, -100           ; 64 ビット被除数 -100",
+          "cqo                       ; RDX:RAX = 128 ビット符号拡張値（RDX = 0xFFFFFFFFFFFFFFFF）",
+          "idiv  rcx                 ; RDX:RAX ÷ RCX → RAX = 商, RDX = 剰余"
+        ],
+        "explanation": "RAX の符号ビット（bit63）を RDX 全体に複製し、64 ビット IDIV（RDX:RAX ÷ src）用の 128 ビット符号拡張被除数を作る。"
+      }
     },
     {
       "mnemonic": "LAHF",
       "operands": "",
       "category": "フラグ操作",
       "summary": "RFLAGS の下位 8 ビット（SF ZF - AF - PF 1 CF）を AH に読み込む。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -502,26 +406,20 @@
       ],
       "notes": "初期の x86-64 CPU の一部は本命令をサポートしない。",
       "src": "book",
-      "example": {"code": ["lahf"],"explanation": "この例では RFLAGS の下位 8 ビット（SF ZF - AF - PF 1 CF）を AH に読み込む。"}
+      "example": {
+        "code": [
+          "lahf                      ; AH = RFLAGS の下位 8 ビット（SF ZF 0 AF 0 PF 1 CF）"
+        ],
+        "explanation": "RFLAGS の下位 8 ビット（SF, ZF, AF, PF, CF）を AH レジスタへ読み込む。"
+      }
     },
     {
       "mnemonic": "SAHF",
       "operands": "",
       "category": "フラグ操作",
       "summary": "AH の内容を RFLAGS の下位 8 ビット（SF/ZF/AF/PF/CF）へ書き込む。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -537,28 +435,20 @@
       ],
       "notes": "bit1 は 1 固定、bit3/5 は 0 で書かれる。初期の x86-64 CPU の一部は未サポート。",
       "src": "book",
-      "example": {"code": ["sahf"],"explanation": "この例では AH の内容を RFLAGS の下位 8 ビット（SF/ZF/AF/PF/CF）へ書き込む。"}
+      "example": {
+        "code": [
+          "sahf                      ; RFLAGS の下位 8 ビット（SF/ZF/AF/PF/CF）を AH の値で更新"
+        ],
+        "explanation": "AH の内容を RFLAGS の下位 8 ビット（SF, ZF, AF, PF, CF）へ書き込む。"
+      }
     },
     {
       "mnemonic": "PUSH",
       "operands": "src",
       "category": "スタック",
       "summary": "RSP をオペランド幅分減算し、レジスタ・メモリ・即値をスタックに格納する（通常 8 バイト、16 ビット形式は 2 バイト）。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -583,27 +473,18 @@
       ],
       "notes": "64ビットモードでは既定で 64bit スタック操作（16bit 幅は 66 プレフィックスだがスタック整合が崩れやすい）。\n即値は符号拡張されて 64bit で積まれる。\n関数の呼び出し保存レジスタ退避やローカル変数確保に使う。",
       "src": "book",
-      "example": {"code": ["push rax"],"explanation": "rax をスタックへ退避する（RSP = RSP - 8、[RSP] = rax）。16 ビット形式では 2 バイト。"}
+      "example": {
+        "code": ["push rax"],
+        "explanation": "rax をスタックへ退避する（RSP = RSP - 8、[RSP] = rax）。16 ビット形式では 2 バイト。"
+      }
     },
     {
       "mnemonic": "POP",
       "operands": "dst",
       "category": "スタック",
       "summary": "スタック先頭の値を dst に読み込み、RSP をオペランド幅分加算する（通常 8 バイト、16 ビット形式は 2 バイト）。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -618,26 +499,18 @@
       ],
       "notes": "64 ビットモードでは 16 ビット形式も使えるが、32 ビットの POP は符号化できない。POP RSP の場合、最終的な RSP は取り出した値になる。",
       "src": "book",
-      "example": {"code": ["pop rax"],"explanation": "スタック先頭の 8 バイトを rax へ読み込む（rax = [RSP]、RSP = RSP + 8）。"}
+      "example": {
+        "code": ["pop rax"],
+        "explanation": "スタック先頭の 8 バイトを rax へ読み込む（rax = [RSP]、RSP = RSP + 8）。"
+      }
     },
     {
       "mnemonic": "PUSHFQ",
       "operands": "",
       "category": "スタック",
       "summary": "RFLAGS の 64 ビットイメージをスタックに退避する。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -653,26 +526,18 @@
       ],
       "notes": "保存イメージの RF と VM は 0。64 ビットモードでは PUSHFQ と 16 ビットの PUSHF が使え、PUSHFD は使えない。",
       "src": "book",
-      "example": {"code": ["pushfq"],"explanation": "RFLAGS をスタックへ退避する（RSP = RSP - 8、[RSP] = RFLAGS）。"}
+      "example": {
+        "code": ["pushfq"],
+        "explanation": "RFLAGS をスタックへ退避する（RSP = RSP - 8、[RSP] = RFLAGS）。"
+      }
     },
     {
       "mnemonic": "POPFQ",
       "operands": "",
       "category": "スタック",
       "summary": "スタックから RFLAGS の 64 ビットイメージを読み込み、変更可能なフラグを復帰する。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -688,28 +553,18 @@
       ],
       "notes": "IF/IOPL などの変更は権限に制限される。変更できないビットは保持される。DF など条件フラグ以外にも変更可能なビットがある。",
       "src": "book",
-      "example": {"code": ["popfq"],"explanation": "スタック先頭の値を RFLAGS へ復帰する（RFLAGS = [RSP]、RSP = RSP + 8）。変更可能なフラグのみ更新される。"}
+      "example": {
+        "code": ["popfq"],
+        "explanation": "スタック先頭の値を RFLAGS へ復帰する（RFLAGS = [RSP]、RSP = RSP + 8）。変更可能なフラグのみ更新される。"
+      }
     },
     {
       "mnemonic": "ADD",
       "operands": "dst, src",
       "category": "算術",
       "summary": "dst に src を加算する。符号なし桁上がりは C、符号付きオーバーフローは O で検出。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -735,28 +590,18 @@
       ],
       "notes": "imm8 形（83 /0）は符号拡張されるため 2〜3 バイト短い。\n多倍長加算は下位ワードから ADC を連結する。",
       "src": "book",
-      "example": {"code": ["add rax, rbx"],"explanation": "rax = rax + rbx。OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["add rax, rbx"],
+        "explanation": "rax = rax + rbx。OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "ADC",
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み加算。dst = dst + src + C。多倍長加算の上位ワード処理に使う。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -777,28 +622,18 @@
       ],
       "notes": "多倍長加算の定形: add 下位 → adc 上位。",
       "src": "book",
-      "example": {"code": ["adc rax, rbx"],"explanation": "rax = rax + rbx + CF。OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["adc rax, rbx"],
+        "explanation": "rax = rax + rbx + CF。OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "SUB",
       "operands": "dst, src",
       "category": "算術",
       "summary": "dst から src を減算する。桁借りは C、符号付きオーバーフローは O で検出。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -824,28 +659,18 @@
       ],
       "notes": "サブトラクション後のフラグは C が符号なし借り、O が符号付き溢れ。",
       "src": "book",
-      "example": {"code": ["sub rax, rbx"],"explanation": "rax = rax - rbx。OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["sub rax, rbx"],
+        "explanation": "rax = rax - rbx。OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "SBB",
       "operands": "dst, src",
       "category": "算術",
       "summary": "キャリー込み減算。dst = dst - src - C。多倍長減算の上位ワード処理に使う。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -866,27 +691,18 @@
       ],
       "notes": "多倍長演算で使用。",
       "src": "book",
-      "example": {"code": ["sbb rax, rbx"],"explanation": "rax = rax - rbx - CF。OF/SF/ZF/AF/PF/CF を更新。"}
+      "example": {
+        "code": ["sbb rax, rbx"],
+        "explanation": "rax = rax - rbx - CF。OF/SF/ZF/AF/PF/CF を更新。"
+      }
     },
     {
       "mnemonic": "INC",
       "operands": "dst",
       "category": "算術",
       "summary": "dst を 1 加算する。C フラグは変化しない。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -902,27 +718,18 @@
       ],
       "notes": "C を保存するため、キャリーを利用するループ内のカウンタに安全。ADD で代用可。",
       "src": "book",
-      "example": {"code": ["inc rax"],"explanation": "rax = rax + 1。OF/SF/ZF/AF/PF を更新（CF は不変）。"}
+      "example": {
+        "code": ["inc rax"],
+        "explanation": "rax = rax + 1。OF/SF/ZF/AF/PF を更新（CF は不変）。"
+      }
     },
     {
       "mnemonic": "DEC",
       "operands": "dst",
       "category": "算術",
       "summary": "dst を 1 減算する。C フラグは変化しない。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -938,27 +745,18 @@
       ],
       "notes": "ループの dec/jnz 形カウンタに使われる。",
       "src": "book",
-      "example": {"code": ["dec rax"],"explanation": "rax = rax - 1。OF/SF/ZF/AF/PF を更新（CF は不変）。"}
+      "example": {
+        "code": ["dec rax"],
+        "explanation": "rax = rax - 1。OF/SF/ZF/AF/PF を更新（CF は不変）。"
+      }
     },
     {
       "mnemonic": "NEG",
       "operands": "dst",
       "category": "算術",
       "summary": "dst を符号反転する（dst = 0 - dst、2 の補数）。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -974,27 +772,18 @@
       ],
       "notes": "dst=0 のとき C=0・ZF=1、それ以外は C=1。NOT はビット反転でフラグ不変、NEG は符号反転でフラグ更新、という対比。",
       "src": "book",
-      "example": {"code": ["neg rax"],"explanation": "rax = 0 - rax（2 の補数）。OF/SF/ZF/AF/PF/CF を更新（rax = 0 のときだけ CF = 0）。"}
+      "example": {
+        "code": ["neg rax"],
+        "explanation": "rax = 0 - rax（2 の補数）。OF/SF/ZF/AF/PF/CF を更新（rax = 0 のときだけ CF = 0）。"
+      }
     },
     {
       "mnemonic": "MUL",
       "operands": "src",
       "category": "算術",
       "summary": "符号なし乗算。RDX:RAX = RAX × src（64bit）。結果の上位半分が RDX に入る。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "U", "U", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1015,28 +804,18 @@
       ],
       "notes": "上位半分（RDX）が 0 なら C=O=0、0 でなければ C=O=1。S/Z/A/P は未定義。\n8bit は AX=AL×src、16bit は DX:AX、32bit は EDX:EAX。",
       "src": "book",
-      "example": {"code": ["mul rbx"],"explanation": "符号なし乗算。RDX:RAX = RAX × rbx の 128 ビット積（下位が RAX、上位が RDX）。RDX != 0 のとき CF = OF = 1。"}
+      "example": {
+        "code": ["mul rbx"],
+        "explanation": "符号なし乗算。RDX:RAX = RAX × rbx の 128 ビット積（下位が RAX、上位が RDX）。RDX != 0 のとき CF = OF = 1。"
+      }
     },
     {
       "mnemonic": "IMUL",
       "operands": "src / dst, src / dst, src, imm",
       "category": "算術",
       "summary": "符号付き乗算。1オペランド形は RDX:RAX = RAX × src。2/3オペランド形は結果の下位半分のみを dst に格納する。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "U", "U", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1067,27 +846,18 @@
       ],
       "notes": "2/3オペランド形は上位半分を切り捨てる。切り捨てにより符号拡張と一致しなければ C=O=1 で検出。\n定数倍は imul 3オペランド形か LEA で実現する。",
       "src": "book",
-      "example": {"code": ["imul rbx"],"explanation": "符号付き乗算（1 オペランド形）。RDX:RAX = RAX × rbx。積が RAX の符号拡張に収まらないとき CF = OF = 1。"}
+      "example": {
+        "code": ["imul rbx"],
+        "explanation": "符号付き乗算（1 オペランド形）。RDX:RAX = RAX × rbx。積が RAX の符号拡張に収まらないとき CF = OF = 1。"
+      }
     },
     {
       "mnemonic": "DIV",
       "operands": "src",
       "category": "算術",
       "summary": "符号なし除算。RDX:RAX ÷ src で RAX=商、RDX=剰余（64bit）。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "U"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["U", "-", "-", "U", "U", "U", "U", "U"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1108,27 +878,18 @@
       ],
       "notes": "0 除算や商があふれると #DE 例外。事前準備: 64bit は RDX=0、32bit は EDX=0（例: xor edx,edx）。CDQ は符号拡張であり符号なし除算のゼロ拡張には使えない。\n8bit は AX÷src → AL=商/AH=剰余、16bit は DX:AX、32bit は EDX:EAX。",
       "src": "book",
-      "example": {"code": ["div rbx"],"explanation": "符号なし除算。RDX:RAX ÷ rbx の商を RAX、剰余を RDX へ。rbx = 0 や商が RAX に収まらないときは #DE 例外。"}
+      "example": {
+        "code": ["div rbx"],
+        "explanation": "符号なし除算。RDX:RAX ÷ rbx の商を RAX、剰余を RDX へ。rbx = 0 や商が RAX に収まらないときは #DE 例外。"
+      }
     },
     {
       "mnemonic": "IDIV",
       "operands": "src",
       "category": "算術",
       "summary": "符号付き除算。RDX:RAX ÷ src で RAX=商、RDX=剰余（64bit）。商は 0 方向へ丸め、剰余は被除数と同符号。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "U",
-        "U",
-        "U",
-        "U"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["U", "-", "-", "U", "U", "U", "U", "U"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1149,28 +910,18 @@
       ],
       "notes": "符号拡張準備: 64bit は CQO、32bit は CDQ。\n0 除算・商あふれ（RAX=-2^63 ÷ -1 など）で #DE。",
       "src": "book",
-      "example": {"code": ["idiv rbx"],"explanation": "符号付き除算。RDX:RAX ÷ rbx の商を RAX、剰余を RDX へ。商は 0 方向へ丸め、剰余は被除数と同符号。"}
+      "example": {
+        "code": ["idiv rbx"],
+        "explanation": "符号付き除算。RDX:RAX ÷ rbx の商を RAX、剰余を RDX へ。商は 0 方向へ丸め、剰余は被除数と同符号。"
+      }
     },
     {
       "mnemonic": "CMP",
       "operands": "dst, src",
       "category": "比較",
       "summary": "dst - src を計算してフラグのみ更新する（dst は不変）。分岐・条件転送の判定に使う。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1196,27 +947,18 @@
       ],
       "notes": "符号付き比較は jg/jge/jl/jle、符号なしは ja/jae/jb/jbe。\nC=1 が「dst < src」（符号なし）。",
       "src": "book",
-      "example": {"code": ["cmp rax, rbx"],"explanation": "rax - rbx を計算してフラグ（OF/SF/ZF/AF/PF/CF）のみ更新する。rax は不変。"}
+      "example": {
+        "code": ["cmp rax, rbx"],
+        "explanation": "rax - rbx を計算してフラグ（OF/SF/ZF/AF/PF/CF）のみ更新する。rax は不変。"
+      }
     },
     {
       "mnemonic": "CMPXCHG",
       "operands": "dst, src",
       "category": "算術",
       "summary": "AL/AX/EAX/RAX と dst を比較し、一致なら src を dst に書く。不一致なら dst の値をアキュムレータへ戻す。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1247,9 +989,7 @@
       ],
       "notes": "フラグは暗黙のアキュムレータから dst を減算した結果に従う。dst がメモリなら LOCK prefix を付けて比較と条件付き書込みをアトミックにできる。",
       "example": {
-        "code": [
-          "lock cmpxchg qword [rdi], rbx"
-        ],
+        "code": ["lock cmpxchg qword [rdi], rbx"],
         "explanation": "RAX と [rdi] が等しければ RBX を [rdi] に書き、異なれば [rdi] の値を RAX に読み込む。LOCK により比較と更新をアトミックに行う。"
       }
     },
@@ -1258,21 +998,8 @@
       "operands": "dst, src",
       "category": "比較",
       "summary": "dst AND src を計算してフラグのみ更新する（dst は不変）。ビットの有無やゼロ判定に使う。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1293,28 +1020,18 @@
       ],
       "notes": "test reg, reg は「レジスタが 0 か」の判定イディオム。",
       "src": "book",
-      "example": {"code": ["test rax, rbx"],"explanation": "rax AND rbx を計算してフラグのみ更新する。rax は不変で CF = OF = 0。"}
+      "example": {
+        "code": ["test rax, rbx"],
+        "explanation": "rax AND rbx を計算してフラグのみ更新する。rax は不変で CF = OF = 0。"
+      }
     },
     {
       "mnemonic": "AND",
       "operands": "dst, src",
       "category": "論理",
       "summary": "ビット単位の論理積を dst に格納する。マスク生成・ビットクリアに使う。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1335,28 +1052,18 @@
       ],
       "notes": "O と C は必ず 0、A は未定義。",
       "src": "book",
-      "example": {"code": ["and rax, rbx"],"explanation": "rax = rax AND rbx。CF = OF = 0、SF/ZF/PF を結果で更新。"}
+      "example": {
+        "code": ["and rax, rbx"],
+        "explanation": "rax = rax AND rbx。CF = OF = 0、SF/ZF/PF を結果で更新。"
+      }
     },
     {
       "mnemonic": "OR",
       "operands": "dst, src",
       "category": "論理",
       "summary": "ビット単位の論理和を dst に格納する。ビットセットに使う。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1377,28 +1084,18 @@
       ],
       "notes": "xor と同様に O=C=0。",
       "src": "book",
-      "example": {"code": ["or rax, rbx"],"explanation": "rax = rax OR rbx。CF = OF = 0、SF/ZF/PF を結果で更新。"}
+      "example": {
+        "code": ["or rax, rbx"],
+        "explanation": "rax = rax OR rbx。CF = OF = 0、SF/ZF/PF を結果で更新。"
+      }
     },
     {
       "mnemonic": "XOR",
       "operands": "dst, src",
       "category": "論理",
       "summary": "ビット単位の排他的論理和を dst に格納する。ビット反転や排他選択に使う。",
-      "addressing": [
-        "レジスタ",
-        "即値",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "0",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "0"
-      ],
+      "addressing": ["レジスタ", "即値", "間接(base+index×scale+disp)"],
+      "flags": ["0", "-", "-", "‡", "‡", "U", "‡", "0"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1419,27 +1116,18 @@
       ],
       "notes": "xor eax, eax は「0 を設定しつつフラグ更新」の 1 命令イディオム。",
       "src": "book",
-      "example": {"code": ["xor rax, rbx"],"explanation": "rax = rax XOR rbx。CF = OF = 0、SF/ZF/PF を結果で更新。"}
+      "example": {
+        "code": ["xor rax, rbx"],
+        "explanation": "rax = rax XOR rbx。CF = OF = 0、SF/ZF/PF を結果で更新。"
+      }
     },
     {
       "mnemonic": "NOT",
       "operands": "dst",
       "category": "論理",
       "summary": "dst の全ビットを反転する（1 の補数）。フラグは一切変化しない。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1455,7 +1143,10 @@
       ],
       "notes": "フラグ更新が必要なら xor dst, dst / sub dst, 1 か NEG を使う。",
       "src": "book",
-      "example": {"code": ["not rax"],"explanation": "rax = NOT rax（全ビット反転）。フラグは一切変化しない。"}
+      "example": {
+        "code": ["not rax"],
+        "explanation": "rax = NOT rax（全ビット反転）。フラグは一切変化しない。"
+      }
     },
     {
       "mnemonic": "SHL",
@@ -1468,16 +1159,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1503,7 +1185,10 @@
       ],
       "notes": "count は 64bit では mod 64、32bit では mod 32 で使われる。\ncount=1 のときのみ OF が定義（結果の MSB と C の XOR）、count≠0 なら S/Z/P 更新。count=0 ならフラグ不変。\nシフトアウトしたビットが C に入るため、ビットテストに使える。",
       "src": "book",
-      "example": {"code": ["shl rax, 1"],"explanation": "rax を左へ 1 ビットシフト（rax = rax << 1）。ビット 63 を CF へ送り出し 0 を詰める。SAL と同一。"}
+      "example": {
+        "code": ["shl rax, 1"],
+        "explanation": "rax を左へ 1 ビットシフト（rax = rax << 1）。ビット 63 を CF へ送り出し 0 を詰める。SAL と同一。"
+      }
     },
     {
       "mnemonic": "SHR",
@@ -1516,16 +1201,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1551,7 +1227,10 @@
       ],
       "notes": "count=1 のとき OF は元の MSB。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["shr rax, 1"],"explanation": "rax を右へ 1 ビット論理シフト（rax = rax >> 1）。ビット 0 を CF へ送り出し上位に 0 を詰める。"}
+      "example": {
+        "code": ["shr rax, 1"],
+        "explanation": "rax を右へ 1 ビット論理シフト（rax = rax >> 1）。ビット 0 を CF へ送り出し上位に 0 を詰める。"
+      }
     },
     {
       "mnemonic": "SAR",
@@ -1564,16 +1243,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1599,7 +1269,10 @@
       ],
       "notes": "count=1 のとき OF=0。SAR は負の無限大方向へ丸めるため、0 方向に丸める IDIV とは結果が異なる（-1 の SAR 1 は -1、IDIV 2 は 0）。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["sar rax, 1"],"explanation": "rax を右へ 1 ビット算術シフト。ビット 0 を CF へ送り出し、符号ビット（ビット 63）のコピーを詰める。"}
+      "example": {
+        "code": ["sar rax, 1"],
+        "explanation": "rax を右へ 1 ビット算術シフト。ビット 0 を CF へ送り出し、符号ビット（ビット 63）のコピーを詰める。"
+      }
     },
     {
       "mnemonic": "ROL",
@@ -1612,16 +1285,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1647,7 +1311,10 @@
       ],
       "notes": "影響フラグは C と O のみ（O は count=1 のとき定義）。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["rol rax, 1"],"explanation": "rax を左へ 1 ビット回転。ビット 63 が CF へ入り、ビット 0 へ戻る。"}
+      "example": {
+        "code": ["rol rax, 1"],
+        "explanation": "rax を左へ 1 ビット回転。ビット 63 が CF へ入り、ビット 0 へ戻る。"
+      }
     },
     {
       "mnemonic": "ROR",
@@ -1660,16 +1327,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1695,7 +1353,10 @@
       ],
       "notes": "パックデータの回転に使用。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["ror rax, 1"],"explanation": "rax を右へ 1 ビット回転。ビット 0 が CF へ入り、ビット 63 へ戻る。"}
+      "example": {
+        "code": ["ror rax, 1"],
+        "explanation": "rax を右へ 1 ビット回転。ビット 0 が CF へ入り、ビット 63 へ戻る。"
+      }
     },
     {
       "mnemonic": "RCL",
@@ -1708,16 +1369,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1743,7 +1395,10 @@
       ],
       "notes": "元の CF が bit0 に入り、元の最上位ビットが CF に入る。キャリーフラグをビットアキュムレータとして使う用途の基本。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。8 ビット形式はさらに 9、16 ビット形式は 17 の剰余を回転回数に使う。",
       "src": "book",
-      "example": {"code": ["rcl rax, 1"],"explanation": "CF を含む 65 ビットの左回転。ビット 63 を CF へ送り出し、旧 CF をビット 0 へ入れる。"}
+      "example": {
+        "code": ["rcl rax, 1"],
+        "explanation": "CF を含む 65 ビットの左回転。ビット 63 を CF へ送り出し、旧 CF をビット 0 へ入れる。"
+      }
     },
     {
       "mnemonic": "RCR",
@@ -1756,16 +1411,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1791,7 +1437,10 @@
       ],
       "notes": "回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。8 ビット形式はさらに 9、16 ビット形式は 17 の剰余を回転回数に使う。",
       "src": "book",
-      "example": {"code": ["rcr rax, 1"],"explanation": "CF を含む 65 ビットの右回転。ビット 0 を CF へ送り出し、旧 CF をビット 63 へ入れる。"}
+      "example": {
+        "code": ["rcr rax, 1"],
+        "explanation": "CF を含む 65 ビットの右回転。ビット 0 を CF へ送り出し、旧 CF をビット 63 へ入れる。"
+      }
     },
     {
       "mnemonic": "SHLD",
@@ -1804,16 +1453,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1834,7 +1474,10 @@
       ],
       "notes": "dst から最後に送り出されたビットが C に入る。多倍長シフトに使用。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["shld rax, rbx, 1"],"explanation": "rax を左へ 1 ビットシフトし、空いたビット 0 へ rbx のビット 63 を詰める（rbx は不変）。"}
+      "example": {
+        "code": ["shld rax, rbx, 1"],
+        "explanation": "rax を左へ 1 ビットシフトし、空いたビット 0 へ rbx のビット 63 を詰める（rbx は不変）。"
+      }
     },
     {
       "mnemonic": "SHRD",
@@ -1847,16 +1490,7 @@
         "CL によるビット数指定",
         "即値によるビット数指定"
       ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "U",
-        "‡",
-        "‡"
-      ],
+      "flags": ["‡", "-", "-", "‡", "‡", "U", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1877,7 +1511,10 @@
       ],
       "notes": "多倍長演算で使用。回数は 64 ビットオペランドでは下位 6 ビット、それ以外では下位 5 ビットを使う。マスク後の回数 0 ではフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["shrd rax, rbx, 1"],"explanation": "rax を右へ 1 ビットシフトし、空いたビット 63 へ rbx のビット 0 を詰める（rbx は不変）。"}
+      "example": {
+        "code": ["shrd rax, rbx, 1"],
+        "explanation": "rax を右へ 1 ビットシフトし、空いたビット 63 へ rbx のビット 0 を詰める（rbx は不変）。"
+      }
     },
     {
       "mnemonic": "BT",
@@ -1890,16 +1527,7 @@
         "即値によるビット番号指定",
         "レジスタによるビット番号指定"
       ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "-",
-        "U",
-        "U",
-        "‡"
-      ],
+      "flags": ["U", "-", "-", "U", "-", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1920,7 +1548,10 @@
       ],
       "notes": "ZF は不変、OF/SF/AF/PF は未定義。メモリ形式でビット番号をレジスタ指定すると、番号に応じて対象アドレスが変わる。即値形式では CPU は番号の下位ビットを使い、大きい番号の対応はアセンブラが変位に反映する場合がある。\nbts/btc/btr は遅いことがある（性能測定推奨）。レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。",
       "src": "book",
-      "example": {"code": ["bt rax, 1"],"explanation": "rax のビット 1 を CF へコピーしてテストする（rax は不変）。"}
+      "example": {
+        "code": ["bt rax, 1"],
+        "explanation": "rax のビット 1 を CF へコピーしてテストする（rax は不変）。"
+      }
     },
     {
       "mnemonic": "BTS",
@@ -1933,16 +1564,7 @@
         "即値によるビット番号指定",
         "レジスタによるビット番号指定"
       ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "-",
-        "U",
-        "U",
-        "‡"
-      ],
+      "flags": ["U", "-", "-", "U", "-", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -1963,7 +1585,10 @@
       ],
       "notes": "ビットセット（集合）表現の挿入に使える。レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。メモリを変更する形式には LOCK を付けて原子的に操作できる。",
       "src": "book",
-      "example": {"code": ["bts rax, 1"],"explanation": "rax のビット 1 を CF へコピーしたうえで 1 にセットする。"}
+      "example": {
+        "code": ["bts rax, 1"],
+        "explanation": "rax のビット 1 を CF へコピーしたうえで 1 にセットする。"
+      }
     },
     {
       "mnemonic": "BTR",
@@ -1976,16 +1601,7 @@
         "即値によるビット番号指定",
         "レジスタによるビット番号指定"
       ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "-",
-        "U",
-        "U",
-        "‡"
-      ],
+      "flags": ["U", "-", "-", "U", "-", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2006,7 +1622,10 @@
       ],
       "notes": "レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。メモリを変更する形式には LOCK を付けて原子的に操作できる。",
       "src": "book",
-      "example": {"code": ["btr rax, 1"],"explanation": "rax のビット 1 を CF へコピーしたうえで 0 にクリアする。"}
+      "example": {
+        "code": ["btr rax, 1"],
+        "explanation": "rax のビット 1 を CF へコピーしたうえで 0 にクリアする。"
+      }
     },
     {
       "mnemonic": "BTC",
@@ -2019,16 +1638,7 @@
         "即値によるビット番号指定",
         "レジスタによるビット番号指定"
       ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "-",
-        "U",
-        "U",
-        "‡"
-      ],
+      "flags": ["U", "-", "-", "U", "-", "U", "U", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2049,27 +1659,18 @@
       ],
       "notes": "レジスタ対象のビット番号はオペランド幅で循環する。メモリ形式は対象ビットだけでなくオペランド幅の範囲をアクセスしうるため、メモリマップド I/O では注意する。メモリを変更する形式には LOCK を付けて原子的に操作できる。",
       "src": "book",
-      "example": {"code": ["btc rax, 1"],"explanation": "rax のビット 1 を CF へコピーしたうえで反転する。"}
+      "example": {
+        "code": ["btc rax, 1"],
+        "explanation": "rax のビット 1 を CF へコピーしたうえで反転する。"
+      }
     },
     {
       "mnemonic": "BSF",
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "src の最下位側から最初に 1 になっているビットの位置を dst に入れる。src=0 なら ZF=1。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "‡",
-        "U",
-        "U",
-        "U"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["U", "-", "-", "U", "‡", "U", "U", "U"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2085,27 +1686,18 @@
       ],
       "notes": "src=0 のとき dst は未定義（BMI1 の TZCNT は src=0 でビット幅を返す）。ビット走査は BSF ループでも書ける。",
       "src": "book",
-      "example": {"code": ["bsf rax, rbx"],"explanation": "rbx の下位から見て最初に 1 になっているビット位置（0〜63）を rax へ入れる。rbx = 0 なら ZF = 1 で rax は不定。"}
+      "example": {
+        "code": ["bsf rax, rbx"],
+        "explanation": "rbx の下位から見て最初に 1 になっているビット位置（0〜63）を rax へ入れる。rbx = 0 なら ZF = 1 で rax は不定。"
+      }
     },
     {
       "mnemonic": "BSR",
       "operands": "dst, src",
       "category": "シフト/ビット",
       "summary": "src の最上位側から最初に 1 になっているビットの位置を dst に入れる。src=0 なら ZF=1。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "U",
-        "-",
-        "-",
-        "U",
-        "‡",
-        "U",
-        "U",
-        "U"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["U", "-", "-", "U", "‡", "U", "U", "U"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2121,27 +1713,18 @@
       ],
       "notes": "src が 0 の場合、BSR の dst は未定義。LZCNT は src=0 のときオペランド幅を返すため、そのケースで定義済みの結果が必要なら代替になる。非ゼロ時は結果の意味が異なり、LZCNT の機能確認も必要。",
       "src": "book",
-      "example": {"code": ["bsr rax, rbx"],"explanation": "rbx の上位から見て最初に 1 になっているビット位置（0〜63）を rax へ入れる。rbx = 0 なら ZF = 1 で rax は不定。"}
+      "example": {
+        "code": ["bsr rax, rbx"],
+        "explanation": "rbx の上位から見て最初に 1 になっているビット位置（0〜63）を rax へ入れる。rbx = 0 なら ZF = 1 で rax は不定。"
+      }
     },
     {
       "mnemonic": "JMP",
       "operands": "label / reg / mem",
       "category": "分岐",
       "summary": "無条件ジャンプ。ラベルへの相対分岐のほか、レジスタ・メモリ間接ジャンプが可能。",
-      "addressing": [
-        "相対分岐(short/near)",
-        "間接(reg/mem)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short/near)", "間接(reg/mem)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2167,26 +1750,23 @@
       ],
       "notes": "間接ジャンプ（jmp rax など）はジャンプテーブルや状態マシンに使う。\n64bit モードで 16bit 相対分岐は存在しない。",
       "src": "book",
-      "example": {"code": ["jmp target","target:"],"explanation": "無条件に target へ分岐する（RIP = target、ここでは相対ジャンプ）。レジスタ・メモリ間接ジャンプも可能。"}
+      "example": {
+        "code": [
+          "jmp   skip",
+          "mov   rax, -1             ; 分岐するため実行されない",
+          "skip:",
+          "xor   eax, eax"
+        ],
+        "explanation": "途中の処理を飛ばして skip へ無条件にジャンプする（RIP を書き換え、レジスタ・メモリ間接ジャンプも可能）。"
+      }
     },
     {
       "mnemonic": "Jcc",
       "operands": "label",
       "category": "分岐",
       "summary": "条件付きジャンプ。フラグの状態をテストして成立時のみ rel8/rel32 のターゲットへ分岐する（16 種類の条件）。",
-      "addressing": [
-        "相対分岐(short/near)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short/near)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2207,26 +1787,23 @@
       ],
       "notes": "cc は 0=O 1=NO 2=B 3=AE 4=E 5=NE 6=BE 7=A 8=S 9=NS A=P B=NP C=L D=GE E=LE F=G。\n主な別名: je=jz / jne=jnz / jb=jc=jnae / jae=jnc=jnb / jbe=jna / ja=jnbe / jl=jnge / jge=jnl / jle=jng / jg=jnle / jp=jpe / jnp=jpo。\n符号付きは SF と O、符号なしは C と Z で判定。",
       "src": "book",
-      "example": {"code": ["jz target","target:"],"explanation": "ZF = 1 のときだけ target へ分岐する（rel8/rel32 相対）。不成立なら次の命令へ直進する。"}
+      "example": {
+        "code": [
+          "cmp  rax, rbx",
+          "jz   equal                ; rax == rbx（ZF=1）ならインクリメントをスキップ",
+          "inc  rax                  ; rax != rbx のときだけ実行",
+          "equal:"
+        ],
+        "explanation": "ZF = 1 のときだけ後続処理をスキップして equal へ分岐する（rel8/rel32 相対）。不成立なら次の命令へ直進する。"
+      }
     },
     {
       "mnemonic": "JRCXZ",
       "operands": "label",
       "category": "分岐",
       "summary": "RCX が 0 のときだけ rel8 へ分岐する（64ビットモード専用）。",
-      "addressing": [
-        "相対分岐(short)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2242,26 +1819,24 @@
       ],
       "notes": "アドレスサイズ 32 では JECXZ（67 プレフィックス）。分岐先は short のみ。\n",
       "src": "book",
-      "example": {"code": ["jrcxz target","target:"],"explanation": "RCX = 0 のときだけ target（rel8）へ分岐する。"}
+      "example": {
+        "code": [
+          "jrcxz loop_end            ; RCX == 0 ならループ本体をスキップ",
+          "loop_body:",
+          "  dec   rcx",
+          "  jnz   loop_body",
+          "loop_end:"
+        ],
+        "explanation": "RCX = 0 のときだけループ本体をスキップして loop_end（rel8）へ分岐する（64 ビットモード専用）。"
+      }
     },
     {
       "mnemonic": "JECXZ",
       "operands": "label",
       "category": "分岐",
       "summary": "ECX が 0 のときだけ rel8 へ分岐する。",
-      "addressing": [
-        "相対分岐(short)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2277,26 +1852,24 @@
       ],
       "notes": "64 ビットモードでアドレスサイズを 32 ビットに変更する。JRCXZ は E3 cb。分岐先は short のみ。",
       "src": "book",
-      "example": {"code": ["jecxz target","target:"],"explanation": "ECX = 0 のときだけ target（rel8）へ分岐する。"}
+      "example": {
+        "code": [
+          "jecxz loop_end            ; ECX == 0 ならループ本体をスキップ（67 プレフィックス）",
+          "loop_body:",
+          "  dec   ecx",
+          "  jnz   loop_body",
+          "loop_end:"
+        ],
+        "explanation": "ECX = 0 のときだけループ本体をスキップして loop_end（rel8）へ分岐する。"
+      }
     },
     {
       "mnemonic": "LOOP",
       "operands": "label",
       "category": "分岐",
       "summary": "RCX を 1 減算し、0 でなければ rel8 へ分岐する（減算と JNZ の合一）。64 ビットモードのアドレスサイズ 32 では ECX を使う。",
-      "addressing": [
-        "相対分岐(short)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2312,26 +1885,23 @@
       ],
       "notes": "RCX の減算はフラグに影響しない。dec/jnz でも同じカウント分岐を作れるが、DEC はフラグを更新する。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loop target","target:"],"explanation": "RCX を 1 減算し、RCX != 0 なら target へ分岐する（アドレスサイズ 32 では ECX を使う）。"}
+      "example": {
+        "code": [
+          "mov   rcx, 4",
+          "loop_start:",
+          "  inc   rax               ; 4 回繰り返される処理",
+          "  loop  loop_start        ; RCX を 1 減算し、RCX != 0 なら loop_start へ戻る"
+        ],
+        "explanation": "RCX を 1 減算し、RCX != 0 なら loop_start へ分岐する（アドレスサイズ 32 では ECX を使う）。"
+      }
     },
     {
       "mnemonic": "LOOPE",
       "operands": "label",
       "category": "分岐",
       "summary": "RCX を 1 減算し、0 以外かつ ZF=1 のとき rel8 へ分岐する。LOOPZ と同じ。64 ビットモードのアドレスサイズ 32 では ECX を使う。",
-      "addressing": [
-        "相対分岐(short)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2347,26 +1917,22 @@
       ],
       "notes": "cmps/scas と組み合わせて一致の連なりをたどる。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loope target","target:"],"explanation": "RCX を 1 減算し、RCX != 0 かつ ZF = 1 のときだけ target へ分岐する（LOOPZ と同じ、アドレスサイズ 32 では ECX）。"}
+      "example": {
+        "code": [
+          "search_eq:",
+          "  cmpsb                   ; [rsi] と [rdi] を比較（一致で ZF=1）",
+          "  loope search_eq         ; RCX を 1 減算し、RCX != 0 かつ ZF=1 なら継続"
+        ],
+        "explanation": "RCX を 1 減算し、RCX != 0 かつ ZF = 1 のときだけ search_eq へ分岐する（LOOPZ と同じ）。"
+      }
     },
     {
       "mnemonic": "LOOPNE",
       "operands": "label",
       "category": "分岐",
       "summary": "RCX を 1 減算し、0 以外かつ ZF=0 のとき rel8 へ分岐する。LOOPNZ と同じ。64 ビットモードのアドレスサイズ 32 では ECX を使う。",
-      "addressing": [
-        "相対分岐(short)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2382,27 +1948,22 @@
       ],
       "notes": "CMPS/SCAS と組み合わせると ZF=0 の不一致中は継続し、一致（ZF=1）またはカウンタ 0 で終了する。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。",
       "src": "book",
-      "example": {"code": ["loopne target","target:"],"explanation": "RCX を 1 減算し、RCX != 0 かつ ZF = 0 のときだけ target へ分岐する（LOOPNZ と同じ、アドレスサイズ 32 では ECX）。"}
+      "example": {
+        "code": [
+          "search_ne:",
+          "  scasb                   ; AL と [rdi] を比較（一致で ZF=1）",
+          "  loopne search_ne        ; RCX を 1 減算し、RCX != 0 かつ ZF=0 なら継続"
+        ],
+        "explanation": "RCX を 1 減算し、RCX != 0 かつ ZF = 0 のときだけ search_ne へ分岐する（LOOPNZ と同じ）。"
+      }
     },
     {
       "mnemonic": "CALL",
       "operands": "label / reg / mem",
       "category": "サブルーチン",
       "summary": "戻りアドレス（次の命令の RIP）をスタックに積んでからプロシージャへジャンプする。",
-      "addressing": [
-        "相対分岐(short/near)",
-        "間接(reg/mem)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["相対分岐(short/near)", "間接(reg/mem)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2423,26 +1984,24 @@
       ],
       "notes": "近呼び出しでは 8 バイトの戻りアドレスを積む。\nプロシージャポインタ（関数テーブル）は間接呼び出しで実現。",
       "src": "book",
-      "example": {"code": ["call target","target:"],"explanation": "戻りアドレス（次の命令の RIP）をスタックへ退避し（RSP = RSP - 8）、target へジャンプする。"}
+      "example": {
+        "code": [
+          "call  callee              ; 次の命令の RIP をスタックへ退避して呼び出し",
+          "mov   rbx, rax            ; RET 後にここへ戻る",
+          "callee:",
+          "  mov   eax, 42",
+          "  ret"
+        ],
+        "explanation": "戻りアドレス（次の命令の RIP）をスタックへ退避し（RSP = RSP - 8）、callee へジャンプする。"
+      }
     },
     {
       "mnemonic": "RET",
       "operands": "imm16（省略可）",
       "category": "サブルーチン",
       "summary": "スタックから戻りアドレスを取り出して復帰する。imm16 指定時は復帰後に RSP に加算する。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2463,26 +2022,18 @@
       ],
       "notes": "RET imm16 は呼び出された側でスタック引数を整理する規約（stdcall 系など）に使われる。64bit の Windows ABI では使用しない。",
       "src": "book",
-      "example": {"code": ["ret"],"explanation": "スタック先頭の戻りアドレスを RIP へ復帰する（RIP = [RSP]、RSP = RSP + 8）。imm16 形式は復帰後に RSP へ加算する。"}
+      "example": {
+        "code": ["ret"],
+        "explanation": "スタック先頭の戻りアドレスを RIP へ復帰する（RIP = [RSP]、RSP = RSP + 8）。imm16 形式は復帰後に RSP へ加算する。"
+      }
     },
     {
       "mnemonic": "LEAVE",
       "operands": "",
       "category": "サブルーチン",
       "summary": "RSP を RBP に戻したうえで RBP をポップする（フレームポインタ破棄）。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2498,26 +2049,18 @@
       ],
       "notes": "標準エピローグ（mov rsp, rbp / pop rbp）を 1 命令にしたもの。\n",
       "src": "book",
-      "example": {"code": ["leave"],"explanation": "RSP を RBP に戻したうえで RBP をポップする（RSP = RBP、RBP = [RSP]、RSP = RSP + 8）。"}
+      "example": {
+        "code": ["leave"],
+        "explanation": "RSP を RBP に戻したうえで RBP をポップする（RSP = RBP、RBP = [RSP]、RSP = RSP + 8）。"
+      }
     },
     {
       "mnemonic": "INT",
       "operands": "n",
       "category": "サブルーチン",
       "summary": "ソフトウェア割り込みを発生させる。IDT の n 番ゲートへ制御を移す。INT3（CC）は 1 バイトのブレークポイント。",
-      "addressing": [
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "‡",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["即値"],
+      "flags": ["-", "-", "‡", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2538,26 +2081,18 @@
       ],
       "notes": "64 ビットモードのゲート通過時は SS/RSP と RFLAGS/CS/RIP がスタックに積まれる。TF はクリアされ、IF は割り込みゲートではクリア、トラップゲートでは保持される。\n旧 32bit Linux は int 0x80 でシステムコールを行っていた（64bit では SYSCALL）。",
       "src": "note",
-      "example": {"code": ["int 0x10"],"explanation": "ソフトウェア割り込みベクタ 0x10 を発生させ、IDT の 0x10 番ゲートへ制御を移す。INT3（CC）は 1 バイトのブレークポイント。"}
+      "example": {
+        "code": ["int 0x10"],
+        "explanation": "ソフトウェア割り込みベクタ 0x10 を発生させ、IDT の 0x10 番ゲートへ制御を移す。INT3（CC）は 1 バイトのブレークポイント。"
+      }
     },
     {
       "mnemonic": "IRETQ",
       "operands": "",
       "category": "サブルーチン",
       "summary": "割り込み／例外ハンドラから 64bit で復帰する。スタックフレームから RIP、CS、RFLAGS、RSP、SS を復帰する。",
-      "addressing": [
-        "スタック"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["スタック"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2572,26 +2107,21 @@
       ],
       "notes": "64bit モードの割り込みからの復帰は本命令を使う（16/32bit 幅の IRET/IRETD とは別ニーモニック）。",
       "src": "book",
-      "example": {"code": ["iretq"],"explanation": "この例では 割り込み／例外ハンドラから 64bit で復帰する。スタックフレームから RIP、CS、RFLAGS、RSP、SS を復帰する。"}
+      "example": {
+        "code": [
+          "; 64 ビット割り込み／例外ハンドラの末尾",
+          "iretq                     ; スタックから RIP, CS, RFLAGS, RSP, SS を復帰"
+        ],
+        "explanation": "64 ビットモードの割り込み／例外ハンドラから復帰する。スタックフレームから RIP、CS、RFLAGS、RSP、SS を一括復元する。"
+      }
     },
     {
       "mnemonic": "IN",
       "operands": "AL/AX/EAX, imm8 / DX",
       "category": "I/O",
       "summary": "I/O ポート（0000〜FFFF）から AL/AX/EAX へデータを入力する。ポート番号は imm8（固定）または DX（可変）。64bit モードでも 32bit 幅が最大。",
-      "addressing": [
-        "I/O（ポート番号は imm8 または DX）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["I/O（ポート番号は imm8 または DX）"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2632,26 +2162,18 @@
       ],
       "notes": "I/O の許可は CPL/IOPL と TSS の I/O 許可ビットマップに依存する。メモリ空間と分離された 64KB の I/O 空間を扱う。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。",
       "src": "book",
-      "example": {"code": ["in al, dx"],"explanation": "DX で指定した I/O ポート（0000〜FFFF）から 1 バイトを AL へ入力する。ポート番号は imm8 での指定も可能。"}
+      "example": {
+        "code": ["in al, dx"],
+        "explanation": "DX で指定した I/O ポート（0000〜FFFF）から 1 バイトを AL へ入力する。ポート番号は imm8 での指定も可能。"
+      }
     },
     {
       "mnemonic": "OUT",
       "operands": "imm8 / DX, AL/AX/EAX",
       "category": "I/O",
       "summary": "AL/AX/EAX のデータを I/O ポート（0000〜FFFF）へ出力する。ポート番号は imm8（固定）または DX（可変）。64bit モードでも 32bit 幅が最大。",
-      "addressing": [
-        "I/O（ポート番号は imm8 または DX）"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["I/O（ポート番号は imm8 または DX）"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2692,26 +2214,18 @@
       ],
       "notes": "I/O の許可は CPL/IOPL と TSS の I/O 許可ビットマップに依存する。imm8 形式は 0〜255 の固定アドレス、DX 形式は可変アドレス。連続転送は OUTS 文字列命令。",
       "src": "book",
-      "example": {"code": ["out dx, al"],"explanation": "AL の 1 バイトを DX で指定した I/O ポート（0000〜FFFF）へ出力する。ポート番号は imm8 での指定も可能。"}
+      "example": {
+        "code": ["out dx, al"],
+        "explanation": "AL の 1 バイトを DX で指定した I/O ポート（0000〜FFFF）へ出力する。ポート番号は imm8 での指定も可能。"
+      }
     },
     {
       "mnemonic": "SYSCALL",
       "operands": "",
       "category": "サブルーチン",
       "summary": "高速システムコール。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2727,26 +2241,22 @@
       ],
       "notes": "RFLAGS は IA32_FMASK のビットが 1 の位置をクリアする（RFLAGS AND NOT IA32_FMASK）。IF を含む各フラグの変更は MSR 設定に依存する。\nRSP は保存・切り替えられないため、必要なスタック切り替えは OS が行う。SYSRET が対の復帰命令。",
       "src": "note",
-      "example": {"code": ["syscall"],"explanation": "この例では 高速システムコール。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR のカーネルエントリへジャンプする。"}
+      "example": {
+        "code": [
+          "mov   eax, 60             ; システムコール番号（Linux x86-64: sys_exit = 60）",
+          "xor   edi, edi            ; 第 1 引数 rdi = 0（終了ステータス）",
+          "syscall                   ; RCX=次RIP, R11=RFLAGS を保存してカーネルへ遷移"
+        ],
+        "explanation": "高速システムコール命令。次の命令の RIP を RCX、RFLAGS を R11 に退避し、MSR LSTAR に登録されたカーネルエントリへジャンプする。"
+      }
     },
     {
       "mnemonic": "SYSRET",
       "operands": "",
       "category": "サブルーチン",
       "summary": "システムコールからユーザーへ復帰する。64 ビット形式は RIP を RCX から復帰し、R11 を基に RFLAGS を復帰する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["‡", "‡", "‡", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2762,26 +2272,21 @@
       ],
       "notes": "特権命令（Ring 0 のみ）。64 ビット形式では RCX はカノニカルアドレスでなければならない。RSP は変更されないため、必要な復帰は OS が行う。",
       "src": "note",
-      "example": {"code": ["sysret"],"explanation": "この例では システムコールからユーザーへ復帰する。64 ビット形式は RIP を RCX から復帰し、R11 を基に RFLAGS を復帰する。"}
+      "example": {
+        "code": [
+          "; RCX にユーザー空間の戻り先 RIP、R11 に復帰後 RFLAGS を設定済み（Ring 0）",
+          "o64 sysret                ; CPL 0 から CPL 3 のユーザー空間へ高速復帰（48 0F 07）"
+        ],
+        "explanation": "システムコールからユーザー空間（CPL 3）へ復帰する特権命令。64 ビット形式は RIP を RCX から、RFLAGS を R11 から復元する。"
+      }
     },
     {
       "mnemonic": "MOVSB",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2797,26 +2302,21 @@
       ],
       "notes": "転送方向は DF（cld=増加、std=減少）。Microsoft ABI はプロシージャ入口で DF=0 を要求する。\n既定のソースは DS:RSI、転送先は ES:RDI（64 ビットモードでは DS/ES ベースは 0）。ソースは FS/GS に上書きできる。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["movsb"],"explanation": "この例では RSI の指す要素を RDI へ 1 バイト転送し、DF に応じて RSI/RDI を ±1 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "movsb                     ; [rdi] = [rsi]（1 バイト）, rsi++, rdi++"
+        ],
+        "explanation": "RSI の指す要素を RDI へ 1 バイト転送し、DF=0 なら RSI/RDI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "MOVSW",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すワードを RDI へ転送し、DF に応じて RSI/RDI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2832,26 +2332,21 @@
       ],
       "notes": "rep movsw の RCX はワード数（要素数）で、バイト数ではない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["movsw"],"explanation": "この例では RSI の指すワードを RDI へ転送し、DF に応じて RSI/RDI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "movsw                     ; [rdi] = [rsi]（2 バイト）, rsi+=2, rdi+=2"
+        ],
+        "explanation": "RSI の指すワードを RDI へ転送し、DF=0 なら RSI/RDI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "MOVSD",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すダブルワードを RDI へ転送し、DF に応じて RSI/RDI を ±4 する。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2867,26 +2362,21 @@
       ],
       "notes": "MASM は MOVSD を多重定義（オーバーロード）する: オペランドなしは文字列転送の本命令、オペランド付きは SSE のスカラ倍精度 movsd。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["movsd"],"explanation": "この例では RSI の指すダブルワードを RDI へ転送し、DF に応じて RSI/RDI を ±4 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "movsd                     ; [rdi] = [rsi]（4 バイト）, rsi+=4, rdi+=4"
+        ],
+        "explanation": "RSI の指すダブルワードを RDI へ転送し、DF=0 なら RSI/RDI を +4、DF=1 なら -4 する。"
+      }
     },
     {
       "mnemonic": "MOVSQ",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すクアッドワードを RDI へ転送し、DF に応じて RSI/RDI を ±8 する。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2902,26 +2392,21 @@
       ],
       "notes": "rep movsq は 8 バイト単位のブロックコピーに使う。性能は CPU とサイズに依存する。RCX はクアッドワード数。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["movsq"],"explanation": "この例では RSI の指すクアッドワードを RDI へ転送し、DF に応じて RSI/RDI を ±8 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "movsq                     ; [rdi] = [rsi]（8 バイト）, rsi+=8, rdi+=8"
+        ],
+        "explanation": "RSI の指すクアッドワードを RDI へ転送し、DF=0 なら RSI/RDI を +8、DF=1 なら -8 する。"
+      }
     },
     {
       "mnemonic": "STOSB",
       "operands": "",
       "category": "文字列",
       "summary": "AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2937,26 +2422,18 @@
       ],
       "notes": "rep stosb でメモリ領域を一括フィル（memset 的用途）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["stosb"],"explanation": "この例では AL の値を RDI の指す 1 バイトへ格納し、DF に応じて RDI を ±1 する。"}
+      "example": {
+        "code": ["cld", "stosb                     ; [rdi] = AL, rdi++"],
+        "explanation": "AL の値を RDI の指す 1 バイトへ格納し、DF=0 なら RDI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "STOSW",
       "operands": "",
       "category": "文字列",
       "summary": "AX の値を RDI の指すワードへ格納し、DF に応じて RDI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -2972,26 +2449,21 @@
       ],
       "notes": "64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["stosw"],"explanation": "この例では AX の値を RDI の指すワードへ格納し、DF に応じて RDI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "stosw                     ; [rdi] = AX（2 バイト）, rdi+=2"
+        ],
+        "explanation": "AX の値を RDI の指すワードへ格納し、DF=0 なら RDI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "STOSD",
       "operands": "",
       "category": "文字列",
       "summary": "EAX の値を RDI の指すダブルワードへ格納し、DF に応じて RDI を ±4 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3007,26 +2479,21 @@
       ],
       "notes": "64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["stosd"],"explanation": "この例では EAX の値を RDI の指すダブルワードへ格納し、DF に応じて RDI を ±4 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "stosd                     ; [rdi] = EAX（4 バイト）, rdi+=4"
+        ],
+        "explanation": "EAX の値を RDI の指すダブルワードへ格納し、DF=0 なら RDI を +4、DF=1 なら -4 する。"
+      }
     },
     {
       "mnemonic": "STOSQ",
       "operands": "",
       "category": "文字列",
       "summary": "RAX の値を RDI の指すクアッドワードへ格納し、DF に応じて RDI を ±8 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3042,26 +2509,21 @@
       ],
       "notes": "rep stosq は 8 バイト単位の一括フィルに対応。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["stosq"],"explanation": "この例では RAX の値を RDI の指すクアッドワードへ格納し、DF に応じて RDI を ±8 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "stosq                     ; [rdi] = RAX（8 バイト）, rdi+=8"
+        ],
+        "explanation": "RAX の値を RDI の指すクアッドワードへ格納し、DF=0 なら RDI を +8、DF=1 なら -8 する。"
+      }
     },
     {
       "mnemonic": "LODSB",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指す 1 バイトを AL に読み込み、DF に応じて RSI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(RSI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3077,26 +2539,18 @@
       ],
       "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。lods/stos の組合せで変換ループを構築。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["lodsb"],"explanation": "この例では RSI の指す 1 バイトを AL に読み込み、DF に応じて RSI を ±1 する。"}
+      "example": {
+        "code": ["cld", "lodsb                     ; AL = [rsi], rsi++"],
+        "explanation": "RSI の指す 1 バイトを AL に読み込み、DF=0 なら RSI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "LODSW",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すワードを AX に読み込み、DF に応じて RSI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(RSI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3112,26 +2566,21 @@
       ],
       "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["lodsw"],"explanation": "この例では RSI の指すワードを AX に読み込み、DF に応じて RSI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "lodsw                     ; AX = [rsi]（2 バイト）, rsi+=2"
+        ],
+        "explanation": "RSI の指すワードを AX に読み込み、DF=0 なら RSI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "LODSD",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すダブルワードを EAX に読み込み、DF に応じて RSI を ±4 する。",
-      "addressing": [
-        "レジスタ間接(RSI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3147,26 +2596,21 @@
       ],
       "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["lodsd"],"explanation": "この例では RSI の指すダブルワードを EAX に読み込み、DF に応じて RSI を ±4 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "lodsd                     ; EAX = [rsi]（4 バイト）, rsi+=4"
+        ],
+        "explanation": "RSI の指すダブルワードを EAX に読み込み、DF=0 なら RSI を +4、DF=1 なら -4 する。"
+      }
     },
     {
       "mnemonic": "LODSQ",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すクアッドワードを RAX に読み込み、DF に応じて RSI を ±8 する。",
-      "addressing": [
-        "レジスタ間接(RSI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3182,26 +2626,21 @@
       ],
       "notes": "REP で 1 回以上実行した場合、読み出しレジスタには最後の要素が残る。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["lodsq"],"explanation": "この例では RSI の指すクアッドワードを RAX に読み込み、DF に応じて RSI を ±8 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "lodsq                     ; RAX = [rsi]（8 バイト）, rsi+=8"
+        ],
+        "explanation": "RSI の指すクアッドワードを RAX に読み込み、DF=0 なら RSI を +8、DF=1 なら -8 する。"
+      }
     },
     {
       "mnemonic": "INSB",
       "operands": "",
       "category": "文字列",
       "summary": "DX で指定した I/O ポートから 1 バイトを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3217,26 +2656,22 @@
       ],
       "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep insb で DX 指定ポートからメモリへのブロック入力（RCX は要素数）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["; DX contains the I/O port","insb"],"explanation": "この例では DX で指定した I/O ポートから 1 バイトを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±1 する。"}
+      "example": {
+        "code": [
+          "; DX に I/O ポート番号を設定済み",
+          "cld                       ; DF=0 なので rdi は +方向に進む",
+          "insb                      ; [rdi] = port[DX]（1 バイト）, rdi++"
+        ],
+        "explanation": "DX で指定した I/O ポートから 1 バイトを読み込み RDI の指すメモリへ格納し、DF=0 なら RDI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "INSW",
       "operands": "",
       "category": "文字列",
       "summary": "DX で指定した I/O ポートから 1 ワードを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3252,26 +2687,22 @@
       ],
       "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック入力可。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["; DX contains the I/O port","insw"],"explanation": "この例では DX で指定した I/O ポートから 1 ワードを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±2 する。"}
+      "example": {
+        "code": [
+          "; DX に I/O ポート番号を設定済み",
+          "cld                       ; DF=0 なので rdi は +方向に進む",
+          "insw                      ; [rdi] = port[DX]（2 バイト）, rdi+=2"
+        ],
+        "explanation": "DX で指定した I/O ポートから 1 ワードを読み込み RDI の指すメモリへ格納し、DF=0 なら RDI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "INSD",
       "operands": "",
       "category": "文字列",
       "summary": "DX で指定した I/O ポートから 1 ダブルワードを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±4 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3287,26 +2718,22 @@
       ],
       "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック入力可。64bit 幅（REX.W 形）は存在しない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["; DX contains the I/O port","insd"],"explanation": "この例では DX で指定した I/O ポートから 1 ダブルワードを読み込み RDI の指すメモリへ格納し、DF に応じて RDI を ±4 する。"}
+      "example": {
+        "code": [
+          "; DX に I/O ポート番号を設定済み",
+          "cld                       ; DF=0 なので rdi は +方向に進む",
+          "insd                      ; [rdi] = port[DX]（4 バイト）, rdi+=4"
+        ],
+        "explanation": "DX で指定した I/O ポートから 1 ダブルワードを読み込み RDI の指すメモリへ格納し、DF=0 なら RDI を +4、DF=1 なら -4 する。"
+      }
     },
     {
       "mnemonic": "OUTSB",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すメモリから 1 バイトを読み込み DX で指定した I/O ポートへ出力し、DF に応じて RSI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(RSI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3322,26 +2749,22 @@
       ],
       "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep outsb でメモリから DX 指定ポートへのブロック出力（RCX は要素数）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["; DX contains the I/O port","outsb"],"explanation": "この例では RSI の指すメモリから 1 バイトを読み込み DX で指定した I/O ポートへ出力し、DF に応じて RSI を ±1 する。"}
+      "example": {
+        "code": [
+          "; DX に I/O ポート番号を設定済み",
+          "cld                       ; DF=0 なので rsi は +方向に進む",
+          "outsb                     ; port[DX] = [rsi]（1 バイト）, rsi++"
+        ],
+        "explanation": "RSI の指すメモリから 1 バイトを読み込み DX で指定した I/O ポートへ出力し、DF=0 なら RSI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "OUTSW",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すメモリから 1 ワードを読み込み DX で指定した I/O ポートへ出力し、DF に応じて RSI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(RSI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3357,26 +2780,22 @@
       ],
       "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック出力可。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["; DX contains the I/O port","outsw"],"explanation": "この例では RSI の指すメモリから 1 ワードを読み込み DX で指定した I/O ポートへ出力し、DF に応じて RSI を ±2 する。"}
+      "example": {
+        "code": [
+          "; DX に I/O ポート番号を設定済み",
+          "cld                       ; DF=0 なので rsi は +方向に進む",
+          "outsw                     ; port[DX] = [rsi]（2 バイト）, rsi+=2"
+        ],
+        "explanation": "RSI の指すメモリから 1 ワードを読み込み DX で指定した I/O ポートへ出力し、DF=0 なら RSI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "OUTSD",
       "operands": "",
       "category": "文字列",
       "summary": "RSI の指すメモリから 1 ダブルワードを読み込み DX で指定した I/O ポートへ出力し、DF に応じて RSI を ±4 する。",
-      "addressing": [
-        "レジスタ間接(RSI)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ間接(RSI)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3392,26 +2811,22 @@
       ],
       "notes": "I/O アクセスは実行特権と I/O 許可に従う。rep でブロック出力可。64bit 幅（REX.W 形）は存在しない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["; DX contains the I/O port","outsd"],"explanation": "この例では RSI の指すメモリから 1 ダブルワードを読み込み DX で指定した I/O ポートへ出力し、DF に応じて RSI を ±4 する。"}
+      "example": {
+        "code": [
+          "; DX に I/O ポート番号を設定済み",
+          "cld                       ; DF=0 なので rsi は +方向に進む",
+          "outsd                     ; port[DX] = [rsi]（4 バイト）, rsi+=4"
+        ],
+        "explanation": "RSI の指すメモリから 1 ダブルワードを読み込み DX で指定した I/O ポートへ出力し、DF=0 なら RSI を +4、DF=1 なら -4 する。"
+      }
     },
     {
       "mnemonic": "SCASB",
       "operands": "",
       "category": "文字列",
       "summary": "AL と RDI の指す 1 バイトを比較（フラグのみ更新）し、DF に応じて RDI を ±1 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3427,26 +2842,21 @@
       ],
       "notes": "repne scasb は「指定バイト（例: 0 終端）を探す」定番。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["scasb"],"explanation": "この例では AL と RDI の指す 1 バイトを比較（フラグのみ更新）し、DF に応じて RDI を ±1 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "scasb                     ; AL - [rdi] でフラグ更新, rdi++"
+        ],
+        "explanation": "AL と RDI の指す 1 バイトを比較（フラグのみ更新）し、DF=0 なら RDI を +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "SCASW",
       "operands": "",
       "category": "文字列",
       "summary": "AX と RDI の指すワードを比較（フラグのみ更新）し、DF に応じて RDI を ±2 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3462,26 +2872,21 @@
       ],
       "notes": "repne scasw でワード列の検索。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["scasw"],"explanation": "この例では AX と RDI の指すワードを比較（フラグのみ更新）し、DF に応じて RDI を ±2 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "scasw                     ; AX - [rdi]（2 バイト）でフラグ更新, rdi+=2"
+        ],
+        "explanation": "AX と RDI の指すワードを比較（フラグのみ更新）し、DF=0 なら RDI を +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "SCASD",
       "operands": "",
       "category": "文字列",
       "summary": "EAX と RDI の指すダブルワードを比較（フラグのみ更新）し、DF に応じて RDI を ±4 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3497,26 +2902,21 @@
       ],
       "notes": "repne scasd でダブルワード列の検索。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["scasd"],"explanation": "この例では EAX と RDI の指すダブルワードを比較（フラグのみ更新）し、DF に応じて RDI を ±4 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "scasd                     ; EAX - [rdi]（4 バイト）でフラグ更新, rdi+=4"
+        ],
+        "explanation": "EAX と RDI の指すダブルワードを比較（フラグのみ更新）し、DF=0 なら RDI を +4、DF=1 なら -4 する。"
+      }
     },
     {
       "mnemonic": "SCASQ",
       "operands": "",
       "category": "文字列",
       "summary": "RAX と RDI の指すクアッドワードを比較し、フラグを更新して DF に応じ RDI を ±8 する。",
-      "addressing": [
-        "レジスタ間接(RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3532,26 +2932,21 @@
       ],
       "notes": "REPNE と組み合わせる場合、RCX は 8 バイト要素の数。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["scasq"],"explanation": "この例では RAX と RDI の指すクアッドワードを比較し、フラグを更新して DF に応じ RDI を ±8 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "scasq                     ; RAX - [rdi]（8 バイト）でフラグ更新, rdi+=8"
+        ],
+        "explanation": "RAX と RDI の指すクアッドワードを比較し、フラグを更新して DF=0 なら RDI を +8、DF=1 なら -8 する。"
+      }
     },
     {
       "mnemonic": "CMPSB",
       "operands": "",
       "category": "文字列",
       "summary": "RSI と RDI の指す 1 バイトを比較（フラグのみ更新）し、両インデックスを進める。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3567,26 +2962,21 @@
       ],
       "notes": "repe cmpsb は指定要素数までの比較に使う。NUL を検出して自動停止する機能はない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["cmpsb"],"explanation": "この例では RSI と RDI の指す 1 バイトを比較（フラグのみ更新）し、両インデックスを進める。"}
+      "example": {
+        "code": [
+          "cld",
+          "cmpsb                     ; [rsi] - [rdi]（1 バイト）でフラグ更新, rsi++, rdi++"
+        ],
+        "explanation": "RSI と RDI の指す 1 バイトを比較（フラグのみ更新）し、DF=0 なら両インデックスを +1、DF=1 なら -1 する。"
+      }
     },
     {
       "mnemonic": "CMPSW",
       "operands": "",
       "category": "文字列",
       "summary": "RSI と RDI の指すワードを比較（フラグのみ更新）し、両インデックスを ±2 進める。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3602,26 +2992,21 @@
       ],
       "notes": "repe cmpsw でワード単位の一致判定。RCX はワード数（要素数）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["cmpsw"],"explanation": "この例では RSI と RDI の指すワードを比較（フラグのみ更新）し、両インデックスを ±2 進める。"}
+      "example": {
+        "code": [
+          "cld",
+          "cmpsw                     ; [rsi] - [rdi]（2 バイト）でフラグ更新, rsi+=2, rdi+=2"
+        ],
+        "explanation": "RSI と RDI の指すワードを比較（フラグのみ更新）し、DF=0 なら両インデックスを +2、DF=1 なら -2 する。"
+      }
     },
     {
       "mnemonic": "CMPSD",
       "operands": "",
       "category": "文字列",
       "summary": "RSI と RDI の指すダブルワードを比較（フラグのみ更新）し、両インデックスを ±4 進める。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3637,26 +3022,21 @@
       ],
       "notes": "repe cmpsd でダブルワード単位の一致判定。RCX はダブルワード数。MASM は movsd と同様に cmpsd を SSE のスカラ倍精度比較と多重定義する（オペランドの有無で区別）。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["cmpsd"],"explanation": "この例では RSI と RDI の指すダブルワードを比較（フラグのみ更新）し、両インデックスを ±4 進める。"}
+      "example": {
+        "code": [
+          "cld",
+          "cmpsd                     ; [rsi] - [rdi]（4 バイト）でフラグ更新, rsi+=4, rdi+=4"
+        ],
+        "explanation": "RSI と RDI の指すダブルワードを比較（フラグのみ更新）し、DF=0 なら両インデックスを +4、DF=1 なら -4 する。"
+      }
     },
     {
       "mnemonic": "CMPSQ",
       "operands": "",
       "category": "文字列",
       "summary": "RSI と RDI の指すクアッドワードを比較し、フラグを更新して DF に応じ両インデックスを ±8 する。",
-      "addressing": [
-        "レジスタ間接(RSI/RDI)"
-      ],
-      "flags": [
-        "‡",
-        "-",
-        "-",
-        "‡",
-        "‡",
-        "‡",
-        "‡",
-        "‡"
-      ],
+      "addressing": ["レジスタ間接(RSI/RDI)"],
+      "flags": ["‡", "-", "-", "‡", "‡", "‡", "‡", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3672,26 +3052,21 @@
       ],
       "notes": "REPE と組み合わせる場合、RCX は 8 バイト要素の数。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。",
       "src": "book",
-      "example": {"code": ["cmpsq"],"explanation": "この例では RSI と RDI の指すクアッドワードを比較し、フラグを更新して DF に応じ両インデックスを ±8 する。"}
+      "example": {
+        "code": [
+          "cld",
+          "cmpsq                     ; [rsi] - [rdi]（8 バイト）でフラグ更新, rsi+=8, rdi+=8"
+        ],
+        "explanation": "RSI と RDI の指すクアッドワードを比較し、フラグを更新して DF=0 なら両インデックスを +8、DF=1 なら -8 する。"
+      }
     },
     {
       "mnemonic": "REP",
       "operands": "",
       "category": "文字列",
       "summary": "後続の文字列命令を RCX 回（最大）繰り返すプレフィックス。movs/stos と組み合わせる。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3707,26 +3082,18 @@
       ],
       "notes": "RCX は要素数（movsq なら 8 バイト単位）。反復ごとに RCX が減る。64 ビットモードのアドレスサイズ上書き（67h）ではカウンタに ECX を使う。",
       "src": "book",
-      "example": {"code": ["rep movsb"],"explanation": "後続の movsb を RCX 回（最大）繰り返すプレフィックス。各反復で RCX を 1 減算し、RCX = 0 で終了する。"}
+      "example": {
+        "code": ["rep movsb"],
+        "explanation": "後続の movsb を RCX 回（最大）繰り返すプレフィックス。各反復で RCX を 1 減算し、RCX = 0 で終了する。"
+      }
     },
     {
       "mnemonic": "REPE",
       "operands": "",
       "category": "文字列",
       "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=1 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3742,26 +3109,18 @@
       ],
       "notes": "各反復後に RCX=0 または ZF=0 で終了する。初期 RCX=0 なら比較せず ZF も変わらない。64 ビットモードのアドレスサイズ上書き（67h）ではカウンタに ECX を使う。",
       "src": "book",
-      "example": {"code": ["repe cmpsb"],"explanation": "後続の cmpsb を RCX 回（最大）繰り返し、RCX = 0 または ZF = 0 で終了する（不一致バイトで早期終了）。"}
+      "example": {
+        "code": ["repe cmpsb"],
+        "explanation": "後続の cmpsb を RCX 回（最大）繰り返し、RCX = 0 または ZF = 0 で終了する（不一致バイトで早期終了）。"
+      }
     },
     {
       "mnemonic": "REPNE",
       "operands": "",
       "category": "文字列",
       "summary": "文字列比較・走査をカウンタが 0 になるまで繰り返し、各反復後に ZF=0 でなくなれば終了する。初回はカウンタが非ゼロなら実行する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3777,26 +3136,18 @@
       ],
       "notes": "初期 RCX が非ゼロなら反復後の ZF で検索成否を判定できる。RCX=0 は最終要素での一致と不一致の両方で起こりうる。64 ビットモードのアドレスサイズ上書き（67h）ではカウンタに ECX を使う。",
       "src": "book",
-      "example": {"code": ["repne scasb"],"explanation": "後続の scasb を RCX 回（最大）繰り返し、RCX = 0 または ZF = 1 で終了する（AL と一致するバイトで早期終了）。"}
+      "example": {
+        "code": ["repne scasb"],
+        "explanation": "後続の scasb を RCX 回（最大）繰り返し、RCX = 0 または ZF = 1 で終了する（AL と一致するバイトで早期終了）。"
+      }
     },
     {
       "mnemonic": "LOCK",
       "operands": "",
       "category": "システム制御",
       "summary": "次の命令のリード・モディファイ・ライトをアトミックにするプレフィックス（マルチコア同期用）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3812,26 +3163,18 @@
       ],
       "notes": "メモリをデスティネーションに持つ add/adc/sub/sbb/and/or/xor/not/neg/inc/dec/bts/btr/btc/cmpxchg 系/xchg 等にのみ付けられる。対応外の命令への適用は例外。xchg は lock なしでもメモリ操作時に暗黙にロックされる。",
       "src": "book",
-      "example": {"code": ["lock add qword [rdi], 1"],"explanation": "後続の add qword [rdi], 1 をリード・モディファイ・ライトとしてアトミックに実行させるプレフィックス（マルチコア同期用）。"}
+      "example": {
+        "code": ["lock add qword [rdi], 1"],
+        "explanation": "後続の add qword [rdi], 1 をリード・モディファイ・ライトとしてアトミックに実行させるプレフィックス（マルチコア同期用）。"
+      }
     },
     {
       "mnemonic": "CLC",
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグ C を 0 にクリアする。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "0"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "0"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3847,26 +3190,18 @@
       ],
       "notes": "adc/sbb/rcl/rcr の前の初期化。",
       "src": "book",
-      "example": {"code": ["clc"],"explanation": "この例では キャリーフラグ C を 0 にクリアする。"}
+      "example": {
+        "code": ["clc                       ; CF = 0"],
+        "explanation": "キャリーフラグ C を 0 にクリアする（ADC/SBB/RCL/RCR の事前初期化に使う）。"
+      }
     },
     {
       "mnemonic": "STC",
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグ C を 1 にセットする。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "1"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "1"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3881,26 +3216,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["stc"],"explanation": "この例では キャリーフラグ C を 1 にセットする。"}
+      "example": {
+        "code": ["stc                       ; CF = 1"],
+        "explanation": "CF = 1 を確定させる。sub の後に sbb を続ける多倍長減算の前段など、キャリー入力の初期化が主用途。"
+      }
     },
     {
       "mnemonic": "CMC",
       "operands": "",
       "category": "フラグ操作",
       "summary": "キャリーフラグ C を反転する。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "‡"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "‡"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3915,26 +3242,18 @@
         }
       ],
       "src": "book",
-      "example": {"code": ["cmc"],"explanation": "この例では キャリーフラグ C を反転する。"}
+      "example": {
+        "code": ["cmc                       ; CF = !CF"],
+        "explanation": "キャリーフラグ C を反転する（0→1、1→0）。"
+      }
     },
     {
       "mnemonic": "CLD",
       "operands": "",
       "category": "フラグ操作",
       "summary": "ディレクションフラグ D を 0 にクリアする（文字列操作を増加方向にする）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "0",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "0", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3950,26 +3269,20 @@
       ],
       "notes": "文字列命令を使う手続きは入口で cld 済みであることが ABI の前提。",
       "src": "book",
-      "example": {"code": ["cld"],"explanation": "この例では ディレクションフラグ D を 0 にクリアする（文字列操作を増加方向にする）。"}
+      "example": {
+        "code": [
+          "cld                       ; DF = 0（文字列命令を増加方向にする）"
+        ],
+        "explanation": "ディレクションフラグ D を 0 にクリアする（文字列操作がアドレス増加方向になる）。ABI では関数呼び出し境界で DF=0 が前提。"
+      }
     },
     {
       "mnemonic": "STD",
       "operands": "",
       "category": "フラグ操作",
       "summary": "ディレクションフラグ D を 1 にセットする（文字列操作を減少方向にする）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "1",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "1", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -3985,26 +3298,22 @@
       ],
       "notes": "使い終わったら必ず cld で戻す。",
       "src": "book",
-      "example": {"code": ["std"],"explanation": "この例では ディレクションフラグ D を 1 にセットする（文字列操作を減少方向にする）。"}
+      "example": {
+        "code": [
+          "std                       ; DF = 1（文字列命令を減少方向にする）",
+          "rep movsb",
+          "cld                       ; ABI 規約に従い DF = 0 に戻す"
+        ],
+        "explanation": "ディレクションフラグ D を 1 にセットする（文字列操作がアドレス減少方向になる）。使用後は cld で 0 に戻すのが ABI の作法。"
+      }
     },
     {
       "mnemonic": "CLI",
       "operands": "",
       "category": "システム制御",
       "summary": "割り込み許可フラグ IF を 0 にする（マスク可能割り込みを禁止）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "0",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4020,26 +3329,20 @@
       ],
       "notes": "CPL>IOPL で実行すると #GP。NMI は禁止できない。",
       "src": "book",
-      "example": {"code": ["cli"],"explanation": "この例では 割り込み許可フラグ IF を 0 にする（マスク可能割り込みを禁止）。"}
+      "example": {
+        "code": [
+          "cli                       ; IF = 0（マスク可能割り込みを禁止、CPL <= IOPL）"
+        ],
+        "explanation": "割り込み許可フラグ IF を 0 にする（マスク可能割り込みを禁止、NMI は禁止されない）。"
+      }
     },
     {
       "mnemonic": "STI",
       "operands": "",
       "category": "システム制御",
       "summary": "割り込み許可フラグ IF を 1 にする（マスク可能割り込みを許可）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "1",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "1", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4055,26 +3358,20 @@
       ],
       "notes": "sti の次の 1 命令は割り込みが抑止される（ret 前の sti で安全に戻れる）。",
       "src": "book",
-      "example": {"code": ["sti"],"explanation": "この例では 割り込み許可フラグ IF を 1 にする（マスク可能割り込みを許可）。"}
+      "example": {
+        "code": [
+          "sti                       ; IF = 1（マスク可能割り込みを許可、CPL <= IOPL）"
+        ],
+        "explanation": "IF を 1 にしてマスク可能割り込みを許可する（CPL <= IOPL）。CLI で区切った割り込み禁止区間の解除が定石で、効力は直後の命令の実行を待って有効になる。"
+      }
     },
     {
       "mnemonic": "HLT",
       "operands": "",
       "category": "システム制御",
       "summary": "CPU を停止状態にする。割り込み・NMI・RESET で再開する。特権命令。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4089,26 +3386,22 @@
       ],
       "notes": "Ring 0 用。ユーザーモードで実行すると #GP。\n",
       "src": "book",
-      "example": {"code": ["hlt"],"explanation": "この例では CPU を停止状態にする。割り込み・NMI・RESET で再開する。特権命令。"}
+      "example": {
+        "code": [
+          "idle:",
+          "  hlt                     ; 割り込み・NMI・RESET まで CPU を停止（Ring 0 特権命令）",
+          "  jmp idle"
+        ],
+        "explanation": "CPU を停止状態にし、割り込み・NMI・RESET で再開する（Ring 0 特権命令）。OS のアイドルループで使われる。"
+      }
     },
     {
       "mnemonic": "NOP",
       "operands": "",
       "category": "システム制御",
       "summary": "何もしない（90h は XCHG (E)AX,(E)AX と等価な NOP。64 ビットモードの既定オペランド幅は EAX）。命令パッチやアライン調整のプレースホルダ。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4116,39 +3409,33 @@
         }
       ],
       "encodings": [
-      {
-        "syntax": "NOP",
-        "opcode": "90",
-        "bytes": 1
-      },
-      {
-        "syntax": "NOP r/m16/32/64",
-        "opcode": "0F 1F /0（REX.W 可）",
-        "length": "可変"
-      }
-    ],
+        {
+          "syntax": "NOP",
+          "opcode": "90",
+          "bytes": 1
+        },
+        {
+          "syntax": "NOP r/m16/32/64",
+          "opcode": "0F 1F /0（REX.W 可）",
+          "length": "可変"
+        }
+      ],
       "notes": "可変長命令の x86 ではコードパッチの潤しや 16 バイトアライン調整に使われる。\n",
       "src": "book",
-      "example": {"code": ["nop"],"explanation": "この例では 何もしない（90 = XCHG AX, AX）。命令パッチやアライン調整のプレースホルダ。"}
+      "example": {
+        "code": [
+          "nop                       ; 1 バイトの何もしない命令（0x90）"
+        ],
+        "explanation": "何もしない（0x90 = XCHG (E)AX, (E)AX と等価、0F 1F /0 で多バイト NOP も可）。命令パッチやアライン調整のプレースホルダ。"
+      }
     },
     {
       "mnemonic": "CPUID",
       "operands": "",
       "category": "システム制御",
       "summary": "EAX で機能リーフを指定し、CPU の対応情報を EAX/EBX/ECX/EDX に返す。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4164,26 +3451,21 @@
       ],
       "notes": "EBX を破壊するため呼び出し前の退避が必要（push rbx による退避が定番）。命令セット判別に使用。",
       "src": "book",
-      "example": {"code": ["cpuid"],"explanation": "この例では EAX で機能リーフを指定し、CPU の対応情報を EAX/EBX/ECX/EDX に返す。"}
+      "example": {
+        "code": [
+          "mov   eax, 1              ; 機能リーフ 1（プロセッサ情報・機能ビット）を指定",
+          "cpuid                     ; 結果を EAX, EBX, ECX, EDX に取得（RBX 破壊に注意）"
+        ],
+        "explanation": "EAX（および必要なら ECX）で機能リーフを指定し、CPU のベンダー ID や命令セット拡張の対応情報を EAX/EBX/ECX/EDX に返す。"
+      }
     },
     {
       "mnemonic": "RDMSR",
       "operands": "",
       "category": "システム制御",
       "summary": "ECX で指定したモデル固有レジスタを読み、値を EDX:EAX に返す。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4198,26 +3480,21 @@
         }
       ],
       "notes": "特権命令（CPL=0）。未対応 MSR や予約値へのアクセスは #GP を発生させる。",
-      "example": {"code": ["rdmsr"],"explanation": "この例では ECX で指定したモデル固有レジスタを読み、値を EDX:EAX に返す。"}
+      "example": {
+        "code": [
+          "mov   ecx, 0xC0000082     ; MSR 番号（例: IA32_LSTAR）を指定",
+          "rdmsr                     ; 64 ビット値を EDX（上位32）:EAX（下位32）へ読み出し"
+        ],
+        "explanation": "ECX で指定したモデル固有レジスタ（MSR）を読み、64 ビット値を EDX（上位 32 ビット）: EAX（下位 32 ビット）に返す（CPL=0 特権命令）。"
+      }
     },
     {
       "mnemonic": "WRMSR",
       "operands": "",
       "category": "システム制御",
       "summary": "ECX で指定したモデル固有レジスタへ EDX:EAX の値を書く。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4232,26 +3509,22 @@
         }
       ],
       "notes": "特権命令（CPL=0）。未対応 MSR や予約値へのアクセスは #GP を発生させる。",
-      "example": {"code": ["wrmsr"],"explanation": "この例では ECX で指定したモデル固有レジスタへ EDX:EAX の値を書く。"}
+      "example": {
+        "code": [
+          "mov   ecx, 0xC0000082     ; MSR 番号（例: IA32_LSTAR）を指定",
+          "; EDX（上位32）:EAX（下位32）に書き込む 64 ビット値を設定済み",
+          "wrmsr                     ; MSR へ書き込み（CPL=0 特権命令）"
+        ],
+        "explanation": "ECX で指定したモデル固有レジスタ（MSR）へ EDX:EAX の 64 ビット値を書き込む（CPL=0 特権命令）。"
+      }
     },
     {
       "mnemonic": "SYSENTER",
       "operands": "",
       "category": "システム制御",
       "summary": "SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "0",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "0", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4266,26 +3539,20 @@
         }
       ],
       "notes": "リアルアドレスモード以外で実行可能。CPL 3 のユーザーコードからも呼び出せ、IA32_SYSENTER_CS/ESP/EIP MSR で設定したCPL 0 の入口へ移行する。EFLAGS.VM と IF をクリアする。戻り先やユーザー状態は保存しないため、復帰情報は呼出側・OS間の規約で扱う。",
-      "example": {"code": ["sysenter"],"explanation": "この例では SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。"}
+      "example": {
+        "code": [
+          "sysenter                  ; IA32_SYSENTER_CS/ESP/EIP MSR に従い Ring 0 へ高速遷移"
+        ],
+        "explanation": "SYSENTER 用 MSR（IA32_SYSENTER_CS/ESP/EIP）と OS の規約に従い、Ring 3 から Ring 0 へ高速な特権レベル遷移を行う。"
+      }
     },
     {
       "mnemonic": "SYSEXIT",
       "operands": "",
       "category": "システム制御",
       "summary": "SYSENTER でカーネルに入った後、CPL 0 から CPL 3 へ制御を戻す高速な特権遷移命令。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4300,26 +3567,21 @@
         }
       ],
       "notes": "リアルアドレス／仮想8086モード以外で実行可能だが、CPL 0 が必要。OSがレジスタに用意した命令ポインタ・スタックポインタと IA32_SYSENTER_CS MSR から計算したセグメントでCPL 3へ移行する。SYSENTERが保存した戻り先から復帰する命令ではない。EFLAGS/RFLAGSは変更しない。",
-      "example": {"code": ["sysexit"],"explanation": "この例では SYSENTER 用 MSR と OS の規約に従い、高速な特権レベル遷移を行う。"}
+      "example": {
+        "code": [
+          "; RDX にユーザー空間の戻り先 RIP、RCX にユーザー空間の RSP を設定済み（CPL=0）",
+          "sysexit                   ; CPL 0 から CPL 3 へ高速復帰"
+        ],
+        "explanation": "SYSENTER でカーネルに入った後、CPL 0 から CPL 3 へ制御を戻す高速な特権遷移命令（戻り先 IP は RDX、SP は RCX から設定）。"
+      }
     },
     {
       "mnemonic": "RDTSC",
       "operands": "",
       "category": "システム制御",
       "summary": "タイムスタンプカウンタ（TSC）を読み EDX:EAX に返す。直列化されない。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4334,27 +3596,20 @@
       ],
       "notes": "CR4.TSD=0 なら全CPLで実行可能。CR4.TSD=1 の保護モードではCPL 0のみ実行でき、それ以外は #GP。直列化命令ではないため、精密な順序測定には要件に応じてLFENCE等を併用する。",
       "src": "book",
-      "example": {"code": ["rdtsc"],"explanation": "この例では タイムスタンプカウンタ（TSC）を読み EDX:EAX に返す。直列化されない。"}
+      "example": {
+        "code": [
+          "rdtsc                     ; タイムスタンプカウンタを EDX（上位32）:EAX（下位32）へ取得"
+        ],
+        "explanation": "プロセッサのタイムスタンプカウンタ（TSC）を読み、64 ビット値を EDX:EAX に返す。直列化されないため精密なベンチマークでは LFENCE 等を併用する。"
+      }
     },
     {
       "mnemonic": "SETcc",
       "operands": "dst8",
       "category": "データ転送",
       "summary": "条件が成立していれば dst（8ビットレジスタ/メモリ）に 1、不成立なら 0 を格納する。",
-      "addressing": [
-        "レジスタ(8bit)",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ(8bit)", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4370,27 +3625,18 @@
       ],
       "notes": "cc の種類と別名は Jcc の備考と同じ。（sete/setne/seta/setb/setg/setl 等）。\n条件を値（0/1）として扱いたい（比較結果の bool 化）ときに使う。",
       "src": "book",
-      "example": {"code": ["setz byte [rdi]"],"explanation": "ZF = 1 なら rdi が指す 1 バイトに 1、ZF = 0 なら 0 を格納する。"}
+      "example": {
+        "code": ["setz byte [rdi]"],
+        "explanation": "ZF = 1 なら rdi が指す 1 バイトに 1、ZF = 0 なら 0 を格納する。"
+      }
     },
     {
       "mnemonic": "CMOVcc",
       "operands": "dst, src",
       "category": "データ転送",
       "summary": "条件成立時に src を dst に転送する。32 ビット形式は条件不成立でも対応する 64 ビットレジスタの上位 32 ビットをクリアする。",
-      "addressing": [
-        "レジスタ",
-        "間接(base+index×scale+disp)"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["レジスタ", "間接(base+index×scale+disp)"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "CPU・実行条件に依存",
@@ -4406,27 +3652,18 @@
       ],
       "notes": "cc の種類は Jcc と同じ。メモリをソースにすると条件不成立でも読み出しが行われ、アクセス例外が起こりうる。",
       "src": "book",
-      "example": {"code": ["cmovz rax, rbx"],"explanation": "ZF = 1 のときだけ rbx を rax へ転送する（不成立なら rax は不変）。"}
+      "example": {
+        "code": ["cmovz rax, rbx"],
+        "explanation": "ZF = 1 のときだけ rbx を rax へ転送する（不成立なら rax は不変）。"
+      }
     },
     {
       "mnemonic": "ENTER",
       "operands": "imm16, imm8",
       "category": "サブルーチン",
       "summary": "スタックフレームを作成する。RBP を退避してフレームポインタを設定し、imm16 バイトのローカル領域を確保する（LEAVE と対）。",
-      "addressing": [
-        "スタック",
-        "即値"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["スタック", "即値"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "実装依存",
@@ -4442,26 +3679,18 @@
       ],
       "notes": "64bit モードでも有効。n>=1 は字句ネスト用ディスプレイ構築にループとメモリアクセスが要るため低速で、実用は n=0 のみ（push rbp / mov rbp,rsp / sub rsp,imm16 相当）。",
       "src": "book",
-      "example": {"code": ["enter 4, 0"],"explanation": "RBP をスタックへ退避して RBP = RSP とし、RSP を 4 減算して 4 バイトのローカル領域を確保する（ネストレベル 0、LEAVE と対）。"}
+      "example": {
+        "code": ["enter 4, 0"],
+        "explanation": "RBP をスタックへ退避して RBP = RSP とし、RSP を 4 減算して 4 バイトのローカル領域を確保する（ネストレベル 0、LEAVE と対）。"
+      }
     },
     {
       "mnemonic": "PAUSE",
       "operands": "",
       "category": "システム制御",
       "summary": "スピンループ用ヒント。パイプラインをフラッシュして消費電力を下げ、SMT 相手スレッドの性能を改善する（機能的には NOP）。",
-      "addressing": [
-        "暗黙"
-      ],
-      "flags": [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-"
-      ],
+      "addressing": ["暗黙"],
+      "flags": ["-", "-", "-", "-", "-", "-", "-", "-"],
       "cycles": [
         {
           "cond": "実装依存（数10〜200超クロック）",
@@ -4477,7 +3706,15 @@
       ],
       "notes": "ロック獲得待ちのスピンループで使う。旧 CPU では REP NOP として素通りする。",
       "src": "book",
-      "example": {"code": ["pause"],"explanation": "この例では スピンループ用ヒント。パイプラインをフラッシュして消費電力を下げ、SMT 相手スレッドの性能を改善する（機能的には NOP）。"}
+      "example": {
+        "code": [
+          "spin_wait:",
+          "  pause                   ; スピンループ中の消費電力低減・SMT 性能改善ヒント",
+          "  cmp   dword [rdi], 0",
+          "  jnz   spin_wait"
+        ],
+        "explanation": "スピンロック待機ループ用のヒント命令（F3 90）。メモリオーダー違反によるペナルティを防ぎ、消費電力を下げて SMT 相手スレッドの実行効率を高める。"
+      }
     }
   ]
 }

@@ -14,10 +14,11 @@ EAX で機能リーフを指定し、CPU の対応情報を EAX/EBX/ECX/EDX に�
   CPUID: 0F A2  (2 バイト)
 
 使用例:
-  cpuid
+  mov   eax, 1              ; 機能リーフ 1（プロセッサ情報・機能ビット）を指定
+  cpuid                     ; 結果を EAX, EBX, ECX, EDX に取得（RBX 破壊に注意）
 
 解説:
-  この例では EAX で機能リーフを指定し、CPU の対応情報を EAX/EBX/ECX/EDX に返す。
+  EAX（および必要なら ECX）で機能リーフを指定し、CPU のベンダー ID や命令セット拡張の対応情報を EAX/EBX/ECX/EDX に返す。
 
 備考:
   EBX を破壊するため呼び出し前の退避が必要（push rbx による退避が定番）。命令セット判別に使用。

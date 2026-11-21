@@ -14,10 +14,12 @@ RAX を符号拡張して RDX:RAX に展開する（RDX に符号ビットを満
   CQO: REX.W 99  (2 バイト)
 
 使用例:
-  cqo
+  mov   rax, -100           ; 64 ビット被除数 -100
+  cqo                       ; RDX:RAX = 128 ビット符号拡張値（RDX = 0xFFFFFFFFFFFFFFFF）
+  idiv  rcx                 ; RDX:RAX ÷ RCX → RAX = 商, RDX = 剰余
 
 解説:
-  この例では RAX を符号拡張して RDX:RAX に展開する（RDX に符号ビットを満たす）。64bit IDIV の前処理。
+  RAX の符号ビット（bit63）を RDX 全体に複製し、64 ビット IDIV（RDX:RAX ÷ src）用の 128 ビット符号拡張被除数を作る。
 
 備考:
   符号なし除算では RDX=0 にする（xor edx, edx）。

@@ -14,9 +14,10 @@ CLD — 8086（フラグ操作）
   CLD: FC  (1 バイト)
 
 使用例:
-  cld
+  cld                       ; DF = 0（文字列命令で SI/DI を増加方向へ進める）
+  rep movsb
 
 解説:
-  この例では 方向フラグ DF を 0（文字列操作で SI/DI を増加）。
+  方向フラグ DF を 0 にクリアし、MOVS/STOS/LODS/CMPS/SCAS で SI/DI がアドレス増加方向へ進むようにする。
 
 （根拠: book）

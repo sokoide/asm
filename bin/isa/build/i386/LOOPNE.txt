@@ -14,11 +14,12 @@ CX/ECX を 1 減算し、0 以外かつ ZF=0 のとき rel8 へ分岐する。LO
   LOOPNE rel8: E0 cb  (2 バイト)
 
 使用例:
-  loopne target
-  target:
+  search_loop:
+    scasb                   ; [edi] と AL を比較（一致で ZF=1）
+    loopne search_loop      ; ecx を 1 減算し、ecx != 0 かつ ZF=0 なら継続
 
 解説:
-  ecx を 1 減算し、0 以外かつ ZF=0 のとき target へジャンプする。
+  ecx を 1 減算し、0 以外かつ ZF=0 の間 search_loop へジャンプする（LOOPNZ と同じ）。
 
 備考:
   カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。

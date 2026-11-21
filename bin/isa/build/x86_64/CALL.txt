@@ -15,11 +15,14 @@ CALL label / reg / mem — x86-64（サブルーチン）
   CALL r/m64: REX.W FF /2  (長さ可変)
 
 使用例:
-  call target
-  target:
+  call  callee              ; 次の命令の RIP をスタックへ退避して呼び出し
+  mov   rbx, rax            ; RET 後にここへ戻る
+  callee:
+    mov   eax, 42
+    ret
 
 解説:
-  戻りアドレス（次の命令の RIP）をスタックへ退避し（RSP = RSP - 8）、target へジャンプする。
+  戻りアドレス（次の命令の RIP）をスタックへ退避し（RSP = RSP - 8）、callee へジャンプする。
 
 備考:
   近呼び出しでは 8 バイトの戻りアドレスを積む。

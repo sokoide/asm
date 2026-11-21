@@ -14,10 +14,11 @@ RSI の指すワードを RDI へ転送し、DF に応じて RSI/RDI を ±2 す
   MOVSW: 66 A5  (2 バイト)
 
 使用例:
-  movsw
+  cld
+  movsw                     ; [rdi] = [rsi]（2 バイト）, rsi+=2, rdi+=2
 
 解説:
-  この例では RSI の指すワードを RDI へ転送し、DF に応じて RSI/RDI を ±2 する。
+  RSI の指すワードを RDI へ転送し、DF=0 なら RSI/RDI を +2、DF=1 なら -2 する。
 
 備考:
   rep movsw の RCX はワード数（要素数）で、バイト数ではない。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。

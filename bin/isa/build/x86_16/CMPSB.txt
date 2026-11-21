@@ -15,10 +15,11 @@ DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）
   CMPSB: A6  (1 バイト)
 
 使用例:
-  cmpsb
+  cld                       ; DF=0（増加方向）に設定
+  cmpsb                     ; DS:[SI] - ES:[DI] でフラグ更新, SI++, DI++
 
 解説:
-  この例では DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）し、DF に応じて SI/DI を ±1 する。
+  DS:SI と ES:DI の指す 1 バイトを比較（SUB と同じフラグ更新）し、DF=0 なら SI/DI を +1、DF=1 なら -1 する。
 
 備考:
   REPE/REPNE と組み合わせてブロック比較。

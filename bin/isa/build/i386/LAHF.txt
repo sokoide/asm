@@ -14,10 +14,10 @@ EFLAGS の下位バイト（SF ZF - AF - PF 1 CF）を AH に読み込む。
   LAHF: 9F  (1 バイト)
 
 使用例:
-  lahf
+  lahf                      ; AH = EFLAGS[7:0]（SF ZF 0 AF 0 PF 1 CF）
 
 解説:
-  この例では EFLAGS の下位バイト（SF ZF - AF - PF 1 CF）を AH に読み込む。
+  EFLAGS の下位バイト（SF, ZF, AF, PF, CF）を AH レジスタへ読み込む。OF/DF/IF/TF は含まれない。
 
 備考:
   8080 互換のブリッジ命令。OF/DF/IF/TF は含まれない。

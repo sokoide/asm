@@ -14,10 +14,11 @@ AX の符号拡張（16→32bit）で EAX に転送する。
   CWDE: 98  (1 バイト)
 
 使用例:
-  cwde
+  mov   ax, -5              ; AX = 0xFFFB（16 ビット -5）
+  cwde                      ; EAX = 0xFFFFFFFB（32 ビット -5 へ符号拡張、RAX 上位 32bit も 0 クリア）
 
 解説:
-  この例では AX の符号拡張（16→32bit）で EAX に転送する。
+  AX の符号ビット（bit15）を EAX 上位 16 ビットへ複製し、16 ビット符号付き値を 32 ビット（EAX）へ符号拡張する。
 
 備考:
   CDQE が 64bit 版（EAX→RAX）。

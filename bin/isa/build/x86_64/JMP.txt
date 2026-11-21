@@ -16,11 +16,13 @@ JMP label / reg / mem — x86-64（分岐）
   JMP r/m64: REX.W FF /4  (長さ可変)
 
 使用例:
-  jmp target
-  target:
+  jmp   skip
+  mov   rax, -1             ; 分岐するため実行されない
+  skip:
+  xor   eax, eax
 
 解説:
-  無条件に target へ分岐する（RIP = target、ここでは相対ジャンプ）。レジスタ・メモリ間接ジャンプも可能。
+  途中の処理を飛ばして skip へ無条件にジャンプする（RIP を書き換え、レジスタ・メモリ間接ジャンプも可能）。
 
 備考:
   間接ジャンプ（jmp rax など）はジャンプテーブルや状態マシンに使う。

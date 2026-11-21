@@ -14,11 +14,12 @@ RCX を 1 減算し、0 以外かつ ZF=0 のとき rel8 へ分岐する。LOOPN
   LOOPNE rel8: E0 cb  (2 バイト)
 
 使用例:
-  loopne target
-  target:
+  search_ne:
+    scasb                   ; AL と [rdi] を比較（一致で ZF=1）
+    loopne search_ne        ; RCX を 1 減算し、RCX != 0 かつ ZF=0 なら継続
 
 解説:
-  RCX を 1 減算し、RCX != 0 かつ ZF = 0 のときだけ target へ分岐する（LOOPNZ と同じ、アドレスサイズ 32 では ECX）。
+  RCX を 1 減算し、RCX != 0 かつ ZF = 0 のときだけ search_ne へ分岐する（LOOPNZ と同じ）。
 
 備考:
   CMPS/SCAS と組み合わせると ZF=0 の不一致中は継続し、一致（ZF=1）またはカウンタ 0 で終了する。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。

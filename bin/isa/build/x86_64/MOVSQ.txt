@@ -14,10 +14,11 @@ RSI の指すクアッドワードを RDI へ転送し、DF に応じて RSI/RDI
   MOVSQ: REX.W A5  (2 バイト)
 
 使用例:
-  movsq
+  cld
+  movsq                     ; [rdi] = [rsi]（8 バイト）, rsi+=8, rdi+=8
 
 解説:
-  この例では RSI の指すクアッドワードを RDI へ転送し、DF に応じて RSI/RDI を ±8 する。
+  RSI の指すクアッドワードを RDI へ転送し、DF=0 なら RSI/RDI を +8、DF=1 なら -8 する。
 
 備考:
   rep movsq は 8 バイト単位のブロックコピーに使う。性能は CPU とサイズに依存する。RCX はクアッドワード数。64 ビットモードのアドレスサイズ上書き（67h）ではインデックスに ESI/EDI を使う。

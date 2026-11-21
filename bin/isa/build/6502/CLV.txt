@@ -15,7 +15,8 @@ CLV — 6502（システム制御）
 
 使用例:
   clv
-  bvc no_overflow
+  bvc no_overflow ; V=0 なので必ず分岐する
+  no_overflow:
 
 解説:
   V をクリアし、直後の BVC が成立する状態にする。

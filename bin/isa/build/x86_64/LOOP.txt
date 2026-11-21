@@ -14,11 +14,13 @@ RCX を 1 減算し、0 でなければ rel8 へ分岐する（減算と JNZ の
   LOOP rel8: E2 cb  (2 バイト)
 
 使用例:
-  loop target
-  target:
+  mov   rcx, 4
+  loop_start:
+    inc   rax               ; 4 回繰り返される処理
+    loop  loop_start        ; RCX を 1 減算し、RCX != 0 なら loop_start へ戻る
 
 解説:
-  RCX を 1 減算し、RCX != 0 なら target へ分岐する（アドレスサイズ 32 では ECX を使う）。
+  RCX を 1 減算し、RCX != 0 なら loop_start へ分岐する（アドレスサイズ 32 では ECX を使う）。
 
 備考:
   RCX の減算はフラグに影響しない。dec/jnz でも同じカウント分岐を作れるが、DEC はフラグを更新する。カウンタが初期値 0 でも先に減算され、カウンタ幅の最大値に折り返す。命令自体はフラグを変更しない。

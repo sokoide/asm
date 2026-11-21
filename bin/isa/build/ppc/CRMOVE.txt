@@ -12,10 +12,10 @@ crmove（拡張ニーモニック）→ CROR crbT, crbA, crbB — PowerPC（CR�
   コンディションレジスタビットの移動（Condition Register Move）
 
 使用例:
-  crmove 2,crbA
+  crmove 2, 6               # CR ビット 6（cr1[EQ]）を CR ビット 2（cr0[EQ]）へコピー
 
 解説:
-  CR ビット crbA の値を CR ビット 2 へコピーする（cror 2,crbA,crbA の簡記）。
+  CR ビット 6 の値を CR ビット 2 へコピーする（cror 2,6,6 の簡記）。
 
 元命令: isa ppc CROR
 CR ビット同士の論理和。

@@ -23,11 +23,14 @@ CALL label / reg / mem / seg:offset — 80386（サブルーチン）
   CALL m16:16/32: FF /3  (長さ可変)
 
 使用例:
-  call target
-  target:
+  call callee               ; 次の命令の EIP をスタックへ積んで呼び出し
+  mov  ebx, eax             ; RET 後にここへ戻る
+  callee:
+    mov eax, 42
+    ret
 
 解説:
-  次の命令の EIP をスタックへ積み、target へジャンプする。
+  次の命令の EIP をスタックへ積み、callee へジャンプする。callee 末尾の RET がスタックから EIP をポップして戻る。
 
 備考:
   far CALL（9A / FF /3）は CS:EIP を退避し、プロテクトモードではコールゲート経由で特権切替が起こる。

@@ -15,10 +15,13 @@ CX = 0 のときだけ相対分岐（ループ事前脱出）。
   JCXZ rel8: E3 rel8  (2 バイト)
 
 使用例:
-  jcxz target
-  target:
+  jcxz loop_end             ; CX == 0 ならループ本体をスキップ
+  loop_body:
+    dec  cx
+    jnz  loop_body
+  loop_end:
 
 解説:
-  CX=0 のときだけ target へ相対分岐（CX 自体は変化しない）。
+  CX=0 のときだけループ本体をスキップして loop_end へ相対分岐する（CX と FLAGS は変化しない）。
 
 （根拠: book）

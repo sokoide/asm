@@ -14,11 +14,12 @@ CX/ECX を 1 減算し、0 以外かつ ZF=1 のとき rel8 へ分岐する。LO
   LOOPE rel8: E1 cb  (2 バイト)
 
 使用例:
-  loope target
-  target:
+  match_loop:
+    cmpsb                   ; [esi] と [edi] を比較（一致で ZF=1）
+    loope match_loop        ; ecx を 1 減算し、ecx != 0 かつ ZF=1 なら継続
 
 解説:
-  ecx を 1 減算し、0 以外かつ ZF=1 のとき target へジャンプする。
+  ecx を 1 減算し、0 以外かつ ZF=1 の間 match_loop へジャンプする（LOOPZ と同じ）。
 
 備考:
   cmps/scas と組み合わせて一致の連なりをたどる。
